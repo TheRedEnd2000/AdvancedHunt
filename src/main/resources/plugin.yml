@@ -1,0 +1,12 @@
+name: AdvancedEggHunt
+version: '${project.version}'
+main: de.theredend2000.advancedegghunt.Main
+api-version: 1.13
+commands:
+  advancedegghunt:
+    aliases:
+      - aeh
+      - advancedhunt
+      - egghunt
+      - eggs
+      - easter

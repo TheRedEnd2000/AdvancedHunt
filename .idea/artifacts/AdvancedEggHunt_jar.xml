@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AdvancedEggHunt:jar">
+    <output-path>$USER_HOME$/AppData/Roaming/.feather/player-server/servers/239e45f8-68df-4000-8a17-9535649d4f98/plugins</output-path>
+    <root id="archive" name="AdvancedEggHunt.jar">
+      <element id="module-output" name="AdvancedEggHunt" />
+      <element id="library" level="project" name="spigot-1.16.3" />
+      <element id="library" level="project" name="spigot-1.17" />
+    </root>
+  </artifact>
+</component>
