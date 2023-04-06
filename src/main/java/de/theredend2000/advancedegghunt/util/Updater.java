@@ -17,7 +17,7 @@ import java.util.Objects;
 public class Updater implements Listener {
 
     private Main plugin;
-    private int key = 108850;
+    private int key = 109085;
 
     public Updater(Main plugin){
         this.plugin = plugin;
