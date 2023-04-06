@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-public class InventoryManager_1_19_R1 implements InventoryManager {
+public class InventoryManager_1_18_R1 implements InventoryManager {
 
 
     public void createEggsSettingsInventory(Player player) {

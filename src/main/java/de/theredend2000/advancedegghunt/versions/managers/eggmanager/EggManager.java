@@ -22,4 +22,5 @@ public interface EggManager {
     public int getEggsFound(Player player);
     public void updateMaxEggs();
     public boolean checkFoundAll(Player player);
+    public void spawnEggParticle();
 }

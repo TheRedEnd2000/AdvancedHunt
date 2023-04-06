@@ -11,4 +11,6 @@ public interface SoundManager {
     public Sound playEggPlaceSound();
     public Sound playEggBreakSound();
     public Sound playErrorSound();
+    public Sound playInventoryFailedSound();
+    public Sound playInventorySuccessSound();
 }

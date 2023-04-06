@@ -5,13 +5,17 @@ import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.saveinventory.Config;
 import de.theredend2000.advancedegghunt.util.saveinventory.Serialization;
+import de.theredend2000.advancedegghunt.versions.VersionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -169,7 +173,8 @@ public class EggManager_1_16_R3 implements EggManager {
         new ConfigLocationUtil(Main.getInstance(),block.getLocation(),"FoundEggs."+player.getUniqueId()+"."+id).saveBlockLocation();
         Main.getInstance().eggs.set("FoundEggs."+player.getUniqueId()+".Count", Main.getInstance().eggs.contains("FoundEggs."+player.getUniqueId()+".Count") ? Main.getInstance().eggs.getInt("FoundEggs." + player.getUniqueId() + ".Count")+1 : 1);
         Main.getInstance().saveEggs();
-        player.sendMessage(Main.getInstance().getMessage("EggFoundMessage").replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs())));
+        if(!Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards") || !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"))
+            player.sendMessage(Main.getInstance().getMessage("EggFoundMessage").replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs())));
     }
     public boolean hasFound(Player player, String id){
         return Main.getInstance().eggs.contains("FoundEggs."+player.getUniqueId()+"."+id);
@@ -195,7 +200,37 @@ public class EggManager_1_16_R3 implements EggManager {
         Main.getInstance().eggs.set("MaxEggs",maxEggs.size());
         Main.getInstance().saveEggs();
     }
+
     public boolean checkFoundAll(Player player){
         return getEggsFound(player) == getMaxEggs();
+    }
+    public void spawnEggParticle(){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(!Main.getInstance().eggs.contains("Eggs.")){
+                    return;
+                }
+                for (String key: Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
+                    ConfigLocationUtil locationUtil = new ConfigLocationUtil(Main.getInstance(),"Eggs."+key);
+                    if (locationUtil.loadBlockLocation() != null){
+                        String world = Main.getInstance().eggs.getString("Eggs."+key+".World");
+                        int x = Main.getInstance().eggs.getInt("Eggs."+key+".X");
+                        int y = Main.getInstance().eggs.getInt("Eggs."+key+".Y");
+                        int z = Main.getInstance().eggs.getInt("Eggs."+key+".Z");
+                        Location loc = new Location(Bukkit.getWorld(world),x,y,z).add(0.5,0.5,0.5);
+                        for (Entity e: loc.getWorld().getNearbyEntities(loc, 10,10,10)){
+                            if (e instanceof Player){
+                                Player p = (Player) e;
+                                if(VersionManager.getEggManager().hasFound(p,key)){
+                                    p.spawnParticle(Particle.VILLAGER_HAPPY,loc,1,0.2,0.1,0.2,0);
+                                }else
+                                    p.spawnParticle(Particle.CRIT,loc,1,0.2,0.1,0.2,0);
+                            }
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(Main.getInstance(),0,5);
     }
 }

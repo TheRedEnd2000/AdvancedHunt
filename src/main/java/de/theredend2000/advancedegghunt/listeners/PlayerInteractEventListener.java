@@ -4,6 +4,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,9 +32,17 @@ public class PlayerInteractEventListener implements Listener {
                     VersionManager.getExtraManager().spawnFireworkRocket(loc.add(0.5,0.5,0.5));
                     if(VersionManager.getEggManager().checkFoundAll(player)){
                         player.playSound(player.getLocation(),VersionManager.getSoundManager().playAllEggsFound(), 1, 1);
-                        player.sendMessage("All Eggs Found");
-                    }else
-                        player.playSound(player.getLocation(),VersionManager.getSoundManager().playEggFoundSound(), VersionManager.getSoundManager().getSoundVolume(),1);
+                        if(Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards")) {
+                            for (String cmd : Main.getInstance().getConfig().getStringList("Rewards.PlayerFoundAllEggs"))
+                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(VersionManager.getEggManager().getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(VersionManager.getEggManager().getMaxEggs())).replaceAll("%PREFIX%", Main.getInstance().messages.getString("Prefix").replaceAll("&", "§")));
+                        }
+                    }else {
+                        player.playSound(player.getLocation(), VersionManager.getSoundManager().playEggFoundSound(), VersionManager.getSoundManager().getSoundVolume(), 1);
+                        if(Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward")) {
+                            for (String cmd : Main.getInstance().getConfig().getStringList("Rewards.PlayerFoundOneEgg"))
+                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(VersionManager.getEggManager().getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(VersionManager.getEggManager().getMaxEggs())).replaceAll("%PREFIX%", Main.getInstance().messages.getString("Prefix").replaceAll("&", "§")));
+                        }
+                    }
                 } else {
                     player.sendMessage(Main.getInstance().getMessage("EggAlreadyFoundMessage"));
                     player.playSound(player.getLocation(),VersionManager.getSoundManager().playEggAlreadyFoundSound(),VersionManager.getSoundManager().getSoundVolume(),1);

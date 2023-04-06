@@ -19,10 +19,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
-public class EggManager_1_15_R1 implements EggManager {
+public class EggManager_1_14_R1 implements EggManager {
 
     public String getRandomEggTexture(int id){
         String texture = "";

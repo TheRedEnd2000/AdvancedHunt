@@ -1,22 +1,24 @@
 package de.theredend2000.advancedegghunt;
 
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
-import de.theredend2000.advancedegghunt.listeners.BlockBreakEventListener;
-import de.theredend2000.advancedegghunt.listeners.BlockPlaceEventListener;
-import de.theredend2000.advancedegghunt.listeners.InventoryClickEventListener;
-import de.theredend2000.advancedegghunt.listeners.PlayerInteractEventListener;
+import de.theredend2000.advancedegghunt.listeners.*;
+import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
+import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
+import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class Main extends JavaPlugin {
 
@@ -35,11 +37,23 @@ public final class Main extends JavaPlugin {
         placeEggsPlayers = new ArrayList<>();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
         initListeners();
+        VersionManager.getEggManager().spawnEggParticle();
+        checkCommandFeedback();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        giveAllItemsBack();
+    }
+
+    public void checkCommandFeedback(){
+        if(getConfig().getBoolean("Settings.DisableCommandFeedback")){
+            for(World worlds : Bukkit.getServer().getWorlds())
+                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK,false);
+        }else{
+            for(World worlds : Bukkit.getServer().getWorlds())
+                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK,true);
+        }
     }
 
     private void initListeners(){
@@ -47,6 +61,16 @@ public final class Main extends JavaPlugin {
         new BlockPlaceEventListener();
         new BlockBreakEventListener();
         new PlayerInteractEventListener();
+        new PlayerInteractItemEvent();
+        new Updater(this);
+    }
+
+    private void giveAllItemsBack(){
+        for(Player player : Bukkit.getServer().getOnlinePlayers()){
+            if(placeEggsPlayers.contains(player)){
+                VersionManager.getEggManager().finishEggPlacing(player);
+            }
+        }
     }
 
     private void setupConfigs(){
@@ -109,6 +133,21 @@ public final class Main extends JavaPlugin {
     public String getMessage(String message){
         return messages.getString("Prefix").replace("&","§")+messages.getString(message).replace("&","§");
     }
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+    public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
+        PlayerMenuUtility playerMenuUtility;
+        if (!(playerMenuUtilityMap.containsKey(p))) { //See if the player has a playermenuutility "saved" for them
+
+            //This player doesn't. Make one for them add add it to the hashmap
+            playerMenuUtility = new PlayerMenuUtility(p);
+            playerMenuUtilityMap.put(p, playerMenuUtility);
+
+            return playerMenuUtility;
+        } else {
+            return playerMenuUtilityMap.get(p); //Return the object by using the provided player
+        }
+    }
+
     public ArrayList<Player> getPlaceEggsPlayers() {
         return placeEggsPlayers;
     }

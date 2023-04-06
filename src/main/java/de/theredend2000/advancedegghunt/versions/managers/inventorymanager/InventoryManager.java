@@ -5,7 +5,6 @@ import org.bukkit.inventory.Inventory;
 
 public interface InventoryManager {
 
-    public void createEggsListInventory(Player player);
-    public void setChests(Inventory inventory);
+    public void createEggsSettingsInventory(Player player);
 
 }

@@ -4,8 +4,11 @@ Permissions:
   PlaceEggPermission: advancedegghunt.place
 
 Settings:
-  ItemInEggList: PAPER
   SoundVolume: 3
+  Updater: true
+  PlayerFoundOneEggRewards: true
+  PlayerFoundAllEggsReward: true
+  DisableCommandFeedback: true
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP
@@ -14,3 +17,18 @@ Sounds:
   EggBreakSound: BLOCK_NOTE_BLOCK_BASS
   EggPlaceSound: BLOCK_NOTE_BLOCK_BELL
   ErrorSound: BLOCK_NOTE_BLOCK_BASEDRUM
+  InventoryClickSuccess: BLOCK_NOTE_BLOCK_CHIME
+  InventoryClickFailed: BLOCK_NOTE_BLOCK_HAT
+
+Rewards:
+  PlayerFoundOneEgg:
+    - give %PLAYER% diamond
+    - title %PLAYER% title "&6EGG FOUND"
+    - title %PLAYER% subtitle "&a(&e%EGGS_FOUND%&a/&e%EGGS_MAX%&a) &2Find all!"
+    - tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"
+  PlayerFoundAllEggs:
+    - give %PLAYER% diamond_block
+    - tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"
+    - tellraw %PLAYER% "%PREFIX%&6You found all eggs!"
+    - title %PLAYER% title "&6All eggs found"
+    - title %PLAYER% subtitle "&2You found all eggs. §2Congrats!"

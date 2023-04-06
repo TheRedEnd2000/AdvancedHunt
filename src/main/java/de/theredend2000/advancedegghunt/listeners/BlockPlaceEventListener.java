@@ -38,7 +38,6 @@ public class BlockPlaceEventListener implements Listener {
                     player.sendMessage(Main.getInstance().getMessage("OnlyInPlaceMode"));
             }else {
                 player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%", permission));
-                event.setCancelled(true);
             }
         }
     }

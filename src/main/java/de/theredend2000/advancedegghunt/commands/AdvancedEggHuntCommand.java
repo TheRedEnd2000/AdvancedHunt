@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.commands;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.EggListMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -42,17 +43,18 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.getInventory().setItem(4,VersionManager.getEggManager().giveFinishedEggToPlayer(4));
                             player.getInventory().setItem(5,VersionManager.getEggManager().giveFinishedEggToPlayer(5));
                             player.getInventory().setItem(6,VersionManager.getEggManager().giveFinishedEggToPlayer(6));
-                            player.getInventory().setItem(7,VersionManager.getEggManager().giveFinishedEggToPlayer(7));
-                            player.getInventory().setItem(8, new ItemBuilder(Material.LIME_DYE).setDisplayname("§2§lFINISH").setLore("§7Right click to finish the setup.").build());
-
+                            player.getInventory().setItem(8, new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayname("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup","§7or type §e/egghunt placeEggs §7again.").setLocalizedName("egghunt.finish").build());
                         }
                     }else if(args[0].equalsIgnoreCase("list")){
-                        VersionManager.getInventoryManager().createEggsListInventory(player);
+                        new EggListMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("reload")){
                         Main.getInstance().reloadConfig();
+                        Main.getInstance().checkCommandFeedback();
                         player.sendMessage(Main.getInstance().getMessage("ReloadedConfig"));
                     }else if(args[0].equalsIgnoreCase("help")){
                         sendHelp(player);
+                    }else if(args[0].equalsIgnoreCase("settings")){
+                        VersionManager.getInventoryManager().createEggsSettingsInventory(player);
                     }else
                         player.sendMessage(usage());
                 }else
@@ -71,7 +73,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 1 && sender.hasPermission(permission)){
-            String[] tabs = {"placeEggs","reload","list","help"};
+            String[] tabs = {"placeEggs","reload","list","help","settings"};
             ArrayList<String> complete = new ArrayList<>();
             Collections.addAll(complete,tabs);
             return complete;
@@ -95,6 +97,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6/advancedegghunt reload §7-> §bReloads the config.");
         player.sendMessage("§6/advancedegghunt list §7-> §bLists all placed eggs.");
         player.sendMessage("§6/advancedegghunt placeEggs §7-> §bEnter Place-Mode the place or break eggs.");
+        player.sendMessage("§6/advancedegghunt settings §7-> §bConfigure many settings of the plugin.");
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("§3-----------------------------------------");
     }

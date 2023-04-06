@@ -1,16 +1,14 @@
 package de.theredend2000.advancedegghunt.versions;
 
+import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ConsoleMessages;
 import de.theredend2000.advancedegghunt.versions.managers.eggmanager.EggManager;
-import de.theredend2000.advancedegghunt.versions.managers.eggmanager.EggManager_1_15_R1;
-import de.theredend2000.advancedegghunt.versions.managers.eggmanager.EggManager_1_16_R3;
-import de.theredend2000.advancedegghunt.versions.managers.eggmanager.EggManager_1_19_R1;
+import de.theredend2000.advancedegghunt.versions.managers.eggmanager.*;
 import de.theredend2000.advancedegghunt.versions.managers.extramanager.ExtraManager;
-import de.theredend2000.advancedegghunt.versions.managers.extramanager.ExtraManager_1_19_R1;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.InventoryManager;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.InventoryManager_1_19_R1;
+import de.theredend2000.advancedegghunt.versions.managers.extramanager.*;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.*;
 import de.theredend2000.advancedegghunt.versions.managers.soundmanager.SoundManager;
-import de.theredend2000.advancedegghunt.versions.managers.soundmanager.SoundManager_1_19_R1;
+import de.theredend2000.advancedegghunt.versions.managers.soundmanager.*;
 import org.bukkit.Bukkit;
 
 public class VersionManager {
@@ -39,14 +37,35 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_15_R1")){
-            eggManager = new EggManager_1_15_R1();
-        }else if(sversion.equals("v1_16_R3")){
-            eggManager = new EggManager_1_16_R3();
+        if(sversion.equals("v1_19_R3")){
+            eggManager = new EggManager_1_19_R3();
+        }else if(sversion.equals("v1_19_R2")){
+            eggManager = new EggManager_1_19_R2();
         }else if(sversion.equals("v1_19_R1")){
             eggManager = new EggManager_1_19_R1();
+        }else if(sversion.equals("v1_18_R2")){
+            eggManager = new EggManager_1_18_R2();;
+        }else if(sversion.equals("v1_18_R1")){
+            eggManager = new EggManager_1_18_R1();
+        }else if(sversion.equals("v1_17_R1")){
+            eggManager = new EggManager_1_17_R1();
+        }else if(sversion.equals("v1_16_R3")){
+            eggManager = new EggManager_1_16_R3();
+        }else if(sversion.equals("v1_16_R2")){
+            eggManager = new EggManager_1_16_R2();
+        }else if(sversion.equals("v1_16_R1")){
+            eggManager = new EggManager_1_16_R1();
+        }else if(sversion.equals("v1_15_R1")){
+            eggManager = new EggManager_1_15_R1();
+        }else if(sversion.equals("v1_14_R1")){
+            eggManager = new EggManager_1_14_R1();
+        }else if(sversion.equals("v1_13_R2")){
+            eggManager = new EggManager_1_13_R2();
+        }else if(sversion.equals("v1_13_R1")){
+            eggManager = new EggManager_1_13_R1();
         }else{
             ConsoleMessages.sendNotCompatibleVersion();
+            Bukkit.getPluginManager().disablePlugin(Main.getInstance());
         }
 
         return eggManager != null;
@@ -62,10 +81,35 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_19_R1")){
+        if(sversion.equals("v1_19_R3")){
+            inventoryManager = new InventoryManager_1_19_R3();
+        }else if(sversion.equals("v1_19_R2")){
+            inventoryManager = new InventoryManager_1_19_R2();
+        }else if(sversion.equals("v1_19_R1")){
             inventoryManager = new InventoryManager_1_19_R1();
+        }else if(sversion.equals("v1_18_R2")){
+            inventoryManager = new InventoryManager_1_18_R2();
+        }else if(sversion.equals("v1_18_R1")){
+            inventoryManager = new InventoryManager_1_18_R1();
+        }else if(sversion.equals("v1_17_R1")){
+            inventoryManager = new InventoryManager_1_17_R1();
+        }else if(sversion.equals("v1_16_R3")){
+            inventoryManager = new InventoryManager_1_16_R3();
+        }else if(sversion.equals("v1_16_R2")){
+            inventoryManager = new InventoryManager_1_16_R2();
+        }else if(sversion.equals("v1_16_R1")){
+            inventoryManager = new InventoryManager_1_16_R1();
+        }else if(sversion.equals("v1_15_R1")){
+            inventoryManager = new InventoryManager_1_15_R1();
+        }else if(sversion.equals("v1_14_R1")){
+            inventoryManager = new InventoryManager_1_14_R1();
+        }else if(sversion.equals("v1_13_R2")){
+            inventoryManager = new InventoryManager_1_13_R2();
+        }else if(sversion.equals("v1_13_R1")){
+            inventoryManager = new InventoryManager_1_13_R1();
         }else{
             ConsoleMessages.sendNotCompatibleVersion();
+            Bukkit.getPluginManager().disablePlugin(Main.getInstance());
         }
 
         return inventoryManager != null;
@@ -81,10 +125,35 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_19_R1")){
+        if(sversion.equals("v1_19_R3")){
+            extraManager = new ExtraManager_1_19_R3();
+        }else if(sversion.equals("v1_19_R2")){
+            extraManager = new ExtraManager_1_19_R2();
+        }else if(sversion.equals("v1_19_R1")){
             extraManager = new ExtraManager_1_19_R1();
+        }else if(sversion.equals("v1_18_R2")){
+            extraManager = new ExtraManager_1_18_R2();
+        }else if(sversion.equals("v1_18_R1")){
+            extraManager = new ExtraManager_1_18_R1();
+        }else if(sversion.equals("v1_17_R1")){
+            extraManager = new ExtraManager_1_17_R1();
+        }else if(sversion.equals("v1_16_R3")){
+            extraManager = new ExtraManager_1_16_R3();
+        }else if(sversion.equals("v1_16_R2")){
+            extraManager = new ExtraManager_1_16_R2();
+        }else if(sversion.equals("v1_16_R1")){
+            extraManager = new ExtraManager_1_16_R1();
+        }else if(sversion.equals("v1_15_R1")){
+            extraManager = new ExtraManager_1_15_R1();
+        }else if(sversion.equals("v1_14_R1")){
+            extraManager = new ExtraManager_1_14_R1();
+        }else if(sversion.equals("v1_13_R2")){
+            extraManager = new ExtraManager_1_13_R2();
+        }else if(sversion.equals("v1_13_R1")){
+            extraManager = new ExtraManager_1_13_R1();
         }else{
             ConsoleMessages.sendNotCompatibleVersion();
+            Bukkit.getPluginManager().disablePlugin(Main.getInstance());
         }
 
         return extraManager != null;
@@ -100,8 +169,32 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_19_R1")){
+        if(sversion.equals("v1_19_R3")){
+            soundManager = new SoundManager_1_19_R3();
+        }else if(sversion.equals("v1_19_R2")){
+            soundManager = new SoundManager_1_19_R2();
+        }else if(sversion.equals("v1_19_R1")){
             soundManager = new SoundManager_1_19_R1();
+        }else if(sversion.equals("v1_18_R2")){
+            soundManager = new SoundManager_1_18_R2();
+        }else if(sversion.equals("v1_18_R1")){
+            soundManager = new SoundManager_1_18_R1();
+        }else if(sversion.equals("v1_17_R1")){
+            soundManager = new SoundManager_1_17_R1();
+        }else if(sversion.equals("v1_16_R3")){
+            soundManager = new SoundManager_1_16_R3();
+        }else if(sversion.equals("v1_16_R2")){
+            soundManager = new SoundManager_1_16_R2();
+        }else if(sversion.equals("v1_16_R1")){
+            soundManager = new SoundManager_1_16_R1();
+        }else if(sversion.equals("v1_15_R1")){
+            soundManager = new SoundManager_1_15_R1();
+        }else if(sversion.equals("v1_14_R1")){
+            soundManager = new SoundManager_1_14_R1();
+        }else if(sversion.equals("v1_13_R2")){
+            soundManager = new SoundManager_1_13_R2();
+        }else if(sversion.equals("v1_13_R1")){
+            soundManager = new SoundManager_1_13_R1();
         }else{
             ConsoleMessages.sendNotCompatibleVersion();
         }

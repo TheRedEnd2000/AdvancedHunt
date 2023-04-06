@@ -3,7 +3,7 @@ package de.theredend2000.advancedegghunt.versions.managers.soundmanager;
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Sound;
 
-public class SoundManager_1_19_R1 implements SoundManager{
+public class SoundManager_1_17_R1 implements SoundManager{
 
 
     public Sound playEggAlreadyFoundSound() {
