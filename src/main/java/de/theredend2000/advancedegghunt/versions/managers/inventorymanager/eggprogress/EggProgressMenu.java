@@ -96,7 +96,7 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
                     boolean hasFound = VersionManager.getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index));
                     int timesFound = VersionManager.getEggManager().getTimesFound(keys.get(index));
                     int random = new Random().nextInt(7);
-                    if(showcoordinates){
+                    if(showcoordinates && VersionManager.getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index))){
                         inventory.addItem(new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(VersionManager.getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("","§9Location:","§7X: §e"+x,"§7Y: §e"+y,"§7Z: §e"+z,"","§7Found: "+(hasFound ? "§2true" : "§4false"),"§7Times found: §6"+timesFound).setLocalizedName(keys.get(index)).build());
                     }else
                         inventory.addItem(new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(VersionManager.getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("","§7Found: "+(hasFound ? "§2true" : "§4false"),"§7Times found: §6"+timesFound).setLocalizedName(keys.get(index)).build());
