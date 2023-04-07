@@ -1,28 +1,27 @@
-package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu;
+package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.ListPaginatedMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
-public class EggListMenu extends ListPaginatedMenu {
+public class EggProgressMenu extends ProgressPaginatedMenu {
 
-    public EggListMenu(PlayerMenuUtility playerMenuUtility) {
+    public EggProgressMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
     }
 
     @Override
     public String getMenuName() {
-        return "Eggs list";
+        return "Egg progress";
     }
 
     @Override
@@ -37,16 +36,6 @@ public class EggListMenu extends ListPaginatedMenu {
         ArrayList<String> keys = new ArrayList<>();
         if(Main.getInstance().eggs.contains("Eggs.")){
             keys.addAll(Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false));
-            for(String id : Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
-                if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){
-                    ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "Eggs." + id);
-                    if (location.loadBlockLocation() != null)
-                        p.teleport(location.loadLocation().add(0.5,0,0.5));
-                    p.closeInventory();
-                    p.sendMessage(Main.getInstance().getMessage("TeleportedToEggMessage").replaceAll("%ID%", id));
-                    p.playSound(p.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
-                }
-            }
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -61,7 +50,7 @@ public class EggListMenu extends ListPaginatedMenu {
                 }
             }
             Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis()+ (3*1000));
-            new EggListMenu(Main.getPlayerMenuUtility(p)).open();
+            new EggProgressMenu(Main.getPlayerMenuUtility(p)).open();
             p.playSound(p.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
         }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
             if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
@@ -93,18 +82,24 @@ public class EggListMenu extends ListPaginatedMenu {
         if(Main.getInstance().eggs.contains("Eggs.")){
             keys.addAll(Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false));
         }else
-            inventory.setItem(22, new ItemBuilder(Material.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs Placed").setLore("§7You can add eggs by using","§e/egghunt placeEggs§7.").build());
+            inventory.setItem(22, new ItemBuilder(Material.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs Available").setLore("§7There are no eggs no find","§7please contact an admin.").build());
 
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < getMaxItemsPerPage(); i++) {
                 index = getMaxItemsPerPage() * page + i;
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
+                    boolean showcoordinates = Main.getInstance().getConfig().getBoolean("Settings.ShowCoordinatesWhenEggFoundInProgressInventory");
                     String x = Main.getInstance().eggs.getString("Eggs."+keys.get(index)+".X");
                     String y = Main.getInstance().eggs.getString("Eggs."+keys.get(index)+".Y");
                     String z = Main.getInstance().eggs.getString("Eggs."+keys.get(index)+".Z");
+                    boolean hasFound = VersionManager.getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index));
+                    int timesFound = VersionManager.getEggManager().getTimesFound(keys.get(index));
                     int random = new Random().nextInt(7);
-                    inventory.addItem(new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(VersionManager.getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("§9Location:","§7X: §e"+x,"§7Y: §e"+y,"§7Z: §e"+z,"","§eClick to teleport.").setLocalizedName(keys.get(index)).build());
+                    if(showcoordinates){
+                        inventory.addItem(new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(VersionManager.getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("","§9Location:","§7X: §e"+x,"§7Y: §e"+y,"§7Z: §e"+z,"","§7Found: "+(hasFound ? "§2true" : "§4false"),"§7Times found: §6"+timesFound).setLocalizedName(keys.get(index)).build());
+                    }else
+                        inventory.addItem(new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(VersionManager.getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("","§7Found: "+(hasFound ? "§2true" : "§4false"),"§7Times found: §6"+timesFound).setLocalizedName(keys.get(index)).build());
                 }
             }
         }

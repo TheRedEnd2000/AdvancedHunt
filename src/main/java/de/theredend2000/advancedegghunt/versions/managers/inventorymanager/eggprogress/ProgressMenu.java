@@ -1,5 +1,6 @@
-package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu;
+package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress;
 
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,13 +11,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-public abstract class Menu implements InventoryHolder {
+public abstract class ProgressMenu implements InventoryHolder {
 
     protected PlayerMenuUtility playerMenuUtility;
     protected Inventory inventory;
     protected ItemStack FILLER_GLASS = makeItem(Material.GRAY_STAINED_GLASS_PANE, " ");
 
-    public Menu(PlayerMenuUtility playerMenuUtility) {
+    public ProgressMenu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
     }
     public abstract String getMenuName();

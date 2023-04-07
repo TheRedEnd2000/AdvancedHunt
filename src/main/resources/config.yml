@@ -9,6 +9,7 @@ Settings:
   PlayerFoundOneEggRewards: true
   PlayerFoundAllEggsReward: true
   DisableCommandFeedback: true
+  ShowCoordinatesWhenEggFoundInProgressInventory: false
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP

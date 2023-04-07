@@ -17,12 +17,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class Main extends JavaPlugin {
 
     private static Main plugin;
+    private Map<String, Long> refreshCooldown;
     private ArrayList<Player> placeEggsPlayers;
     public YamlConfiguration messages;
     public File messagesData;
@@ -32,6 +35,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        refreshCooldown = new HashMap<String, Long>();
         setupConfigs();
         VersionManager.registerAllManagers();
         placeEggsPlayers = new ArrayList<>();
@@ -89,6 +93,32 @@ public final class Main extends JavaPlugin {
         saveMessages();
         this.eggs = YamlConfiguration.loadConfiguration(this.data);
         this.saveEggs();
+        checkUpdatePath();
+    }
+
+    private void checkUpdatePath(){
+        if(!messages.contains("SoundCanOnlyBetween")){
+            messagesData.delete();
+            setupConfigs();
+            for(Player player : Bukkit.getOnlinePlayers()){
+                if(player.isOp()){
+                    player.sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
+                }
+            }
+            Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
+        }
+        if(!getConfig().contains("Settings.ShowCoordinatesWhenEggFoundInProgressInventory")){
+            File configFile = new File(getDataFolder(), "config.yml");
+            configFile.delete();
+            saveDefaultConfig();
+            reloadConfig();
+            for(Player player : Bukkit.getOnlinePlayers()){
+                if(player.isOp()){
+                    player.sendMessage("§f[§eAdvancedEggHunt§f] §cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
+                }
+            }
+            Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
+        }
     }
 
     public void saveMessages() {
@@ -150,5 +180,8 @@ public final class Main extends JavaPlugin {
 
     public ArrayList<Player> getPlaceEggsPlayers() {
         return placeEggsPlayers;
+    }
+    public Map<String, Long> getRefreshCooldown() {
+        return refreshCooldown;
     }
 }

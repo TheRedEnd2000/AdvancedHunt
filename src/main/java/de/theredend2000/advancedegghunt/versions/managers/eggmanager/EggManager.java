@@ -23,4 +23,5 @@ public interface EggManager {
     public void updateMaxEggs();
     public boolean checkFoundAll(Player player);
     public void spawnEggParticle();
+    public int getTimesFound(String id);
 }

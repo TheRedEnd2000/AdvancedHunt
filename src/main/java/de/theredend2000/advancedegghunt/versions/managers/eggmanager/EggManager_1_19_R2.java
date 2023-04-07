@@ -6,6 +6,8 @@ import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.saveinventory.Config;
 import de.theredend2000.advancedegghunt.util.saveinventory.Serialization;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -169,11 +171,18 @@ public class EggManager_1_19_R2 implements EggManager {
     }
 
     public void saveFoundEggs(Player player, Block block, String id){
+        Main.getInstance().eggs.set("Eggs."+id+".TimesFound", Main.getInstance().eggs.contains("Eggs."+id+".TimesFound") ? Main.getInstance().eggs.getInt("Eggs."+id+".TimesFound")+1 : 1);
+        Main.getInstance().saveConfig();
         new ConfigLocationUtil(Main.getInstance(),block.getLocation(),"FoundEggs."+player.getUniqueId()+"."+id).saveBlockLocation();
         Main.getInstance().eggs.set("FoundEggs."+player.getUniqueId()+".Count", Main.getInstance().eggs.contains("FoundEggs."+player.getUniqueId()+".Count") ? Main.getInstance().eggs.getInt("FoundEggs." + player.getUniqueId() + ".Count")+1 : 1);
         Main.getInstance().saveEggs();
         if(!Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards") || !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"))
             player.sendMessage(Main.getInstance().getMessage("EggFoundMessage").replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs())));
+    }
+
+    @Override
+    public int getTimesFound(String id) {
+        return Main.getInstance().eggs.contains("Eggs."+id+".TimesFound") ? Main.getInstance().eggs.getInt("Eggs."+id+".TimesFound") : 0;
     }
     public boolean hasFound(Player player, String id){
         return Main.getInstance().eggs.contains("FoundEggs."+player.getUniqueId()+"."+id);
@@ -223,8 +232,10 @@ public class EggManager_1_19_R2 implements EggManager {
                                 Player p = (Player) e;
                                 if(VersionManager.getEggManager().hasFound(p,key)){
                                     p.spawnParticle(Particle.VILLAGER_HAPPY,loc,1,0.2,0.1,0.2,0);
-                                }else
-                                    p.spawnParticle(Particle.CRIT,loc,1,0.2,0.1,0.2,0);
+                                }else {
+                                    p.spawnParticle(Particle.CRIT, loc, 1, 0.2, 0.1, 0.2, 0);
+                                    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Main.getInstance().getMessage("EggNearbyMessage")));
+                                }
                             }
                         }
                     }

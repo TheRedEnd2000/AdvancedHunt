@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.commands;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.EggProgressMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.EggListMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -55,10 +56,17 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         sendHelp(player);
                     }else if(args[0].equalsIgnoreCase("settings")){
                         VersionManager.getInventoryManager().createEggsSettingsInventory(player);
+                    }else if(args[0].equalsIgnoreCase("progress")){
+                        new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
                     }else
                         player.sendMessage(usage());
                 }else
                     player.sendMessage(usage());
+            }else if(args.length == 1){
+                if(args[0].equalsIgnoreCase("progress")){
+                    new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
+                }else
+                    player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%",permission));
             }else
                 player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%",permission));
         }else
@@ -72,10 +80,21 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if(args.length == 1 && sender.hasPermission(permission)){
-            String[] tabs = {"placeEggs","reload","list","help","settings"};
+        if(args.length == 1){
+            if(sender.hasPermission(permission)) {
+                String[] tabs = {"placeEggs", "reload", "list", "help", "settings","progress"};
+                ArrayList<String> complete = new ArrayList<>();
+                Collections.addAll(complete, tabs);
+                return complete;
+            }else{
+                String[] tabs = {"progress"};
+                ArrayList<String> complete = new ArrayList<>();
+                Collections.addAll(complete, tabs);
+                return complete;
+            }
+        }
+        if(args.length >= 2){
             ArrayList<String> complete = new ArrayList<>();
-            Collections.addAll(complete,tabs);
             return complete;
         }
         return null;
