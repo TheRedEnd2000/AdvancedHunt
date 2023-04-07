@@ -24,4 +24,8 @@ public interface EggManager {
     public boolean checkFoundAll(Player player);
     public void spawnEggParticle();
     public int getTimesFound(String id);
+    public String getEggDatePlaced(String id);
+    public String getEggTimePlaced(String id);
+    public String getEggDateCollected(String uuid,String id);
+    public String getEggTimeCollected(String uuid,String id);
 }

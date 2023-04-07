@@ -2,6 +2,7 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egginformation.InformationMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.ProgressMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.ListMenu;
 import org.bukkit.Bukkit;
@@ -43,6 +44,14 @@ public class InventoryClickEventListener implements Listener {
                         return;
                     }
                     ProgressMenu menu = (ProgressMenu) holder;
+                    menu.handleMenu(event);
+                }
+                if (holder instanceof InformationMenu) {
+                    event.setCancelled(true);
+                    if (event.getCurrentItem() == null) {
+                        return;
+                    }
+                    InformationMenu menu = (InformationMenu) holder;
                     menu.handleMenu(event);
                 }
                 if(event.getView().getTitle().equals("Advanced Egg Settings")){

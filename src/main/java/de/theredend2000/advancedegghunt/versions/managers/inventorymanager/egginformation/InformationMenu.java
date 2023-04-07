@@ -1,9 +1,8 @@
-package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress;
+package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egginformation;
 
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -12,23 +11,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-public abstract class ProgressMenu implements InventoryHolder {
+public abstract class InformationMenu implements InventoryHolder {
 
     protected PlayerMenuUtility playerMenuUtility;
     protected Inventory inventory;
     protected ItemStack FILLER_GLASS = makeItem(Material.GRAY_STAINED_GLASS_PANE, " ");
 
-    public ProgressMenu(PlayerMenuUtility playerMenuUtility) {
+    public InformationMenu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
     }
     public abstract String getMenuName();
     public abstract int getSlots();
     public abstract void handleMenu(InventoryClickEvent e);
-    public abstract void setMenuItems(String playerUUID);
-    public void open() {
+    public abstract void setMenuItems(String eggId);
+    public void open(String eggId) {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
 
-        this.setMenuItems(playerMenuUtility.getOwner().getUniqueId().toString());
+        this.setMenuItems(eggId);
 
         playerMenuUtility.getOwner().openInventory(inventory);
     }

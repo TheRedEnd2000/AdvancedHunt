@@ -29,6 +29,8 @@ public class ConfigLocationUtil {
         config.set(root + ".X", location.getBlockX());
         config.set(root + ".Y", location.getBlockY());
         config.set(root + ".Z", location.getBlockZ());
+        config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
+        config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
         plugin.saveEggs();
     }
 

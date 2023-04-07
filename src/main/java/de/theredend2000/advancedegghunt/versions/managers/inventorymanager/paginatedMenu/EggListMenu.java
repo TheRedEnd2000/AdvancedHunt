@@ -4,9 +4,11 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egginformation.EggInformationMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
@@ -39,12 +41,17 @@ public class EggListMenu extends ListPaginatedMenu {
             keys.addAll(Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false));
             for(String id : Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){
-                    ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "Eggs." + id);
-                    if (location.loadBlockLocation() != null)
-                        p.teleport(location.loadLocation().add(0.5,0,0.5));
-                    p.closeInventory();
-                    p.sendMessage(Main.getInstance().getMessage("TeleportedToEggMessage").replaceAll("%ID%", id));
-                    p.playSound(p.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
+                    if(e.getAction() == InventoryAction.PICKUP_ALL){
+                        ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "Eggs." + id);
+                        if (location.loadBlockLocation() != null)
+                            p.teleport(location.loadLocation().add(0.5,0,0.5));
+                        p.closeInventory();
+                        p.sendMessage(Main.getInstance().getMessage("TeleportedToEggMessage").replaceAll("%ID%", id));
+                        p.playSound(p.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
+                    }else if(e.getAction() == InventoryAction.PICKUP_HALF){
+                        new EggInformationMenu(Main.getPlayerMenuUtility(p)).open(id);
+                        p.playSound(p.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
+                    }
                 }
             }
         }
@@ -104,7 +111,10 @@ public class EggListMenu extends ListPaginatedMenu {
                     String y = Main.getInstance().eggs.getString("Eggs."+keys.get(index)+".Y");
                     String z = Main.getInstance().eggs.getString("Eggs."+keys.get(index)+".Z");
                     int random = new Random().nextInt(7);
-                    inventory.addItem(new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(VersionManager.getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("§9Location:","§7X: §e"+x,"§7Y: §e"+y,"§7Z: §e"+z,"","§eClick to teleport.").setLocalizedName(keys.get(index)).build());
+                    String date = VersionManager.getEggManager().getEggDatePlaced(keys.get(index));
+                    String time = VersionManager.getEggManager().getEggTimePlaced(keys.get(index));
+                    String timesFound = String.valueOf(VersionManager.getEggManager().getTimesFound(keys.get(index)));
+                    inventory.addItem(new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(VersionManager.getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("§9Location:","§7X: §e"+x,"§7Y: §e"+y,"§7Z: §e"+z,"","§9Information:","§7Times found: §6"+timesFound,"","§9Placed:","§7Date: §6"+date,"§7Time: §6"+time,"","§eLEFT-CLICK to teleport.","§eRIGHT-CLICK for information.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }

@@ -171,10 +171,12 @@ public class EggManager_1_13_R1 implements EggManager {
     }
 
     public void saveFoundEggs(Player player, Block block, String id){
-        Main.getInstance().getConfig().set("Eggs."+id+".TimesFound", Main.getInstance().getConfig().contains("Eggs."+id+".TimesFound") ? Main.getInstance().getConfig().getInt("Eggs."+id+".TimesFound")+1 : 1);
+        Main.getInstance().eggs.set("Eggs."+id+".TimesFound", Main.getInstance().eggs.contains("Eggs."+id+".TimesFound") ? Main.getInstance().eggs.getInt("Eggs."+id+".TimesFound")+1 : 1);
         Main.getInstance().saveConfig();
         new ConfigLocationUtil(Main.getInstance(),block.getLocation(),"FoundEggs."+player.getUniqueId()+"."+id).saveBlockLocation();
         Main.getInstance().eggs.set("FoundEggs."+player.getUniqueId()+".Count", Main.getInstance().eggs.contains("FoundEggs."+player.getUniqueId()+".Count") ? Main.getInstance().eggs.getInt("FoundEggs." + player.getUniqueId() + ".Count")+1 : 1);
+        Main.getInstance().saveEggs();
+        Main.getInstance().eggs.set("FoundEggs."+player.getUniqueId()+".Name", player.getName());
         Main.getInstance().saveEggs();
         if(!Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards") || !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"))
             player.sendMessage(Main.getInstance().getMessage("EggFoundMessage").replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs())));
@@ -182,8 +184,29 @@ public class EggManager_1_13_R1 implements EggManager {
 
     @Override
     public int getTimesFound(String id) {
-        return Main.getInstance().getConfig().contains("Eggs."+id+".TimesFound") ? Main.getInstance().getConfig().getInt("Eggs."+id+".TimesFound") : 0;
+        return Main.getInstance().eggs.contains("Eggs."+id+".TimesFound") ? Main.getInstance().eggs.getInt("Eggs."+id+".TimesFound") : 0;
     }
+
+    @Override
+    public String getEggDatePlaced(String id) {
+        return Main.getInstance().eggs.getString("Eggs."+id+".Date");
+    }
+
+    @Override
+    public String getEggTimePlaced(String id) {
+        return Main.getInstance().eggs.getString("Eggs."+id+".Time");
+    }
+
+    @Override
+    public String getEggDateCollected(String uuid,String id) {
+        return Main.getInstance().eggs.getString("FoundEggs."+uuid+"."+id+".Date");
+    }
+
+    @Override
+    public String getEggTimeCollected(String uuid, String id) {
+        return Main.getInstance().eggs.getString("FoundEggs."+uuid+"."+id+".Time");
+    }
+
     public boolean hasFound(Player player, String id){
         return Main.getInstance().eggs.contains("FoundEggs."+player.getUniqueId()+"."+id);
     }

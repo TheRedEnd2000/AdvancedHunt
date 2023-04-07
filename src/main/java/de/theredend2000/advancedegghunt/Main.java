@@ -4,6 +4,7 @@ import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.Updater;
+import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
 import org.bukkit.*;
@@ -25,6 +26,7 @@ import java.util.Map;
 public final class Main extends JavaPlugin {
 
     private static Main plugin;
+    private DatetimeUtils datetimeUtils;
     private Map<String, Long> refreshCooldown;
     private ArrayList<Player> placeEggsPlayers;
     public YamlConfiguration messages;
@@ -36,11 +38,12 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         refreshCooldown = new HashMap<String, Long>();
+        placeEggsPlayers = new ArrayList<>();
         setupConfigs();
         VersionManager.registerAllManagers();
-        placeEggsPlayers = new ArrayList<>();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
         initListeners();
+        datetimeUtils = new DatetimeUtils();
         VersionManager.getEggManager().spawnEggParticle();
         checkCommandFeedback();
     }
@@ -166,15 +169,14 @@ public final class Main extends JavaPlugin {
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
         PlayerMenuUtility playerMenuUtility;
-        if (!(playerMenuUtilityMap.containsKey(p))) { //See if the player has a playermenuutility "saved" for them
+        if (!(playerMenuUtilityMap.containsKey(p))) {
 
-            //This player doesn't. Make one for them add add it to the hashmap
             playerMenuUtility = new PlayerMenuUtility(p);
             playerMenuUtilityMap.put(p, playerMenuUtility);
 
             return playerMenuUtility;
         } else {
-            return playerMenuUtilityMap.get(p); //Return the object by using the provided player
+            return playerMenuUtilityMap.get(p);
         }
     }
 
@@ -183,5 +185,9 @@ public final class Main extends JavaPlugin {
     }
     public Map<String, Long> getRefreshCooldown() {
         return refreshCooldown;
+    }
+
+    public DatetimeUtils getDatetimeUtils() {
+        return datetimeUtils;
     }
 }
