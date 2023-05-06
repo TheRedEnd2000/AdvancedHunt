@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.commands;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.EggProgressMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.EggListMenu;
 import org.bukkit.Bukkit;
@@ -48,6 +49,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         }
                     }else if(args[0].equalsIgnoreCase("list")){
                         new EggListMenu(Main.getPlayerMenuUtility(player)).open();
+                    }else if(args[0].equalsIgnoreCase("show")){
+                        VersionManager.getEggManager().showAllEggs();
+                        player.sendMessage(Main.getInstance().getMessage("EggsVisible").replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow"))));
                     }else if(args[0].equalsIgnoreCase("reload")){
                         Main.getInstance().reloadConfig();
                         Main.getInstance().checkCommandFeedback();
@@ -58,6 +62,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         VersionManager.getInventoryManager().createEggsSettingsInventory(player);
                     }else if(args[0].equalsIgnoreCase("progress")){
                         new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
+                    }else if(args[0].equalsIgnoreCase("commands")){
+                        new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
                     }else
                         player.sendMessage(usage());
                 }else
@@ -82,7 +88,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 1){
             if(sender.hasPermission(permission)) {
-                String[] tabs = {"placeEggs", "reload", "list", "help", "settings","progress"};
+                String[] tabs = {"placeEggs", "reload", "list", "help", "settings","progress","show","commands"};
                 ArrayList<String> complete = new ArrayList<>();
                 Collections.addAll(complete, tabs);
                 return complete;
@@ -117,6 +123,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6/advancedegghunt list §7-> §bLists all placed eggs.");
         player.sendMessage("§6/advancedegghunt placeEggs §7-> §bEnter Place-Mode the place or break eggs.");
         player.sendMessage("§6/advancedegghunt settings §7-> §bConfigure many settings of the plugin.");
+        player.sendMessage("§6/advancedegghunt progress §7-> §bView your progress of the eggs.");
+        player.sendMessage("§6/advancedegghunt show §7-> §bSpawns an glowing armorstand at every egg.");
+        player.sendMessage("§6/advancedegghunt commands §7-> §bChange commands or add more.");
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("§3-----------------------------------------");
     }

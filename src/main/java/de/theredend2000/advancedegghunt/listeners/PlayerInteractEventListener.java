@@ -32,15 +32,25 @@ public class PlayerInteractEventListener implements Listener {
                     VersionManager.getExtraManager().spawnFireworkRocket(loc.add(0.5,0.5,0.5));
                     if(VersionManager.getEggManager().checkFoundAll(player)){
                         player.playSound(player.getLocation(),VersionManager.getSoundManager().playAllEggsFound(), 1, 1);
-                        if(Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards")) {
-                            for (String cmd : Main.getInstance().getConfig().getStringList("Rewards.PlayerFoundAllEggs"))
-                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(VersionManager.getEggManager().getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(VersionManager.getEggManager().getMaxEggs())).replaceAll("%PREFIX%", Main.getInstance().messages.getString("Prefix").replaceAll("&", "§")));
+                        if(Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward")){
+                            for(String key : Main.getInstance().getConfig().getConfigurationSection("Rewards.").getKeys(false)) {
+                                boolean enabled = Main.getInstance().getConfig().getBoolean("Rewards."+key+".enabled");
+                                if (Main.getInstance().getConfig().getInt("Rewards." + key + ".type") == 1 && enabled) {
+                                    String cmd = Main.getInstance().getConfig().getString("Rewards." + key + ".command");
+                                    Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(VersionManager.getEggManager().getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(VersionManager.getEggManager().getMaxEggs())).replaceAll("%PREFIX%", Main.getInstance().messages.getString("Prefix").replaceAll("&", "§")));
+                                }
+                            }
                         }
                     }else {
                         player.playSound(player.getLocation(), VersionManager.getSoundManager().playEggFoundSound(), VersionManager.getSoundManager().getSoundVolume(), 1);
-                        if(Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward")) {
-                            for (String cmd : Main.getInstance().getConfig().getStringList("Rewards.PlayerFoundOneEgg"))
-                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(VersionManager.getEggManager().getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(VersionManager.getEggManager().getMaxEggs())).replaceAll("%PREFIX%", Main.getInstance().messages.getString("Prefix").replaceAll("&", "§")));
+                        if(Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards")) {
+                            for(String key : Main.getInstance().getConfig().getConfigurationSection("Rewards.").getKeys(false)){
+                                boolean enabled = Main.getInstance().getConfig().getBoolean("Rewards."+key+".enabled");
+                                if(Main.getInstance().getConfig().getInt("Rewards."+key+".type") == 0 && enabled){
+                                    String cmd = Main.getInstance().getConfig().getString("Rewards." + key + ".command").replaceAll("&","§");
+                                    Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(VersionManager.getEggManager().getEggsFound(player))).replaceAll("%EGGS_MAX%", String.valueOf(VersionManager.getEggManager().getMaxEggs())).replaceAll("%PREFIX%", Main.getInstance().messages.getString("Prefix").replaceAll("&", "§")));
+                                }
+                            }
                         }
                     }
                 } else {

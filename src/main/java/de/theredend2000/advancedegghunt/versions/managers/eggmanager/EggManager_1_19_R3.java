@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -265,5 +266,43 @@ public class EggManager_1_19_R3 implements EggManager {
                 }
             }
         }.runTaskTimer(Main.getInstance(),0,5);
+    }
+    public void showAllEggs(){
+        if(!Main.getInstance().eggs.contains("Eggs.")){
+            return;
+        }
+        for (String key: Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
+            ConfigLocationUtil locationUtil = new ConfigLocationUtil(Main.getInstance(),"Eggs."+key);
+            if (locationUtil.loadBlockLocation() != null){
+                String world = Main.getInstance().eggs.getString("Eggs."+key+".World");
+                int x = Main.getInstance().eggs.getInt("Eggs."+key+".X");
+                int y = Main.getInstance().eggs.getInt("Eggs."+key+".Y");
+                int z = Main.getInstance().eggs.getInt("Eggs."+key+".Z");
+                Location loc = new Location(Bukkit.getWorld(world),x,y,z).add(0.5,0.5,0.5);
+                ArmorStand armorStand = loc.getWorld().spawn(loc, ArmorStand.class);
+                armorStand.setGravity(false);
+                armorStand.setInvulnerable(true);
+                armorStand.setGlowing(true);
+                armorStand.setCustomName("§dEgg #"+key);
+                armorStand.setCustomNameVisible(true);
+                armorStand.setSmall(true);
+                armorStand.setInvisible(true);
+                Main.getInstance().getShowedArmorstands().add(armorStand);
+                new BukkitRunnable() {
+                    int count = Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow");
+                    @Override
+                    public void run() {
+                        count --;
+                        if(count == 0){
+                            cancel();
+                            for(ArmorStand a : Main.getInstance().getShowedArmorstands()){
+                                a.remove();
+                                Main.getInstance().getShowedArmorstands().remove(a);
+                            }
+                        }
+                    }
+                }.runTaskTimer(Main.getInstance(),0,20);
+            }
+        }
     }
 }

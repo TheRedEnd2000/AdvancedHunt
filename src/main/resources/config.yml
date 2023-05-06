@@ -10,6 +10,8 @@ Settings:
   PlayerFoundAllEggsReward: true
   DisableCommandFeedback: true
   ShowCoordinatesWhenEggFoundInProgressInventory: false
+  ArmorstandGlow: 10
+  RewardInventoryMaterial: PAPER
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP
@@ -22,14 +24,24 @@ Sounds:
   InventoryClickFailed: BLOCK_NOTE_BLOCK_HAT
 
 Rewards:
-  PlayerFoundOneEgg:
-    - give %PLAYER% diamond
-    - title %PLAYER% title "&6EGG FOUND"
-    - title %PLAYER% subtitle "&a(&e%EGGS_FOUND%&a/&e%EGGS_MAX%&a) &2Find all!"
-    - tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"
-  PlayerFoundAllEggs:
-    - give %PLAYER% diamond_block
-    - tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"
-    - tellraw %PLAYER% "%PREFIX%&6You found all eggs!"
-    - title %PLAYER% title "&6All eggs found"
-    - title %PLAYER% subtitle "&2You found all eggs. §2Congrats!"
+  #types: 0 = Player found one egg; 1 = Player found all eggs
+    0:
+      command: 'tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
+      enabled: true
+      type: 0
+    1:
+      command: 'give %PLAYER% diamond'
+      enabled: true
+      type: 0
+    2:
+      command: 'tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
+      enabled: true
+      type: 1
+    3:
+      command: 'give %PLAYER% diamond'
+      enabled: true
+      type: 1
+    4:
+      command: 'tellraw %PLAYER% "%PREFIX%&6You found all eggs!"'
+      enabled: true
+      type: 1

@@ -28,4 +28,5 @@ public interface EggManager {
     public String getEggTimePlaced(String id);
     public String getEggDateCollected(String uuid,String id);
     public String getEggTimeCollected(String uuid,String id);
+    public void showAllEggs();
 }

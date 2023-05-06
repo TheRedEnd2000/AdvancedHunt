@@ -2,23 +2,22 @@ package de.theredend2000.advancedegghunt;
 
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
-import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
+import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +28,8 @@ public final class Main extends JavaPlugin {
     private DatetimeUtils datetimeUtils;
     private Map<String, Long> refreshCooldown;
     private ArrayList<Player> placeEggsPlayers;
+    private HashMap<Player, Integer> playerAddCommand;
+    private ArrayList<ArmorStand> showedArmorstands;
     public YamlConfiguration messages;
     public File messagesData;
     public YamlConfiguration eggs;
@@ -39,6 +40,8 @@ public final class Main extends JavaPlugin {
         plugin = this;
         refreshCooldown = new HashMap<String, Long>();
         placeEggsPlayers = new ArrayList<>();
+        showedArmorstands = new ArrayList<>();
+        playerAddCommand = new HashMap<>();
         setupConfigs();
         VersionManager.registerAllManagers();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
@@ -46,11 +49,21 @@ public final class Main extends JavaPlugin {
         datetimeUtils = new DatetimeUtils();
         VersionManager.getEggManager().spawnEggParticle();
         checkCommandFeedback();
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
+            new PlaceholderExtension().register();
+            Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§2§lAll placeholders successfully enabled.");
+        }
     }
 
     @Override
     public void onDisable() {
         giveAllItemsBack();
+        for(ArmorStand a : showedArmorstands){
+            a.remove();
+        }
+        Main.getInstance().eggs.set("Edit",null);
+        Main.getInstance().saveEggs();
     }
 
     public void checkCommandFeedback(){
@@ -70,6 +83,8 @@ public final class Main extends JavaPlugin {
         new PlayerInteractEventListener();
         new PlayerInteractItemEvent();
         new Updater(this);
+        new PlayerChatEventListener();
+        new ExplodeEventListener();
     }
 
     private void giveAllItemsBack(){
@@ -100,7 +115,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void checkUpdatePath(){
-        if(!messages.contains("SoundCanOnlyBetween")){
+        if(!messages.contains("CommandChangedMessage")){
             messagesData.delete();
             setupConfigs();
             for(Player player : Bukkit.getOnlinePlayers()){
@@ -110,14 +125,14 @@ public final class Main extends JavaPlugin {
             }
             Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
         }
-        if(!getConfig().contains("Settings.ShowCoordinatesWhenEggFoundInProgressInventory")){
+        if(!getConfig().contains("Settings.RewardInventoryMaterial")){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();
             reloadConfig();
             for(Player player : Bukkit.getOnlinePlayers()){
                 if(player.isOp()){
-                    player.sendMessage("§f[§eAdvancedEggHunt§f] §cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
+                    player.sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
                 }
             }
             Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
@@ -189,5 +204,13 @@ public final class Main extends JavaPlugin {
 
     public DatetimeUtils getDatetimeUtils() {
         return datetimeUtils;
+    }
+
+    public ArrayList<ArmorStand> getShowedArmorstands() {
+        return showedArmorstands;
+    }
+
+    public HashMap<Player, Integer> getPlayerAddCommand() {
+        return playerAddCommand;
     }
 }

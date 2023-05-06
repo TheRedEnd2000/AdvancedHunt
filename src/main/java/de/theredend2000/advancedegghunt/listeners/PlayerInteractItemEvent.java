@@ -2,6 +2,7 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

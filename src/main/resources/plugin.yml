@@ -1,7 +1,8 @@
 name: AdvancedEggHunt
-version: 1.3
+version: 1.5
 main: de.theredend2000.advancedegghunt.Main
 api-version: 1.13
+softdepend: [PlaceholderAPI]
 commands:
   advancedegghunt:
     aliases:
