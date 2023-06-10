@@ -6,7 +6,9 @@ import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.Inven
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.RewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egginformation.InformationMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggplacelist.PlaceMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.ProgressMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.leaderboardmenu.LeadeboardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.ListMenu;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -32,12 +34,6 @@ public class InventoryClickEventListener implements Listener {
         if(event.getWhoClicked() instanceof Player){
             Player player = (Player) event.getWhoClicked();
             if(event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null){
-                if(Main.getInstance().getPlaceEggsPlayers().contains(player)){
-                    if(event.getInventory().getViewers().contains(player)){
-                        if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
-                        event.setCancelled(true);
-                    }
-                }
                 InventoryHolder holder = event.getInventory().getHolder();
                 if (holder instanceof ListMenu) {
                     event.setCancelled(true);
@@ -73,6 +69,24 @@ public class InventoryClickEventListener implements Listener {
                         return;
                     }
                     RewardMenu menu = (RewardMenu) holder;
+                    menu.handleMenu(event);
+                }
+                if (holder instanceof PlaceMenu) {
+                    if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
+                    event.setCancelled(true);
+                    if (event.getCurrentItem() == null) {
+                        return;
+                    }
+                    PlaceMenu menu = (PlaceMenu) holder;
+                    menu.handleMenu(event);
+                }
+                if (holder instanceof LeadeboardMenu) {
+                    if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
+                    event.setCancelled(true);
+                    if (event.getCurrentItem() == null) {
+                        return;
+                    }
+                    LeadeboardMenu menu = (LeadeboardMenu) holder;
                     menu.handleMenu(event);
                 }
                 if(event.getView().getTitle().equals("Advanced Egg Settings")){
@@ -154,6 +168,32 @@ public class InventoryClickEventListener implements Listener {
                                 VersionManager.getInventoryManager().createEggsSettingsInventory(player);
                                 player.playSound(player.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
                                 break;
+                            case "settings.eggnearbyradius":
+                                int currentRadius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
+                                if(event.getAction() == InventoryAction.PICKUP_ALL){
+                                    if(currentRadius == 50) {
+                                        player.sendMessage(Main.getInstance().getMessage("EggsNearbyRadiusOnlyBetween"));
+                                        return;
+                                    }
+                                    Main.getInstance().getConfig().set("Settings.ShowEggsNearbyMessageRadius", currentRadius + 1);
+
+                                }else if(event.getAction() == InventoryAction.PICKUP_HALF){
+                                    if(currentRadius == 0) {
+                                        player.sendMessage(Main.getInstance().getMessage("EggsNearbyRadiusOnlyBetween"));
+                                        return;
+                                    }
+                                    Main.getInstance().getConfig().set("Settings.ShowEggsNearbyMessageRadius", currentRadius - 1);
+                                }
+                                Main.getInstance().saveConfig();
+                                VersionManager.getInventoryManager().createEggsSettingsInventory(player);
+                                player.playSound(player.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
+                                break;
+                            case "settings.pluginprefix":
+                                Main.getInstance().getConfig().set("Settings.PluginPrefixEnabled",!Main.getInstance().getConfig().getBoolean("Settings.PluginPrefixEnabled"));
+                                Main.getInstance().saveConfig();
+                                VersionManager.getInventoryManager().createEggsSettingsInventory(player);
+                                player.playSound(player.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
+                                break;
                         }
                     }
                 }else if(event.getView().getTitle().equals("Command configuration")){
@@ -214,6 +254,10 @@ public class InventoryClickEventListener implements Listener {
                                 TextComponent clickme2 = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
                                 clickme2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
                                 c2.addExtra(clickme2);
+                                TextComponent clickme3 = new TextComponent("\n§5-----------§4§l[GET OLD COMMAND]§5-----------");
+                                clickme3.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§aClick to get old command in the command line.")));
+                                clickme3.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,Main.getInstance().getConfig().getString("Rewards."+id+".command")));
+                                c2.addExtra(clickme3);
                                 player.spigot().sendMessage(c2);
                                 Main.getInstance().eggs.set("Edit."+player.getUniqueId()+".commandID",id);
                                 Main.getInstance().saveEggs();

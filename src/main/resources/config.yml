@@ -11,7 +11,9 @@ Settings:
   DisableCommandFeedback: true
   ShowCoordinatesWhenEggFoundInProgressInventory: false
   ArmorstandGlow: 10
+  ShowEggsNearbyMessageRadius: 10
   RewardInventoryMaterial: PAPER
+  PluginPrefixEnabled: true
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP
@@ -45,3 +47,23 @@ Rewards:
       command: 'tellraw %PLAYER% "%PREFIX%&6You found all eggs!"'
       enabled: true
       type: 1
+
+PlaceEggs:
+  0:
+    texture: 'ZWNlZGRjMjNmOWQ5NmJhYWEwZDJkN2I5ZWMxODBjZDdiZWE1NDQ3ZDM5YzQyNWNhOWU0NGQ4ODA4ZWExMWVhMCJ9fX0='
+  1:
+    texture: 'ODYyMWE1MjY5ODY5ODQ3NTMxMDE1NjYzMDBhMzU2YjVmMzBkNjk3NWExZWZlNjI5YWJmMjY5NDc2NWQ5NmNjIn19fQ=='
+  2:
+    texture: 'NmUzMmE3ZGU3YTY3MmNjNjhmYTdhMjcyYmFhNmE4OWViZDQ0MGMzMmRjZjQ0ZTc3MDU3MDY4OTg5MDQyZjdjNiJ9fX0='
+  3:
+    texture: 'NmI3NDQ2NTUwZjBmOTU3NmI3MzE3MjhiNWNiZWIyYmNlYTI1ZmQxYTU1NjBhMTdiMjM1N2U2MTZmYmM2NTYyMSJ9fX0='
+  4:
+    texture: 'ZmU2ZmFiMDkxZTQ5NmMwOTY5MTA0ODBkYTBkODVlZTkxOWJjNDlhYTMxNzc1Y2FkYmJmNTA1ZWY0MTFiNWY5NCJ9fX0='
+  5:
+    texture: 'ODUzMWNjMjY5YzhlNDcwNmU4OTJmOGEwZmIzNTFiMTA5MDE1NmIzZjYyNjFkODE2MzVkMDdhY2FkYmU2Y2UwZSJ9fX0='
+  6:
+    texture: 'YTZhNjA1MWY3ZjZmNDM5ZDhmMjE0YzIzNGU4ZTJjNDc3NjMwMDUyNDMyZTQyNjA3ZjA0MDRiODQwYjUzY2VhYiJ9fX0='
+  7:
+    texture: 'MjEzYjJlMjhlMDM3MTAwNzM5MTMwYjJlYjkwZWY0OTFjNmMzZGZmNWRlNTYxNWQyZjZkZmQxZTQ2YzljMmY3YyJ9fX0='
+  8:
+    texture: 'NTIzZDkyMmJlMGJhZTA1ZDBlN2I4OGU2NDljMTlmZTNiMmRhZTQzNjM5ZGRkMDljYjcxZTI4M2JmMDM0ZjY4OSJ9fX0='

@@ -29,4 +29,10 @@ public interface EggManager {
     public String getEggDateCollected(String uuid,String id);
     public String getEggTimeCollected(String uuid,String id);
     public void showAllEggs();
+    public String getTopPlayerName();
+    public int getTopPlayerEggsFound();
+    public String getSecondPlayerName();
+    public int getSecondPlayerEggsFound();
+    public String getThirdPlayerName();
+    public int getThirdPlayerEggsFound();
 }

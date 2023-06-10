@@ -3,8 +3,11 @@ package de.theredend2000.advancedegghunt.commands;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.eggmanager.EggManager_1_19_R1;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.EggProgressMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.hintInventory.HintInventoryCreator;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.EggListMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,14 +41,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             VersionManager.getEggManager().startEggPlacing(player);
                             Main.getInstance().getPlaceEggsPlayers().add(player);
                             player.sendMessage(Main.getInstance().getMessage("EnterPlaceMode"));
-                            player.getInventory().setItem(0,VersionManager.getEggManager().giveFinishedEggToPlayer(0));
-                            player.getInventory().setItem(1,VersionManager.getEggManager().giveFinishedEggToPlayer(1));
-                            player.getInventory().setItem(2,VersionManager.getEggManager().giveFinishedEggToPlayer(2));
-                            player.getInventory().setItem(3,VersionManager.getEggManager().giveFinishedEggToPlayer(3));
-                            player.getInventory().setItem(4,VersionManager.getEggManager().giveFinishedEggToPlayer(4));
-                            player.getInventory().setItem(5,VersionManager.getEggManager().giveFinishedEggToPlayer(5));
-                            player.getInventory().setItem(6,VersionManager.getEggManager().giveFinishedEggToPlayer(6));
-                            player.getInventory().setItem(8, new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayname("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup","§7or type §e/egghunt placeEggs §7again.").setLocalizedName("egghunt.finish").build());
+                            player.getInventory().setItem(4,new ItemBuilder(Material.NETHER_STAR).setDisplayname("§6§lEggs Types §7(Right-Click)").setLocalizedName("egghunt.eggs").build());
+                            player.getInventory().setItem(8, new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayname("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup","§7or type §e/egghunt placeEggs §7again.").setLocalizedName("egghunt.finish").setSoulbound(true).build());
                         }
                     }else if(args[0].equalsIgnoreCase("list")){
                         new EggListMenu(Main.getPlayerMenuUtility(player)).open();
@@ -64,6 +61,10 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("commands")){
                         new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
+                    }else if(args[0].equalsIgnoreCase("leaderboard")){
+                        new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
+                    }else if(args[0].equalsIgnoreCase("admin")){
+                        new HintInventoryCreator(player,Bukkit.createInventory(player,54,"Eggs Hint"),true);
                     }else
                         player.sendMessage(usage());
                 }else
@@ -71,6 +72,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             }else if(args.length == 1){
                 if(args[0].equalsIgnoreCase("progress")){
                     new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
+                }else if(args[0].equalsIgnoreCase("leaderboard")){
+                    new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                 }else
                     player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%",permission));
             }else
@@ -88,12 +91,12 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 1){
             if(sender.hasPermission(permission)) {
-                String[] tabs = {"placeEggs", "reload", "list", "help", "settings","progress","show","commands"};
+                String[] tabs = {"placeEggs", "reload", "list", "help", "settings","progress","show","commands","leaderboard"};
                 ArrayList<String> complete = new ArrayList<>();
                 Collections.addAll(complete, tabs);
                 return complete;
             }else{
-                String[] tabs = {"progress"};
+                String[] tabs = {"progress","leaderboard"};
                 ArrayList<String> complete = new ArrayList<>();
                 Collections.addAll(complete, tabs);
                 return complete;

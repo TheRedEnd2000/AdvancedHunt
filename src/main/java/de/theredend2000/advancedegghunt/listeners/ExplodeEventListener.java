@@ -16,11 +16,6 @@ public class ExplodeEventListener implements Listener {
 
     @EventHandler
     public void onExplode(EntityExplodeEvent event){
-        if(Main.getInstance().eggs.contains("Eggs.")){
-            for(String id : Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
-
-            }
-        }
         event.blockList().removeIf(blocks -> VersionManager.getEggManager().containsEgg(blocks));
     }
 

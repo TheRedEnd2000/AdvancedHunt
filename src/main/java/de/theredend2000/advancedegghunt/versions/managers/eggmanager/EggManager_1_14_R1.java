@@ -20,9 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class EggManager_1_14_R1 implements EggManager {
 
@@ -104,7 +102,7 @@ public class EggManager_1_14_R1 implements EggManager {
 
     public void removeEgg(Player player, Block block){
         Main plugin = Main.getInstance();
-        if(plugin.eggs.contains("Eggs.") && plugin.eggs.contains("FoundEggs.")){
+        if(plugin.eggs.contains("Eggs.")){
             Set<String> keys = new HashSet<>();
             keys.clear();
             for (String key : plugin.eggs.getConfigurationSection("Eggs.").getKeys(false)) {
@@ -119,14 +117,16 @@ public class EggManager_1_14_R1 implements EggManager {
                     }
                 }
             }
-            for(String uuids : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)){
-                for(String keys2 : Main.getInstance().eggs.getConfigurationSection("FoundEggs."+uuids).getKeys(false)){
-                    ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs."+uuids+"."+keys2+".");
-                    if (location.loadBlockLocation() != null) {
-                        if (block.getX() == location.loadLocation().getBlockX() && block.getY() == location.loadLocation().getBlockY() && block.getZ() == location.loadLocation().getBlockZ()) {
-                            plugin.eggs.set("FoundEggs."+uuids+"."+keys2,null);
-                            plugin.eggs.set("FoundEggs."+uuids+".Count", plugin.eggs.getInt("FoundEggs."+uuids+".Count")-1);
-                            plugin.saveEggs();
+            if(plugin.eggs.contains("FoundEggs.")) {
+                for (String uuids : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+                    for (String keys2 : Main.getInstance().eggs.getConfigurationSection("FoundEggs." + uuids).getKeys(false)) {
+                        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs." + uuids + "." + keys2 + ".");
+                        if (location.loadBlockLocation() != null) {
+                            if (block.getX() == location.loadLocation().getBlockX() && block.getY() == location.loadLocation().getBlockY() && block.getZ() == location.loadLocation().getBlockZ()) {
+                                plugin.eggs.set("FoundEggs." + uuids + "." + keys2, null);
+                                plugin.eggs.set("FoundEggs." + uuids + ".Count", plugin.eggs.getInt("FoundEggs." + uuids + ".Count") - 1);
+                                plugin.saveEggs();
+                            }
                         }
                     }
                 }
@@ -258,6 +258,14 @@ public class EggManager_1_14_R1 implements EggManager {
                                     p.spawnParticle(Particle.VILLAGER_HAPPY,loc,1,0.2,0.1,0.2,0);
                                 }else {
                                     p.spawnParticle(Particle.CRIT, loc, 1, 0.2, 0.1, 0.2, 0);
+                                }
+                            }
+                        }
+                        int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
+                        for(Entity e : loc.getWorld().getNearbyEntities(loc,radius,radius,radius)){
+                            if(e instanceof Player){
+                                Player p = (Player) e;
+                                if(!VersionManager.getEggManager().hasFound(p,key)){
                                     p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Main.getInstance().getMessage("EggNearbyMessage")));
                                 }
                             }
@@ -304,5 +312,104 @@ public class EggManager_1_14_R1 implements EggManager {
                 }.runTaskTimer(Main.getInstance(),0,20);
             }
         }
+    }
+
+    public String getTopPlayerName(){
+        HashMap<String, Integer> leaderboard = new HashMap<>();
+        if(!Main.getInstance().eggs.contains("FoundEggs.")){
+            return "?????";
+        }
+        for(String uuid : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+            leaderboard.put(Main.getInstance().eggs.getString("FoundEggs."+uuid+".Name"),Main.getInstance().eggs.getInt("FoundEggs."+uuid+".Count"));
+        }
+        if(leaderboard.size() < 1){
+            return "?????";
+        }
+        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        return leaderList.get(0).getKey();
+    }
+    public int getTopPlayerEggsFound(){
+        HashMap<String, Integer> leaderboard = new HashMap<>();
+        if(!Main.getInstance().eggs.contains("FoundEggs.")){
+            return -1;
+        }
+        for(String uuid : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+            leaderboard.put(Main.getInstance().eggs.getString("FoundEggs."+uuid+".Name"),Main.getInstance().eggs.getInt("FoundEggs."+uuid+".Count"));
+        }
+        if(leaderboard.size() < 1){
+            return -1;
+        }
+        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        return leaderList.get(0).getValue();
+    }
+
+    public String getSecondPlayerName(){
+        HashMap<String, Integer> leaderboard = new HashMap<>();
+        if(!Main.getInstance().eggs.contains("FoundEggs.")){
+            return "?????";
+        }
+        for(String uuid : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+            leaderboard.put(Main.getInstance().eggs.getString("FoundEggs."+uuid+".Name"),Main.getInstance().eggs.getInt("FoundEggs."+uuid+".Count"));
+        }
+        if(leaderboard.size() < 2){
+            return "?????";
+        }
+        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        return leaderList.get(1).getKey();
+    }
+    public int getSecondPlayerEggsFound(){
+        HashMap<String, Integer> leaderboard = new HashMap<>();
+        if(!Main.getInstance().eggs.contains("FoundEggs.")){
+            return -1;
+        }
+        for(String uuid : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+            leaderboard.put(Main.getInstance().eggs.getString("FoundEggs."+uuid+".Name"),Main.getInstance().eggs.getInt("FoundEggs."+uuid+".Count"));
+        }
+        if(leaderboard.size() < 2){
+            return -1;
+        }
+        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        return leaderList.get(1).getValue();
+    }
+
+    public String getThirdPlayerName(){
+        HashMap<String, Integer> leaderboard = new HashMap<>();
+        if(!Main.getInstance().eggs.contains("FoundEggs.")){
+            return "?????";
+        }
+        for(String uuid : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+            leaderboard.put(Main.getInstance().eggs.getString("FoundEggs."+uuid+".Name"),Main.getInstance().eggs.getInt("FoundEggs."+uuid+".Count"));
+        }
+        if(leaderboard.size() < 3){
+            return "?????";
+        }
+        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        return leaderList.get(2).getKey();
+    }
+    public int getThirdPlayerEggsFound(){
+        HashMap<String, Integer> leaderboard = new HashMap<>();
+        if(!Main.getInstance().eggs.contains("FoundEggs.")){
+            return -1;
+        }
+        for(String uuid : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+            leaderboard.put(Main.getInstance().eggs.getString("FoundEggs."+uuid+".Name"),Main.getInstance().eggs.getInt("FoundEggs."+uuid+".Count"));
+        }
+        if(leaderboard.size() < 3){
+            return -1;
+        }
+        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        return leaderList.get(2).getValue();
     }
 }

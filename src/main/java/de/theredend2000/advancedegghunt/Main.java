@@ -4,19 +4,18 @@ import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.Updater;
+import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ public final class Main extends JavaPlugin {
     public YamlConfiguration messages;
     public File messagesData;
     public YamlConfiguration eggs;
+    private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
     private File data = new File(getDataFolder(), "eggs.yml");
 
     @Override
@@ -42,6 +42,7 @@ public final class Main extends JavaPlugin {
         placeEggsPlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
         playerAddCommand = new HashMap<>();
+        sortTypeLeaderboard = new HashMap<>();
         setupConfigs();
         VersionManager.registerAllManagers();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
@@ -85,6 +86,10 @@ public final class Main extends JavaPlugin {
         new Updater(this);
         new PlayerChatEventListener();
         new ExplodeEventListener();
+        new PlayerConnectionListener();
+        new EntityChangeListener();
+        new HintInventoryCreator(null,null,false);
+        Bukkit.getConsoleSender().sendMessage(getMessage("Prefix").replaceAll("&","§")+"§aAll Listeners registered.");
     }
 
     private void giveAllItemsBack(){
@@ -115,7 +120,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void checkUpdatePath(){
-        if(!messages.contains("CommandChangedMessage")){
+        if(!messages.contains("EggsNearbyRadiusOnlyBetween")){
             messagesData.delete();
             setupConfigs();
             for(Player player : Bukkit.getOnlinePlayers()){
@@ -125,7 +130,7 @@ public final class Main extends JavaPlugin {
             }
             Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
         }
-        if(!getConfig().contains("Settings.RewardInventoryMaterial")){
+        if(!getConfig().contains("PlaceEggs")){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();
@@ -179,7 +184,10 @@ public final class Main extends JavaPlugin {
         return texture;
     }
     public String getMessage(String message){
-        return messages.getString("Prefix").replace("&","§")+messages.getString(message).replace("&","§");
+        if(getConfig().getBoolean("Settings.PluginPrefixEnabled")){
+            return messages.getString("Prefix").replace("&","§")+messages.getString(message).replace("&","§");
+        }else
+            return messages.getString(message).replace("&","§");
     }
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
@@ -212,5 +220,9 @@ public final class Main extends JavaPlugin {
 
     public HashMap<Player, Integer> getPlayerAddCommand() {
         return playerAddCommand;
+    }
+
+    public HashMap<Player, LeaderboardSortTypes> getSortTypeLeaderboard() {
+        return sortTypeLeaderboard;
     }
 }
