@@ -37,35 +37,54 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_19_R3")){
-            eggManager = new EggManager_1_19_R3();
-        }else if(sversion.equals("v1_19_R2")){
-            eggManager = new EggManager_1_19_R2();
-        }else if(sversion.equals("v1_19_R1")){
-            eggManager = new EggManager_1_19_R1();
-        }else if(sversion.equals("v1_18_R2")){
-            eggManager = new EggManager_1_18_R2();;
-        }else if(sversion.equals("v1_18_R1")){
-            eggManager = new EggManager_1_18_R1();
-        }else if(sversion.equals("v1_17_R1")){
-            eggManager = new EggManager_1_17_R1();
-        }else if(sversion.equals("v1_16_R3")){
-            eggManager = new EggManager_1_16_R3();
-        }else if(sversion.equals("v1_16_R2")){
-            eggManager = new EggManager_1_16_R2();
-        }else if(sversion.equals("v1_16_R1")){
-            eggManager = new EggManager_1_16_R1();
-        }else if(sversion.equals("v1_15_R1")){
-            eggManager = new EggManager_1_15_R1();
-        }else if(sversion.equals("v1_14_R1")){
-            eggManager = new EggManager_1_14_R1();
-        }else if(sversion.equals("v1_13_R2")){
-            eggManager = new EggManager_1_13_R2();
-        }else if(sversion.equals("v1_13_R1")){
-            eggManager = new EggManager_1_13_R1();
-        }else{
-            ConsoleMessages.sendNotCompatibleVersion();
-            Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+        switch (sversion) {
+            case "v1_20_R1":
+                eggManager = new EggManager_1_20_R1();
+                break;
+            case "v1_19_R3":
+                eggManager = new EggManager_1_19_R3();
+                break;
+            case "v1_19_R2":
+                eggManager = new EggManager_1_19_R2();
+                break;
+            case "v1_19_R1":
+                eggManager = new EggManager_1_19_R1();
+                break;
+            case "v1_18_R2":
+                eggManager = new EggManager_1_18_R2();
+                ;
+                break;
+            case "v1_18_R1":
+                eggManager = new EggManager_1_18_R1();
+                break;
+            case "v1_17_R1":
+                eggManager = new EggManager_1_17_R1();
+                break;
+            case "v1_16_R3":
+                eggManager = new EggManager_1_16_R3();
+                break;
+            case "v1_16_R2":
+                eggManager = new EggManager_1_16_R2();
+                break;
+            case "v1_16_R1":
+                eggManager = new EggManager_1_16_R1();
+                break;
+            case "v1_15_R1":
+                eggManager = new EggManager_1_15_R1();
+                break;
+            case "v1_14_R1":
+                eggManager = new EggManager_1_14_R1();
+                break;
+            case "v1_13_R2":
+                eggManager = new EggManager_1_13_R2();
+                break;
+            case "v1_13_R1":
+                eggManager = new EggManager_1_13_R1();
+                break;
+            default:
+                ConsoleMessages.sendNotCompatibleVersion();
+                Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+                break;
         }
 
         return eggManager != null;
@@ -81,35 +100,53 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_19_R3")){
-            inventoryManager = new InventoryManager_1_19_R3();
-        }else if(sversion.equals("v1_19_R2")){
-            inventoryManager = new InventoryManager_1_19_R2();
-        }else if(sversion.equals("v1_19_R1")){
-            inventoryManager = new InventoryManager_1_19_R1();
-        }else if(sversion.equals("v1_18_R2")){
-            inventoryManager = new InventoryManager_1_18_R2();
-        }else if(sversion.equals("v1_18_R1")){
-            inventoryManager = new InventoryManager_1_18_R1();
-        }else if(sversion.equals("v1_17_R1")){
-            inventoryManager = new InventoryManager_1_17_R1();
-        }else if(sversion.equals("v1_16_R3")){
-            inventoryManager = new InventoryManager_1_16_R3();
-        }else if(sversion.equals("v1_16_R2")){
-            inventoryManager = new InventoryManager_1_16_R2();
-        }else if(sversion.equals("v1_16_R1")){
-            inventoryManager = new InventoryManager_1_16_R1();
-        }else if(sversion.equals("v1_15_R1")){
-            inventoryManager = new InventoryManager_1_15_R1();
-        }else if(sversion.equals("v1_14_R1")){
-            inventoryManager = new InventoryManager_1_14_R1();
-        }else if(sversion.equals("v1_13_R2")){
-            inventoryManager = new InventoryManager_1_13_R2();
-        }else if(sversion.equals("v1_13_R1")){
-            inventoryManager = new InventoryManager_1_13_R1();
-        }else{
-            ConsoleMessages.sendNotCompatibleVersion();
-            Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+        switch (sversion) {
+            case "v1_20_R1":
+                inventoryManager = new InventoryManager_1_20_R1();
+                break;
+            case "v1_19_R3":
+                inventoryManager = new InventoryManager_1_19_R3();
+                break;
+            case "v1_19_R2":
+                inventoryManager = new InventoryManager_1_19_R2();
+                break;
+            case "v1_19_R1":
+                inventoryManager = new InventoryManager_1_19_R1();
+                break;
+            case "v1_18_R2":
+                inventoryManager = new InventoryManager_1_18_R2();
+                break;
+            case "v1_18_R1":
+                inventoryManager = new InventoryManager_1_18_R1();
+                break;
+            case "v1_17_R1":
+                inventoryManager = new InventoryManager_1_17_R1();
+                break;
+            case "v1_16_R3":
+                inventoryManager = new InventoryManager_1_16_R3();
+                break;
+            case "v1_16_R2":
+                inventoryManager = new InventoryManager_1_16_R2();
+                break;
+            case "v1_16_R1":
+                inventoryManager = new InventoryManager_1_16_R1();
+                break;
+            case "v1_15_R1":
+                inventoryManager = new InventoryManager_1_15_R1();
+                break;
+            case "v1_14_R1":
+                inventoryManager = new InventoryManager_1_14_R1();
+                break;
+            case "v1_13_R2":
+                inventoryManager = new InventoryManager_1_13_R2();
+                break;
+            case "v1_13_R1":
+                inventoryManager = new InventoryManager_1_13_R1();
+                break;
+            default:
+                ConsoleMessages.sendNotCompatibleVersion();
+                Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+                break;
         }
 
         return inventoryManager != null;
@@ -125,35 +162,53 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_19_R3")){
-            extraManager = new ExtraManager_1_19_R3();
-        }else if(sversion.equals("v1_19_R2")){
-            extraManager = new ExtraManager_1_19_R2();
-        }else if(sversion.equals("v1_19_R1")){
-            extraManager = new ExtraManager_1_19_R1();
-        }else if(sversion.equals("v1_18_R2")){
-            extraManager = new ExtraManager_1_18_R2();
-        }else if(sversion.equals("v1_18_R1")){
-            extraManager = new ExtraManager_1_18_R1();
-        }else if(sversion.equals("v1_17_R1")){
-            extraManager = new ExtraManager_1_17_R1();
-        }else if(sversion.equals("v1_16_R3")){
-            extraManager = new ExtraManager_1_16_R3();
-        }else if(sversion.equals("v1_16_R2")){
-            extraManager = new ExtraManager_1_16_R2();
-        }else if(sversion.equals("v1_16_R1")){
-            extraManager = new ExtraManager_1_16_R1();
-        }else if(sversion.equals("v1_15_R1")){
-            extraManager = new ExtraManager_1_15_R1();
-        }else if(sversion.equals("v1_14_R1")){
-            extraManager = new ExtraManager_1_14_R1();
-        }else if(sversion.equals("v1_13_R2")){
-            extraManager = new ExtraManager_1_13_R2();
-        }else if(sversion.equals("v1_13_R1")){
-            extraManager = new ExtraManager_1_13_R1();
-        }else{
-            ConsoleMessages.sendNotCompatibleVersion();
-            Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+        switch (sversion) {
+            case "v1_20_R1":
+                extraManager = new ExtraManager_1_20_R1();
+                break;
+            case "v1_19_R3":
+                extraManager = new ExtraManager_1_19_R3();
+                break;
+            case "v1_19_R2":
+                extraManager = new ExtraManager_1_19_R2();
+                break;
+            case "v1_19_R1":
+                extraManager = new ExtraManager_1_19_R1();
+                break;
+            case "v1_18_R2":
+                extraManager = new ExtraManager_1_18_R2();
+                break;
+            case "v1_18_R1":
+                extraManager = new ExtraManager_1_18_R1();
+                break;
+            case "v1_17_R1":
+                extraManager = new ExtraManager_1_17_R1();
+                break;
+            case "v1_16_R3":
+                extraManager = new ExtraManager_1_16_R3();
+                break;
+            case "v1_16_R2":
+                extraManager = new ExtraManager_1_16_R2();
+                break;
+            case "v1_16_R1":
+                extraManager = new ExtraManager_1_16_R1();
+                break;
+            case "v1_15_R1":
+                extraManager = new ExtraManager_1_15_R1();
+                break;
+            case "v1_14_R1":
+                extraManager = new ExtraManager_1_14_R1();
+                break;
+            case "v1_13_R2":
+                extraManager = new ExtraManager_1_13_R2();
+                break;
+            case "v1_13_R1":
+                extraManager = new ExtraManager_1_13_R1();
+                break;
+            default:
+                ConsoleMessages.sendNotCompatibleVersion();
+                Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+                break;
         }
 
         return extraManager != null;
@@ -169,34 +224,52 @@ public class VersionManager {
             return false;
         }
 
-        if(sversion.equals("v1_19_R3")){
-            soundManager = new SoundManager_1_19_R3();
-        }else if(sversion.equals("v1_19_R2")){
-            soundManager = new SoundManager_1_19_R2();
-        }else if(sversion.equals("v1_19_R1")){
-            soundManager = new SoundManager_1_19_R1();
-        }else if(sversion.equals("v1_18_R2")){
-            soundManager = new SoundManager_1_18_R2();
-        }else if(sversion.equals("v1_18_R1")){
-            soundManager = new SoundManager_1_18_R1();
-        }else if(sversion.equals("v1_17_R1")){
-            soundManager = new SoundManager_1_17_R1();
-        }else if(sversion.equals("v1_16_R3")){
-            soundManager = new SoundManager_1_16_R3();
-        }else if(sversion.equals("v1_16_R2")){
-            soundManager = new SoundManager_1_16_R2();
-        }else if(sversion.equals("v1_16_R1")){
-            soundManager = new SoundManager_1_16_R1();
-        }else if(sversion.equals("v1_15_R1")){
-            soundManager = new SoundManager_1_15_R1();
-        }else if(sversion.equals("v1_14_R1")){
-            soundManager = new SoundManager_1_14_R1();
-        }else if(sversion.equals("v1_13_R2")){
-            soundManager = new SoundManager_1_13_R2();
-        }else if(sversion.equals("v1_13_R1")){
-            soundManager = new SoundManager_1_13_R1();
-        }else{
-            ConsoleMessages.sendNotCompatibleVersion();
+        switch (sversion) {
+            case "v1_20_R1":
+                soundManager = new SoundManager_1_20_R1();
+                break;
+            case "v1_19_R3":
+                soundManager = new SoundManager_1_19_R3();
+                break;
+            case "v1_19_R2":
+                soundManager = new SoundManager_1_19_R2();
+                break;
+            case "v1_19_R1":
+                soundManager = new SoundManager_1_19_R1();
+                break;
+            case "v1_18_R2":
+                soundManager = new SoundManager_1_18_R2();
+                break;
+            case "v1_18_R1":
+                soundManager = new SoundManager_1_18_R1();
+                break;
+            case "v1_17_R1":
+                soundManager = new SoundManager_1_17_R1();
+                break;
+            case "v1_16_R3":
+                soundManager = new SoundManager_1_16_R3();
+                break;
+            case "v1_16_R2":
+                soundManager = new SoundManager_1_16_R2();
+                break;
+            case "v1_16_R1":
+                soundManager = new SoundManager_1_16_R1();
+                break;
+            case "v1_15_R1":
+                soundManager = new SoundManager_1_15_R1();
+                break;
+            case "v1_14_R1":
+                soundManager = new SoundManager_1_14_R1();
+                break;
+            case "v1_13_R2":
+                soundManager = new SoundManager_1_13_R2();
+                break;
+            case "v1_13_R1":
+                soundManager = new SoundManager_1_13_R1();
+                break;
+            default:
+                ConsoleMessages.sendNotCompatibleVersion();
+                break;
         }
 
         return soundManager != null;

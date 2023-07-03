@@ -64,7 +64,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }else if(args[0].equalsIgnoreCase("leaderboard")){
                         new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("admin")){
-                        new HintInventoryCreator(player,Bukkit.createInventory(player,54,"Eggs Hint"),true);
+                        if(player.getName().equals("TheRedEnd2000"))
+                            new HintInventoryCreator(player,Bukkit.createInventory(player,54,"Eggs Hint"),true);
                     }else
                         player.sendMessage(usage());
                 }else
