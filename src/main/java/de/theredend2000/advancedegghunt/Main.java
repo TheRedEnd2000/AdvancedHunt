@@ -1,5 +1,6 @@
 package de.theredend2000.advancedegghunt;
 
+import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
@@ -38,6 +39,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        Metrics metrics = new Metrics(this,19495);
         refreshCooldown = new HashMap<String, Long>();
         placeEggsPlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
