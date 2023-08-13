@@ -1,11 +1,14 @@
 package de.theredend2000.advancedegghunt.versions.managers.extramanager;
 
+import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Random;
 

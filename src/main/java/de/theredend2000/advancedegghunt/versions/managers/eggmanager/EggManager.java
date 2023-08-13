@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.versions.managers.eggmanager;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +24,7 @@ public interface EggManager {
     public void updateMaxEggs();
     public boolean checkFoundAll(Player player);
     public void spawnEggParticle();
+    public Particle getParticle(Player p, String key);
     public int getTimesFound(String id);
     public String getEggDatePlaced(String id);
     public String getEggTimePlaced(String id);

@@ -9,17 +9,19 @@ import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggpr
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.EggListMenu;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.bukkit.Bukkit.getServer;
 
 public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
@@ -118,7 +120,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§7Name: §6"+Main.getInstance().getDescription().getName());
         player.sendMessage("§7Plugin Version: §6"+Main.getInstance().getDescription().getVersion());
         player.sendMessage("§7Api Version: §6"+Main.getInstance().getDescription().getAPIVersion());
-        player.sendMessage("§7Server Version: §6"+ Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]);
+        player.sendMessage("§7Server Version: §6"+ getServer().getClass().getPackage().getName().split("\\.")[3]);
         player.sendMessage("§7Author: §6XMC-PLUGINS");
         player.sendMessage("");
         player.sendMessage("§2§lCommands");

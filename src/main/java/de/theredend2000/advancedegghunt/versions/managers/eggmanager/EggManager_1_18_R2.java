@@ -236,10 +236,13 @@ public class EggManager_1_18_R2 implements EggManager {
     public boolean checkFoundAll(Player player){
         return getEggsFound(player) == getMaxEggs();
     }
+    @Override
     public void spawnEggParticle(){
         new BukkitRunnable() {
+            double time = 0;
             @Override
             public void run() {
+                time += 0.025;
                 if(!Main.getInstance().eggs.contains("Eggs.")){
                     return;
                 }
@@ -250,19 +253,44 @@ public class EggManager_1_18_R2 implements EggManager {
                         int x = Main.getInstance().eggs.getInt("Eggs."+key+".X");
                         int y = Main.getInstance().eggs.getInt("Eggs."+key+".Y");
                         int z = Main.getInstance().eggs.getInt("Eggs."+key+".Z");
-                        Location loc = new Location(Bukkit.getWorld(world),x,y,z).add(0.5,0.5,0.5);
-                        for (Entity e: loc.getWorld().getNearbyEntities(loc, 10,10,10)){
+                        Location startLocation = new Location(Bukkit.getWorld(world),x,y,z);
+                        for (Entity e: startLocation.getWorld().getNearbyEntities(startLocation, 10,10,10)){
                             if (e instanceof Player){
                                 Player p = (Player) e;
-                                if(VersionManager.getEggManager().hasFound(p,key)){
-                                    p.spawnParticle(Particle.VILLAGER_HAPPY,loc,1,0.2,0.1,0.2,0);
-                                }else {
-                                    p.spawnParticle(Particle.CRIT, loc, 1, 0.2, 0.1, 0.2, 0);
+                                if (time > 3.0)
+                                    time = 0;
+                                if (time > 2.0) {
+                                    double startX = startLocation.getX() - 1;
+                                    double startY = startLocation.getY();
+                                    double startZ = startLocation.getZ() + 1;
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX - 1) + time, (startY), (startZ), 0);
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX + 2), (startY), (startZ - 3) + time, 0);
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX + 2), (startY + 3) - time, (startZ), 0);
+                                    continue;
                                 }
+                                if (time > 1.0) {
+                                    double startX = startLocation.getX();
+                                    double startY = startLocation.getY();
+                                    double startZ = startLocation.getZ() - 1;
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX - 1) + time, startY, (startZ + 1), 0);
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), startX, startY, startZ + time, 0);
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX), (startY + 2) - time, (startZ + 2), 0);
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX + 1), (startY + 2) - time, (startZ + 1), 0);
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX - 1) + time, (startY + 1), (startZ + 2), 0);
+                                    startLocation.getWorld().spawnParticle(getParticle(p,key), (startX + 1), (startY + 1), (startZ) + time, 0);
+                                    continue;
+                                }
+
+                                double startX = startLocation.getX();
+                                double startY = startLocation.getY() + 1.0;
+                                double startZ = startLocation.getZ();
+                                startLocation.getWorld().spawnParticle(getParticle(p,key), startX + time, startY, startZ, 0);
+                                startLocation.getWorld().spawnParticle(getParticle(p,key), startX, startY - time, startZ, 0);
+                                startLocation.getWorld().spawnParticle(getParticle(p,key), startX, startY, startZ + time, 0);
                             }
                         }
                         int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
-                        for(Entity e : loc.getWorld().getNearbyEntities(loc,radius,radius,radius)){
+                        for(Entity e : startLocation.getWorld().getNearbyEntities(startLocation,radius,radius,radius)){
                             if(e instanceof Player){
                                 Player p = (Player) e;
                                 if(!VersionManager.getEggManager().hasFound(p,key)){
@@ -273,7 +301,15 @@ public class EggManager_1_18_R2 implements EggManager {
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(),0,5);
+        }.runTaskTimer(Main.getInstance(),0,3);
+    }
+
+    public Particle getParticle(Player p,String key){
+        if(VersionManager.getEggManager().hasFound(p,key)){
+            return Particle.VILLAGER_HAPPY;
+        }else {
+            return Particle.CRIT;
+        }
     }
     public void showAllEggs(){
         if(!Main.getInstance().eggs.contains("Eggs.")){

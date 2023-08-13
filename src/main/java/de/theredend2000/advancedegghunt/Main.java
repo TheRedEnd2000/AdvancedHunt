@@ -120,7 +120,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void checkUpdatePath(){
-        if(!messages.contains("EggsNearbyRadiusOnlyBetween")){
+        if(!messages.contains("version")){
             messagesData.delete();
             setupConfigs();
             for(Player player : Bukkit.getOnlinePlayers()){
@@ -130,7 +130,7 @@ public final class Main extends JavaPlugin {
             }
             Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
         }
-        if(!getConfig().contains("PlaceEggs")){
+        if(!getConfig().contains("config-version")){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();

@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.Inven
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.RewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egginformation.InformationMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggplacelist.EggPlaceMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggplacelist.PlaceMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.ProgressMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.leaderboardmenu.LeadeboardMenu;
@@ -14,6 +15,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class InventoryClickEventListener implements Listener {
 
@@ -88,6 +92,29 @@ public class InventoryClickEventListener implements Listener {
                     }
                     LeadeboardMenu menu = (LeadeboardMenu) holder;
                     menu.handleMenu(event);
+                }
+                if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
+                    for(String key : Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false)){
+                        if(event.getCurrentItem().getType().name().toUpperCase().equals(Main.getInstance().getConfig().getString("PlaceEggs."+key+".type").toUpperCase())){
+                            player.sendMessage(Main.getInstance().getMessage("BlockAlreadyExists"));
+                            return;
+                        }
+                    }
+                    ConfigurationSection chestsSection = Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.");
+                    int nextNumber = 0;
+                    Set<String> keys = chestsSection.getKeys(false);
+                    if (!keys.isEmpty()) {
+                        for (int i = 0; i <= keys.size(); i++) {
+                            String key = Integer.toString(i);
+                            if (!keys.contains(key)) {
+                                nextNumber = i;
+                                break;
+                            }
+                        }
+                    }
+                    Main.getInstance().getConfig().set("PlaceEggs."+nextNumber+".type",event.getCurrentItem().getType().name().toUpperCase());
+                    Main.getInstance().saveConfig();
+                    new EggPlaceMenu(Main.getPlayerMenuUtility(player)).open();
                 }
                 if(event.getView().getTitle().equals("Advanced Egg Settings")){
                     if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);

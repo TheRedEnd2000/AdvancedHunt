@@ -21,21 +21,20 @@ public class BlockBreakEventListener implements Listener {
     public void onDestroyEgg(BlockBreakEvent event){
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if ((block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD)) {
-            if(VersionManager.getEggManager().containsEgg(event.getBlock())){
-                String permission = Main.getInstance().getConfig().getString("Permissions.BreakEggPermission");
+        if(VersionManager.getEggManager().containsEgg(event.getBlock())){
+            String permission = Main.getInstance().getConfig().getString("Permissions.BreakEggPermission");
+            if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
                 if(player.hasPermission(permission)){
-                    if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-                        VersionManager.getEggManager().removeEgg(player, block);
-                        player.playSound(player.getLocation(), VersionManager.getSoundManager().playEggBreakSound(), VersionManager.getSoundManager().getSoundVolume(), 1);
-                    }else {
-                        player.sendMessage(Main.getInstance().getMessage("OnlyInPlaceMode"));
-                        event.setCancelled(true);
-                    }
+                    VersionManager.getEggManager().removeEgg(player, block);
+                    player.playSound(player.getLocation(), VersionManager.getSoundManager().playEggBreakSound(), VersionManager.getSoundManager().getSoundVolume(), 1);
                 }else {
                     player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%", permission));
                     event.setCancelled(true);
                 }
+            }else {
+                if(player.hasPermission(permission))
+                    player.sendMessage(Main.getInstance().getMessage("OnlyInPlaceMode"));
+                event.setCancelled(true);
             }
         }
     }
