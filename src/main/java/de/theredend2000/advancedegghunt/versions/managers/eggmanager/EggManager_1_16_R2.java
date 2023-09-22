@@ -246,6 +246,7 @@ public class EggManager_1_16_R2 implements EggManager {
                 if(!Main.getInstance().eggs.contains("Eggs.")){
                     return;
                 }
+                if(!Main.getInstance().getConfig().getBoolean("Particle.enabled")) return;
                 for (String key: Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
                     ConfigLocationUtil locationUtil = new ConfigLocationUtil(Main.getInstance(),"Eggs."+key);
                     if (locationUtil.loadBlockLocation() != null){
@@ -306,9 +307,9 @@ public class EggManager_1_16_R2 implements EggManager {
 
     public Particle getParticle(Player p,String key){
         if(VersionManager.getEggManager().hasFound(p,key)){
-            return Particle.VILLAGER_HAPPY;
+            return Particle.valueOf(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
         }else {
-            return Particle.CRIT;
+            return Particle.valueOf(Main.getInstance().getConfig().getString("Particle.type.EggFound").toUpperCase());
         }
     }
     public void showAllEggs(){

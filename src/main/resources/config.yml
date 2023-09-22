@@ -1,4 +1,4 @@
-config-version: 1.9
+config-version: 2.2
 
 Permissions:
   AdvancedEggHuntCommandPermission: advancedegghunt.main
@@ -27,10 +27,16 @@ Sounds:
   InventoryClickSuccess: BLOCK_NOTE_BLOCK_CHIME
   InventoryClickFailed: BLOCK_NOTE_BLOCK_HAT
 
+Particle:
+  enabled: true
+  type:
+    EggFound: CRIT
+    EggNotFound: VILLAGER_HAPPY
+
 Rewards:
   #types: 0 = Player found one egg; 1 = Player found all eggs
     0:
-      command: 'tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
+      command: 'tellraw %PLAYER% "%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
       enabled: true
       type: 0
     1:
@@ -38,7 +44,7 @@ Rewards:
       enabled: true
       type: 0
     2:
-      command: 'tellraw %PLAYER% "%PREFIX%&aYou found a egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
+      command: 'tellraw %PLAYER% "%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
       enabled: true
       type: 1
     3:
