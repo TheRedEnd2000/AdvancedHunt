@@ -1,4 +1,4 @@
-config-version: 2.2
+config-version: 2.3
 
 Permissions:
   AdvancedEggHuntCommandPermission: advancedegghunt.main
@@ -16,6 +16,8 @@ Settings:
   ShowEggsNearbyMessageRadius: 10
   RewardInventoryMaterial: PAPER
   PluginPrefixEnabled: true
+  LeftClickEgg: false
+  RightClickEgg: true
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP

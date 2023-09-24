@@ -132,7 +132,7 @@ public final class Main extends JavaPlugin {
             }
             Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
         }
-        if(getConfig().getDouble("config-version") < 2.2){
+        if(getConfig().getDouble("config-version") < 2.3){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();
