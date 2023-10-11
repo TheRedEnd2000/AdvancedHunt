@@ -312,6 +312,30 @@ public class EggManager_1_16_R1 implements EggManager {
             return Particle.valueOf(Main.getInstance().getConfig().getString("Particle.type.EggFound").toUpperCase());
         }
     }
+
+    public void resetStatsPlayer(String name){
+        for(String uuids : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)){
+            if(Main.getInstance().eggs.getString("FoundEggs."+uuids+".Name").equals(name)) {
+                Main.getInstance().eggs.set("FoundEggs." + uuids, null);
+                Main.getInstance().saveEggs();
+            }
+        }
+    }
+    public void resetStatsAll(){
+        Main.getInstance().eggs.set("FoundEggs",null);
+        Main.getInstance().saveEggs();
+    }
+
+    public boolean containsPlayer(String name){
+        if(Main.getInstance().eggs.contains("FoundEggs.")){
+            for(String uuids : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)){
+                if(Main.getInstance().eggs.getString("FoundEggs."+uuids+".Name").equals(name)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public void showAllEggs(){
         if(!Main.getInstance().eggs.contains("Eggs.")){
             return;

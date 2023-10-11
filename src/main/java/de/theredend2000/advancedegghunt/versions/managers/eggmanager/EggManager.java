@@ -37,4 +37,7 @@ public interface EggManager {
     public int getSecondPlayerEggsFound();
     public String getThirdPlayerName();
     public int getThirdPlayerEggsFound();
+    public void resetStatsPlayer(String name);
+    public void resetStatsAll();
+    public boolean containsPlayer(String name);
 }
