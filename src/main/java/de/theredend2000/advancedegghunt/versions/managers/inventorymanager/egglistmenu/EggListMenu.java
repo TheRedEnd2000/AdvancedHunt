@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu;
+package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 

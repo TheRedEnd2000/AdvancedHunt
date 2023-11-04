@@ -1,11 +1,9 @@
 package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.ListPaginatedMenu;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

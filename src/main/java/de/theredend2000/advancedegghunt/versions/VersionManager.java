@@ -38,6 +38,9 @@ public class VersionManager {
         }
 
         switch (sversion) {
+            case "v1_20_R2":
+                eggManager = new EggManager_1_20_R2();
+                break;
             case "v1_20_R1":
                 eggManager = new EggManager_1_20_R1();
                 break;
@@ -52,7 +55,6 @@ public class VersionManager {
                 break;
             case "v1_18_R2":
                 eggManager = new EggManager_1_18_R2();
-                ;
                 break;
             case "v1_18_R1":
                 eggManager = new EggManager_1_18_R1();
@@ -101,6 +103,9 @@ public class VersionManager {
         }
 
         switch (sversion) {
+            case "v1_20_R2":
+                inventoryManager = new InventoryManager_1_20_R2();
+                break;
             case "v1_20_R1":
                 inventoryManager = new InventoryManager_1_20_R1();
                 break;
@@ -163,6 +168,9 @@ public class VersionManager {
         }
 
         switch (sversion) {
+            case "v1_20_R2":
+                extraManager = new ExtraManager_1_20_R2();
+                break;
             case "v1_20_R1":
                 extraManager = new ExtraManager_1_20_R1();
                 break;
@@ -225,6 +233,9 @@ public class VersionManager {
         }
 
         switch (sversion) {
+            case "v1_20_R2":
+                soundManager = new SoundManager_1_20_R2();
+                break;
             case "v1_20_R1":
                 soundManager = new SoundManager_1_20_R1();
                 break;

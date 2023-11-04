@@ -3,16 +3,14 @@ package de.theredend2000.advancedegghunt.commands;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
-import de.theredend2000.advancedegghunt.versions.managers.eggmanager.EggManager_1_19_R1;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.EggProgressMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.EggListMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.EggListMenu;
 import org.bukkit.*;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;

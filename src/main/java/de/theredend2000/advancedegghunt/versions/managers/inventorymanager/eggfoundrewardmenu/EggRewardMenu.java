@@ -1,28 +1,18 @@
 package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.InventoryManager_1_19_R1;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egginformation.EggInformationMenu;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.ListPaginatedMenu;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
-
-import static org.spigotmc.AsyncCatcher.enabled;
 
 public class EggRewardMenu extends RewardPaginatedMenu {
 

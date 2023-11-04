@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-public class InventoryManager_1_16_R2 implements InventoryManager {
+public class InventoryManager_1_20_R2 implements InventoryManager {
 
 
     public void createEggsSettingsInventory(Player player) {
@@ -44,5 +44,4 @@ public class InventoryManager_1_16_R2 implements InventoryManager {
         inventory.setItem(40, new ItemBuilder(Material.BARRIER).setDisplayname("§4Close").setLocalizedName("command.close").build());
         player.openInventory(inventory);
     }
-
 }

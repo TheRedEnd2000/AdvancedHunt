@@ -78,7 +78,7 @@ public class ItemBuilder {
     public ItemBuilder setSkullOwner(String texture) {
         try {
             SkullMeta skullMeta = (SkullMeta) this.itemMeta;
-            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+            GameProfile profile = new GameProfile(UUID.randomUUID(), texture);
             profile.getProperties().put("textures", new Property("textures", texture));
             Field field = skullMeta.getClass().getDeclaredField("profile");
             field.setAccessible(true);

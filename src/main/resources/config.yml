@@ -1,4 +1,4 @@
-config-version: 2.3
+config-version: 2.4
 
 Permissions:
   AdvancedEggHuntCommandPermission: advancedegghunt.main
@@ -12,6 +12,7 @@ Settings:
   PlayerFoundAllEggsReward: true
   DisableCommandFeedback: true
   ShowCoordinatesWhenEggFoundInProgressInventory: false
+  ShowFireworkAfterEggFound: true
   ArmorstandGlow: 10
   ShowEggsNearbyMessageRadius: 10
   RewardInventoryMaterial: PAPER

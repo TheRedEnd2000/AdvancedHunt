@@ -2,7 +2,6 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.InventoryManager_1_19_R1;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggfoundrewardmenu.RewardMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egginformation.InformationMenu;
@@ -10,12 +9,11 @@ import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggpl
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggplacelist.PlaceMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.ProgressMenu;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.leaderboardmenu.LeadeboardMenu;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.ListMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.ListMenu;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +22,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 public class InventoryClickEventListener implements Listener {
@@ -217,6 +214,12 @@ public class InventoryClickEventListener implements Listener {
                                 break;
                             case "settings.pluginprefix":
                                 Main.getInstance().getConfig().set("Settings.PluginPrefixEnabled",!Main.getInstance().getConfig().getBoolean("Settings.PluginPrefixEnabled"));
+                                Main.getInstance().saveConfig();
+                                VersionManager.getInventoryManager().createEggsSettingsInventory(player);
+                                player.playSound(player.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);
+                                break;
+                            case "settings.firework":
+                                Main.getInstance().getConfig().set("Settings.ShowFireworkAfterEggFound",!Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"));
                                 Main.getInstance().saveConfig();
                                 VersionManager.getInventoryManager().createEggsSettingsInventory(player);
                                 player.playSound(player.getLocation(),VersionManager.getSoundManager().playInventorySuccessSound(),VersionManager.getSoundManager().getSoundVolume(), 1);

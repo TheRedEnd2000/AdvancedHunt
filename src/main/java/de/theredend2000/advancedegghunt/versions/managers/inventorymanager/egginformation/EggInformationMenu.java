@@ -3,10 +3,8 @@ package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggi
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggprogress.ProgressPaginatedMenu;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.EggListMenu;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu.PlayerMenuUtility;
-import org.bukkit.Bukkit;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.EggListMenu;
+import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,7 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 public class EggInformationMenu extends InformationPaginatedMenu {
 

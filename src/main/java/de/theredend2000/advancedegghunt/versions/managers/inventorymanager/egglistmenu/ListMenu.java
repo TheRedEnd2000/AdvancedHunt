@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.paginatedMenu;
+package de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

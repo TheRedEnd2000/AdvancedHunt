@@ -31,7 +31,8 @@ public class PlayerInteractEventListener implements Listener {
                     if (!VersionManager.getEggManager().hasFound(player, id)) {
                         VersionManager.getEggManager().saveFoundEggs(player, event.getClickedBlock(), id);
                         Location loc = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
-                        VersionManager.getExtraManager().spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
+                        if(Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"))
+                            VersionManager.getExtraManager().spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
                         if (VersionManager.getEggManager().checkFoundAll(player)) {
                             player.playSound(player.getLocation(), VersionManager.getSoundManager().playAllEggsFound(), 1, 1);
                             if (Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward")) {
