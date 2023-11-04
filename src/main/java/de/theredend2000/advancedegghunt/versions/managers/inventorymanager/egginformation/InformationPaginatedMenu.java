@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.eggli
 import org.bukkit.Material;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public abstract class InformationPaginatedMenu extends InformationMenu {
 
@@ -16,10 +17,10 @@ public abstract class InformationPaginatedMenu extends InformationMenu {
     public InformationPaginatedMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
     }
-    public void addMenuBorder(){
-        inventory.setItem(48, new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b"+(page+1)+"§7/§b"+getMaxPages()+"§7)","","§eClick to scroll.").setDisplayname("§2Left").build());
+    public void addMenuBorder(String eggId){
+        inventory.setItem(48, new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b"+(page+1)+"§7/§b"+getMaxPages(eggId)+"§7)","","§eClick to scroll.").setDisplayname("§2Left").build());
 
-        inventory.setItem(50, new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b"+(page+1)+"§7/§b"+getMaxPages()+"§7)","","§eClick to scroll.").setDisplayname("§2Right").build());
+        inventory.setItem(50, new ItemBuilder(Material.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b"+(page+1)+"§7/§b"+getMaxPages(eggId)+"§7)","","§eClick to scroll.").setDisplayname("§2Right").build());
 
         inventory.setItem(49, makeItem(Material.BARRIER, "§4Close"));
         inventory.setItem(53, makeItem(Material.EMERALD_BLOCK, "§aRefresh"));
@@ -49,10 +50,15 @@ public abstract class InformationPaginatedMenu extends InformationMenu {
     public int getMaxItemsPerPage() {
         return maxItemsPerPage;
     }
-    public int getMaxPages(){
-        int keys = Main.getInstance().eggs.getInt("MaxEggs");
-        if(keys == 0) return 1;
-        return (int) Math.ceil((double) keys / getMaxItemsPerPage());
+    public int getMaxPages(String eggId){
+        ArrayList<String> keys = new ArrayList<>();
+        for(String uuids : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)){
+            if(Main.getInstance().eggs.contains("FoundEggs."+uuids+"."+eggId)){
+                Collections.addAll(keys, Main.getInstance().eggs.getString("FoundEggs."+uuids+".Name"));
+            }
+        }
+        if(keys.isEmpty()) return 1;
+        return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
     }
 }
 

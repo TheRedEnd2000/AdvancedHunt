@@ -5,6 +5,8 @@ import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import org.bukkit.Material;
 
+import java.util.ArrayList;
+
 public abstract class RewardPaginatedMenu extends RewardMenu{
 
     protected int page = 0;
@@ -47,9 +49,12 @@ public abstract class RewardPaginatedMenu extends RewardMenu{
         return maxItemsPerPage;
     }
     public int getMaxPages(){
-        int keys = Main.getInstance().eggs.getInt("MaxEggs");
-        if(keys == 0) return 1;
-        return (int) Math.ceil((double) keys / getMaxItemsPerPage());
+        ArrayList<String> keys = new ArrayList<>();
+        if(Main.getInstance().getConfig().contains("Rewards.")){
+            keys.addAll(Main.getInstance().getConfig().getConfigurationSection("Rewards.").getKeys(false));
+        }
+        if(keys.isEmpty()) return 1;
+        return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
     }
 }
 

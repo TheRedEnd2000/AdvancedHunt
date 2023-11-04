@@ -83,7 +83,7 @@ public class EggInformationMenu extends InformationPaginatedMenu {
     @Override
     public void setMenuItems(String eggId) {
         inventory.setItem(0,new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayname("§c").setLocalizedName(eggId).build());
-        addMenuBorder();
+        addMenuBorder(eggId);
         ArrayList<String> keys = new ArrayList<>();
         ArrayList<String> uuid = new ArrayList<>();
         for(String uuids : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)){

@@ -6,6 +6,9 @@ import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import org.bukkit.Material;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public abstract class LeaderboardPaginatedMenu extends LeadeboardMenu {
 
     protected int page = 0;
@@ -62,9 +65,17 @@ public abstract class LeaderboardPaginatedMenu extends LeadeboardMenu {
         return maxItemsPerPage;
     }
     public int getMaxPages(){
-        int keys = Main.getInstance().eggs.getInt("MaxEggs");
-        if(keys == 0) return 1;
-        return (int) Math.ceil((double) keys / getMaxItemsPerPage());
+        ArrayList<String> keys = new ArrayList<>();
+        HashMap<String, Integer> leaderboard = new HashMap<>();
+        if(Main.getInstance().eggs.contains("FoundEggs.")){
+            for(String uuid : Main.getInstance().eggs.getConfigurationSection("FoundEggs.").getKeys(false)) {
+                leaderboard.put(Main.getInstance().eggs.getString("FoundEggs."+uuid+".Name"),Main.getInstance().eggs.getInt("FoundEggs."+uuid+".Count"));
+            }
+            for(int i = 0; i < leaderboard.size(); i++)
+                keys.add(String.valueOf(i));
+        }
+        if(keys.isEmpty()) return 1;
+        return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
     }
 }
 

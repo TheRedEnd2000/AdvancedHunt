@@ -49,9 +49,12 @@ public abstract class PlacePaginatedMenu extends PlaceMenu {
         return maxItemsPerPage;
     }
     public int getMaxPages(){
-        int keys = Main.getInstance().eggs.getInt("MaxEggs");
-        if(keys == 0) return 1;
-        return (int) Math.ceil((double) keys / getMaxItemsPerPage());
+        ArrayList<String> keys = new ArrayList<>();
+        if(Main.getInstance().getConfig().contains("PlaceEggs.")){
+            keys.addAll(Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false));
+        }
+        if(keys.isEmpty()) return 1;
+        return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
     }
 }
 
