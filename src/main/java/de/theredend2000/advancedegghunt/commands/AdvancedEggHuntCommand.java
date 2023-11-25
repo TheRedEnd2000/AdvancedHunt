@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -60,9 +61,21 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("leaderboard")){
                         new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
-                    }else if(args[0].equalsIgnoreCase("admin")){
-                        if(player.getName().equals("TheRedEnd2000"))
-                            new HintInventoryCreator(player,Bukkit.createInventory(player,54,"Eggs Hint"),true);
+                    }else if(args[0].equalsIgnoreCase("hint")){
+                        if(!VersionManager.getEggManager().checkFoundAll(player)){
+                            if(VersionManager.getEggManager().getMaxEggs() >= 1){
+                                if(!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
+                                    long current = System.currentTimeMillis();
+                                    long release = Main.getInstance().getCooldownManager().getCooldown(player);
+                                    long millis = release - current;
+                                    player.sendMessage(Main.getInstance().getCooldownManager().getRemainingTime(millis));
+                                    return true;
+                                }
+                                new HintInventoryCreator(player,Bukkit.createInventory(player,54,"Eggs Hint"),true);
+                            }else
+                                player.sendMessage(Main.getInstance().getMessage("NoEggsPlaced"));
+                        }else
+                            player.sendMessage(Main.getInstance().getMessage("PlayerFoundAllEggs"));
                     }else
                         player.sendMessage(usage());
                 }else if(args.length == 2){
@@ -87,8 +100,23 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
                 }else if(args[0].equalsIgnoreCase("leaderboard")){
                     new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
+                }else if(args[0].equalsIgnoreCase("hint")){
+                    if(!VersionManager.getEggManager().checkFoundAll(player)){
+                        if(VersionManager.getEggManager().getMaxEggs() >= 1){
+                            if(!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
+                                long current = System.currentTimeMillis();
+                                long release = Main.getInstance().getCooldownManager().getCooldown(player);
+                                long millis = release - current;
+                                player.sendMessage(Main.getInstance().getCooldownManager().getRemainingTime(millis));
+                                return true;
+                            }
+                            new HintInventoryCreator(player,Bukkit.createInventory(player,54,"Eggs Hint"),true);
+                        }else
+                            player.sendMessage(Main.getInstance().getMessage("NoEggsPlaced"));
+                    }else
+                        player.sendMessage(Main.getInstance().getMessage("PlayerFoundAllEggs"));
                 }else
-                    player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%",permission));
+                    player.sendMessage(usage());
             }else
                 player.sendMessage(usage());
         }else if(sender instanceof ConsoleCommandSender){
@@ -122,12 +150,12 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 1){
             if(sender.hasPermission(permission)) {
-                String[] tabs = {"placeEggs", "reload","reset", "list", "help", "settings","progress","show","commands","leaderboard"};
+                String[] tabs = {"placeEggs", "reload","reset", "list", "help", "settings","progress","show","commands","leaderboard","hint"};
                 ArrayList<String> complete = new ArrayList<>();
                 Collections.addAll(complete, tabs);
                 return complete;
             }else{
-                String[] tabs = {"progress","leaderboard"};
+                String[] tabs = {"progress","leaderboard","hint"};
                 ArrayList<String> complete = new ArrayList<>();
                 Collections.addAll(complete, tabs);
                 return complete;
@@ -171,6 +199,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6/advancedegghunt list §7-> §bLists all placed eggs.");
         player.sendMessage("§6/advancedegghunt placeEggs §7-> §bEnter Place-Mode the place or break eggs.");
         player.sendMessage("§6/advancedegghunt settings §7-> §bConfigure many settings of the plugin.");
+        player.sendMessage("§6/advancedegghunt hint §7-> §bOpens the hint menu to find eggs easier.");
         player.sendMessage("§6/advancedegghunt progress §7-> §bView your progress of the eggs.");
         player.sendMessage("§6/advancedegghunt show §7-> §bSpawns an glowing armorstand at every egg.");
         player.sendMessage("§6/advancedegghunt commands §7-> §bChange commands or add more.");

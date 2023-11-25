@@ -8,6 +8,7 @@ import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.versions.managers.CooldownManager;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import org.bukkit.*;
@@ -35,6 +36,7 @@ public final class Main extends JavaPlugin {
     public YamlConfiguration eggs;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
     private File data = new File(getDataFolder(), "eggs.yml");
+    private CooldownManager cooldownManager;
 
     @Override
     public void onEnable() {
@@ -50,6 +52,7 @@ public final class Main extends JavaPlugin {
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
         initListeners();
         datetimeUtils = new DatetimeUtils();
+        cooldownManager = new CooldownManager(this);
         VersionManager.getEggManager().spawnEggParticle();
         checkCommandFeedback();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -57,6 +60,7 @@ public final class Main extends JavaPlugin {
             new PlaceholderExtension().register();
             Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§2§lAll placeholders successfully enabled.");
         }
+        VersionManager.getEggManager().updateMaxEggs();
     }
 
     @Override
@@ -122,7 +126,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void checkUpdatePath(){
-        if(messages.getDouble("version") < 2.0){
+        if(messages.getDouble("version") < 2.1){
             messagesData.delete();
             setupConfigs();
             for(Player player : Bukkit.getOnlinePlayers()){
@@ -226,5 +230,9 @@ public final class Main extends JavaPlugin {
 
     public HashMap<Player, LeaderboardSortTypes> getSortTypeLeaderboard() {
         return sortTypeLeaderboard;
+    }
+
+    public CooldownManager getCooldownManager() {
+        return cooldownManager;
     }
 }

@@ -8,10 +8,7 @@ import de.theredend2000.advancedegghunt.util.saveinventory.Serialization;
 import de.theredend2000.advancedegghunt.versions.VersionManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
@@ -139,6 +136,18 @@ public class EggManager_1_20_R2 implements EggManager {
         }
     }
 
+    public int getRandomNotFoundEgg(Player player){
+        Main plugin = Main.getInstance();
+        if(plugin.eggs.contains("Eggs.") && plugin.eggs.contains("FoundEggs."+player.getUniqueId())) {
+            for (int i = 0; i < VersionManager.getEggManager().getMaxEggs(); i++) {
+                if (!VersionManager.getEggManager().hasFound(player, String.valueOf(i))) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     public boolean containsEgg(Block block){
         Main plugin = Main.getInstance();
         if(!Main.getInstance().eggs.contains("Eggs.")){
@@ -221,14 +230,12 @@ public class EggManager_1_20_R2 implements EggManager {
     }
 
     public void updateMaxEggs(){
-        ArrayList<String> maxEggs = new ArrayList<>();
-        maxEggs.clear();
         if(!Main.getInstance().eggs.contains("Eggs.")){
+            Main.getInstance().eggs.set("MaxEggs",0);
+            Main.getInstance().saveEggs();
             return;
         }
-        for(String id : Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
-            maxEggs.add(id);
-        }
+        ArrayList<String> maxEggs = new ArrayList<>(Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false));
         Main.getInstance().eggs.set("MaxEggs",maxEggs.size());
         Main.getInstance().saveEggs();
     }

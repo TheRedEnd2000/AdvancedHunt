@@ -155,6 +155,18 @@ public class EggManager_1_18_R1 implements EggManager {
         return false;
     }
 
+    public int getRandomNotFoundEgg(Player player){
+        Main plugin = Main.getInstance();
+        if(plugin.eggs.contains("Eggs.") && plugin.eggs.contains("FoundEggs."+player.getUniqueId())) {
+            for (int i = 0; i < VersionManager.getEggManager().getMaxEggs(); i++) {
+                if (!VersionManager.getEggManager().hasFound(player, String.valueOf(i))) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     public String getEggID(Block block){
         Main plugin = Main.getInstance();
         if(!Main.getInstance().eggs.contains("Eggs.")){
@@ -221,14 +233,12 @@ public class EggManager_1_18_R1 implements EggManager {
     }
 
     public void updateMaxEggs(){
-        ArrayList<String> maxEggs = new ArrayList<>();
-        maxEggs.clear();
         if(!Main.getInstance().eggs.contains("Eggs.")){
+            Main.getInstance().eggs.set("MaxEggs",0);
+            Main.getInstance().saveEggs();
             return;
         }
-        for(String id : Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false)){
-            maxEggs.add(id);
-        }
+        ArrayList<String> maxEggs = new ArrayList<>(Main.getInstance().eggs.getConfigurationSection("Eggs.").getKeys(false));
         Main.getInstance().eggs.set("MaxEggs",maxEggs.size());
         Main.getInstance().saveEggs();
     }

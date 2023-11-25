@@ -4,6 +4,7 @@ Permissions:
   AdvancedEggHuntCommandPermission: advancedegghunt.main
   BreakEggPermission: advancedegghunt.break
   PlaceEggPermission: advancedegghunt.place
+  IgnoreCooldownPermission: advancedegghunt.cooldown
 
 Settings:
   SoundVolume: 3
@@ -19,6 +20,9 @@ Settings:
   PluginPrefixEnabled: true
   LeftClickEgg: false
   RightClickEgg: true
+  HintCount: 25
+  HintCooldownSeconds: 1800
+  HintUpdateTime: 20 #in ticks 20 ticks = 1 second
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP

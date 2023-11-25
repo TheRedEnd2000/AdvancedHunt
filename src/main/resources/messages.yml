@@ -1,4 +1,4 @@
-version: 2.0
+version: 2.1
 
 Prefix: '&f[&eAdvancedEggHunt&f] &r'
 
@@ -36,3 +36,7 @@ BlockAlreadyExists: '&cThis block is already listed!'
 ResetedAllFoundEggs: '&7All &eFoundEggs &7has been &creseted&7.'
 ResetedPlayerFoundEggs: '&7All &eFoundEggs &7of &a%PLAYER% &7has been &creseted&7.'
 PlayerNotFound: '&7The system has &cno entry &7for the player &a%PLAYER%&7.'
+PlayerFoundAllEggs: '&cYou have already found all eggs.'
+NoEggsPlaced: '&cThere are no eggs placed.'
+EggHintFound: '&2&lSUCCESS! &aA egg were found at &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
+OnCooldown: '&4&lON COOLDOWN! &cPlease wait &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'

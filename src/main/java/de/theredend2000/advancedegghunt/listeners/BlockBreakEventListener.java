@@ -36,6 +36,7 @@ public class BlockBreakEventListener implements Listener {
                     player.sendMessage(Main.getInstance().getMessage("OnlyInPlaceMode"));
                 event.setCancelled(true);
             }
+            VersionManager.getEggManager().updateMaxEggs();
         }
     }
 

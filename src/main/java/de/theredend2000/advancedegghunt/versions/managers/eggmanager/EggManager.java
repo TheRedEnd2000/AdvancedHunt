@@ -1,5 +1,7 @@
 package de.theredend2000.advancedegghunt.versions.managers.eggmanager;
 
+import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.versions.VersionManager;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
@@ -26,6 +28,7 @@ public interface EggManager {
     public void spawnEggParticle();
     public Particle getParticle(Player p, String key);
     public int getTimesFound(String id);
+    public int getRandomNotFoundEgg(Player player);
     public String getEggDatePlaced(String id);
     public String getEggTimePlaced(String id);
     public String getEggDateCollected(String uuid,String id);
