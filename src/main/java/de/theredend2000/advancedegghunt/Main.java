@@ -126,7 +126,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void checkUpdatePath(){
-        if(messages.getDouble("version") < 2.1){
+        if(messages.getDouble("version") < 2.2){
             messagesData.delete();
             setupConfigs();
             for(Player player : Bukkit.getOnlinePlayers()){
