@@ -24,18 +24,40 @@ public class ConfigLocationUtil {
     }
 
     public void saveBlockLocation() {
-        FileConfiguration config = plugin.eggs;
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
         config.set(root + ".World", location.getWorld().getName());
         config.set(root + ".X", location.getBlockX());
         config.set(root + ".Y", location.getBlockY());
         config.set(root + ".Z", location.getBlockZ());
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
-        plugin.saveEggs();
+        Main.getInstance().getEggDataManager().savePlacedEggs();
     }
 
     public Block loadBlockLocation() {
-        FileConfiguration config = plugin.eggs;
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
+        if(config.contains(root)) {
+            World world = Bukkit.getWorld(config.getString(root+".World"));
+            int x = plugin.getConfig().getInt(root +".X"),
+                    y = plugin.getConfig().getInt(root +".Y"),
+                    z = plugin.getConfig().getInt(root +".Z");
+            return new Location(world, x,y,z).getBlock();
+        }
+        return null;
+    }
+
+    public void saveBlockLocation(UUID uuid,FileConfiguration config) {
+        config.set(root + ".World", location.getWorld().getName());
+        config.set(root + ".X", location.getBlockX());
+        config.set(root + ".Y", location.getBlockY());
+        config.set(root + ".Z", location.getBlockZ());
+        config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
+        config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
+        plugin.getPlayerEggDataManager().savePlayerData(uuid,config);
+    }
+
+    public Block loadBlockLocation(UUID uuid) {
+        FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root+".World"));
             int x = plugin.getConfig().getInt(root +".X"),
@@ -51,17 +73,32 @@ public class ConfigLocationUtil {
     }
 
     public void saveLocation() {
-        FileConfiguration config = plugin.eggs;
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
         config.set(root+".World", location.getWorld().getName());
         config.set(root+".X", location.getX());
         config.set(root+".Y", location.getY());
         config.set(root+".Z", location.getZ());
         config.set(root+".Yaw", location.getYaw());
         config.set(root+".Pitch", location.getPitch());
-        plugin.saveEggs();
+        Main.getInstance().getEggDataManager().savePlacedEggs();
     }
     public Location loadLocation() {
-        FileConfiguration config = plugin.eggs;
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
+        if(config.contains(root)) {
+            World world = Bukkit.getWorld(config.getString(root + ".World"));
+            double x = config.getDouble(root+".X"),
+                    y = config.getDouble(root+".Y"),
+                    z = config.getDouble(root+".Z");
+            float yaw = (float) config.getDouble(root+".Yaw"),
+                    pitch = (float) config.getDouble(root+".Pitch");
+            return new Location(world,x,y,z,yaw,pitch);
+        }else
+            return  null;
+
+    }
+
+    public Location loadLocation(UUID uuid) {
+        FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root + ".World"));
             double x = config.getDouble(root+".X"),

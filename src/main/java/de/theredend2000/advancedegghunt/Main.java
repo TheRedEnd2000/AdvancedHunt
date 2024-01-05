@@ -1,16 +1,23 @@
 package de.theredend2000.advancedegghunt;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
+import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
+import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
-import de.theredend2000.advancedegghunt.versions.VersionManager;
-import de.theredend2000.advancedegghunt.versions.managers.CooldownManager;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.hintInventory.HintInventoryCreator;
-import de.theredend2000.advancedegghunt.versions.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.CooldownManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
+import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -19,9 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class Main extends JavaPlugin {
 
@@ -33,11 +38,14 @@ public final class Main extends JavaPlugin {
     private ArrayList<ArmorStand> showedArmorstands;
     public YamlConfiguration messages;
     public File messagesData;
-    public YamlConfiguration eggs;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
-    private File data = new File(getDataFolder(), "eggs.yml");
     private CooldownManager cooldownManager;
 
+    private EggDataManager eggDataManager;
+    private EggManager eggManager;
+    private SoundManager soundManager;
+    private ExtraManager extraManager;
+    private InventoryManager inventoryManager;
     @Override
     public void onEnable() {
         plugin = this;
@@ -48,19 +56,21 @@ public final class Main extends JavaPlugin {
         playerAddCommand = new HashMap<>();
         sortTypeLeaderboard = new HashMap<>();
         setupConfigs();
-        VersionManager.registerAllManagers();
+        initManagers();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
         initListeners();
         datetimeUtils = new DatetimeUtils();
         cooldownManager = new CooldownManager(this);
-        VersionManager.getEggManager().spawnEggParticle();
+        eggManager.spawnEggParticle();
         checkCommandFeedback();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
             new PlaceholderExtension().register();
             Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§2§lAll placeholders successfully enabled.");
         }
-        VersionManager.getEggManager().updateMaxEggs();
+        eggManager.updateMaxEggs();
+        getEggManager().convertEggData();
+        //new StartupMessages().sendMessages();
     }
 
     @Override
@@ -69,17 +79,26 @@ public final class Main extends JavaPlugin {
         for(ArmorStand a : showedArmorstands){
             a.remove();
         }
-        Main.getInstance().eggs.set("Edit",null);
-        Main.getInstance().saveEggs();
+        //Main.getInstance().eggs.set("Edit",null);
+    }
+
+    private void initManagers(){
+        eggDataManager = new EggDataManager(this);
+        eggManager = new EggManager();
+        inventoryManager = new InventoryManager();
+        soundManager = new SoundManager();
+        extraManager = new ExtraManager();
     }
 
     public void checkCommandFeedback(){
-        if(getConfig().getBoolean("Settings.DisableCommandFeedback")){
-            for(World worlds : Bukkit.getServer().getWorlds())
-                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK,false);
-        }else{
-            for(World worlds : Bukkit.getServer().getWorlds())
-                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK,true);
+        if(XMaterial.supports(9)) {
+            if (getConfig().getBoolean("Settings.DisableCommandFeedback")) {
+                for (World worlds : Bukkit.getServer().getWorlds())
+                    worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+            } else {
+                for (World worlds : Bukkit.getServer().getWorlds())
+                    worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
+            }
         }
     }
 
@@ -95,13 +114,12 @@ public final class Main extends JavaPlugin {
         new PlayerConnectionListener();
         new EntityChangeListener();
         new HintInventoryCreator(null,null,false);
-        Bukkit.getConsoleSender().sendMessage(getMessage("Prefix").replaceAll("&","§")+"§aAll Listeners registered.");
     }
 
     private void giveAllItemsBack(){
         for(Player player : Bukkit.getServer().getOnlinePlayers()){
             if(placeEggsPlayers.contains(player)){
-                VersionManager.getEggManager().finishEggPlacing(player);
+                eggManager.finishEggPlacing(player);
             }
         }
     }
@@ -120,13 +138,11 @@ public final class Main extends JavaPlugin {
         }
         this.messages = YamlConfiguration.loadConfiguration(this.messagesData);
         saveMessages();
-        this.eggs = YamlConfiguration.loadConfiguration(this.data);
-        this.saveEggs();
         checkUpdatePath();
     }
 
     private void checkUpdatePath(){
-        if(messages.getDouble("version") < 2.2){
+        if(messages.getDouble("version") < 2.3){
             messagesData.delete();
             setupConfigs();
             for(Player player : Bukkit.getOnlinePlayers()){
@@ -158,24 +174,16 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    public void saveEggs() {
+    public XMaterial getMaterial(String materialString) {
         try {
-            this.eggs.save(this.data);
-        } catch (IOException var2) {
-            var2.printStackTrace();
-        }
-    }
-
-    public Material getMaterial(String materialString) {
-        try {
-            Material material = Material.getMaterial(materialString);
+            XMaterial material = XMaterial.valueOf(materialString);
             if (material == null) {
-                return Material.BARRIER;
+                return XMaterial.BARRIER;
             }
             return material;
         } catch (Exception ex) {
             Bukkit.getConsoleSender().sendMessage("§4Material Error: "+ex);
-            return Material.STONE;
+            return XMaterial.STONE;
         }
     }
 
@@ -191,9 +199,9 @@ public final class Main extends JavaPlugin {
     }
     public String getMessage(String message){
         if(getConfig().getBoolean("Settings.PluginPrefixEnabled")){
-            return messages.getString("Prefix").replace("&","§")+messages.getString(message).replace("&","§");
+            return HexColor.color(Objects.requireNonNull(messages.getString("Prefix"))+messages.getString(message));
         }else
-            return messages.getString(message).replace("&","§");
+            return HexColor.color(Objects.requireNonNull(messages.getString(message)));
     }
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
@@ -234,5 +242,29 @@ public final class Main extends JavaPlugin {
 
     public CooldownManager getCooldownManager() {
         return cooldownManager;
+    }
+
+    public EggDataManager getEggDataManager() {
+        return eggDataManager;
+    }
+
+    public EggManager getEggManager() {
+        return eggManager;
+    }
+
+    public InventoryManager getInventoryManager() {
+        return inventoryManager;
+    }
+
+    public ExtraManager getExtraManager() {
+        return extraManager;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
+    }
+
+    public PlayerEggDataManager getPlayerEggDataManager() {
+        return new PlayerEggDataManager();
     }
 }

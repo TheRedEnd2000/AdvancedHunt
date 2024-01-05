@@ -1,10 +1,11 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="AdvancedEggHunt:jar">
-    <output-path>$USER_HOME$/AppData/Roaming/.feather/player-server/servers/17f054c2-4b9e-4c13-853f-92fe688ce76a/plugins</output-path>
+    <output-path>$USER_HOME$/Documents/Server/plugins</output-path>
     <root id="archive" name="AdvancedEggHunt.jar">
       <element id="module-output" name="AdvancedEggHunt" />
-      <element id="library" level="project" name="spigot-1.16.3" />
-      <element id="library" level="project" name="spigot-1.17" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/cryptomorin/XSeries/9.8.0/XSeries-9.8.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Documents/build/spigot-1.16.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Documents/build/spigot-1.17.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

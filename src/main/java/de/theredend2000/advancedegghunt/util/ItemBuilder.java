@@ -1,5 +1,6 @@
 package de.theredend2000.advancedegghunt.util;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Color;
@@ -20,8 +21,8 @@ import java.util.UUID;
 public class ItemBuilder {
     private ItemMeta itemMeta;
     private ItemStack itemStack;
-    public ItemBuilder(Material mat){
-        itemStack = new ItemStack(mat);
+    public ItemBuilder(XMaterial mat){
+        itemStack = mat.parseItem();
         itemMeta = itemStack.getItemMeta();
     }
     public ItemBuilder setDisplayname(String s){

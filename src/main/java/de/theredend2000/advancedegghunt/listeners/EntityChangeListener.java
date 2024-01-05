@@ -1,7 +1,7 @@
 package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.versions.VersionManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +15,8 @@ public class EntityChangeListener implements Listener {
 
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent event){
-        if(VersionManager.getEggManager().containsEgg(event.getBlock())) event.setCancelled(true);
+        EggManager eggManager = Main.getInstance().getEggManager();
+        if(eggManager.containsEgg(event.getBlock())) event.setCancelled(true);
     }
 
 }

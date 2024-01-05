@@ -1,17 +1,14 @@
 package de.theredend2000.advancedegghunt.placeholderapi;
 
-import de.theredend2000.advancedegghunt.versions.VersionManager;
-import de.theredend2000.advancedegghunt.versions.managers.eggmanager.EggManager;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderHook;
+
+import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class PlaceholderExtension extends PlaceholderExpansion {
+     private EggManager eggManager = Main.getInstance().getEggManager();
 
     @Override
     public String getAuthor() {
@@ -36,33 +33,33 @@ public class PlaceholderExtension extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, String params) {
         if(params.equalsIgnoreCase("max_eggs")){
-            return String.valueOf(VersionManager.getEggManager().getMaxEggs());
+            return String.valueOf(eggManager.getMaxEggs());
         }
 
         if(params.equalsIgnoreCase("found_eggs")) {
-            return String.valueOf(VersionManager.getEggManager().getEggsFound(player));
+            return String.valueOf(eggManager.getEggsFound(player));
         }
 
         if(params.equalsIgnoreCase("remaining_eggs")) {
-            return String.valueOf(VersionManager.getEggManager().getMaxEggs() - VersionManager.getEggManager().getEggsFound(player));
+            return String.valueOf(eggManager.getMaxEggs() - eggManager.getEggsFound(player));
         }
         if(params.equalsIgnoreCase("top_player_name")) {
-            return VersionManager.getEggManager().getTopPlayerName();
+            return eggManager.getTopPlayerName();
         }
         if(params.equalsIgnoreCase("top_player_count")) {
-            return String.valueOf(VersionManager.getEggManager().getTopPlayerEggsFound());
+            return String.valueOf(eggManager.getTopPlayerEggsFound());
         }
         if(params.equalsIgnoreCase("second_player_name")) {
-            return VersionManager.getEggManager().getSecondPlayerName();
+            return eggManager.getSecondPlayerName();
         }
         if(params.equalsIgnoreCase("second_player_count")) {
-            return String.valueOf(VersionManager.getEggManager().getSecondPlayerEggsFound());
+            return String.valueOf(eggManager.getSecondPlayerEggsFound());
         }
         if(params.equalsIgnoreCase("third_player_name")) {
-            return VersionManager.getEggManager().getThirdPlayerName();
+            return eggManager.getThirdPlayerName();
         }
         if(params.equalsIgnoreCase("third_player_count")) {
-            return String.valueOf(VersionManager.getEggManager().getThirdPlayerEggsFound());
+            return String.valueOf(eggManager.getThirdPlayerEggsFound());
         }
 
         return null;

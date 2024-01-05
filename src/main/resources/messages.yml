@@ -1,4 +1,7 @@
-version: 2.2
+#NOTE:
+#Hex support since plugin version 2.0.2 or messages version 2.3
+
+version: 2.3
 
 Prefix: '&f[&eAdvancedEggHunt&f] &r'
 
@@ -40,3 +43,4 @@ PlayerFoundAllEggs: '&cYou have already found all eggs.'
 NoEggsPlaced: '&cThere are no eggs placed.'
 EggHintFound: '&2&lSUCCESS! &aAn egg was found at &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
 OnCooldown: '&4&lON COOLDOWN! &cPlease wait &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'
+ClickedSameGlassInHint: '&4&lFAILED! &cYou clicked the wrong glass pane, no glass pane or the same twice.'
