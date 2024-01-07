@@ -1,8 +1,11 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import de.theredend2000.advancedegghunt.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +23,12 @@ public class PlayerEggDataManager {
         plugin = Main.getInstance();
         dataFolder = plugin.getDataFolder();
         playerConfigs = new HashMap<>();
-        initPlayers();
     }
 
     public void initPlayers() {
-        for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
+        List<UUID> savedPlayers = new ArrayList<>(plugin.getEggDataManager().savedPlayers());
+        for(UUID uuid : savedPlayers)
             loadPlayerData(uuid);
-        }
     }
 
     private void loadPlayerData(UUID uuid) {

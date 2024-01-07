@@ -6,7 +6,7 @@
 
     <groupId>de.theredend2000</groupId>
     <artifactId>AdvancedEggHunt</artifactId>
-    <version>1.0</version>
+    <version>v2.0.3</version>
     <packaging>jar</packaging>
 
     <name>AdvancedEggHunt</name>

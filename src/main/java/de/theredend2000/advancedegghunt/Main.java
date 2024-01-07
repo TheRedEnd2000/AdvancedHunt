@@ -46,6 +46,7 @@ public final class Main extends JavaPlugin {
     private SoundManager soundManager;
     private ExtraManager extraManager;
     private InventoryManager inventoryManager;
+    private PlayerEggDataManager playerEggDataManager;
     @Override
     public void onEnable() {
         plugin = this;
@@ -70,6 +71,8 @@ public final class Main extends JavaPlugin {
         }
         eggManager.updateMaxEggs();
         getEggManager().convertEggData();
+        playerEggDataManager = new PlayerEggDataManager();
+        playerEggDataManager.initPlayers();
         //new StartupMessages().sendMessages();
     }
 
@@ -266,5 +269,9 @@ public final class Main extends JavaPlugin {
 
     public PlayerEggDataManager getPlayerEggDataManager() {
         return new PlayerEggDataManager();
+    }
+
+    public static HashMap<Player, PlayerMenuUtility> getPlayerMenuUtilityMap() {
+        return playerMenuUtilityMap;
     }
 }
