@@ -79,7 +79,6 @@ public class HintInventoryCreator implements Listener {
         if(event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null){
             if(event.getInventory().equals(inventory)){
                 event.setCancelled(true);
-                Bukkit.broadcastMessage(currentSlot + " " +lastClicked);
                 if(currentSlot == lastClicked){
                     fail(player);
                     player.sendMessage(Main.getInstance().getMessage("ClickedSameGlassInHint"));
@@ -92,7 +91,7 @@ public class HintInventoryCreator implements Listener {
                         player.closeInventory();
                         active = false;
                         player.playSound(player.getLocation() ,soundManager.playAllEggsFound(),soundManager.getSoundVolume(), 1);
-                        getReward(player);
+                        player.sendMessage(getReward(player));
                     }
                     clickedRight = true;
                     lastClicked = currentSlot;
@@ -104,18 +103,21 @@ public class HintInventoryCreator implements Listener {
         }
     }
 
-    public void getReward(Player player){
+    public String getReward(Player player){
         Main plugin = Main.getInstance();
-        if(Main.getInstance().getEggManager().containsPlayer(player.getName())){
-            if(!Main.getInstance().getEggManager().checkFoundAll(player)){
-                int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player);
-                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".");
-                if (location.loadBlockLocation() != null) {
-                    int random = new Random().nextInt(2);
-                    player.sendMessage(Main.getInstance().getMessage("EggHintFound").replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation().getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation().getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation().getBlockZ()) : "§k1"));
+        for(String sections : plugin.getEggDataManager().savedEggSections()) {
+            if (Main.getInstance().getEggManager().containsPlayer(player.getName())) {
+                if (!Main.getInstance().getEggManager().checkFoundAll(player, sections)) {
+                    int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, sections);
+                    ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".");
+                    if (location.loadBlockLocation() != null) {
+                        int random = new Random().nextInt(2);
+                        return Main.getInstance().getMessage("EggHintFound").replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation().getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation().getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation().getBlockZ()) : "§k1");
+                    }
                 }
             }
         }
+        return null;
     }
 
     public void fail(Player player){

@@ -110,5 +110,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-platform-facet:4.3.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-platform-viaversion:4.3.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.cryptomorin:XSeries:9.8.0" level="project" />
+    <orderEntry type="library" name="Maven: net.wesjd:anvilgui:1.7.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="CustomHeads" level="project" />
   </component>
 </module>

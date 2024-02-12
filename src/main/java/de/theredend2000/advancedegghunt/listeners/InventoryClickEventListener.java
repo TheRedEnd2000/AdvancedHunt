@@ -10,11 +10,15 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.P
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.ProgressMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.LeadeboardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.ListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
+import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -24,7 +28,10 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 
 public class InventoryClickEventListener implements Listener {
 
@@ -92,6 +99,15 @@ public class InventoryClickEventListener implements Listener {
                         return;
                     }
                     LeadeboardMenu menu = (LeadeboardMenu) holder;
+                    menu.handleMenu(event);
+                }
+                if (holder instanceof SelectionSelectListMenu) {
+                    if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
+                    event.setCancelled(true);
+                    if (event.getCurrentItem() == null) {
+                        return;
+                    }
+                    SelectionSelectListMenu menu = (SelectionSelectListMenu) holder;
                     menu.handleMenu(event);
                 }
                 if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
@@ -293,9 +309,125 @@ public class InventoryClickEventListener implements Listener {
                                 clickme3.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,Main.getInstance().getConfig().getString("Rewards."+id+".command")));
                                 c2.addExtra(clickme3);
                                 player.spigot().sendMessage(c2);
-                                FileConfiguration config = Main.getInstance().getEggDataManager().getPlacedEggs();
-                                Main.getInstance().getEggDataManager().getPlacedEggs().set("Edit."+player.getUniqueId()+".commandID",id);
-                                Main.getInstance().getEggDataManager().savePlacedEggs();
+                                FileConfiguration config = Main.getInstance().getConfig();
+                                config.set("Edit."+player.getUniqueId()+".commandID",id);
+                                Main.getInstance().saveConfig();
+                                break;
+                        }
+                    }
+                }else if(event.getView().getTitle().equals("Collection creator")){
+                    event.setCancelled(true);
+                    if(event.getCurrentItem().getItemMeta().hasDisplayName()){
+                        FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
+                        boolean enabled = playerConfig.getBoolean("CollectionEdit.enabled");
+                        switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())){
+                            case "Close":
+                                player.closeInventory();
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                break;
+                            case "Name":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                new AnvilGUI.Builder()
+                                        .onClose(stateSnapshot -> {
+                                            if (!stateSnapshot.getText().isEmpty()) {
+                                                playerConfig.set("CollectionEdit.Name",stateSnapshot.getText());
+                                                Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(),playerConfig);
+                                                Main.getInstance().getInventoryManager().createAddCollectionMenu(player);
+                                            }
+                                        })
+                                        .onClick((slot, stateSnapshot) -> {
+                                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                                        })
+                                        .text("Enter collection name")
+                                        .title("Collection name")
+                                        .plugin(Main.getInstance())
+                                        .open(player);
+                                break;
+                            case "Status":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                playerConfig.set("CollectionEdit.enabled",!enabled);
+                                Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(),playerConfig);
+                                Main.getInstance().getInventoryManager().createAddCollectionMenu(player);
+                                break;
+                            case "Back":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                                break;
+                            case "Create":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                String name = playerConfig.getString("CollectionEdit.Name");
+                                if(name == null){
+                                    player.sendMessage("§cPlease enter a name to continue.");
+                                    return;
+                                }
+                                if(!Main.getInstance().getEggDataManager().containsSectionFile(name)) {
+                                    Main.getInstance().getEggDataManager().createEggSectionFile(name, enabled);
+                                    new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                                    playerConfig.set("CollectionEdit",null);
+                                    Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(),playerConfig);
+                                    Main.getInstance().getRequirementsManager().changeActivity(name,true);
+                                }else
+                                    player.sendMessage("§cThe name of the collection is already chosen.");
+                                break;
+                        }
+                    }
+                }else if(event.getView().getTitle().equals("Collection editor")){
+                    event.setCancelled(true);
+                    String section = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
+                    if(event.getCurrentItem().getItemMeta().hasDisplayName()){
+                        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+                        boolean enabled = placedEggs.getBoolean("Enabled");
+                        switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())){
+                            case "Close":
+                                player.closeInventory();
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                break;
+                            case "Status":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                placedEggs.set("Enabled",!enabled);
+                                Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
+                                Main.getInstance().getInventoryManager().createEditCollectionMenu(player,section);
+                                break;
+                            case "Requirements":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                Main.getInstance().getInventoryRequirementsManager().createSelectInventory(player,section);
+                                break;
+                            case "Back":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                                break;
+                            case "Delete":
+                                if(section.equalsIgnoreCase("default")){
+                                    player.sendMessage("§cBecause of many issues it is not possible to delete the default section.\n§cIf you want to disable it please just chance the status.");
+                                    return;
+                                }
+                                Main.getInstance().getRequirementsManager().removeAllEggBlocks(section,player.getUniqueId());
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                player.sendMessage("§aSuccessfully deleted collection "+section);
+                                for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
+                                    FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
+                                    playerConfig.set("FoundEggs."+section,null);
+                                    playerConfig.set("SelectedSection","default");
+                                    Main.getInstance().getPlayerEggDataManager().savePlayerData(uuids,playerConfig);
+                                }
+                                Main.getInstance().getEggDataManager().deleteCollection(section);
+                                player.closeInventory();
+                                break;
+                            case "Deletion Types":
+                                DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(player.getUniqueId());
+                                switch (deletionTypes){
+                                    case Noting:
+                                        Main.getInstance().getPlayerEggDataManager().setDeletionType(DeletionTypes.Player_Heads,player.getUniqueId());
+                                        break;
+                                    case Player_Heads:
+                                        Main.getInstance().getPlayerEggDataManager().setDeletionType(DeletionTypes.Everything,player.getUniqueId());
+                                        break;
+                                    case Everything:
+                                        Main.getInstance().getPlayerEggDataManager().setDeletionType(DeletionTypes.Noting,player.getUniqueId());
+                                        break;
+                                }
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                Main.getInstance().getInventoryManager().createEditCollectionMenu(player,section);
                                 break;
                         }
                     }

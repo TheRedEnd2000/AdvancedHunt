@@ -28,6 +28,8 @@ public abstract class LeaderboardPaginatedMenu extends LeadeboardMenu {
 
         inventory.setItem(49, makeItem(XMaterial.BARRIER, "§4Close"));
         inventory.setItem(53, makeItem(XMaterial.EMERALD_BLOCK, "§aRefresh"));
+        String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
+        inventory.setItem(45,new ItemBuilder(XMaterial.PAPER).setDisplayname("§bSelected Collection").setLore("§7Shows your currently selected collection.","","§7Current: §6"+selectedSection,"","§eClick to change.").build());
         LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
         switch (sortTypes){
             case ALL:

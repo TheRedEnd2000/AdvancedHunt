@@ -31,7 +31,7 @@ public class PlayerChatEventListener implements Listener {
                 new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
                 return;
             }
-            if (!Main.getInstance().getEggDataManager().getPlacedEggs().contains("Edit." + player.getUniqueId())) {
+            if (!Main.getInstance().getConfig().contains("Edit." + player.getUniqueId())) {
                 String id = null;
                 if (Main.getInstance().getConfig().contains("Rewards.")) {
                     ConfigurationSection section = Main.getInstance().getConfig().getConfigurationSection("Rewards.");
@@ -57,12 +57,12 @@ public class PlayerChatEventListener implements Listener {
                 Main.getInstance().getPlayerAddCommand().remove(player);
                 Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
             }else {
-                String id = Main.getInstance().getEggDataManager().getPlacedEggs().getString("Edit."+player.getUniqueId()+".commandID");
+                String id = Main.getInstance().getConfig().getString("Edit."+player.getUniqueId()+".commandID");
                 Main.getInstance().getConfig().set("Rewards."+id+".command", event.getMessage());
                 Main.getInstance().saveConfig();
                 player.sendMessage(Main.getInstance().getMessage("CommandChangedMessage").replaceAll("%ID%",id));
-                Main.getInstance().getEggDataManager().getPlacedEggs().set("Edit."+player.getUniqueId(),null);
-                Main.getInstance().getEggDataManager().savePlacedEggs();
+                Main.getInstance().getConfig().set("Edit."+player.getUniqueId(),null);
+                Main.getInstance().saveConfig();
                 Main.getInstance().getPlayerAddCommand().remove(player);
                 Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
             }
@@ -85,8 +85,8 @@ public class PlayerChatEventListener implements Listener {
                     if(currenttime == 0){
                         if(player != null){
                             player.sendMessage(Main.getInstance().getMessage("CommandTimeExpiredMessage"));
-                            Main.getInstance().getEggDataManager().getPlacedEggs().set("Edit."+player.getUniqueId(),null);
-                            Main.getInstance().getEggDataManager().savePlacedEggs();
+                            Main.getInstance().getConfig().set("Edit."+player.getUniqueId(),null);
+                            Main.getInstance().saveConfig();
                         }
                         return;
                     }

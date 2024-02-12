@@ -16,26 +16,32 @@ public class ConfigLocationUtil {
     private Main plugin;
     private Location location;
     private String root;
-
-    public ConfigLocationUtil(Main plugin,Location location, String root){
+    private String section;
+    public ConfigLocationUtil(Main plugin,Location location, String root, String section){
         this.plugin = plugin;
         this.location = location;
         this.root = root;
+        this.section = section;
+    }
+    public ConfigLocationUtil(Main plugin, String root, String section){
+        this.plugin = plugin;
+        this.root = root;
+        this.section = section;
     }
 
     public void saveBlockLocation() {
-        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
         config.set(root + ".World", location.getWorld().getName());
         config.set(root + ".X", location.getBlockX());
         config.set(root + ".Y", location.getBlockY());
         config.set(root + ".Z", location.getBlockZ());
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
-        Main.getInstance().getEggDataManager().savePlacedEggs();
+        Main.getInstance().getEggDataManager().savePlacedEggs(section,config);
     }
 
     public Block loadBlockLocation() {
-        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root+".World"));
             int x = plugin.getConfig().getInt(root +".X"),
@@ -69,21 +75,21 @@ public class ConfigLocationUtil {
     }
 
     public ConfigLocationUtil(Main plugin, String root) {
-        this(plugin, null, root);
+        this(plugin, null, root,null);
     }
 
     public void saveLocation() {
-        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
         config.set(root+".World", location.getWorld().getName());
         config.set(root+".X", location.getX());
         config.set(root+".Y", location.getY());
         config.set(root+".Z", location.getZ());
         config.set(root+".Yaw", location.getYaw());
         config.set(root+".Pitch", location.getPitch());
-        Main.getInstance().getEggDataManager().savePlacedEggs();
+        Main.getInstance().getEggDataManager().savePlacedEggs(section,config);
     }
     public Location loadLocation() {
-        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs();
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root + ".World"));
             double x = config.getDouble(root+".X"),

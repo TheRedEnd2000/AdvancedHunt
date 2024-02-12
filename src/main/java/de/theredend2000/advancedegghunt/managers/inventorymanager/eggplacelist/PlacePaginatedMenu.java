@@ -25,6 +25,8 @@ public abstract class PlacePaginatedMenu extends PlaceMenu {
         inventory.setItem(49, makeItem(XMaterial.BARRIER, "§4Close"));
         inventory.setItem(53, makeItem(XMaterial.EMERALD_BLOCK, "§aRefresh"));
         inventory.setItem(45, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("MTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0=")).setDisplayname("§9Information").setLore("§7If you do not know how you can add your","§7own egg textures. Click here","§7to get to the discord channel","§7where you can see how it will work.","","§aYou can find the post under:","§a§lfaq -> How to add Custom egg textures in the AdvancedEggHunt plugin§a","","§9Click any block in your inventory","§9to add it into the list.","","§eClick to get the discord link.").build());
+        String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
+        inventory.setItem(46,new ItemBuilder(XMaterial.PAPER).setDisplayname("§bSelected Collection").setLore("§7Shows your currently selected collection.","","§7Current: §6"+selectedSection,"","§eClick to change.").build());
 
         for (int i = 0; i < 10; i++) {
             if (inventory.getItem(i) == null) {

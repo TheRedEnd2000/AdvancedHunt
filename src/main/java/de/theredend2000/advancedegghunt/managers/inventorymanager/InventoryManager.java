@@ -2,10 +2,16 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+
+import java.util.*;
 
 public class InventoryManager {
 
@@ -41,6 +47,40 @@ public class InventoryManager {
         inventory.setItem(33, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4Delete Command").setLore("","§4§l! WARNING !","§c§lYOU CAN NOT UNDO THIS ACTION","","§cAre you sure to delete command #"+key+"?","","§eClick to confirm.").setLocalizedName("command.delete").build());
         inventory.setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayname("§eBack").setLocalizedName("command.back").build());
         inventory.setItem(40, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").setLocalizedName("command.close").build());
+        player.openInventory(inventory);
+    }
+
+    public void createAddCollectionMenu(Player player){
+        Inventory inventory = Bukkit.createInventory(player,45,"Collection creator");
+        int[] glass = new int[]{0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,40,41,42,43,44};
+        for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).setDisplayname("§c").build());}
+        FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
+        String name = playerConfig.getString("CollectionEdit.Name");
+        boolean enabled = playerConfig.getBoolean("CollectionEdit.enabled");
+        inventory.setItem(20, new ItemBuilder(XMaterial.PAPER).setDisplayname("§3Name").setLore("§7Currently: "+(name != null ? name : "§cnone"),"","§eClick to change.").build());
+        inventory.setItem(22, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Status").setLore("§7Currently: "+(enabled ? "§aEnabled" : "§cDisabled"),"","§eClick to toggle.").build());
+        inventory.setItem(24, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setLore("§cYou can change the requirements","§cafter creating the new collection.","","§7All Requirements will be active","§7on creating a new collection.").build());
+        inventory.setItem(40, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build());
+        inventory.setItem(44, new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§2Create").setLore("","§eClick to create.").build());
+        inventory.setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayname("§eBack").build());
+        player.openInventory(inventory);
+    }
+
+    public void createEditCollectionMenu(Player player,String section){
+        Inventory inventory = Bukkit.createInventory(player,45,"Collection editor");
+        int[] glass = new int[]{0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,37,38,39,40,41,42,43,44};
+        for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).setDisplayname("§c").build());}
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        boolean enabled = placedEggs.getBoolean("Enabled");
+        inventory.setItem(4,new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).setDisplayname("§6"+section).build());
+        //inventory.setItem(20, new ItemBuilder(XMaterial.PAPER).setDisplayname("§3Rename").setLore("§7Currently: "+name,"","§eClick to change.").build());
+        inventory.setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Status").setLore("§7Currently: "+(enabled ? "§aEnabled" : "§cDisabled"),"","§eClick to toggle.").build());
+        inventory.setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4Delete").setLore("","§4§lYOU CAN NOT UNDO THIS","","§eClick to delete.").build());
+        inventory.setItem(22, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setDefaultLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(section)).build());
+        inventory.setItem(40, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build());
+        DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(player.getUniqueId());
+        inventory.setItem(44, new ItemBuilder(XMaterial.WOODEN_AXE).setDisplayname("§3Deletion Types").setLore("§8Every player can configure that himself.","§7Change what happens after the deletion","§7of an collection.","",(deletionTypes == DeletionTypes.Noting ? "§b➤ " : "§7")+"Nothing","§8All blocks that were eggs will stay. (includes player heads)",(deletionTypes == DeletionTypes.Player_Heads ? "§b➤ " : "§7")+"Player Heads","§8All blocks that are player heads will be removed.",(deletionTypes == DeletionTypes.Everything ? "§b➤ " : "§7")+"Everything","§8All blocks and will be set to air. (includes player heads)","","§eClick to change.").build());
+        inventory.setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayname("§eBack").build());
         player.openInventory(inventory);
     }
 }

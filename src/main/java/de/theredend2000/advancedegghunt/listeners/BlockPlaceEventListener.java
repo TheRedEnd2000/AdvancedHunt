@@ -24,7 +24,8 @@ public class BlockPlaceEventListener implements Listener {
         String permission = Main.getInstance().getConfig().getString("Permissions.PlaceEggPermission");
         if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
             if(player.hasPermission(permission)){
-                eggManager.saveEgg(player, event.getBlockPlaced().getLocation());
+                String section = eggManager.getEggSectionFromPlayerData(player.getUniqueId());
+                eggManager.saveEgg(player, event.getBlockPlaced().getLocation(),section);
                 player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
             }else
                 player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%", permission));

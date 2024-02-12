@@ -1,10 +1,14 @@
 package de.theredend2000.advancedegghunt;
 
 import com.cryptomorin.xseries.XMaterial;
+import de.likewhat.customheads.api.CustomHeadsAPI;
 import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
+import de.theredend2000.advancedegghunt.listeners.inventoryListeners.RequirementsListeners;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
+import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
@@ -18,6 +22,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManag
 import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
+import org.bstats.charts.CustomChart;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -26,6 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.*;
 
 public final class Main extends JavaPlugin {
@@ -39,6 +45,7 @@ public final class Main extends JavaPlugin {
     public YamlConfiguration messages;
     public File messagesData;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
+    private InventoryRequirementsManager inventoryRequirementsManager;
     private CooldownManager cooldownManager;
 
     private EggDataManager eggDataManager;
@@ -47,6 +54,7 @@ public final class Main extends JavaPlugin {
     private ExtraManager extraManager;
     private InventoryManager inventoryManager;
     private PlayerEggDataManager playerEggDataManager;
+    private RequirementsManager requirementsManager;
     @Override
     public void onEnable() {
         plugin = this;
@@ -69,11 +77,8 @@ public final class Main extends JavaPlugin {
             new PlaceholderExtension().register();
             Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§2§lAll placeholders successfully enabled.");
         }
-        eggManager.updateMaxEggs();
         getEggManager().convertEggData();
-        playerEggDataManager = new PlayerEggDataManager();
-        playerEggDataManager.initPlayers();
-        //new StartupMessages().sendMessages();
+        initData();
     }
 
     @Override
@@ -82,7 +87,18 @@ public final class Main extends JavaPlugin {
         for(ArmorStand a : showedArmorstands){
             a.remove();
         }
-        //Main.getInstance().eggs.set("Edit",null);
+        getConfig().set("Edit",null);
+        saveConfig();
+    }
+
+    private void initData(){
+        playerEggDataManager.initPlayers();
+        Bukkit.getConsoleSender().sendMessage("§2§l" +
+                "Loaded data of "+eggDataManager.savedPlayers().size()+" player(s).");
+        eggDataManager.initEggs();
+        Bukkit.getConsoleSender().sendMessage("§2§lLoaded data of "+eggDataManager.savedEggSections().size()+" collection(s).");
+        for(String section : getEggDataManager().savedEggSections())
+            eggManager.updateMaxEggs(section);
     }
 
     private void initManagers(){
@@ -91,6 +107,9 @@ public final class Main extends JavaPlugin {
         inventoryManager = new InventoryManager();
         soundManager = new SoundManager();
         extraManager = new ExtraManager();
+        playerEggDataManager = new PlayerEggDataManager();
+        inventoryRequirementsManager = new InventoryRequirementsManager();
+        requirementsManager = new RequirementsManager();
     }
 
     public void checkCommandFeedback(){
@@ -117,6 +136,7 @@ public final class Main extends JavaPlugin {
         new PlayerConnectionListener();
         new EntityChangeListener();
         new HintInventoryCreator(null,null,false);
+        new RequirementsListeners(this);
     }
 
     private void giveAllItemsBack(){
@@ -273,5 +293,13 @@ public final class Main extends JavaPlugin {
 
     public static HashMap<Player, PlayerMenuUtility> getPlayerMenuUtilityMap() {
         return playerMenuUtilityMap;
+    }
+
+    public InventoryRequirementsManager getInventoryRequirementsManager() {
+        return inventoryRequirementsManager;
+    }
+
+    public RequirementsManager getRequirementsManager() {
+        return requirementsManager;
     }
 }

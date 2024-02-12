@@ -1,9 +1,8 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -12,13 +11,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-public abstract class RewardMenu implements InventoryHolder {
+public abstract class SelectionSelectMenu implements InventoryHolder {
 
     protected PlayerMenuUtility playerMenuUtility;
     protected Inventory inventory;
     protected ItemStack FILLER_GLASS = makeItem(XMaterial.GRAY_STAINED_GLASS_PANE, " ");
 
-    public RewardMenu(PlayerMenuUtility playerMenuUtility) {
+    public SelectionSelectMenu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
     }
     public abstract String getMenuName();
@@ -39,7 +38,7 @@ public abstract class RewardMenu implements InventoryHolder {
 
     public ItemStack makeItem(XMaterial material, String displayName, String... lore) {
 
-        ItemStack item = new ItemStack(material.parseMaterial());
+        ItemStack item = material.parseItem();
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(displayName);
 

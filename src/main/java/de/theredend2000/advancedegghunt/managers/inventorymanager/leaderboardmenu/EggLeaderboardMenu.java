@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardme
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
@@ -37,6 +38,11 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
         ArrayList<String> keys = new ArrayList<>();
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers())
             keys.add(String.valueOf(uuids));
+
+        if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
+        }
+
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
             p.closeInventory();
             p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
@@ -97,13 +103,14 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
 
     @Override
     public void setMenuItems() {
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         addMenuBorder();
         ArrayList<String> keys = new ArrayList<>();
         HashMap<String, Integer> leaderboard = new HashMap<>();
         if(Main.getInstance().getEggDataManager().savedPlayers().size() != 0){
             for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
-                leaderboard.put(playerConfig.getString("FoundEggs.Name"),playerConfig.getInt("FoundEggs.Count"));
+                leaderboard.put(playerConfig.getString("FoundEggs."+section+".Name"),playerConfig.getInt("FoundEggs."+section+".Count"));
             }
             for(int i = 0; i < leaderboard.size(); i++)
                 keys.add(String.valueOf(i));
@@ -120,7 +127,7 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
                     leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
                     String playerName = leaderList.get(i).getKey();
                     int count = leaderList.get(i).getValue();
-                    int maxEggs = Main.getInstance().getEggManager().getMaxEggs();
+                    int maxEggs = Main.getInstance().getEggManager().getMaxEggs(section);
                     switch (sortTypes) {
                         case ALL:
                             inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName).setDisplayname("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")).setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= i ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (i - 9) + " place behind 10th place").build());

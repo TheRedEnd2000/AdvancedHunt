@@ -2,6 +2,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
@@ -43,9 +44,16 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
             for(String id : Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false)){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
                     p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-                    p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setSkullOwner(e.getCurrentItem().getType() == Material.PLAYER_HEAD ? Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs."+id+".texture")) : null).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map","§7that everyone can search and find it.").build());
+                    if(e.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
+                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs."+id+".texture"))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map","§7that everyone can search and find it.").build());
+                    else
+                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map","§7that everyone can search and find it.").build());
                 }
             }
+        }
+
+        if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -106,7 +114,10 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
                     XMaterial mat = Main.getInstance().getMaterial(Objects.requireNonNull(Main.getInstance().getConfig().getString("PlaceEggs." + keys.get(index) + ".type")).toUpperCase());
-                    inventory.addItem(new ItemBuilder(mat).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs."+keys.get(index)+".texture"))).setDisplayname("§b§lEggs Type #"+keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
+                    if(mat.equals(XMaterial.PLAYER_HEAD))
+                        inventory.addItem(new ItemBuilder(mat).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs."+keys.get(index)+".texture"))).setDisplayname("§b§lEggs Type #"+keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
+                    else
+                        inventory.addItem(new ItemBuilder(mat).setDisplayname("§b§lEggs Type #"+keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }

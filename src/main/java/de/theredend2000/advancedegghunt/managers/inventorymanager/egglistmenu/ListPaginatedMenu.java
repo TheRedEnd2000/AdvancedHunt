@@ -21,6 +21,8 @@ public abstract class ListPaginatedMenu extends ListMenu {
 
         inventory.setItem(49, makeItem(XMaterial.BARRIER, "§4Close"));
         inventory.setItem(53, makeItem(XMaterial.EMERALD_BLOCK, "§aRefresh"));
+        String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
+        inventory.setItem(45,new ItemBuilder(XMaterial.PAPER).setDisplayname("§bSelected Collection").setLore("§7Shows your currently selected collection.","","§7Current: §6"+selectedSection,"","§eClick to change.").build());
 
         for (int i = 0; i < 10; i++) {
             if (inventory.getItem(i) == null) {
@@ -46,7 +48,8 @@ public abstract class ListPaginatedMenu extends ListMenu {
         return maxItemsPerPage;
     }
     public int getMaxPages(){
-        int keys = Main.getInstance().getEggManager().getMaxEggs();
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        int keys = Main.getInstance().getEggManager().getMaxEggs(section);
         if(keys == 0) return 1;
         return (int) Math.ceil((double) keys / getMaxItemsPerPage());
     }

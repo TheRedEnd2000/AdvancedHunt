@@ -16,6 +16,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class ItemBuilder {
@@ -54,6 +55,10 @@ public class ItemBuilder {
     }
     public ItemBuilder setLore(String... s){
         itemMeta.setLore(Arrays.asList(s));
+        return this;
+    }
+    public ItemBuilder setDefaultLore(List<String> s){
+        itemMeta.setLore(s);
         return this;
     }
     public ItemBuilder setUnbreakable(boolean s){
