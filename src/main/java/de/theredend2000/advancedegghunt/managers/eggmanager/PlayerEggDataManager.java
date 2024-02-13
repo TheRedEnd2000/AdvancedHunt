@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -53,6 +54,12 @@ public class PlayerEggDataManager {
         }
     }
 
+    public void savePlayerSection(UUID uuid,String section){
+        FileConfiguration config = getPlayerData(uuid);
+        config.set("SelectedSection",section);
+        savePlayerData(uuid,config);
+    }
+
     public void createPlayerFile(UUID uuid) {
         FileConfiguration config = getPlayerData(uuid);
         File playerFile = getFile(uuid);
@@ -66,5 +73,18 @@ public class PlayerEggDataManager {
         }
         loadPlayerData(uuid);
         savePlayerData(uuid,config);
+        setDeletionType(DeletionTypes.Noting,uuid);
+        savePlayerSection(uuid,"default");
+    }
+
+    public void setDeletionType(DeletionTypes deletionType,UUID uuid){
+        FileConfiguration config = getPlayerData(uuid);
+        config.set("DeletionType",deletionType.name());
+        savePlayerData(uuid,config);
+    }
+
+    public DeletionTypes getDeletionType(UUID uuid){
+        FileConfiguration config = getPlayerData(uuid);
+        return DeletionTypes.valueOf(config.getString("DeletionType"));
     }
 }

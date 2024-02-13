@@ -5,6 +5,7 @@ Permissions:
   BreakEggPermission: advancedegghunt.break
   PlaceEggPermission: advancedegghunt.place
   IgnoreCooldownPermission: advancedegghunt.cooldown
+  ChangeCollectionsPermission: advancedegghunt.collection
 
 Settings:
   SoundVolume: 3

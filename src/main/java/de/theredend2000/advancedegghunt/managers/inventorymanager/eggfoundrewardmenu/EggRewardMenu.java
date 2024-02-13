@@ -2,6 +2,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewar
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -43,6 +45,10 @@ public class EggRewardMenu extends RewardPaginatedMenu {
                     p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
             }
+        }
+
+        if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {

@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import de.theredend2000.advancedegghunt.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -15,9 +16,6 @@ public class EggDataManager {
     private final Main plugin;
     private final File dataFolder;
 
-    private static File eggsFile;
-    private static FileConfiguration eggs;
-
     public EggDataManager(Main plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
@@ -25,34 +23,85 @@ public class EggDataManager {
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
-        createEggFile();
+        if(savedEggSections().size() < 1)
+            createEggSectionFile("default",true);
     }
 
-    public void createEggFile() {
-        eggsFile = new File(dataFolder + "/eggs/placedEggs.yml");
+    public void initEggs() {
+        List<String> savedEggSections = new ArrayList<>(plugin.getEggDataManager().savedEggSections());
+        for(String section : savedEggSections)
+            getPlacedEggs(section);
+    }
 
-        if (!eggsFile.exists()) {
+    private void loadEggData(String section) {
+        getPlacedEggs(section);
+    }
+
+    private File getFile(String section) {
+        return new File(dataFolder + "/eggs/", section + ".yml");
+    }
+
+    public FileConfiguration getPlacedEggs(String section) {
+        File playerFile = getFile(section);
+        return YamlConfiguration.loadConfiguration(playerFile);
+    }
+
+    public void savePlacedEggs(String section,FileConfiguration config) {
+        try {
+            config.save(getFile(section));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createEggSectionFile(String section,boolean enabled) {
+        FileConfiguration config = getPlacedEggs(section);
+        File playerFile = getFile(section);
+
+        if (!playerFile.exists()) {
             try {
-                eggsFile.createNewFile();
+                playerFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        eggs = YamlConfiguration.loadConfiguration(eggsFile);
-        savePlacedEggs();
+        loadEggData(section);
+        savePlacedEggs(section,config);
+        config.set("Enabled",enabled);
+        savePlacedEggs(section,config);
     }
 
-    public void savePlacedEggs(){
-        try {
-            eggs.save(eggsFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public boolean containsSectionFile(String section){
+        for(String sections : savedEggSections()){
+            if(sections.contains(section)) return true;
+        }
+        return false;
+    }
+    public List<String> savedEggSections() {
+        List<String> eggsSections = new ArrayList<>();
+        File eggsSectionsFolder = new File(dataFolder + "/eggs/");
+
+        if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
+            File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+
+            if (playerFiles != null) {
+                for (File playerFile : playerFiles) {
+                    String fileName = playerFile.getName();
+                    String sectionName = fileName.substring(0, fileName.length() - 4);
+                    eggsSections.add(sectionName);
+                }
+            }
+        }
+        return eggsSections;
+    }
+
+    public void deleteCollection(String section) {
+        File sectionFile = getFile(section);
+        if (sectionFile.exists()) {
+            sectionFile.delete();
         }
     }
 
-    public FileConfiguration getPlacedEggs() {
-        return eggs;
-    }
 
     /*
             PLAYER DATA

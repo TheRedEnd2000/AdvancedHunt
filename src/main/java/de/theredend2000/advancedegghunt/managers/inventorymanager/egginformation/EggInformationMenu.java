@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -40,6 +41,10 @@ public class EggInformationMenu extends InformationPaginatedMenu {
             if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundEggs."+id)){
                 Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.Name"));
             }
+        }
+
+        if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -101,9 +106,10 @@ public class EggInformationMenu extends InformationPaginatedMenu {
                 index = getMaxItemsPerPage() * page + i;
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
-                    String maxEggs = String.valueOf(Main.getInstance().getEggManager().getMaxEggs());
-                    String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId);
-                    String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index),eggId);
+                    String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+                    String maxEggs = String.valueOf(Main.getInstance().getEggManager().getMaxEggs(section));
+                    String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId,section);
+                    String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index),eggId,section);
                     String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs.Count");
                     inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(keys.get(index)).setDisplayname("§6§l"+keys.get(index)+" §7("+uuid.get(index)+")").setLore("§7"+keys.get(index)+" have found the §2egg #"+eggId+"§7.","","§9Information of "+keys.get(index)+":","§7Eggs found: §6"+eggsFound+"/"+maxEggs,"","§9Collected:","§7Date: §6"+date,"§7Time: §6"+time).setLocalizedName(keys.get(index)).build());
                 }

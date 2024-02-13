@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import org.bukkit.ChatColor;
@@ -31,13 +32,18 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         SoundManager soundManager = Main.getInstance().getSoundManager();
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs();
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         Player p = (Player) e.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
+        }
+
+        if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -79,7 +85,8 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
 
     @Override
     public void setMenuItems(String playerUUID) {
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs();
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         addMenuBorder();
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs.")){
@@ -96,10 +103,10 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
                     String x = placedEggs.getString("PlacedEggs."+keys.get(index)+".X");
                     String y = placedEggs.getString("PlacedEggs."+keys.get(index)+".Y");
                     String z = placedEggs.getString("PlacedEggs."+keys.get(index)+".Z");
-                    boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index));
+                    boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index),section);
                     int random = new Random().nextInt(7);
-                    String date = Main.getInstance().getEggManager().getEggDateCollected(playerUUID,keys.get(index));
-                    String time = Main.getInstance().getEggManager().getEggTimeCollected(playerUUID,keys.get(index));
+                    String date = Main.getInstance().getEggManager().getEggDateCollected(playerUUID,keys.get(index),section);
+                    String time = Main.getInstance().getEggManager().getEggTimeCollected(playerUUID,keys.get(index),section);
                     if(showcoordinates && hasFound){
                         inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("","§9Location:","§7X: §e"+x,"§7Y: §e"+y,"§7Z: §e"+z,"",(hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."),"","§9Collected:","§7Date: §6"+date,"§7Time: §6"+time,"").setLocalizedName(keys.get(index)).build());
                     }else if(hasFound && !showcoordinates) {

@@ -1,0 +1,285 @@
+package de.theredend2000.advancedegghunt.managers.extramanager;
+
+import com.cryptomorin.xseries.XBlock;
+import com.cryptomorin.xseries.XMaterial;
+import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.DateTimeUtil;
+import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class RequirementsManager {
+
+    private Main plugin;
+
+    public RequirementsManager(){
+        this.plugin = Main.getInstance();
+    }
+
+    public List<String> getListRequirementsLore(String section){
+        String pre = "Requirements.";
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add("§6§lListed:");
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        if (placedEggs.contains("Requirements.Hours")) {
+            List<String> hoursList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Hours").getKeys(false));
+
+            if (!hoursList.isEmpty()) {
+                hoursList.sort(Comparator.comparingInt(Integer::parseInt));
+                int counter = 0;
+                lore.add("§dHours:");
+                for (String hours : hoursList) {
+                    if (placedEggs.getBoolean(pre + ".Hours." + hours)) {
+                        if (counter < 3)
+                            lore.add("  §7- " + hours);
+                        counter++;
+                    }
+                }
+                if(counter == 0) {
+                    lore.add("  §cnone");
+                }
+                if(counter > 3)
+                    lore.add("  §7§o+"+(counter-3)+" more...");
+            }
+        }else{
+            lore.add("§dHours:");
+            lore.add("  §cnone");
+        }
+        if (placedEggs.contains("Requirements.Date")) {
+            List<String> dateList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Date").getKeys(false));
+
+            if (!dateList.isEmpty()) {
+                dateList.sort(Comparator.comparingInt(Integer::parseInt));
+                int counter = 0;
+                lore.add("§dDates:");
+                for (String dates : dateList) {
+                    if (placedEggs.getBoolean(pre + ".Date." + dates)) {
+                        if (counter < 3)
+                            lore.add("  §7- " + dates);
+                        counter++;
+                    }
+                }
+                if(counter == 0) {
+                    lore.add("  §cnone");
+                }
+                if(counter > 3)
+                    lore.add("  §7§o+"+(counter-3)+" more...");
+            }
+        } else{
+            lore.add("§dDates:");
+            lore.add("  §cnone");
+        }
+        if (placedEggs.contains("Requirements.Weekday")) {
+            List<String> weekdayList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Weekday").getKeys(false));
+
+            if (!weekdayList.isEmpty()) {
+                weekdayList.sort(Comparator.comparingInt(day -> DateTimeUtil.getWeekList().indexOf(day)));
+                int counter = 0;
+                lore.add("§dWeekdays:");
+                for (String weekdays : weekdayList) {
+                    if (placedEggs.getBoolean(pre + ".Weekday." + weekdays)) {
+                        if (counter < 3)
+                            lore.add("  §7- " + weekdays);
+                        counter++;
+                    }
+                }
+                if(counter == 0) {
+                    lore.add("  §cnone");
+                }
+                if(counter > 3)
+                    lore.add("  §7§o+"+(counter-3)+" more...");
+            }
+        }else{
+            lore.add("§dWeekdays:");
+            lore.add("  §cnone");
+        }
+        if (placedEggs.contains("Requirements.Month")) {
+            List<String> monthList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Month").getKeys(false));
+
+            if (!monthList.isEmpty()) {
+                monthList.sort(Comparator.comparingInt(day -> DateTimeUtil.getMonthList().indexOf(day)));
+                int counter = 0;
+                lore.add("§dMonth:");
+                for (String month : monthList) {
+                    if (placedEggs.getBoolean(pre + ".Month." + month)) {
+                        if (counter < 3)
+                            lore.add("  §7- " + month);
+                        counter++;
+                    }
+                }
+                if(counter == 0) {
+                    lore.add("  §cnone");
+                }
+                if(counter > 3)
+                    lore.add("  §7§o+"+(counter-3)+" more...");
+            }
+        }else{
+            lore.add("§dMonths:");
+            lore.add("  §cnone");
+        }
+        if (placedEggs.contains("Requirements.Year")) {
+            List<String> yearList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Year").getKeys(false));
+
+            if (!yearList.isEmpty()) {
+                yearList.sort(Comparator.comparingInt(Integer::parseInt));
+                int counter = 0;
+                lore.add("§dYears:");
+                for (String year : yearList) {
+                    if (placedEggs.getBoolean(pre + ".Year." + year)) {
+                        if (counter < 3)
+                            lore.add("  §7- " + year);
+                        counter++;
+                    }
+                }
+                if(counter == 0) {
+                    lore.add("  §cnone");
+                }
+                if(counter > 3)
+                    lore.add("  §7§o+"+(counter-3)+" more...");
+            }
+        }else{
+            lore.add("§dYears:");
+            lore.add("  §cnone");
+        }
+        if (placedEggs.contains("Requirements.Season")) {
+            List<String> seasonList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Season").getKeys(false));
+
+            if (!seasonList.isEmpty()) {
+                seasonList.sort(Comparator.comparingInt(day -> DateTimeUtil.getSeasonList().indexOf(day)));
+                int counter = 0;
+                lore.add("§dSeasons:");
+                for (String season : seasonList) {
+                    if (placedEggs.getBoolean(pre + ".Season." + season)) {
+                        if (counter < 3)
+                            lore.add("  §7- " + season);
+                        counter++;
+                    }
+                }
+                if(counter == 0) {
+                    lore.add("  §cnone");
+                }
+                if(counter > 3)
+                    lore.add("  §7§o+"+(counter-3)+" more...");
+            }
+        } else{
+            lore.add("§dSeasons:");
+            lore.add("  §cnone");
+        }
+        lore.add("");
+        lore.add("§eClick to change.");
+        return lore;
+    }
+
+    public boolean canBeAccessed(String section){
+        String pre = "Requirements.";
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String currentHour = String.valueOf(LocalTime.now().getHour());
+        String currentWeekday = String.valueOf(DateTimeUtil.getWeek(Calendar.getInstance()));
+        String currentMonth = String.valueOf(DateTimeUtil.getMonth(Calendar.getInstance()));
+        String currentYear = String.valueOf(DateTimeUtil.getCurrentYear());
+        String currentSeason = String.valueOf(DateTimeUtil.getCurrentSeason());
+        ArrayList<String> allAvailable = new ArrayList<>();
+        if (placedEggs.contains("Requirements.Hours")) {
+            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Hours").getKeys(false).stream()
+                    .filter(hours -> placedEggs.getBoolean(pre + ".Hours." + hours))
+                    .collect(Collectors.toList()));
+        }
+        /*if (placedEggs.contains("Requirements.Date")) {
+            String currentHour = String.valueOf(LocalTime.now().getHour());
+            List<String> hoursList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Hours").getKeys(false));
+
+            List<String> available = hoursList.stream()
+                    .filter(hours -> placedEggs.getBoolean(pre + ".Hours." + hours))
+                    .collect(Collectors.toList());
+
+            Bukkit.broadcastMessage(currentHour);
+            return available.contains(currentHour);
+        }*/
+        if (placedEggs.contains("Requirements.Weekday")) {
+            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Weekday").getKeys(false).stream()
+                    .filter(weekday -> placedEggs.getBoolean(pre + ".Weekday." + weekday))
+                    .collect(Collectors.toList()));
+        }
+        if (placedEggs.contains("Requirements.Month")) {
+            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Month").getKeys(false).stream()
+                    .filter(month -> placedEggs.getBoolean(pre + ".Month." + month))
+                    .collect(Collectors.toList()));
+        }
+        if (placedEggs.contains("Requirements.Year")) {
+            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Year").getKeys(false).stream()
+                    .filter(year -> placedEggs.getBoolean(pre + ".Year." + year))
+                    .collect(Collectors.toList()));
+        }
+        if (placedEggs.contains("Requirements.Season")) {
+            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Season").getKeys(false).stream()
+                    .filter(season -> placedEggs.getBoolean(pre + ".Season." + season))
+                    .collect(Collectors.toList()));
+        }
+        boolean isContained = allAvailable.stream().anyMatch(value ->
+                value.equals(currentHour) || value.equals(currentWeekday) || value.equals(currentMonth) || value.equals(currentYear) || value.equals(currentSeason)
+        );
+        return isContained;
+    }
+
+    public void changeActivity(String section,boolean active){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        for(int i = 0; i < 24; i++){
+            placedEggs.set("Requirements.Hours."+i,active);
+        }
+        for(String weekday : DateTimeUtil.getWeekList()){
+            placedEggs.set("Requirements.Weekday."+weekday,active);
+        }
+        for(String month : DateTimeUtil.getMonthList()){
+            placedEggs.set("Requirements.Month."+month,active);
+        }
+        int currentYear = DateTimeUtil.getCurrentYear();
+        for (int year = currentYear; year < (currentYear+28);year++) {
+            placedEggs.set("Requirements.Year."+year,active);
+        }
+        for(String season : DateTimeUtil.getSeasonList()){
+            placedEggs.set("Requirements.Season."+season,active);
+        }
+        plugin.getEggDataManager().savePlacedEggs(section,placedEggs);
+    }
+
+    public void removeAllEggBlocks(String section, UUID uuid){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        if(placedEggs.contains("PlacedEggs.")){
+            for(String ids : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
+                int x = placedEggs.getInt("PlacedEggs."+ids+".X");
+                int y = placedEggs.getInt("PlacedEggs."+ids+".Y");
+                int z = placedEggs.getInt("PlacedEggs."+ids+".Z");
+                int chunkX = x >> 4;
+                int chunkZ = z >> 4;
+                World world = Bukkit.getWorld(Objects.requireNonNull(placedEggs.getString("PlacedEggs." + ids + ".World")));
+                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                if(chunk.load()) {
+                    Location location = new Location(world, x, y, z);
+                    Block block = location.getBlock();
+                    DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(uuid);
+                    switch (deletionTypes){
+                        case Player_Heads:
+                            if(block.getType().equals(XMaterial.PLAYER_HEAD.parseMaterial())){
+                                new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
+                                Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at "+x+" "+y+" "+z+" to air.");
+                            }
+                            break;
+                        case Everything:
+                            new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
+                            Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at "+x+" "+y+" "+z+" to air.");
+                            break;
+                    }
+                }
+            }
+        }
+    }
+}
