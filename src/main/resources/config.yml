@@ -1,29 +1,76 @@
-config-version: 2.4
+config-version: 2.5
+
+# Change the language
+# Available: en | de
+messages-lang: en
+
+prefix: '&f[&eAdvancedEggHunt&f] &r'
 
 Permissions:
+  # Permission for the main commands
   AdvancedEggHuntCommandPermission: advancedegghunt.main
+
+  # Permission for destroying an egg
   BreakEggPermission: advancedegghunt.break
+
+  # Permission for placing an egg
   PlaceEggPermission: advancedegghunt.place
+
+  # Permission for the hint cooldown
   IgnoreCooldownPermission: advancedegghunt.cooldown
+
+  # Permission to change collections
   ChangeCollectionsPermission: advancedegghunt.collection
 
 Settings:
+
+  # The sound volume for all sounds
   SoundVolume: 3
+
+  # If a message should be sent if the plugin has a newer version
   Updater: true
+
+  # If the player find on egg he gets a reward
   PlayerFoundOneEggRewards: true
+
+  # If the player find all eggs he gets a reward
   PlayerFoundAllEggsReward: true
+
+  # That no commands will be sent to the operators
   DisableCommandFeedback: true
+
+  # Shows the coordinates in the progress inventory of the player
   ShowCoordinatesWhenEggFoundInProgressInventory: false
+
+  # If a firework should spawn after clicking an egg
   ShowFireworkAfterEggFound: true
+
+  # How long the armorstands are visible after typing /eggs show
   ArmorstandGlow: 10
+
+  # In witch radius the player gets a message that he is near an egg
   ShowEggsNearbyMessageRadius: 10
+
+  # What the material of the reward inventory is
   RewardInventoryMaterial: PAPER
+
+  # If the plugin prefix should show up
   PluginPrefixEnabled: true
+
+  # If left-clicking an egg works
   LeftClickEgg: false
+
+  # If right-clicking an egg works
   RightClickEgg: true
+
+  # How many panes a player has to click bevor getting his reward
   HintCount: 25
+
+  # How long the cooldown on the hint inventory is ( in seconds )
   HintCooldownSeconds: 1800
-  HintUpdateTime: 20 #in ticks 20 ticks = 1 second
+
+  # How long the update in the hint inventory is ( in ticks )
+  HintUpdateTime: 20
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP
@@ -41,28 +88,6 @@ Particle:
     EggFound: CRIT
     EggNotFound: VILLAGER_HAPPY
 
-Rewards:
-  #types: 0 = Player found one egg; 1 = Player found all eggs
-    0:
-      command: 'tellraw %PLAYER% "%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
-      enabled: true
-      type: 0
-    1:
-      command: 'give %PLAYER% diamond'
-      enabled: true
-      type: 0
-    2:
-      command: 'tellraw %PLAYER% "%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)"'
-      enabled: true
-      type: 1
-    3:
-      command: 'give %PLAYER% diamond'
-      enabled: true
-      type: 1
-    4:
-      command: 'tellraw %PLAYER% "%PREFIX%&6You found all eggs!"'
-      enabled: true
-      type: 1
 
 PlaceEggs:
   # You can only use textures if the type is a player head

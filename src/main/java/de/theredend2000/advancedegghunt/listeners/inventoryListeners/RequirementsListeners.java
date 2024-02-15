@@ -4,6 +4,9 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.DateTimeUtil;
+import de.theredend2000.advancedegghunt.util.enums.Requirements;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,10 +21,12 @@ import java.util.UUID;
 public class RequirementsListeners implements Listener {
 
     private Main plugin;
+    private MessageManager messageManager;
 
     public RequirementsListeners(Main plugin){
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this,plugin);
+        messageManager = plugin.getMessageManager();
     }
 
     @EventHandler
@@ -69,12 +74,18 @@ public class RequirementsListeners implements Listener {
                                 case "Activate all":
                                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                                     plugin.getRequirementsManager().changeActivity(section,true);
-                                    player.sendMessage("§aActivated all requirements.");
+                                    player.sendMessage(messageManager.getMessage(MessageKey.ACTIVATE_REQUIREMENTS));
+                                    plugin.getInventoryRequirementsManager().createSelectInventory(player, section);
                                     break;
                                 case "Deactivate all":
                                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                                     plugin.getRequirementsManager().changeActivity(section,false);
-                                    player.sendMessage("§cDeactivated all requirements.");
+                                    player.sendMessage(messageManager.getMessage(MessageKey.DEACTIVATE_REQUIREMENTS));
+                                    plugin.getInventoryRequirementsManager().createSelectInventory(player, section);
+                                    break;
+                                case "Requirements Order":
+                                    player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                                    player.sendMessage("§cThis feature is coming soon.");
                                     break;
                             }
                         }
@@ -88,7 +99,6 @@ public class RequirementsListeners implements Listener {
                                     boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
                                     placedEggs.set("Requirements.Hours." + i, !enabled);
                                     plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                                    player.sendMessage("§aChanged hour " + i + " to §6" + enabled);
                                     plugin.getInventoryRequirementsManager().createHourInventory(player, section);
                                 }
                             }
@@ -107,7 +117,6 @@ public class RequirementsListeners implements Listener {
                                     boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekdays);
                                     placedEggs.set("Requirements.Weekday." + weekdays, !enabled);
                                     plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                                    player.sendMessage("§aChanged " + weekdays + " to §6" + enabled);
                                     plugin.getInventoryRequirementsManager().createWeekdayInventory(player, section);
                                 }
                             }
@@ -126,7 +135,6 @@ public class RequirementsListeners implements Listener {
                                     boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
                                     placedEggs.set("Requirements.Month." + month, !enabled);
                                     plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                                    player.sendMessage("§aChanged " + month + " to §6" + enabled);
                                     plugin.getInventoryRequirementsManager().createMonthInventory(player, section);
                                 }
                             }
@@ -146,7 +154,6 @@ public class RequirementsListeners implements Listener {
                                     boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
                                     placedEggs.set("Requirements.Year." + year, !enabled);
                                     plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                                    player.sendMessage("§aChanged " + year + " to §6" + enabled);
                                     plugin.getInventoryRequirementsManager().createYearInventory(player, section);
                                 }
                             }
@@ -165,7 +172,6 @@ public class RequirementsListeners implements Listener {
                                     boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
                                     placedEggs.set("Requirements.Season." + season, !enabled);
                                     plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                                    player.sendMessage("§aChanged " + season + " to §6" + enabled);
                                     plugin.getInventoryRequirementsManager().createSeasonInventory(player, section);
                                 }
                             }

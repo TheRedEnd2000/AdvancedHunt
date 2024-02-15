@@ -13,6 +13,8 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.Li
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -35,8 +37,11 @@ import java.util.UUID;
 
 public class InventoryClickEventListener implements Listener {
 
+    private MessageManager messageManager;
+
     public InventoryClickEventListener(){
         Bukkit.getPluginManager().registerEvents(this,Main.getInstance());
+        messageManager = Main.getInstance().getMessageManager();
     }
 
     @EventHandler
@@ -113,7 +118,7 @@ public class InventoryClickEventListener implements Listener {
                 if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
                     for(String key : Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false)){
                         if(event.getCurrentItem().getType().name().toUpperCase().equals(Main.getInstance().getConfig().getString("PlaceEggs."+key+".type").toUpperCase())){
-                            player.sendMessage(Main.getInstance().getMessage("BlockAlreadyExists"));
+                            player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
                             return;
                         }
                     }
@@ -170,14 +175,14 @@ public class InventoryClickEventListener implements Listener {
                                 int currentVolume = Main.getInstance().getConfig().getInt("Settings.SoundVolume");
                                 if(event.getAction() == InventoryAction.PICKUP_ALL){
                                     if(currentVolume == 15) {
-                                        player.sendMessage(Main.getInstance().getMessage("SoundCanOnlyBetween"));
+                                        player.sendMessage(messageManager.getMessage(MessageKey.SOUND_VOLUME));
                                         return;
                                     }
                                     Main.getInstance().getConfig().set("Settings.SoundVolume", currentVolume + 1);
 
                                 }else if(event.getAction() == InventoryAction.PICKUP_HALF){
                                     if(currentVolume == 0) {
-                                        player.sendMessage(Main.getInstance().getMessage("SoundCanOnlyBetween"));
+                                        player.sendMessage(messageManager.getMessage(MessageKey.SOUND_VOLUME));
                                         return;
                                     }
                                     Main.getInstance().getConfig().set("Settings.SoundVolume",currentVolume-1);
@@ -190,14 +195,14 @@ public class InventoryClickEventListener implements Listener {
                                 int currentTime = Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow");
                                 if(event.getAction() == InventoryAction.PICKUP_ALL){
                                     if(currentTime == 120) {
-                                        player.sendMessage(Main.getInstance().getMessage("ArmorStandGlowCanOnlyBetween"));
+                                        player.sendMessage(messageManager.getMessage(MessageKey.ARMORSTAND_GLOW));
                                         return;
                                     }
                                     Main.getInstance().getConfig().set("Settings.ArmorstandGlow", currentTime + 1);
 
                                 }else if(event.getAction() == InventoryAction.PICKUP_HALF){
                                     if(currentTime == 0) {
-                                        player.sendMessage(Main.getInstance().getMessage("ArmorStandGlowCanOnlyBetween"));
+                                        player.sendMessage(messageManager.getMessage(MessageKey.ARMORSTAND_GLOW));
                                         return;
                                     }
                                     Main.getInstance().getConfig().set("Settings.ArmorstandGlow", currentTime - 1);
@@ -216,14 +221,14 @@ public class InventoryClickEventListener implements Listener {
                                 int currentRadius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
                                 if(event.getAction() == InventoryAction.PICKUP_ALL){
                                     if(currentRadius == 50) {
-                                        player.sendMessage(Main.getInstance().getMessage("EggsNearbyRadiusOnlyBetween"));
+                                        player.sendMessage(messageManager.getMessage(MessageKey.EGG_RADIUS));
                                         return;
                                     }
                                     Main.getInstance().getConfig().set("Settings.ShowEggsNearbyMessageRadius", currentRadius + 1);
 
                                 }else if(event.getAction() == InventoryAction.PICKUP_HALF){
                                     if(currentRadius == 0) {
-                                        player.sendMessage(Main.getInstance().getMessage("EggsNearbyRadiusOnlyBetween"));
+                                        player.sendMessage(messageManager.getMessage(MessageKey.EGG_RADIUS));
                                         return;
                                     }
                                     Main.getInstance().getConfig().set("Settings.ShowEggsNearbyMessageRadius", currentRadius - 1);
@@ -250,6 +255,8 @@ public class InventoryClickEventListener implements Listener {
                     event.setCancelled(true);
                     if(event.getCurrentItem().getItemMeta().hasLocalizedName()){
                         String id = event.getInventory().getItem(22).getItemMeta().getLocalizedName();
+                        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+                        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
                         switch (event.getCurrentItem().getItemMeta().getLocalizedName()){
                             case "command.close":
                                 player.closeInventory();
@@ -257,37 +264,37 @@ public class InventoryClickEventListener implements Listener {
                                 break;
                             case "command.delete":
                                 player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-                                TextComponent c = new TextComponent(Main.getInstance().getMessage("CommandDeleteMessage").replaceAll("%ID%",id)+"\n");
+                                TextComponent c = new TextComponent(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%",id)+"\n");
                                 TextComponent clickme = new TextComponent("§6§l[SHOW COMMAND INFORMATION] §7(Hover)");
 
-                                String command = Main.getInstance().getConfig().getString("Rewards."+id+".command").replaceAll("§","&");
-                                boolean enabled = Main.getInstance().getConfig().getBoolean("Rewards."+id+".enabled");
-                                int type = Main.getInstance().getConfig().getInt("Rewards."+id+".type");
+                                String command = placedEggs.getString("Rewards."+id+".command").replaceAll("§","&");
+                                boolean enabled = placedEggs.getBoolean("Rewards."+id+".enabled");
+                                int type = placedEggs.getInt("Rewards."+id+".type");
                                 clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§9Information:\n§7Command: §6"+command+"\n§7Command Enabled: "+(enabled ? "§atrue" : "§cfalse")+"\n§7Type: §6"+type+"\n\n§a§lNote:\n§2Type 0:\n§7Type 0 means that this command will be\n§7be executed if the player found §7§lone §7egg.\n§2Type 1:\n§7Type 1 means that this command will be\n§7be executed if the player had found §7§lall §7egg.")));
                                 c.addExtra(clickme);
                                 player.spigot().sendMessage(c);
-                                Main.getInstance().getConfig().set("Rewards."+id,null);
-                                Main.getInstance().saveConfig();
+                                placedEggs.set("Rewards."+id,null);
+                                Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
                                 new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
                                 break;
                             case "command.type":
-                                int type2 = Main.getInstance().getConfig().getInt("Rewards."+id+".type");
+                                int type2 = placedEggs.getInt("Rewards."+id+".type");
                                 if(type2 == 0){
-                                    Main.getInstance().getConfig().set("Rewards."+id+".type",1);
+                                    placedEggs.set("Rewards."+id+".type",1);
                                 }else if(type2 == 1)
-                                    Main.getInstance().getConfig().set("Rewards."+id+".type",0);
-                                Main.getInstance().saveConfig();
+                                    placedEggs.set("Rewards."+id+".type",0);
+                                Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
                                 player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
                                 inventoryManager.createCommandSettingsMenu(player,id);
-                                player.sendMessage(Main.getInstance().getMessage("CommandTypeChangeMessage").replaceAll("%ID%",id).replaceAll("%TYPE%", String.valueOf((type2 == 1 ? 0 : 1))));
+                                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_TYPE).replaceAll("%ID%",id).replaceAll("%TYPE%", String.valueOf((type2 == 1 ? 0 : 1))));
                                 break;
                             case "command.enabled":
-                                boolean enabled2 = Main.getInstance().getConfig().getBoolean("Rewards."+id+".enabled");
-                                Main.getInstance().getConfig().set("Rewards."+id+".enabled",!enabled2);
-                                Main.getInstance().saveConfig();
+                                boolean enabled2 = placedEggs.getBoolean("Rewards."+id+".enabled");
+                                placedEggs.set("Rewards."+id+".enabled",!enabled2);
+                                Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
                                 player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
                                 inventoryManager.createCommandSettingsMenu(player,id);
-                                player.sendMessage(Main.getInstance().getMessage("CommandEnabledChangeMessage").replaceAll("%ID%",id).replaceAll("%ENABLED_WITH_COLOR%", (!enabled2 ? "§aenabled" : "§cdisabled")));
+                                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ENABLED).replaceAll("%ID%",id).replaceAll("%ENABLED_WITH_COLOR%", (!enabled2 ? "§aenabled" : "§cdisabled")));
                                 break;
                             case "command.back":
                                 player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
@@ -295,22 +302,21 @@ public class InventoryClickEventListener implements Listener {
                                 break;
                             case "command.command":
                                 if(Main.getInstance().getPlayerAddCommand().containsKey(player)){
-                                    player.sendMessage(Main.getInstance().getMessage("OnlyOneCommandMessage"));
+                                    player.sendMessage(messageManager.getMessage(MessageKey.ONE_COMMAND));
                                     return;
                                 }
                                 player.closeInventory();
                                 Main.getInstance().getPlayerAddCommand().put(player,120);
-                                TextComponent c2 = new TextComponent("\n\n\n\n\n"+Main.getInstance().getMessage("EnterNewCommandMessage")+"\n\n");
+                                TextComponent c2 = new TextComponent("\n\n\n\n\n"+messageManager.getMessage(MessageKey.NEW_COMMAND)+"\n\n");
                                 TextComponent clickme2 = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
                                 clickme2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
                                 c2.addExtra(clickme2);
                                 TextComponent clickme3 = new TextComponent("\n§5-----------§4§l[GET OLD COMMAND]§5-----------");
                                 clickme3.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§aClick to get old command in the command line.")));
-                                clickme3.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,Main.getInstance().getConfig().getString("Rewards."+id+".command")));
+                                clickme3.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,placedEggs.getString("Rewards."+id+".command")));
                                 c2.addExtra(clickme3);
                                 player.spigot().sendMessage(c2);
-                                FileConfiguration config = Main.getInstance().getConfig();
-                                config.set("Edit."+player.getUniqueId()+".commandID",id);
+                                Main.getInstance().getConfig().set("Edit."+player.getUniqueId()+".commandID",id);
                                 Main.getInstance().saveConfig();
                                 break;
                         }
@@ -398,12 +404,12 @@ public class InventoryClickEventListener implements Listener {
                                 break;
                             case "Delete":
                                 if(section.equalsIgnoreCase("default")){
-                                    player.sendMessage("§cBecause of many issues it is not possible to delete the default section.\n§cIf you want to disable it please just chance the status.");
+                                    player.sendMessage("§cBecause of many issues it is not possible to delete the default section.\n§cIf you want to disable it please just change the status.");
                                     return;
                                 }
                                 Main.getInstance().getRequirementsManager().removeAllEggBlocks(section,player.getUniqueId());
                                 player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-                                player.sendMessage("§aSuccessfully deleted collection "+section);
+                                player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DELETED).replaceAll("%COLLECTION%",section));
                                 for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
                                     FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
                                     playerConfig.set("FoundEggs."+section,null);

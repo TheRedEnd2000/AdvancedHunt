@@ -2,6 +2,8 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,9 +17,12 @@ import java.util.Set;
 
 public class PlayerChatEventListener implements Listener {
 
+    private MessageManager messageManager;
+
     public PlayerChatEventListener(){
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
         runTimeForPlayers();
+        messageManager = Main.getInstance().getMessageManager();
     }
 
     @EventHandler
@@ -27,14 +32,16 @@ public class PlayerChatEventListener implements Listener {
             event.setCancelled(true);
             if (event.getMessage().equalsIgnoreCase("cancel")) {
                 Main.getInstance().getPlayerAddCommand().remove(player);
-                player.sendMessage(Main.getInstance().getMessage("CommandCanceledMessage"));
+                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CANCEL));
                 new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
                 return;
             }
-            if (!Main.getInstance().getConfig().contains("Edit." + player.getUniqueId())) {
+            String section1 = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+            FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section1);
+            if (!placedEggs.contains("Edit." + player.getUniqueId())) {
                 String id = null;
-                if (Main.getInstance().getConfig().contains("Rewards.")) {
-                    ConfigurationSection section = Main.getInstance().getConfig().getConfigurationSection("Rewards.");
+                if (placedEggs.contains("Rewards.")) {
+                    ConfigurationSection section = placedEggs.getConfigurationSection("Rewards.");
                     int nextNumber = 0;
                     Set<String> keys = section.getKeys(false);
                     if (!keys.isEmpty()) {
@@ -46,33 +53,35 @@ public class PlayerChatEventListener implements Listener {
                             }
                         }
                     }
-                    setConfiguration(String.valueOf(nextNumber), event.getMessage());
-                    player.sendMessage(Main.getInstance().getMessage("CommandAddedMessage").replaceAll("%ID%", String.valueOf(nextNumber)));
+                    setConfiguration(String.valueOf(nextNumber), event.getMessage(),player);
+                    player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", String.valueOf(nextNumber)));
                     id = String.valueOf(nextNumber);
                 } else {
-                    setConfiguration("0", event.getMessage());
-                    player.sendMessage(Main.getInstance().getMessage("CommandAddedMessage").replaceAll("%ID%", "0"));
+                    setConfiguration("0", event.getMessage(),player);
+                    player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", "0"));
                     id = "0";
                 }
                 Main.getInstance().getPlayerAddCommand().remove(player);
                 Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
             }else {
                 String id = Main.getInstance().getConfig().getString("Edit."+player.getUniqueId()+".commandID");
-                Main.getInstance().getConfig().set("Rewards."+id+".command", event.getMessage());
-                Main.getInstance().saveConfig();
-                player.sendMessage(Main.getInstance().getMessage("CommandChangedMessage").replaceAll("%ID%",id));
-                Main.getInstance().getConfig().set("Edit."+player.getUniqueId(),null);
-                Main.getInstance().saveConfig();
+                placedEggs.set("Rewards."+id+".command", event.getMessage());
+                Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
+                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CHANGED).replaceAll("%ID%",id));
+                placedEggs.set("Edit."+player.getUniqueId(),null);
+                Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
                 Main.getInstance().getPlayerAddCommand().remove(player);
                 Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
             }
         }
     }
-    private void setConfiguration(String id, String command){
-        Main.getInstance().getConfig().set("Rewards."+id+".command", command);
-        Main.getInstance().getConfig().set("Rewards."+id+".enabled", true);
-        Main.getInstance().getConfig().set("Rewards."+id+".type", 0);
-        Main.getInstance().saveConfig();
+    private void setConfiguration(String id, String command,Player player){
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        placedEggs.set("Rewards."+id+".command", command);
+        placedEggs.set("Rewards."+id+".enabled", true);
+        placedEggs.set("Rewards."+id+".type", 0);
+        Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
     }
 
     private void runTimeForPlayers(){
@@ -80,13 +89,15 @@ public class PlayerChatEventListener implements Listener {
             @Override
             public void run() {
                 for(Player player : Main.getInstance().getPlayerAddCommand().keySet()){
+                    String section1 = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+                    FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section1);
                     int currenttime = Main.getInstance().getPlayerAddCommand().get(player);
                     Main.getInstance().getPlayerAddCommand().remove(player);
                     if(currenttime == 0){
                         if(player != null){
-                            player.sendMessage(Main.getInstance().getMessage("CommandTimeExpiredMessage"));
-                            Main.getInstance().getConfig().set("Edit."+player.getUniqueId(),null);
-                            Main.getInstance().saveConfig();
+                            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_EXPIRED));
+                            placedEggs.set("Edit."+player.getUniqueId(),null);
+                            Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
                         }
                         return;
                     }

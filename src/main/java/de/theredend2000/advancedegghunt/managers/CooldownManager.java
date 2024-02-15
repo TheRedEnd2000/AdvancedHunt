@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.managers;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -62,7 +63,7 @@ public class CooldownManager {
             hours-=24;
             days++;
         }
-        return Main.getInstance().getMessage("OnCooldown").replaceAll("%DAYS%", String.valueOf(days)).replaceAll("%HOURS%", String.valueOf(hours)).replaceAll("%MINUTES%", String.valueOf(minutes)).replaceAll("%SECONDS%", String.valueOf(seconds));
+        return Main.getInstance().getMessageManager().getMessage(MessageKey.HINT_COOLDOWN).replaceAll("%DAYS%", String.valueOf(days)).replaceAll("%HOURS%", String.valueOf(hours)).replaceAll("%MINUTES%", String.valueOf(minutes)).replaceAll("%SECONDS%", String.valueOf(seconds));
     }
 
 

@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.Eg
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -53,7 +54,7 @@ public class EggInformationMenu extends InformationPaginatedMenu {
         }else if (e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
             if(Main.getInstance().getRefreshCooldown().containsKey(p.getName())){
                 if(Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()){
-                    p.sendMessage(Main.getInstance().getMessage("RefreshWaitMessage"));
+                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
                     p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     return;
                 }
@@ -64,7 +65,7 @@ public class EggInformationMenu extends InformationPaginatedMenu {
         }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
             if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
                 if (page == 0){
-                    p.sendMessage(Main.getInstance().getMessage("AlreadyOnFirstPageMessage"));
+                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
                     p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }else{
                     page = page - 1;
@@ -77,7 +78,7 @@ public class EggInformationMenu extends InformationPaginatedMenu {
                     super.open(id);
                     p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }else{
-                    p.sendMessage(Main.getInstance().getMessage("AlreadyOnLastPageMessage"));
+                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
                     p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
             }else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Back")){

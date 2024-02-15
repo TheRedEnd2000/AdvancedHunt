@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.listeners;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +29,7 @@ public class BlockPlaceEventListener implements Listener {
                 eggManager.saveEgg(player, event.getBlockPlaced().getLocation(),section);
                 player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
             }else
-                player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%", permission));
+                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission));
         }
     }
 

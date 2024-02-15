@@ -5,6 +5,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
+import de.theredend2000.advancedegghunt.util.enums.Requirements;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -45,14 +46,14 @@ public class RequirementsManager {
                     }
                 }
                 if(counter == 0) {
-                    lore.add("  §cnone");
+                    lore.add("  §cN/A");
                 }
                 if(counter > 3)
                     lore.add("  §7§o+"+(counter-3)+" more...");
             }
         }else{
             lore.add("§dHours:");
-            lore.add("  §cnone");
+            lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Date")) {
             List<String> dateList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Date").getKeys(false));
@@ -69,14 +70,14 @@ public class RequirementsManager {
                     }
                 }
                 if(counter == 0) {
-                    lore.add("  §cnone");
+                    lore.add("  §cN/A");
                 }
                 if(counter > 3)
                     lore.add("  §7§o+"+(counter-3)+" more...");
             }
         } else{
             lore.add("§dDates:");
-            lore.add("  §cnone");
+            lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Weekday")) {
             List<String> weekdayList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Weekday").getKeys(false));
@@ -93,14 +94,14 @@ public class RequirementsManager {
                     }
                 }
                 if(counter == 0) {
-                    lore.add("  §cnone");
+                    lore.add("  §cN/A");
                 }
                 if(counter > 3)
                     lore.add("  §7§o+"+(counter-3)+" more...");
             }
         }else{
             lore.add("§dWeekdays:");
-            lore.add("  §cnone");
+            lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Month")) {
             List<String> monthList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Month").getKeys(false));
@@ -117,14 +118,14 @@ public class RequirementsManager {
                     }
                 }
                 if(counter == 0) {
-                    lore.add("  §cnone");
+                    lore.add("  §cN/A");
                 }
                 if(counter > 3)
                     lore.add("  §7§o+"+(counter-3)+" more...");
             }
         }else{
             lore.add("§dMonths:");
-            lore.add("  §cnone");
+            lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Year")) {
             List<String> yearList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Year").getKeys(false));
@@ -141,14 +142,14 @@ public class RequirementsManager {
                     }
                 }
                 if(counter == 0) {
-                    lore.add("  §cnone");
+                    lore.add("  §cN/A");
                 }
                 if(counter > 3)
                     lore.add("  §7§o+"+(counter-3)+" more...");
             }
         }else{
             lore.add("§dYears:");
-            lore.add("  §cnone");
+            lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Season")) {
             List<String> seasonList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Season").getKeys(false));
@@ -165,14 +166,14 @@ public class RequirementsManager {
                     }
                 }
                 if(counter == 0) {
-                    lore.add("  §cnone");
+                    lore.add("  §cN/A");
                 }
                 if(counter > 3)
                     lore.add("  §7§o+"+(counter-3)+" more...");
             }
         } else{
             lore.add("§dSeasons:");
-            lore.add("  §cnone");
+            lore.add("  §cN/A");
         }
         lore.add("");
         lore.add("§eClick to change.");
@@ -281,5 +282,50 @@ public class RequirementsManager {
                 }
             }
         }
+    }
+
+    public String getActives(Requirements requirements,String section){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        switch (requirements){
+            case Hours:
+                int hours = 0;
+                for(int i = 0; i < 24; i++){
+                    boolean enabled = placedEggs.getBoolean("Requirements.Hours."+i);
+                    if(enabled) hours++;
+                }
+                return hours+"/24";
+            case Date:
+                return "§4DISABLED";
+            case Weekday:
+                int weekdays = 0;
+                for(String weekday : DateTimeUtil.getWeekList()){
+                    boolean enabled = placedEggs.getBoolean("Requirements.Weekday."+weekday);
+                    if(enabled) weekdays++;
+                }
+                return weekdays+"/7";
+            case Month:
+                int months = 0;
+                for(String month : DateTimeUtil.getMonthList()){
+                    boolean enabled = placedEggs.getBoolean("Requirements.Month."+month);
+                    if(enabled) months++;
+                }
+                return months+"/12";
+            case Year:
+                int years = 0;
+                int currentYear = DateTimeUtil.getCurrentYear();
+                for (int year = currentYear; year < (currentYear+28);year++) {
+                    boolean enabled = placedEggs.getBoolean("Requirements.Year."+year);
+                    if(enabled) years++;
+                }
+                return years+"/28";
+            case Season:
+                int seasons = 0;
+                for(String season : DateTimeUtil.getSeasonList()){
+                    boolean enabled = placedEggs.getBoolean("Requirements.Season."+season);
+                    if(enabled) seasons++;
+                }
+                return seasons+"/4";
+        }
+        return "§4ERROR";
     }
 }

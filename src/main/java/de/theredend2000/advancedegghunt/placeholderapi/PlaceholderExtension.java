@@ -12,7 +12,7 @@ public class PlaceholderExtension extends PlaceholderExpansion {
 
     @Override
     public String getAuthor() {
-        return "someauthor";
+        return "theredend2000";
     }
 
     @Override

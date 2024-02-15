@@ -24,6 +24,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="spigot-1.16.3" level="project" />
     <orderEntry type="library" name="spigot-1.17" level="project" />
+    <orderEntry type="library" name="CustomHeads" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot:remapped-mojang:1.19-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:31.0.1-jre" level="project" />
@@ -111,6 +112,5 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.kyori:adventure-platform-viaversion:4.3.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.cryptomorin:XSeries:9.8.0" level="project" />
     <orderEntry type="library" name="Maven: net.wesjd:anvilgui:1.7.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="CustomHeads" level="project" />
   </component>
 </module>

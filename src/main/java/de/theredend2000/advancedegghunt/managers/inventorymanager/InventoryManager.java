@@ -34,12 +34,14 @@ public class InventoryManager {
     }
 
     public void createCommandSettingsMenu(Player player, String key) {
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         Inventory inventory = Bukkit.createInventory(player,45,"Command configuration");
         int[] glass = new int[]{0,1,2,3,4,5,6,7,8,9,10,16,17,18,26,27,28,34,35,37,38,39,40,41,42,43,44};
         for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-        String command = Main.getInstance().getConfig().getString("Rewards."+key+".command").replaceAll("§","&");
-        boolean enabled = Main.getInstance().getConfig().getBoolean("Rewards."+key+".enabled");
-        int type = Main.getInstance().getConfig().getInt("Rewards."+key+".type");
+        String command = placedEggs.getString("Rewards."+key+".command").replaceAll("§","&");
+        boolean enabled = placedEggs.getBoolean("Rewards."+key+".enabled");
+        int type = placedEggs.getInt("Rewards."+key+".type");
         inventory.setItem(11, new ItemBuilder(XMaterial.COMMAND_BLOCK).setDisplayname("§3Change Command").setLore("§7You can change the command to any vanilla","§7command or commands of plugins for the console types.","","§5Currently:","§6§l"+command,"","§2Available placeholders:","§b- %PLAYER% --> Name of the player","§b- & --> For color codes (&6=gold)","§b- %EGGS_FOUND% --> How many eggs the player has found","§b- %EGGS_MAX% --> How many eggs are placed","§b- %PREFIX% --> The prefix of the plugin","","§eClick to change").setLocalizedName("command.command").build());
         inventory.setItem(15, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Command Enabled").setLore("§7Change if the command will be executed","§7if the player founds one or all eggs.","","§5Currently:",(enabled ? "§a§l✔ Enabled" : "§c§l❌ Disabled"),"","§eClick to toggle.").setLocalizedName("command.enabled").build());
         inventory.setItem(22, new ItemBuilder(Main.getInstance().getMaterial(Main.getInstance().getConfig().getString("Settings.RewardInventoryMaterial"))).setDisplayname("§b§lCommand §7#"+key).setLore("","§9Information:","§7Command: §6"+command,"§7Command Enabled: "+(enabled ? "§atrue" : "§cfalse"),"§7Type: §6"+type,"","§a§lNote:","§2Type 0:","§7Type 0 means that this command will be","§7be executed if the player found §7§lone §7egg.","§2Type 1:","§7Type 1 means that this command will be","§7be executed if the player had found §7§lall §7egg.").setLocalizedName(key).build());
@@ -75,7 +77,7 @@ public class InventoryManager {
         inventory.setItem(4,new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).setDisplayname("§6"+section).build());
         //inventory.setItem(20, new ItemBuilder(XMaterial.PAPER).setDisplayname("§3Rename").setLore("§7Currently: "+name,"","§eClick to change.").build());
         inventory.setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Status").setLore("§7Currently: "+(enabled ? "§aEnabled" : "§cDisabled"),"","§eClick to toggle.").build());
-        inventory.setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4Delete").setLore("","§4§lYOU CAN NOT UNDO THIS","","§eClick to delete.").build());
+        inventory.setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4Delete").setLore("§8Check if your deletion type is correct. (WOODEN_AXE)","","§4§lYOU CAN NOT UNDO THIS","","§eClick to delete.").build());
         inventory.setItem(22, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setDefaultLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(section)).build());
         inventory.setItem(40, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build());
         DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(player.getUniqueId());

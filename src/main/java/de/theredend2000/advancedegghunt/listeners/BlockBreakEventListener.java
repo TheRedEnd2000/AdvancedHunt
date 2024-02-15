@@ -3,6 +3,8 @@ package de.theredend2000.advancedegghunt.listeners;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -13,8 +15,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 public class BlockBreakEventListener implements Listener {
 
+    private MessageManager messageManager;
+
     public BlockBreakEventListener(){
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+        messageManager = Main.getInstance().getMessageManager();
     }
 
     @EventHandler
@@ -31,12 +36,12 @@ public class BlockBreakEventListener implements Listener {
                     eggManager.removeEgg(player, block,section);
                     player.playSound(player.getLocation(), soundManager.playEggBreakSound(), soundManager.getSoundVolume(), 1);
                 }else {
-                    player.sendMessage(Main.getInstance().getMessage("NoPermissionMessage").replaceAll("%PERMISSION%", permission));
+                    player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission));
                     event.setCancelled(true);
                 }
             }else {
                 if(player.hasPermission(permission))
-                    player.sendMessage(Main.getInstance().getMessage("OnlyInPlaceMode"));
+                    player.sendMessage(messageManager.getMessage(MessageKey.ONLY_IN_PLACEMODE));
                 event.setCancelled(true);
             }
             eggManager.updateMaxEggs(section);

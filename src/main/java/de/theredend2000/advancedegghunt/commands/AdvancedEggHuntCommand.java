@@ -12,6 +12,8 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.Eg
 import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.*;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -25,6 +27,11 @@ import static org.bukkit.Bukkit.getServer;
 public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     private final String permission = Main.getInstance().getConfig().getString("Permissions.AdvancedEggHuntCommandPermission");
+    private MessageManager messageManager;
+
+    public AdvancedEggHuntCommand(){
+        messageManager = Main.getInstance().getMessageManager();
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -39,11 +46,11 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         if(Main.getInstance().getPlaceEggsPlayers().contains(player)){
                             eggManager.finishEggPlacing(player);
                             Main.getInstance().getPlaceEggsPlayers().remove(player);
-                            player.sendMessage(Main.getInstance().getMessage("LeftPlaceMode"));
+                            player.sendMessage(messageManager.getMessage(MessageKey.LEAVE_PLACEMODE));
                         }else{
                             eggManager.startEggPlacing(player);
                             Main.getInstance().getPlaceEggsPlayers().add(player);
-                            player.sendMessage(Main.getInstance().getMessage("EnterPlaceMode"));
+                            player.sendMessage(messageManager.getMessage(MessageKey.ENTER_PLACEMODE));
                             player.getInventory().setItem(4,new ItemBuilder(XMaterial.NETHER_STAR).setDisplayname("§6§lEggs Types §7(Right-Click)").setLocalizedName("egghunt.eggs").build());
                             player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayname("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup","§7or type §e/egghunt placeEggs §7again.").setLocalizedName("egghunt.finish").setSoulbound(true).build());
                         }
@@ -51,11 +58,12 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         new EggListMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("show")){
                         eggManager.showAllEggs();
-                        player.sendMessage(Main.getInstance().getMessage("EggsVisible").replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow"))));
+                        player.sendMessage(messageManager.getMessage(MessageKey.EGG_VISIBLE).replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow"))));
                     }else if(args[0].equalsIgnoreCase("reload")){
                         Main.getInstance().reloadConfig();
                         Main.getInstance().checkCommandFeedback();
-                        player.sendMessage(Main.getInstance().getMessage("ReloadedConfig"));
+                        messageManager.reloadMessages();
+                        player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
                     }else if(args[0].equalsIgnoreCase("help")){
                         sendHelp(player);
                     }else if(args[0].equalsIgnoreCase("settings")){
@@ -69,7 +77,10 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }else if(args[0].equalsIgnoreCase("leaderboard")){
                         new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("hint")){
+                        int counter = 0;
+                        int max = Main.getInstance().getEggDataManager().savedEggSections().size();
                         for(String sections : Main.getInstance().getEggDataManager().savedEggSections()) {
+                            counter++;
                             if (!eggManager.checkFoundAll(player,sections) && eggManager.getMaxEggs(sections) >= 1) {
                                 if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
                                     long current = System.currentTimeMillis();
@@ -79,8 +90,10 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                     return true;
                                 }
                                 new HintInventoryCreator(player, Bukkit.createInventory(player, 54, "Eggs Hint"), true);
-                            } else
-                                player.sendMessage(Main.getInstance().getMessage("PlayerFoundAllEggs"));
+                            } else {
+                                if(counter == max)
+                                    player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
+                            }
                         }
                     }else
                         player.sendMessage(usage());
@@ -88,16 +101,16 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     if(args[0].equalsIgnoreCase("reset")){
                         if(args[1].equalsIgnoreCase("all")){
                             eggManager.resetStatsAll();
-                            player.sendMessage(Main.getInstance().getMessage("ResetedAllFoundEggs"));
+                            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
                             return true;
                         }
                         String name = args[1];
                         if(eggManager.containsPlayer(name)){
                             for(String sections : Main.getInstance().getEggDataManager().savedEggSections())
                                 eggManager.resetStatsPlayer(name,sections);
-                            player.sendMessage(Main.getInstance().getMessage("ResetedPlayerFoundEggs").replaceAll("%PLAYER%", name));
+                            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
                         }else
-                            player.sendMessage(Main.getInstance().getMessage("PlayerNotFound").replaceAll("%PLAYER%", name));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
                     }else
                         player.sendMessage(usage());
                 }else
@@ -121,7 +134,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             }
                             new HintInventoryCreator(player, Bukkit.createInventory(player, 54, "Eggs Hint"), true);
                         } else
-                            player.sendMessage(Main.getInstance().getMessage("PlayerFoundAllEggs"));
+                            player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
                     }
                 }else
                     player.sendMessage(usage());
@@ -132,27 +145,27 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 if(args[0].equalsIgnoreCase("reset")){
                     if(args[1].equalsIgnoreCase("all")){
                         eggManager.resetStatsAll();
-                        sender.sendMessage(Main.getInstance().getMessage("ResetedAllFoundEggs"));
+                        sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
                         return true;
                     }
                     String name = args[1];
                     if(eggManager.containsPlayer(name)){
                         for(String sections : Main.getInstance().getEggDataManager().savedEggSections())
                             eggManager.resetStatsPlayer(name,sections);
-                        sender.sendMessage(Main.getInstance().getMessage("ResetedPlayerFoundEggs").replaceAll("%PLAYER%", name));
+                        sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
                     }else
-                        sender.sendMessage(Main.getInstance().getMessage("PlayerNotFound").replaceAll("%PLAYER%", name));
+                        sender.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
                 }else
                     sender.sendMessage(usage());
             }else
                 sender.sendMessage(usage());
         }else
-            sender.sendMessage(Main.getInstance().getMessage("OnlyPlayerCanUseThisCommandMessage"));
+            sender.sendMessage(messageManager.getMessage(MessageKey.ONLY_PLAYER));
         return false;
     }
 
     private String usage(){
-        return Main.getInstance().getMessage("AdvancedEggHuntCommandUsageMessage");
+        return messageManager.getMessage(MessageKey.COMMAND_NOT_FOUND);
     }
 
     @Override
@@ -175,7 +188,11 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 if(args[0].equalsIgnoreCase("reset")){
                     ArrayList<String> complete = new ArrayList<>();
                     for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
-                        complete.add(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.Name"));
+                        if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.") == null) continue;
+                        for(String sections : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getConfigurationSection("FoundEggs.").getKeys(false)) {
+                            if(!complete.contains(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + sections + ".Name")))
+                                complete.add(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + sections + ".Name"));
+                        }
                     }
                     complete.add("all");
                     return complete;
@@ -201,6 +218,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§7Author: §6XMC-PLUGINS");
         player.sendMessage("");
         player.sendMessage("§2§lCommands");
+        player.sendMessage("§6/advancedegghunt collection §7-> §bSwitch and edit collections.");
         player.sendMessage("§6/advancedegghunt help §7-> §bShows this help messages and information.");
         player.sendMessage("§6/advancedegghunt reload §7-> §bReloads the config.");
         player.sendMessage("§6/advancedegghunt list §7-> §bLists all placed eggs.");

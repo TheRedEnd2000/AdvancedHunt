@@ -6,6 +6,8 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.Updater;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.Config;
 import de.theredend2000.advancedegghunt.util.saveinventory.Serialization;
 import net.md_5.bungee.api.ChatMessageType;
@@ -35,9 +37,11 @@ import java.util.logging.Logger;
 public class EggManager {
 
     private Main plugin;
+    private MessageManager messageManager;
 
     public EggManager(){
         this.plugin = Main.getInstance();
+        messageManager = Main.getInstance().getMessageManager();
     }
 
 
@@ -109,10 +113,10 @@ public class EggManager {
                 }
             }
             new ConfigLocationUtil(plugin, location, "PlacedEggs."+ nextNumber,section).saveBlockLocation();
-            player.sendMessage(Main.getInstance().getMessage("EggPlacedMessage").replaceAll("%ID%", String.valueOf(nextNumber)));
+            player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", String.valueOf(nextNumber)));
         }else {
             new ConfigLocationUtil(plugin, location, "PlacedEggs.0",section).saveBlockLocation();
-            player.sendMessage(Main.getInstance().getMessage("EggPlacedMessage").replaceAll("%ID%","0"));
+            player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%","0"));
         }
         updateMaxEggs(section);
     }
@@ -129,7 +133,7 @@ public class EggManager {
                     if (block.getX() == location.loadLocation().getBlockX() && block.getY() == location.loadLocation().getBlockY() && block.getZ() == location.loadLocation().getBlockZ()) {
                         config.set("PlacedEggs."+key,null);
                         Main.getInstance().getEggDataManager().savePlacedEggs(section,config);
-                        player.sendMessage(plugin.getMessage("EggBreakMessage").replaceAll("%ID%",key));
+                        player.sendMessage(messageManager.getMessage(MessageKey.EGG_BROKEN).replaceAll("%ID%",key));
                         keys.remove(key);
                     }
                 }
@@ -236,7 +240,7 @@ public class EggManager {
         new ConfigLocationUtil(plugin,block.getLocation(),"FoundEggs."+section+"."+id,section).saveBlockLocation(player.getUniqueId(),playerConfig);
         plugin.getPlayerEggDataManager().savePlayerData(player.getUniqueId(),playerConfig);
         if(!Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards") || !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"))
-            player.sendMessage(Main.getInstance().getMessage("EggFoundMessage").replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player,section))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs(section))));
+            player.sendMessage(messageManager.getMessage(MessageKey.EGG_FOUND).replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player,section))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs(section))));
     }
 
     public int getTimesFound(String id,String section) {
@@ -352,7 +356,7 @@ public class EggManager {
                                 if (e instanceof Player) {
                                     Player p = (Player) e;
                                     if (!hasFound(p, key,sections)) {
-                                        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Main.getInstance().getMessage("EggNearbyMessage")));
+                                        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(messageManager.getMessage(MessageKey.EGG_NEARBY)));
                                     }
                                 }
                             }
@@ -375,6 +379,7 @@ public class EggManager {
         ArrayList<String> eggID = new ArrayList<>();
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
+            if(playerConfig.getString("FoundEggs."+section) == null) continue;
             if(playerConfig.getString("FoundEggs."+section+".Name").equals(name)) {
                 eggID.addAll(playerConfig.getConfigurationSection("FoundEggs."+section).getKeys(false));
                 playerConfig.set("FoundEggs."+section, null);
@@ -392,9 +397,12 @@ public class EggManager {
     public boolean containsPlayer(String name){
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuids);
-            if(playerConfig.getString("FoundEggs."+section+".Name").equals(name)){
-                return true;
+            for(String sections : Main.getInstance().getEggDataManager().savedEggSections()) {
+                if (playerConfig == null || playerConfig.getString("FoundEggs.") == null) continue;
+                if(playerConfig.getString("FoundEggs."+sections) == null) continue;
+                if (playerConfig.getString("FoundEggs." + sections + ".Name").equals(name)) {
+                    return true;
+                }
             }
         }
         return false;

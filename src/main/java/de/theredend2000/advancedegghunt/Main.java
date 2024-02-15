@@ -1,7 +1,6 @@
 package de.theredend2000.advancedegghunt;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.likewhat.customheads.api.CustomHeadsAPI;
 import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
@@ -13,6 +12,8 @@ import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import de.theredend2000.advancedegghunt.managers.CooldownManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
@@ -55,17 +56,21 @@ public final class Main extends JavaPlugin {
     private InventoryManager inventoryManager;
     private PlayerEggDataManager playerEggDataManager;
     private RequirementsManager requirementsManager;
+    private MessageManager messageManager;
+    public static String PREFIX = "";
     @Override
     public void onEnable() {
         plugin = this;
+        saveDefaultConfig();
+        PREFIX = ChatColor.translateAlternateColorCodes('&',getConfig().getString("prefix"));
         Metrics metrics = new Metrics(this,19495);
         refreshCooldown = new HashMap<String, Long>();
         placeEggsPlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
         playerAddCommand = new HashMap<>();
         sortTypeLeaderboard = new HashMap<>();
-        setupConfigs();
         initManagers();
+        setupConfigs();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
         initListeners();
         datetimeUtils = new DatetimeUtils();
@@ -73,12 +78,13 @@ public final class Main extends JavaPlugin {
         eggManager.spawnEggParticle();
         checkCommandFeedback();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
+            Bukkit.getConsoleSender().sendMessage(PREFIX+"§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
             new PlaceholderExtension().register();
-            Bukkit.getConsoleSender().sendMessage(messages.getString("Prefix").replaceAll("&","§")+"§2§lAll placeholders successfully enabled.");
+            Bukkit.getConsoleSender().sendMessage(PREFIX+"§2§lAll placeholders successfully enabled.");
         }
         getEggManager().convertEggData();
         initData();
+        sendCurrentLanguage();
     }
 
     @Override
@@ -102,6 +108,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void initManagers(){
+        messageManager = new MessageManager();
         eggDataManager = new EggDataManager(this);
         eggManager = new EggManager();
         inventoryManager = new InventoryManager();
@@ -147,45 +154,31 @@ public final class Main extends JavaPlugin {
         }
     }
 
+    private void sendCurrentLanguage(){
+        String lang = plugin.getConfig().getString("messages-lang");
+        Bukkit.getConsoleSender().sendMessage(PREFIX+"§7Language §6"+lang+" §7detected. File messages-"+lang+".yml loaded.");
+    }
+
     private void setupConfigs(){
         saveDefaultConfig();
-        messagesData = new File(getDataFolder(),"messages.yml");
-        try {
-            if(!messagesData.exists()){
-                InputStream in = getResource("messages.yml");
-                assert in != null;
-                Files.copy(in,messagesData.toPath());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.messages = YamlConfiguration.loadConfiguration(this.messagesData);
-        saveMessages();
         checkUpdatePath();
     }
 
     private void checkUpdatePath(){
-        if(messages.getDouble("version") < 2.3){
-            messagesData.delete();
-            setupConfigs();
-            for(Player player : Bukkit.getOnlinePlayers()){
-                if(player.isOp()){
-                    player.sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
-                }
-            }
-            Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your messages.yml again.");
+        if(!messageManager.isUpToDate()){
+            Bukkit.getConsoleSender().sendMessage(PREFIX+"§cThere is a newer version of your messages file. Please reinstall them.");
         }
-        if(getConfig().getDouble("config-version") < 2.4){
+        if(getConfig().getDouble("config-version") < 2.5){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();
             reloadConfig();
             for(Player player : Bukkit.getOnlinePlayers()){
                 if(player.isOp()){
-                    player.sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
+                    player.sendMessage(PREFIX+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
                 }
             }
-            Bukkit.getConsoleSender().sendMessage(Main.getInstance().getMessage("Prefix").replaceAll("&","§")+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
+            Bukkit.getConsoleSender().sendMessage(PREFIX+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
         }
     }
 
@@ -219,12 +212,6 @@ public final class Main extends JavaPlugin {
         String prefix = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv";
         texture = prefix+texture;
         return texture;
-    }
-    public String getMessage(String message){
-        if(getConfig().getBoolean("Settings.PluginPrefixEnabled")){
-            return HexColor.color(Objects.requireNonNull(messages.getString("Prefix"))+messages.getString(message));
-        }else
-            return HexColor.color(Objects.requireNonNull(messages.getString(message)));
     }
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
@@ -301,5 +288,9 @@ public final class Main extends JavaPlugin {
 
     public RequirementsManager getRequirementsManager() {
         return requirementsManager;
+    }
+
+    public MessageManager getMessageManager() {
+        return messageManager;
     }
 }

@@ -5,6 +5,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -56,7 +57,7 @@ public class HintInventoryCreator implements Listener {
                 if(active){
                     if(!clickedRight) {
                         fail(player);
-                        player.sendMessage(Main.getInstance().getMessage("ClickedSameGlassInHint"));
+                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
                     }
                     inventory.clear();
                     currentSlot = getRandomSlot();
@@ -81,7 +82,7 @@ public class HintInventoryCreator implements Listener {
                 event.setCancelled(true);
                 if(currentSlot == lastClicked){
                     fail(player);
-                    player.sendMessage(Main.getInstance().getMessage("ClickedSameGlassInHint"));
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
                     return;
                 }
                 if(event.getSlot() == currentSlot){
@@ -97,7 +98,7 @@ public class HintInventoryCreator implements Listener {
                     lastClicked = currentSlot;
                 }else{
                     fail(player);
-                    player.sendMessage(Main.getInstance().getMessage("ClickedSameGlassInHint"));
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
                 }
             }
         }
@@ -106,14 +107,16 @@ public class HintInventoryCreator implements Listener {
     public String getReward(Player player){
         Main plugin = Main.getInstance();
         for(String sections : plugin.getEggDataManager().savedEggSections()) {
+            player.sendMessage("1");
             if (Main.getInstance().getEggManager().containsPlayer(player.getName())) {
-                if (!Main.getInstance().getEggManager().checkFoundAll(player, sections)) {
-                    int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, sections);
-                    ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".");
-                    if (location.loadBlockLocation() != null) {
-                        int random = new Random().nextInt(2);
-                        return Main.getInstance().getMessage("EggHintFound").replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation().getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation().getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation().getBlockZ()) : "§k1");
-                    }
+                player.sendMessage("2");
+                if (Main.getInstance().getEggManager().checkFoundAll(player, sections)) continue;
+                player.sendMessage("3");
+                int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, sections);
+                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".",sections);
+                if (location.loadBlockLocation() != null) {
+                    int random = new Random().nextInt(2);
+                    return Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT).replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation().getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation().getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation().getBlockZ()) : "§k1");
                 }
             }
         }

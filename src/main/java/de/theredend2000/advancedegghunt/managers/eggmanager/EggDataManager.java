@@ -24,7 +24,7 @@ public class EggDataManager {
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
         if(savedEggSections().size() < 1)
-            createEggSectionFile("default",true);
+            createEggSectionFile("default", true);
     }
 
     public void initEggs() {
@@ -68,7 +68,9 @@ public class EggDataManager {
         loadEggData(section);
         savePlacedEggs(section,config);
         config.set("Enabled",enabled);
+        config.set("RequirementsOrder","OR");
         savePlacedEggs(section,config);
+        addDefaultCommands(section);
     }
 
     public boolean containsSectionFile(String section){
@@ -100,6 +102,26 @@ public class EggDataManager {
         if (sectionFile.exists()) {
             sectionFile.delete();
         }
+    }
+
+    private void addDefaultCommands(String section){
+        FileConfiguration config = getPlacedEggs(section);
+        config.set("Rewards.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
+        config.set("Rewards.0.enabled", true);
+        config.set("Rewards.0.type", 0);
+        config.set("Rewards.1.command", "give %PLAYER% diamond");
+        config.set("Rewards.1.enabled", true);
+        config.set("Rewards.1.type", 0);
+        config.set("Rewards.2.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
+        config.set("Rewards.2.enabled", true);
+        config.set("Rewards.2.type", 1);
+        config.set("Rewards.3.command", "give %PLAYER% diamond");
+        config.set("Rewards.3.enabled", true);
+        config.set("Rewards.3.type", 1);
+        config.set("Rewards.4.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
+        config.set("Rewards.4.enabled", true);
+        config.set("Rewards.4.type", 1);
+        savePlacedEggs(section,config);
     }
 
 

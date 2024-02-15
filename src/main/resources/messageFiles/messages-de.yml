@@ -1,0 +1,56 @@
+version: 2.4
+
+no-permission-error: '&cDu hast die &6Berechtigung %PERMISSION% &cnicht.'
+command-not-found: '&cKein Befehl gefunden! &7Schreibe &e/egghunt help &7um alle Befehle zu sehen.'
+only-player: '&cNur Spieler können diesen Befehl benutzen.'
+reload-config: '&7Die Config wurde &aerfolgreich &eneu geladen&7.'
+player-not-found: '&7Das System hat &ckeinen Eintrag &7für den Spieler &a%PLAYER%&7.'
+
+egg-placed: '&aDu hast erfolgreich &aein neues Ei &2erstellt. &7(ID#%ID%)'
+egg-broken: '&aDu hast erfolgreich &aein Ei &centfernt. &7(ID#%ID%)'
+teleport-to-egg: '&aDu wurdest zu dem Ei #%ID% &ateleportiert&7.'
+
+egg-found: '&aDu hast ein Ei gefunden. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&cDu hast dieses Ei bereits gefunden.'
+all-eggs-found: '&cDu hast bereits alle Eier gefunden.'
+no-eggs: '&cEs sind keine Eier platziert.'
+egg-hint: '&aEin Ei wurde bei &6X: %X%&6, Y: %Y%&6, Z: %Z%&a gefunden.'
+hint-cooldown: '&4&lCOOLDOWN! &cBitte warte &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c um den Befehl erneuert auszuführen.'
+clicked-same: '&4&lFEHLGESCHLAGEN! &cDu hast die falsche Scheibe oder eine Scheibe doppelt gedrückt.'
+egg-not-accessed: '&cDu hast aktuell kein Zugang hierzu.'
+
+only-in-placemode: '&cDu kannst Eier nur im Platzier-Modus zerstören. Schreibe &e/egghunt placeEggs &cum in diesen Modus zu wechseln.'
+enter-placemode: '&aDu bist nun im Platzier-Modus. Du kannst nun Eier platzieren und zerstören.'
+leave-placemode: '&cDu bist nun nicht mehr im Platzier-Modus. Du kannst nun keine Eier mehr platzieren oder zerstören.'
+
+first-page: '&7Du bist bereits auf der ersten Seite.'
+last-page: '&7Du bist bereits auf der letzten Seite.'
+wait-refresh: '&cBitte warte bevor du dies neu lädst.'
+block-listed: '&cDieser Block ist schon in der liste!'
+
+egg-nearby: '&3&lEI IN DER NÄHE'
+
+sound-volume: '&cDie Sound Lautstärke kann nur zwischen &e0 und 15&c sein!'
+egg-visible: '&aAlle Eier sind nun für &6%TIME_VISIBLE% Sekunden&a sichtbar.'
+armorstand-glow: '&cRüstungsständer-Leuchten kann nur zwischen &e0 und 120&c sein!'
+egg-radius: '&cEi nahe kann nur zwischen &e0 und 50&c sein!'
+
+command-type: '&7Der &6Befehl #%ID% &7wird nun bei &2Type %TYPE%&7 ausgeführt.'
+command-enabled: '&7Der &6Befehl #%ID% &7ist nun %ENABLED_WITH_COLOR%&7.'
+command-delete: '&7Du hast &aerfolgreich &7den &6Befehl #%ID% &cgelöscht&7.'
+new-command: '&7Schreibe den &3Befehl &7in &aChat&7 oder schreibe &c"cancel" &7um zurück zu kehren. Die Aktion wird in &22 minutes&7 ablaufen.'
+command-cancel: '&cDu hast die Aktion erfolgreich abgebrochen.'
+command-add: '&7Der &6Befehl #%ID% &7wurde &aerfolgreich &7hinzugefügt.'
+command-expired: '&7Du hast den &6Befehl &cnicht schnell genug &3eingegeben. &4Versuche es erneuert!'
+one-command: '&cDu kannst nur einen Befehl zu gleichen Zeit eingeben.'
+command-changed: '&7Du hast &aerfolgreich &7den &6Befehl #%ID% &3geändert&7.'
+
+foundeggs-reset: '&7Alle &egefundenen Eier &7wurden &czurückgesetzt&7.'
+foundeggs-player-reset: '&7Alle &egefunden Eier &7von &a%PLAYER% &7wurden &czurückgesetzt&7.'
+
+activate-requirements: '&aAlle Anforderungen wurden aktiviert.'
+deactivate-requirements: '&cAlle Anforderungen wurden deaktiviert.'
+
+collection-disabled: '&cDiese Sammlung ist aktuell ausgeschalten.'
+collection-selected: '&7Du hast die Sammlung &6%SELECTION% &7ausgewählt.'
+collection-deleted: '&aDie Collection &6%COLLECTION% &awurde erfolgreich gelöscht.'

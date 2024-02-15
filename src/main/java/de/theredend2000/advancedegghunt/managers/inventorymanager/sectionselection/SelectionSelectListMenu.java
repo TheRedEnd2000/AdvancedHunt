@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.Pl
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -48,7 +49,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
                     Main.getInstance().getPlayerEggDataManager().savePlayerSection(p.getUniqueId(),selection);
                     p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
                     super.open();
-                    p.sendMessage("selected "+selection);
+                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%",selection));
                 }else if(e.getAction() == InventoryAction.PICKUP_HALF){
                     if(p.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")))) {
                         Main.getInstance().getInventoryManager().createEditCollectionMenu(p, section);
@@ -64,7 +65,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
         }else if (e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
             if(Main.getInstance().getRefreshCooldown().containsKey(p.getName())){
                 if(Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()){
-                    p.sendMessage(Main.getInstance().getMessage("RefreshWaitMessage"));
+                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
                     p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
                     return;
                 }
@@ -75,7 +76,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
         }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
             if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
                 if (page == 0){
-                    p.sendMessage(Main.getInstance().getMessage("AlreadyOnFirstPageMessage"));
+                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
                         p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
                 }else{
                     page = page - 1;
@@ -88,7 +89,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
                     super.open();
                     p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
                 }else{
-                    p.sendMessage(Main.getInstance().getMessage("AlreadyOnLastPageMessage"));
+                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
                     p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
                 }
             }else if(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add collection")){
