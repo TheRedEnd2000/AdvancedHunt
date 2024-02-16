@@ -168,7 +168,7 @@ public final class Main extends JavaPlugin {
         if(!messageManager.isUpToDate()){
             Bukkit.getConsoleSender().sendMessage(PREFIX+"§cThere is a newer version of your messages file. Please reinstall them.");
         }
-        if(getConfig().getDouble("config-version") < 2.5){
+        if(getConfig().getDouble("config-version") < 2.6){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();

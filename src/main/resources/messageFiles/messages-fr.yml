@@ -1,0 +1,56 @@
+version: 2.4
+
+no-permission-error: '&cVous n''avez pas la &6%PERMISSION% permission&c pour utiliser cette commande.'
+command-not-found: '&cAucune commande trouvée! &7Veuillez taper &e/egghunt help &7pour voir toutes les commandes.'
+only-player: '&cSeulement le joueur peut utiliser cette commande.'
+reload-config: '&7La configuration a été &erechargée &7avec &asuccès&7.'
+player-not-found: '&7Le système n''a &cpas d''entrée &7pour le joueur &a%PLAYER%&7.'
+
+egg-placed: '&aVous avez &2créé &7avec succès &aun nouvel oeuf. &7(ID#%ID%)'
+egg-broken: '&aVous avez &csupprimer &7avec succès &aun oeuf. &7(ID#%ID%)'
+teleport-to-egg: '&aVous avez été téléporté à l''oeuf #%ID%.'
+
+egg-found: '&aVous avez trouvé un oeuf. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&cVous avez déjà trouvé cet oeuf.'
+all-eggs-found: '&cVous avez déjà trouvé tous les oeufs.'
+no-eggs: '&cIl n''y a pas d''oeufs placés.'
+egg-hint: '&2&lSUCCÈS! &aUn oeuf a été trouvé en &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
+hint-cooldown: '&4&lEN TEMPS DE RECHARGE! &cVeuillez patienter &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'
+clicked-same: '&4&lÉCHOUÉ! &cVous avez cliqué sur la mauvaise vitre, sur aucune vitre ou deux fois sur la même.'
+egg-not-accessed: '&cVous ne pouvez pas y accéder pour le moment.'
+
+only-in-placemode: '&cVous pouvez uniquement placer ou casser des oeufs en mode construction. Tapez &e/egghunt placeEggs &cpour aller dans ce mode.'
+enter-placemode: '&aVous êtes maintenant en mode Placement. Vous pouvez maintenant ajouter ou supprimer des oeufs.'
+leave-placemode: '&cVous avez quitté le mode Placement. Vous ne pouvez plus ajouter ou supprimer des oeufs.'
+
+first-page: '&7Vous êtes déjà sur la première page.'
+last-page: '&7Vous êtes sur la dernière page.'
+wait-refresh: '&cVeuillez patienter avant d''actualiser à nouveau.'
+block-listed: '&cCe bloc est déjà listé!'
+
+egg-nearby: '&3&lOEUF À PROXIMITÉ'
+
+sound-volume: '&cLe volume sonore ne peut être compris qu''entre &e0 et 15&c!'
+egg-visible: '&aTous les oeufs sont maintenant visibles pour &6%TIME_VISIBLE% secondes&a.'
+armorstand-glow: '&cLa lueur du support d''armure ne peut être comprise qu''entre &e0 et 120&c!'
+egg-radius: '&cLe message d''oeuf à proximité ne peut être compris qu''entre &e0 et 50&c!'
+
+command-type: '&7La &6commande #%ID% &7s''exécutera désormais au &2type %TYPE%&7.'
+command-enabled: '&7La &6commande #%ID% &7est maintenant %ENABLED_WITH_COLOR%&7.'
+command-delete: '&7Vous avez &csupprimé &7avec &asuccès &7la &6commande #%ID%&7.'
+new-command: '&7Tapez la &3commande &7dans le &atchat&7 ou tapez &c"cancel" &7pour revenir en arrière. Cette action expirera dans &22 minutes&7.'
+command-cancel: '&cVous avez annulé l''action avec succès.'
+command-add: '&7La &6commande #%ID% &7a été ajoutée avec &asuccès&7.'
+command-expired: '&7Vous n''avez &cpas entré &7la &6commande &7assez &3rapidement. &7&lVeuillez réessayer!'
+one-command: '&cVous ne pouvez saisir qu''une seule commande à la fois.'
+command-changed: '&7Vous avez &3modifié &7avec &asuccès &7la &6commande #%ID%&7.'
+
+foundeggs-reset: '&7Tous les &eOeufs Trouvés &7ont été &créinitialisés&7.'
+foundeggs-player-reset: '&7Tous les &eOeufs Trouvés &7de &a%PLAYER% &7ont été &créinitialisés&7.'
+
+activate-requirements: '&aActivé toutes les conditions requises.'
+deactivate-requirements: '&cDésactivé toutes les conditions requises.'
+
+collection-disabled: '&cCette collection est actuellement désactivée.'
+collection-selected: '&7Vous avez sélectionné la collection &6%SELECTION%'
+collection-deleted: '&aVous avez supprimée avec succès la collection &6%COLLECTION%'
