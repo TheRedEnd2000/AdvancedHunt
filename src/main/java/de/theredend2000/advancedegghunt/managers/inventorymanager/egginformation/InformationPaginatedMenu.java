@@ -29,7 +29,7 @@ public abstract class InformationPaginatedMenu extends InformationMenu {
         inventory.setItem(53, makeItem(XMaterial.EMERALD_BLOCK, "§aRefresh"));
         inventory.setItem(45, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0=")).setDisplayname("§eBack").build());
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
-        inventory.setItem(45,new ItemBuilder(XMaterial.PAPER).setDisplayname("§bSelected Collection").setLore("§7Shows your currently selected collection.","","§7Current: §6"+selectedSection,"","§eClick to change.").build());
+        inventory.setItem(46,new ItemBuilder(XMaterial.PAPER).setDisplayname("§bSelected Collection").setLore("§7Shows your currently selected collection.","","§7Current: §6"+selectedSection,"","§eClick to change.").build());
 
         for (int i = 1; i < 10; i++) {
             if (inventory.getItem(i) == null) {

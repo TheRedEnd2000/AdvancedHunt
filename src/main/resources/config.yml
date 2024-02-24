@@ -1,7 +1,7 @@
-config-version: 2.6
+config-version: 2.7
 
 # Change the language
-# Available: en | de | fr
+# Available: en (Englisch) | de (German) | fr (France) | vn (Vietnamese)
 messages-lang: en
 
 prefix: '&f[&eAdvancedEggHunt&f] &r'

@@ -387,11 +387,28 @@ public class EggManager {
             }
         }
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(section);
-        for(String ids : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
-            if(eggID.contains(ids)){
-                placedEggs.set("PlacedEggs."+ids+".TimesFound",getTimesFound(ids,section)-1);
+        ConfigurationSection eggsSection = placedEggs.getConfigurationSection("PlacedEggs");
+
+        if (eggsSection != null) {
+            for (String ids : eggsSection.getKeys(false)) {
+                if (eggID.contains(ids)) {
+                    placedEggs.set("PlacedEggs." + ids + ".TimesFound", getTimesFound(ids, section) - 1);
+                    plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
+                }
             }
         }
+    }
+
+    public void resetStatsPlayerEgg(UUID uuid, String section,String id){
+        FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
+        int count = getPlayerCount(uuid,section);
+        playerConfig.set("FoundEggs."+section+"."+id, null);
+        playerConfig.set("FoundEggs."+section+".Count", count-1);
+        plugin.getPlayerEggDataManager().savePlayerData(uuid,playerConfig);
+
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(section);
+        placedEggs.set("PlacedEggs."+id+".TimesFound",getTimesFound(id,section)-1);
+        plugin.getEggDataManager().savePlacedEggs(section,placedEggs);
     }
 
     public boolean containsPlayer(String name){
@@ -411,7 +428,7 @@ public class EggManager {
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
             String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuids);
-            playerConfig.set("FoundEggs"+section,null);
+            playerConfig.set("FoundEggs."+section,null);
             plugin.getPlayerEggDataManager().savePlayerData(uuids,playerConfig);
         }
     }

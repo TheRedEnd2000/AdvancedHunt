@@ -51,6 +51,8 @@ public class PlayerInteractEventListener implements Listener {
                                     player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
                                     return;
                                 }
+                                if(Main.getInstance().getRequirementsManager().getOverallTime(sections) <= 0)
+                                    Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(),sections,id);
                                 eggManager.saveFoundEggs(player, event.getClickedBlock(), id, sections);
                                 Location loc = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
                                 if (Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"))

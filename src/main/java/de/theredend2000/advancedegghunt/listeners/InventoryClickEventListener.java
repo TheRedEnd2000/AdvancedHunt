@@ -372,6 +372,7 @@ public class InventoryClickEventListener implements Listener {
                                     playerConfig.set("CollectionEdit",null);
                                     Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(),playerConfig);
                                     Main.getInstance().getRequirementsManager().changeActivity(name,true);
+                                    Main.getInstance().getRequirementsManager().resetReset(name);
                                 }else
                                     player.sendMessage("§cThe name of the collection is already chosen.");
                                 break;
@@ -397,6 +398,10 @@ public class InventoryClickEventListener implements Listener {
                             case "Requirements":
                                 player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
                                 Main.getInstance().getInventoryRequirementsManager().createSelectInventory(player,section);
+                                break;
+                            case "Reset (BETA)":
+                                player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                                Main.getInstance().getResetInventoryManager().createSelectInventory(player,section);
                                 break;
                             case "Back":
                                 player.playSound(player.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);

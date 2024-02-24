@@ -1,9 +1,11 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +25,10 @@ public class EggDataManager {
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
-        if(savedEggSections().size() < 1)
+        if(savedEggSections().size() < 1) {
             createEggSectionFile("default", true);
+            Main.setupDefaultCollection = true;
+        }
     }
 
     public void initEggs() {

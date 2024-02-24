@@ -123,7 +123,10 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }else if(args[0].equalsIgnoreCase("leaderboard")){
                     new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                 }else if(args[0].equalsIgnoreCase("hint")){
+                    int counter = 0;
+                    int max = Main.getInstance().getEggDataManager().savedEggSections().size();
                     for(String sections : Main.getInstance().getEggDataManager().savedEggSections()) {
+                        counter++;
                         if (!eggManager.checkFoundAll(player,sections) && eggManager.getMaxEggs(sections) >= 1) {
                             if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
                                 long current = System.currentTimeMillis();
@@ -133,8 +136,10 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                 return true;
                             }
                             new HintInventoryCreator(player, Bukkit.createInventory(player, 54, "Eggs Hint"), true);
-                        } else
-                            player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
+                        } else {
+                            if(counter == max)
+                                player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
+                        }
                     }
                 }else
                     player.sendMessage(usage());

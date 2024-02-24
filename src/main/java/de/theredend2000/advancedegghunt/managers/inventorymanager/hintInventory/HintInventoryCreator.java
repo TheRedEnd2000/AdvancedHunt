@@ -107,11 +107,8 @@ public class HintInventoryCreator implements Listener {
     public String getReward(Player player){
         Main plugin = Main.getInstance();
         for(String sections : plugin.getEggDataManager().savedEggSections()) {
-            player.sendMessage("1");
             if (Main.getInstance().getEggManager().containsPlayer(player.getName())) {
-                player.sendMessage("2");
                 if (Main.getInstance().getEggManager().checkFoundAll(player, sections)) continue;
-                player.sendMessage("3");
                 int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, sections);
                 ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".",sections);
                 if (location.loadBlockLocation() != null) {

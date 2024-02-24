@@ -5,9 +5,11 @@ import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.RequirementsListeners;
+import de.theredend2000.advancedegghunt.listeners.inventoryListeners.ResetListeners;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
@@ -56,11 +58,15 @@ public final class Main extends JavaPlugin {
     private InventoryManager inventoryManager;
     private PlayerEggDataManager playerEggDataManager;
     private RequirementsManager requirementsManager;
+    private ResetInventoryManager resetInventoryManager;
+    private ResetListeners resetListeners;
     private MessageManager messageManager;
     public static String PREFIX = "";
+    public static boolean setupDefaultCollection;
     @Override
     public void onEnable() {
         plugin = this;
+        setupDefaultCollection = false;
         saveDefaultConfig();
         PREFIX = ChatColor.translateAlternateColorCodes('&',getConfig().getString("prefix"));
         Metrics metrics = new Metrics(this,19495);
@@ -85,6 +91,11 @@ public final class Main extends JavaPlugin {
         getEggManager().convertEggData();
         initData();
         sendCurrentLanguage();
+        if(setupDefaultCollection) {
+            getRequirementsManager().changeActivity("default", true);
+            getRequirementsManager().resetReset("default");
+        }
+        playerEggDataManager.checkReset();
     }
 
     @Override
@@ -117,6 +128,7 @@ public final class Main extends JavaPlugin {
         playerEggDataManager = new PlayerEggDataManager();
         inventoryRequirementsManager = new InventoryRequirementsManager();
         requirementsManager = new RequirementsManager();
+        resetInventoryManager = new ResetInventoryManager();
     }
 
     public void checkCommandFeedback(){
@@ -144,6 +156,7 @@ public final class Main extends JavaPlugin {
         new EntityChangeListener();
         new HintInventoryCreator(null,null,false);
         new RequirementsListeners(this);
+        new ResetListeners(this);
     }
 
     private void giveAllItemsBack(){
@@ -168,7 +181,7 @@ public final class Main extends JavaPlugin {
         if(!messageManager.isUpToDate()){
             Bukkit.getConsoleSender().sendMessage(PREFIX+"§cThere is a newer version of your messages file. Please reinstall them.");
         }
-        if(getConfig().getDouble("config-version") < 2.6){
+        if(getConfig().getDouble("config-version") < 2.7){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();
@@ -292,5 +305,9 @@ public final class Main extends JavaPlugin {
 
     public MessageManager getMessageManager() {
         return messageManager;
+    }
+
+    public ResetInventoryManager getResetInventoryManager() {
+        return resetInventoryManager;
     }
 }

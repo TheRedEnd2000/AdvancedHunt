@@ -38,9 +38,10 @@ public class EggInformationMenu extends InformationPaginatedMenu {
         Player p = (Player) e.getWhoClicked();
         String id = inventory.getItem(0).getItemMeta().getLocalizedName();
         ArrayList<String> keys = new ArrayList<>();
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
             if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundEggs."+id)){
-                Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.Name"));
+                Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs."+section+".Name"));
             }
         }
 
@@ -94,10 +95,11 @@ public class EggInformationMenu extends InformationPaginatedMenu {
         addMenuBorder(eggId);
         ArrayList<String> keys = new ArrayList<>();
         ArrayList<String> uuid = new ArrayList<>();
+        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
-            if(playerConfig.contains("FoundEggs."+eggId)){
-                Collections.addAll(keys, playerConfig.getString("FoundEggs.Name"));
+            if(playerConfig.contains("FoundEggs."+section+"."+eggId)){
+                Collections.addAll(keys, playerConfig.getString("FoundEggs."+section+".Name"));
                 Collections.addAll(uuid, String.valueOf(uuids));
             }
         }
@@ -107,12 +109,11 @@ public class EggInformationMenu extends InformationPaginatedMenu {
                 index = getMaxItemsPerPage() * page + i;
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
-                    String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
                     String maxEggs = String.valueOf(Main.getInstance().getEggManager().getMaxEggs(section));
                     String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId,section);
                     String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index),eggId,section);
-                    String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs.Count");
-                    inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(keys.get(index)).setDisplayname("§6§l"+keys.get(index)+" §7("+uuid.get(index)+")").setLore("§7"+keys.get(index)+" have found the §2egg #"+eggId+"§7.","","§9Information of "+keys.get(index)+":","§7Eggs found: §6"+eggsFound+"/"+maxEggs,"","§9Collected:","§7Date: §6"+date,"§7Time: §6"+time).setLocalizedName(keys.get(index)).build());
+                    String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs."+section+".Count");
+                    inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(keys.get(index)).setDisplayname("§6§l"+keys.get(index)+" §7("+uuid.get(index)+")").setLore("§7"+keys.get(index)+" has found the §2egg #"+eggId+"§7.","","§9Information of "+keys.get(index)+":","§7Eggs found: §6"+eggsFound+"/"+maxEggs,"","§9Collected:","§7Date: §6"+date,"§7Time: §6"+time).setLocalizedName(keys.get(index)).build());
                 }
             }
         }else

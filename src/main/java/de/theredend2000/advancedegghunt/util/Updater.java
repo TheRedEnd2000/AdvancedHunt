@@ -33,12 +33,12 @@ public class Updater implements Listener {
             c.disconnect();
             String oldVersion = plugin.getDescription().getVersion();
             if(!newVersion.equals(oldVersion)) {
-                player.sendMessage(Objects.requireNonNull(plugin.messages.getString("Prefix")).replaceAll("&","§")+"§aThere is a newer version available. Please update your plugin§a. §aVersion: §2§l"+oldVersion+"§6 --> §2§l"+newVersion);
+                player.sendMessage(Main.PREFIX+"§aThere is a newer version available. Please update your plugin§a. §aVersion: §2§l"+oldVersion+"§6 --> §2§l"+newVersion);
                 return true;
             }
         }
         catch(Exception e) {
-            player.sendMessage(Objects.requireNonNull(plugin.messages.getString("Prefix")).replaceAll("&","§")+"§4§lERROR: §cCould not make connection to SpigotMC.org");
+            player.sendMessage(Main.PREFIX+"§4§lERROR: §cCould not make connection to SpigotMC.org");
             e.printStackTrace();
         }
         return false;
@@ -50,13 +50,13 @@ public class Updater implements Listener {
             c.disconnect();
             String oldVersion = plugin.getDescription().getVersion();
             if(!newVersion.equals(oldVersion)) {
-                Bukkit.getConsoleSender().sendMessage(Objects.requireNonNull(plugin.messages.getString("Prefix")).replaceAll("&","§")+"§cYou do not have the most updated version of §eAdvancedEggHunt§c.");
-                Bukkit.getConsoleSender().sendMessage(Objects.requireNonNull(plugin.messages.getString("Prefix")).replaceAll("&","§")+"§cPlease chance the version: §4"+oldVersion+"§6 --> §2§l"+newVersion);
+                Bukkit.getConsoleSender().sendMessage(Main.PREFIX+"§cYou do not have the most updated version of §eAdvancedEggHunt§c.");
+                Bukkit.getConsoleSender().sendMessage(Main.PREFIX+"§cPlease chance the version: §4"+oldVersion+"§6 --> §2§l"+newVersion);
                 return true;
             }
         }
         catch(Exception e) {
-            Bukkit.getConsoleSender().sendMessage(Objects.requireNonNull(plugin.messages.getString("Prefix")).replaceAll("&","§")+"§4§lERROR: §cCould not make connection to SpigotMC.org");
+            Bukkit.getConsoleSender().sendMessage(Main.PREFIX+"§4§lERROR: §cCould not make connection to SpigotMC.org");
             e.printStackTrace();
         }
         return false;

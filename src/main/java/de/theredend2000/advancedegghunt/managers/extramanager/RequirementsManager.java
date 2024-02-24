@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedegghunt.util.enums.Requirements;
+import de.theredend2000.advancedegghunt.util.enums.ResetOption;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -250,6 +251,66 @@ public class RequirementsManager {
             placedEggs.set("Requirements.Season."+season,active);
         }
         plugin.getEggDataManager().savePlacedEggs(section,placedEggs);
+    }
+
+    public void resetReset(String section){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        placedEggs.set("Reset.Year",0);
+        placedEggs.set("Reset.Month",0);
+        placedEggs.set("Reset.Day",0);
+        placedEggs.set("Reset.Hour",0);
+        placedEggs.set("Reset.Minute",0);
+        placedEggs.set("Reset.Second",0);
+        plugin.getEggDataManager().savePlacedEggs(section,placedEggs);
+    }
+
+    public int getOverallTime(String section){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        int years = placedEggs.getInt("Reset.Year") * 365 * 24 * 60 * 60;
+        int months = placedEggs.getInt("Reset.Month") * 30 * 24 * 60 * 60;
+        int days = placedEggs.getInt("Reset.Day") * 24 * 60 * 60;
+        int hours = placedEggs.getInt("Reset.Hour") * 60 * 60;
+        int min = placedEggs.getInt("Reset.Minute") * 60;
+        int seconds = placedEggs.getInt("Reset.Second");
+        return years + months + days + hours + min + seconds;
+    }
+
+    public String getConvertedTime(String section) {
+        int years = 0;
+        int months = 0;
+        int days = 0;
+        int hours = 0;
+        int minutes = 0;
+        int seconds = 0;
+        int duration = getOverallTime(section);
+
+        if (duration / (60 * 60 * 24 * 365) >= 1) {
+            years = duration / (60 * 60 * 24 * 365);
+            duration = duration - (years * 60 * 60 * 24 * 365);
+        }
+        if (duration / (60 * 60 * 24 * 30) >= 1) {
+            months = duration / (60 * 60 * 24 * 30);
+            duration = duration - (months * 60 * 60 * 24 * 30);
+        }
+        if (duration / (60 * 60 * 24) >= 1) {
+            days = duration / (60 * 60 * 24);
+            duration = duration - (days * 60 * 60 * 24);
+        }
+        if (duration / (60 * 60) >= 1) {
+            hours = duration / (60 * 60);
+            duration = duration - (hours * 60 * 60);
+        }
+        if (duration / 60 >= 1) {
+            minutes = duration / 60;
+            duration = duration - (minutes * 60);
+        }
+        if (duration >= 1) {
+            seconds = duration;
+        }
+        if(years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && seconds == 0)
+            return "§4§lNEVER";
+        else
+            return years+"Y "+months+"M "+days+"d "+hours+"h "+minutes+"m "+seconds+"s";
     }
 
     public void removeAllEggBlocks(String section, UUID uuid){

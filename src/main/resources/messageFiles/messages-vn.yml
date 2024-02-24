@@ -1,0 +1,56 @@
+version: 2.4
+
+no-permission-error: '&cBạn không có quyền &6%PERMISSION% để sử dụng lệnh này.'
+command-not-found: '&cLệnh không tồn! &7Vui lòng nhập &e/egghunt help &7để xem tất cả các lệnh.'
+only-player: '&cChỉ người chơi có thể dùng lệnh này.'
+reload-config: '&7Config đã được &enạp lại &athành công&7.'
+player-not-found: '&7Dữ liệu &ckhông tồn tại &7với tên &a%PLAYER%&7.'
+
+egg-placed: '&aBạn đã &2tạo &amột quả trứng. &7(ID#%ID%)'
+egg-broken: '&aBạn đã &cgỡ &amột quả trứng. &7(ID#%ID%)'
+teleport-to-egg: '&aBạn đã dịch chuyển đến quả trứng ID #%ID%.'
+
+egg-found: '&aBạn vừa tìm thấy một quả trứng. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&cBạn đã tìm thấy quả trứng này rồi.'
+all-eggs-found: '&cBạn đã tìm thấy được tất cả quả trứng.'
+no-eggs: '&cChưa có quả trứng nào được đặt.'
+egg-hint: '&2&lTHÀNH CÔNG! &aMột quả trứng đã được đặt ở &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
+hint-cooldown: '&4&lĐANG CHỜ! &cVui lòng đợi &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'
+clicked-same: '&4&lTHẤT BẠI! &cBạn đã bấm nhầm ô kính, không có ô kính nào hoặc giống nhau.'
+egg-not-accessed: '&cBạn không thể truy cập vào đây lúc này.'
+
+only-in-placemode: '&cBạn chỉ có thể đặt hoặc phá trứng ở chế độ xây cả plugin. Gõ &e/egghunt placeEggs &cđể bật chế độ này.'
+enter-placemode: '&aBạn đang ở Chế độ xây. Giờ bạn có thể đặt và phá trứng.'
+leave-placemode: '&cBạn đã thoát khỏi Chế độ xây. Giờ bạn không thể đặt và phá trứng.'
+
+first-page: '&7Bạn đang ở trang đầu tiên rồi.'
+last-page: '&7Bạn đang ở trang cuối.'
+wait-refresh: '&cVui lòng đợi trước khi làm mới lại.'
+block-listed: '&cKhối này đã có trong danh sách!'
+
+egg-nearby: '&3&lTRỨNG Ở GẦN'
+
+sound-volume: '&cÂm lượng âm thanh chỉ có thể giữa &e0 và 15&c!'
+egg-visible: '&aTất cả Trứng đang được hiển thị trong &6%TIME_VISIBLE% giây&a.'
+armorstand-glow: '&cGiá treo vật phẩm chỉ phát sáng với giá trị giữa &e0 và 120&c!'
+egg-radius: '&cPhạm vi hiển thị tin nhắn Trứng ở gần có giá trị ở giữa &e0 và 50&c!'
+
+command-type: '&6Lệnh #%ID% &7sẽ được thực hiện với &2loại %TYPE%&7.'
+command-enabled: '6Lệnh #%ID% &7đang được %ENABLED_WITH_COLOR%&7.'
+command-delete: '&7Bạn đã &cxoá &athành công &6lệnh #%ID%&7.'
+new-command: '&7Nhập &3lệnh &7trong &achat&7 hoặc gõ &c"cancel" &7để quay lại. Hành động này sẽ hết hạn sau &22 phút&7.'
+command-cancel: '&cBạn đã hủy hành động thành công.'
+command-add: '6Lệnh #%ID% &7đã được thêm &athành công&7.'
+command-expired: '&7Bạn &ckhông nhập &6lệnh &3đủ &7nhanh. &7&lVui lòng thử lại!'
+one-command: '&cBạn chỉ có thể nhập một lệnh tại một lần.'
+command-changed: '&7Bạn đã &3thay đổi &athành công &6lệnh #%ID%&7.'
+
+foundeggs-reset: '&7Tất cả &eTrứng tìm từ trước &7đã được &creseted&7.'
+foundeggs-player-reset: '&7Tất cả &eTrứng tìm từ trước &7của &a%PLAYER% &7đã được &creseted&7.'
+
+activate-requirements: '&aĐã kích hoạt tất cả các yêu cầu.'
+deactivate-requirements: '&cĐã vô hiệu hóa tất cả các yêu cầu.'
+
+collection-disabled: '&cBộ sưu tập này hiện đã bị vô hiệu hóa.'
+collection-selected: '&7Bạn đã chọn bộ sưu tập &6%SELECTION%'
+collection-deleted: '&aĐã xóa bộ sưu tập &6%COLLECTION'

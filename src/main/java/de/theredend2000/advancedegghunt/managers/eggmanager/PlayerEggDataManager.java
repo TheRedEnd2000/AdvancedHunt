@@ -2,9 +2,11 @@ package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -86,5 +88,51 @@ public class PlayerEggDataManager {
     public DeletionTypes getDeletionType(UUID uuid){
         FileConfiguration config = getPlayerData(uuid);
         return DeletionTypes.valueOf(config.getString("DeletionType"));
+    }
+
+    public void setResetTimer(UUID uuid,String section,String id) {
+        FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuid));
+        int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(section);
+        Bukkit.broadcastMessage(String.valueOf(currentSeconds != 0));
+        if(currentSeconds != 0) {
+            long toSet = System.currentTimeMillis() + (currentSeconds * 1000L);
+            cfg.set("FoundEggs." + section + "." + id + ".ResetCooldown", toSet);
+            try {
+                cfg.save(getFile(uuid));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public long getResetTimer(UUID uuid, String section,String id) {
+        FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuid));
+        if(!cfg.contains("FoundEggs."+section+"."+id+".ResetCooldown")) return System.currentTimeMillis()+1000000;
+        return cfg.getLong("FoundEggs."+section+"."+id+".ResetCooldown");
+    }
+
+
+    public boolean canReset(UUID uuid,String section,String id) {
+        long current = System.currentTimeMillis();
+        long millis = getResetTimer(uuid,section,id);
+        return current > millis;
+    }
+
+    public void checkReset(){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
+                    FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuids));
+                    for(String sections : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
+                        for(String id : cfg.getConfigurationSection("FoundEggs."+sections).getKeys(false)) {
+                            if (id.equals("Count") || id.equals("Name")) continue;
+                            if (canReset(uuids, sections, id))
+                                plugin.getEggManager().resetStatsPlayerEgg(uuids,sections,id);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(plugin,20,20);
     }
 }
