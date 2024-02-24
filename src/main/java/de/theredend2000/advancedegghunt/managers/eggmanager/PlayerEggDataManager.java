@@ -124,6 +124,7 @@ public class PlayerEggDataManager {
             public void run() {
                 for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
                     FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuids));
+                    if(!cfg.contains("FoundEggs.")) return;
                     for(String sections : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
                         for(String id : cfg.getConfigurationSection("FoundEggs."+sections).getKeys(false)) {
                             if (id.equals("Count") || id.equals("Name")) continue;
