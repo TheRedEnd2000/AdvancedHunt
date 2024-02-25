@@ -93,7 +93,6 @@ public class PlayerEggDataManager {
     public void setResetTimer(UUID uuid,String section,String id) {
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuid));
         int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(section);
-        Bukkit.broadcastMessage(String.valueOf(currentSeconds != 0));
         if(currentSeconds != 0) {
             long toSet = System.currentTimeMillis() + (currentSeconds * 1000L);
             cfg.set("FoundEggs." + section + "." + id + ".ResetCooldown", toSet);
