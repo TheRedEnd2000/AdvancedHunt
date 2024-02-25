@@ -111,9 +111,9 @@ public abstract class DateTimeUtil {
     }
 
     public static String getWeek(Calendar calendar) {
-        final String dayNames[] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+        final String dayNames[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        return dayNames[dayOfWeek - 2];
+        return dayNames[dayOfWeek - 1];
     }
 
     public static String getMonth(Calendar calendar) {
