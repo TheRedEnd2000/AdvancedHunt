@@ -325,30 +325,30 @@ public class EggManager {
                                         double startX = startLocation.getX() - 1;
                                         double startY = startLocation.getY();
                                         double startZ = startLocation.getZ() + 1;
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX - 1) + time, (startY), (startZ), 0);
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX + 2), (startY), (startZ - 3) + time, 0);
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX + 2), (startY + 3) - time, (startZ), 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX - 1) + time, (startY), (startZ), 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX + 2), (startY), (startZ - 3) + time, 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX + 2), (startY + 3) - time, (startZ), 0);
                                         continue;
                                     }
                                     if (time > 1.0) {
                                         double startX = startLocation.getX();
                                         double startY = startLocation.getY();
                                         double startZ = startLocation.getZ() - 1;
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX - 1) + time, startY, (startZ + 1), 0);
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), startX, startY, startZ + time, 0);
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX), (startY + 2) - time, (startZ + 2), 0);
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX + 1), (startY + 2) - time, (startZ + 1), 0);
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX - 1) + time, (startY + 1), (startZ + 2), 0);
-                                        startLocation.getWorld().spawnParticle(getParticle(p, key,sections), (startX + 1), (startY + 1), (startZ) + time, 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX - 1) + time, startY, (startZ + 1), 0);
+                                        p.spawnParticle(getParticle(p, key,sections), startX, startY, startZ + time, 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX), (startY + 2) - time, (startZ + 2), 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX + 1), (startY + 2) - time, (startZ + 1), 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX - 1) + time, (startY + 1), (startZ + 2), 0);
+                                        p.spawnParticle(getParticle(p, key,sections), (startX + 1), (startY + 1), (startZ) + time, 0);
                                         continue;
                                     }
 
                                     double startX = startLocation.getX();
                                     double startY = startLocation.getY() + 1.0;
                                     double startZ = startLocation.getZ();
-                                    startLocation.getWorld().spawnParticle(getParticle(p, key,sections), startX + time, startY, startZ, 0);
-                                    startLocation.getWorld().spawnParticle(getParticle(p, key,sections), startX, startY - time, startZ, 0);
-                                    startLocation.getWorld().spawnParticle(getParticle(p, key,sections), startX, startY, startZ + time, 0);
+                                    p.spawnParticle(getParticle(p, key,sections), startX + time, startY, startZ, 0);
+                                    p.spawnParticle(getParticle(p, key,sections), startX, startY - time, startZ, 0);
+                                    p.spawnParticle(getParticle(p, key,sections), startX, startY, startZ + time, 0);
                                 }
                             }
                             int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
