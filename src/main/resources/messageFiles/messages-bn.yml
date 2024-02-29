@@ -1,0 +1,56 @@
+version: 2.4
+
+no-permission-error: '&cEi command ti bebohar korar jonno apnar kache &6%PERMISSION% er onumoti&c nei.'
+command-not-found: '&cKono command pawa jai ni! &7Onugroho kore sokol command dekhte &e/egghunt help &7type korun.'
+only-player: '&cShudumatro player rai ei command ti bebohar korte parbe.'
+reload-config: '&7Config ti &asofolvabe &epunorai load &7kora hoyeche.'
+player-not-found: '&a%PLAYER% &7er somporke system e kono kichu &clipiboddho nei&7.'
+
+egg-placed: '&aApni sofolvabe &aekti notun dim &2boshiyechen. &7(ID#%ID%)'
+egg-broken: '&aApni sofolvabe &aekti dim &csoriyechen. &7(ID#%ID%)'
+teleport-to-egg: '&aApnake dim er kache teleport kora hoyeche #%ID%.'
+
+egg-found: '&aApni ekti dim khuje peyechen. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&cApni itimoddhe ei dim ti peyechen.'
+all-eggs-found: '&cApni itimoddhe sobgulo dim khuje peyechen.'
+no-eggs: '&cEkhane kono dim i boshano hoi ni.'
+egg-hint: '&2&lSHAFOLLO! &aUkto jaigai ekti dim pawa gelo &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
+hint-cooldown: '&4&lCOOLDOWN COLCHE! &cOnugroho kore &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c opekkha korun.'
+clicked-same: '&4&lBERTHO! &cApni click korechen ekti vul glass pane e, noito kono glass pane ei noi othoba ekoi glass pane e duibar.'
+egg-not-accessed: '&cApni ei muhurte eti upolovdi korte parben nah.'
+
+only-in-placemode: '&cApni shudumatro build mode e dim boshate othoba sorate parben. Ei mode e jawar jonno &e/egghunt placeEggs &ctype korun.'
+enter-placemode: '&aApni ekhon Place mode e. Apni ekhon dim boshate othoba sorate parben.'
+leave-placemode: '&cApni Place mode theke ber hoye giyechen. Apni ekhon ar dim boshate othoba sorate parben nah'
+
+first-page: '&7Apni itimoddhei prothom pristai.'
+last-page: '&7Apni ekhon sesh pristai.'
+wait-refresh: '&cOnugroho kore abar refresh korar age opekkha korun'
+block-listed: '&cEi block tike etimoddhei talikabhukto kora hoyeche'
+
+egg-nearby: '&3&lKACHAKACHI DIM ROYECHE'
+
+sound-volume: '&cSobder matra shudu matro &e0 and 15&c er moddhe hote pare!'
+egg-visible: '&aSomosto Dim &6%TIME_VISIBLE% seconds&a er jonno dekha jabe.'
+armorstand-glow: '&cArmorstand glow shudu matro &e0 and 120&c er moddhe hote pare!'
+egg-radius: '&cDim kachakachi thakar barta shudu matro &e0 and 50&c er moddhe hote pare!'
+
+command-type: '&7Ei &6command ti #%ID% &7ekhon karjokor korbe ei &2%TYPE%&7 vabe.'
+command-enabled: '&7Ei &6command ti #%ID% &7ekhon %ENABLED_WITH_COLOR%&7.'
+command-delete: '&7Apni &asofolvabe &6command ti &csoriye &7felechen #%ID%&7.'
+new-command: '&3Command &7ti &achat&7e likhun othoba &c"cancel" &7lekhe purbosthan e fire ashun. Ei kriyatir myad &22 minutes &7por sesh hobe.'
+command-cancel: '&cApni sofolvabe kriyati batil korechen.'
+command-add: '&7Ei &6command #%ID% &7 ti &asofolvabe&7 zog kora hoyeche.'
+command-expired: '&7Apni &6command &7ti &3jothesto dhruto &7lekhen ni. &7&lOnugroho kore abar chesta korun!'
+one-command: '&cApni ekbar e shudumatro ekti command i likhte parben.'
+command-changed: '&7Apni &asofolvabe &6command &7ti &3poriborton &7korechen #%ID%&7.'
+
+foundeggs-reset: '&7Sokol &ePrapto Dim &creset&7 kora hoyeche.'
+foundeggs-player-reset: '&a%PLAYER% &7er sokol &ePrapto Dim &creset &7kora hoyeche.'
+
+activate-requirements: '&aSomosto proyojoniyota sokriyo kora holo.'
+deactivate-requirements: '&cSomosto proyojoniyota niskriyo kora holo.'
+
+collection-disabled: '&cEi songroho ti bortomane bondho royeche.'
+collection-selected: '&7Apni &6%SELECTION% namok songroho nirbachon korechen'
+collection-deleted: '&aSofolvabe &6%COLLECTION% namok songroho muche felechen'
