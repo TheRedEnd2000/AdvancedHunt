@@ -43,7 +43,7 @@ public class PlayerEggDataManager {
 
     private File getFile(UUID uuid) {
         if(!playerFiles.containsKey(uuid))
-            return new File(this.dataFolder + "/playerdata/", uuid + ".yml");
+            playerFiles.put(uuid,new File(this.dataFolder + "/playerdata/", uuid + ".yml"));
         return playerFiles.get(uuid);
     }
 
