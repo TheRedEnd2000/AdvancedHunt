@@ -296,19 +296,21 @@ public class EggManager {
     }
 
     public void spawnEggParticle(){
-        List<String> sections = plugin.getEggDataManager().savedEggSections();
-            new BukkitRunnable() {
-                double time = 0;
+        if (!Main.getInstance().getConfig().getBoolean("Particle.enabled")) return;
 
-                @Override
-                public void run() {
-                    for(String sections : sections) {
-                        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(sections);
+        List<String> sections = plugin.getEggDataManager().savedEggSections();
+
+        new BukkitRunnable() {
+            double time = 0;
+
+            @Override
+            public void run() {
+                for(String sections : sections) {
+                    FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(sections);
                     time += 0.025;
                     if (!placedEggs.contains("PlacedEggs.")) {
                         continue;
                     }
-                    if (!Main.getInstance().getConfig().getBoolean("Particle.enabled")) return;
                     for (String key : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                         ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + key,sections);
                         if (locationUtil.loadBlockLocation() != null) {
