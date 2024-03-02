@@ -9,114 +9,126 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class EggDataManager {
 
     private final Main plugin;
     private final File dataFolder;
-    private HashMap<String, FileConfiguration> eggsConfigs;
 
     public EggDataManager(Main plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
-        eggsConfigs = new HashMap<>();
 
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
-        if(savedEggSectionFiles().size() < 1) {
+        if(savedEggSections().size() < 1) {
             createEggSectionFile("default", true);
             Main.setupDefaultCollection = true;
         }
     }
 
     public void initEggs() {
-        List<String> savedEggSections = new ArrayList<>(plugin.getEggDataManager().savedEggSectionFiles());
-        for(String section : savedEggSections)
-            loadEggData(section);
+        List<String> savedEggSections = new ArrayList(this.plugin.getEggDataManager().savedEggSections());
+        Iterator var2 = savedEggSections.iterator();
+
+        while(var2.hasNext()) {
+            String section = (String)var2.next();
+            this.getPlacedEggs(section);
+        }
+
     }
 
-    public List<String> savedEggSectionFiles(){
-        List<String> eggsSections = new ArrayList<>();
-        File eggsSectionsFolder = new File(dataFolder + "/eggs/");
+    private void loadEggData(String section) {
+        this.getPlacedEggs(section);
+    }
 
+    private File getFile(String section) {
+        return new File(String.valueOf(this.dataFolder) + "/eggs/", section + ".yml");
+    }
+
+    public FileConfiguration getPlacedEggs(String section) {
+        File playerFile = this.getFile(section);
+        return YamlConfiguration.loadConfiguration(playerFile);
+    }
+
+    public void savePlacedEggs(String section, FileConfiguration config) {
+        try {
+            config.save(this.getFile(section));
+        } catch (IOException var4) {
+            var4.printStackTrace();
+        }
+
+    }
+
+    public void createEggSectionFile(String section, boolean enabled) {
+        FileConfiguration config = this.getPlacedEggs(section);
+        File playerFile = this.getFile(section);
+        if (!playerFile.exists()) {
+            try {
+                playerFile.createNewFile();
+            } catch (IOException var6) {
+                var6.printStackTrace();
+            }
+        }
+
+        this.loadEggData(section);
+        this.savePlacedEggs(section, config);
+        config.set("Enabled", enabled);
+        config.set("RequirementsOrder", "OR");
+        this.savePlacedEggs(section, config);
+        this.addDefaultCommands(section);
+    }
+
+    public boolean containsSectionFile(String section) {
+        Iterator var2 = this.savedEggSections().iterator();
+
+        String sections;
+        do {
+            if (!var2.hasNext()) {
+                return false;
+            }
+
+            sections = (String)var2.next();
+        } while(!sections.contains(section));
+
+        return true;
+    }
+
+    public List<String> savedEggSections() {
+        List<String> eggsSections = new ArrayList();
+        File eggsSectionsFolder = new File(String.valueOf(this.dataFolder) + "/eggs/");
         if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
-            File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
-
+            File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> {
+                return name.endsWith(".yml");
+            });
             if (playerFiles != null) {
-                for (File playerFile : playerFiles) {
+                File[] var4 = playerFiles;
+                int var5 = playerFiles.length;
+
+                for(int var6 = 0; var6 < var5; ++var6) {
+                    File playerFile = var4[var6];
                     String fileName = playerFile.getName();
                     String sectionName = fileName.substring(0, fileName.length() - 4);
                     eggsSections.add(sectionName);
                 }
             }
         }
+
         return eggsSections;
     }
 
-    private void loadEggData(String section) {
-        FileConfiguration config = YamlConfiguration.loadConfiguration(getFile(section));
-        eggsConfigs.put(section, config);
-    }
-
-    private File getFile(String section) {
-        return new File(dataFolder + "/eggs/", section + ".yml");
-    }
-
-    public FileConfiguration getPlacedEggs(String section) {
-        return eggsConfigs.get(section);
-    }
-
-    public void savePlacedEggs(String section,FileConfiguration config) {
-        try {
-            config.save(getFile(section));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createEggSectionFile(String section,boolean enabled) {
-        FileConfiguration config = getPlacedEggs(section);
-        File playerFile = getFile(section);
-
-        if (!playerFile.exists()) {
-            try {
-                playerFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        loadEggData(section);
-        savePlacedEggs(section,config);
-        config.set("Enabled",enabled);
-        config.set("RequirementsOrder","OR");
-        savePlacedEggs(section,config);
-        addDefaultCommands(section);
-    }
-
-    public boolean containsSectionFile(String section){
-        for(String sections : savedEggSections()){
-            if(sections.contains(section)) return true;
-        }
-        return false;
-    }
-    public List<String> savedEggSections() {
-        return new ArrayList<>(eggsConfigs.keySet());
-    }
-
     public void deleteCollection(String section) {
-        File sectionFile = getFile(section);
+        File sectionFile = this.getFile(section);
         if (sectionFile.exists()) {
             sectionFile.delete();
         }
+
     }
 
-    private void addDefaultCommands(String section){
-        FileConfiguration config = getPlacedEggs(section);
+    private void addDefaultCommands(String section) {
+        FileConfiguration config = this.getPlacedEggs(section);
         config.set("Rewards.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
         config.set("Rewards.0.enabled", true);
         config.set("Rewards.0.type", 0);
@@ -132,23 +144,22 @@ public class EggDataManager {
         config.set("Rewards.4.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
         config.set("Rewards.4.enabled", true);
         config.set("Rewards.4.type", 1);
-        savePlacedEggs(section,config);
+        this.savePlacedEggs(section, config);
     }
 
-
-    /*
-            PLAYER DATA
-    */
-
     public List<UUID> savedPlayers() {
-        List<UUID> playerUUIDs = new ArrayList<>();
-        File playerDataFolder = new File(dataFolder + "/playerdata/");
-
+        List<UUID> playerUUIDs = new ArrayList();
+        File playerDataFolder = new File(String.valueOf(this.dataFolder) + "/playerdata/");
         if (playerDataFolder.exists() && playerDataFolder.isDirectory()) {
-            File[] playerFiles = playerDataFolder.listFiles((dir, name) -> name.endsWith(".yml"));
-
+            File[] playerFiles = playerDataFolder.listFiles((dir, name) -> {
+                return name.endsWith(".yml");
+            });
             if (playerFiles != null) {
-                for (File playerFile : playerFiles) {
+                File[] var4 = playerFiles;
+                int var5 = playerFiles.length;
+
+                for(int var6 = 0; var6 < var5; ++var6) {
+                    File playerFile = var4[var6];
                     String fileName = playerFile.getName();
                     UUID playerUUID = UUID.fromString(fileName.substring(0, fileName.length() - 4));
                     playerUUIDs.add(playerUUID);

@@ -35,84 +35,86 @@ public class PlayerEggDataManager {
     }
 
     private void loadPlayerData(UUID uuid) {
-        FileConfiguration config = YamlConfiguration.loadConfiguration(getFile(uuid));
-        playerConfigs.put(uuid, config);
+        FileConfiguration config = this.getPlayerData(uuid);
+        this.playerConfigs.put(uuid, config);
     }
 
     private File getFile(UUID uuid) {
-        return new File(dataFolder + "/playerdata/", uuid + ".yml");
+        return new File(String.valueOf(this.dataFolder) + "/playerdata/", String.valueOf(uuid) + ".yml");
     }
 
     public FileConfiguration getPlayerData(UUID uuid) {
-        return playerConfigs.get(uuid);
+        File playerFile = this.getFile(uuid);
+        return YamlConfiguration.loadConfiguration(playerFile);
     }
 
-    public void savePlayerData(UUID uuid,FileConfiguration config) {
+    public void savePlayerData(UUID uuid, FileConfiguration config) {
         try {
-            config.save(getFile(uuid));
-        } catch (IOException e) {
-            e.printStackTrace();
+            config.save(this.getFile(uuid));
+        } catch (IOException var4) {
+            var4.printStackTrace();
         }
+
     }
 
-    public void savePlayerSection(UUID uuid,String section){
-        FileConfiguration config = getPlayerData(uuid);
-        config.set("SelectedSection",section);
-        savePlayerData(uuid,config);
+    public void savePlayerSection(UUID uuid, String section) {
+        FileConfiguration config = this.getPlayerData(uuid);
+        config.set("SelectedSection", section);
+        this.savePlayerData(uuid, config);
     }
 
     public void createPlayerFile(UUID uuid) {
-        FileConfiguration config = getPlayerData(uuid);
-        File playerFile = getFile(uuid);
-
+        FileConfiguration config = this.getPlayerData(uuid);
+        File playerFile = this.getFile(uuid);
         if (!playerFile.exists()) {
             try {
                 playerFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException var5) {
+                var5.printStackTrace();
             }
         }
-        loadPlayerData(uuid);
-        savePlayerData(uuid,config);
-        setDeletionType(DeletionTypes.Noting,uuid);
-        savePlayerSection(uuid,"default");
+
+        this.loadPlayerData(uuid);
+        this.savePlayerData(uuid, config);
+        this.setDeletionType(DeletionTypes.Noting, uuid);
+        this.savePlayerSection(uuid, "default");
     }
 
-    public void setDeletionType(DeletionTypes deletionType,UUID uuid){
-        FileConfiguration config = getPlayerData(uuid);
-        config.set("DeletionType",deletionType.name());
-        savePlayerData(uuid,config);
+    public void setDeletionType(DeletionTypes deletionType, UUID uuid) {
+        FileConfiguration config = this.getPlayerData(uuid);
+        config.set("DeletionType", deletionType.name());
+        this.savePlayerData(uuid, config);
     }
 
-    public DeletionTypes getDeletionType(UUID uuid){
-        FileConfiguration config = getPlayerData(uuid);
+    public DeletionTypes getDeletionType(UUID uuid) {
+        FileConfiguration config = this.getPlayerData(uuid);
         return DeletionTypes.valueOf(config.getString("DeletionType"));
     }
 
-    public void setResetTimer(UUID uuid,String section,String id) {
-        FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuid));
+    public void setResetTimer(UUID uuid, String section, String id) {
+        FileConfiguration cfg = YamlConfiguration.loadConfiguration(this.getFile(uuid));
         int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(section);
-        if(currentSeconds != 0) {
-            long toSet = System.currentTimeMillis() + (currentSeconds * 1000L);
+        if (currentSeconds != 0) {
+            long toSet = System.currentTimeMillis() + (long)currentSeconds * 1000L;
             cfg.set("FoundEggs." + section + "." + id + ".ResetCooldown", toSet);
+
             try {
-                cfg.save(getFile(uuid));
-            } catch (IOException e) {
-                e.printStackTrace();
+                cfg.save(this.getFile(uuid));
+            } catch (IOException var9) {
+                var9.printStackTrace();
             }
         }
+
     }
 
-    public long getResetTimer(UUID uuid, String section,String id) {
-        FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuid));
-        if(!cfg.contains("FoundEggs."+section+"."+id+".ResetCooldown")) return System.currentTimeMillis()+1000000;
-        return cfg.getLong("FoundEggs."+section+"."+id+".ResetCooldown");
+    public long getResetTimer(UUID uuid, String section, String id) {
+        FileConfiguration cfg = YamlConfiguration.loadConfiguration(this.getFile(uuid));
+        return !cfg.contains("FoundEggs." + section + "." + id + ".ResetCooldown") ? System.currentTimeMillis() + 1000000L : cfg.getLong("FoundEggs." + section + "." + id + ".ResetCooldown");
     }
 
-
-    public boolean canReset(UUID uuid,String section,String id) {
+    public boolean canReset(UUID uuid, String section, String id) {
         long current = System.currentTimeMillis();
-        long millis = getResetTimer(uuid,section,id);
+        long millis = this.getResetTimer(uuid, section, id);
         return current > millis;
     }
 
