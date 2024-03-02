@@ -46,7 +46,8 @@ public class EggDataManager {
 
     private void loadEggData(String section) {
         FileConfiguration config = getPlacedEggs(section);
-        this.eggsConfigs.put(section, config);
+        if(!eggsConfigs.containsKey(section))
+            this.eggsConfigs.put(section, config);
     }
 
     private File getFile(String section) {
@@ -57,9 +58,8 @@ public class EggDataManager {
 
     public FileConfiguration getPlacedEggs(String section) {
         File playerFile = this.getFile(section);
-        if(!eggsConfigs.containsKey(section)) {
+        if(!eggsConfigs.containsKey(section))
             this.eggsConfigs.put(section, YamlConfiguration.loadConfiguration(playerFile));
-        }
         return eggsConfigs.get(section);
     }
 

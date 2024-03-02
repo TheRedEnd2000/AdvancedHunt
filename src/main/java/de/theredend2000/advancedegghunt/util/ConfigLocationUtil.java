@@ -44,9 +44,9 @@ public class ConfigLocationUtil {
         FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root+".World"));
-            int x = plugin.getConfig().getInt(root +".X"),
-                    y = plugin.getConfig().getInt(root +".Y"),
-                    z = plugin.getConfig().getInt(root +".Z");
+            int x = config.getInt(root +".X"),
+                    y = config.getInt(root +".Y"),
+                    z = config.getInt(root +".Z");
             return new Location(world, x,y,z).getBlock();
         }
         return null;
@@ -66,9 +66,9 @@ public class ConfigLocationUtil {
         FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root+".World"));
-            int x = plugin.getConfig().getInt(root +".X"),
-                    y = plugin.getConfig().getInt(root +".Y"),
-                    z = plugin.getConfig().getInt(root +".Z");
+            int x = config.getInt(root +".X"),
+                    y = config.getInt(root +".Y"),
+                    z = config.getInt(root +".Z");
             return new Location(world, x,y,z).getBlock();
         }
         return null;

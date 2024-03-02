@@ -38,7 +38,8 @@ public class PlayerEggDataManager {
 
     private void loadPlayerData(UUID uuid) {
         FileConfiguration config = getPlayerData(uuid);
-        this.playerConfigs.put(uuid, config);
+        if(!playerConfigs.containsKey(uuid))
+            this.playerConfigs.put(uuid, config);
     }
 
     private File getFile(UUID uuid) {
@@ -130,7 +131,7 @@ public class PlayerEggDataManager {
             @Override
             public void run() {
                 for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
-                    FileConfiguration cfg = YamlConfiguration.loadConfiguration(getFile(uuids));
+                    FileConfiguration cfg = playerConfigs.get(uuids);
                     if(!cfg.contains("FoundEggs.")) return;
                     for(String sections : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
                         for(String id : cfg.getConfigurationSection("FoundEggs."+sections).getKeys(false)) {

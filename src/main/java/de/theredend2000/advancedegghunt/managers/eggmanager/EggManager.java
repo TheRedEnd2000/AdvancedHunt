@@ -365,7 +365,7 @@ public class EggManager {
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 3);
+        }.runTaskTimer(Main.getInstance(), 0, 20);
     }
 
     public Particle getParticle(Player p, String key,String section){
