@@ -81,7 +81,6 @@ public final class Main extends JavaPlugin {
         initListeners();
         datetimeUtils = new DatetimeUtils();
         cooldownManager = new CooldownManager(this);
-        eggManager.spawnEggParticle();
         checkCommandFeedback();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getConsoleSender().sendMessage(PREFIX+"§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
@@ -96,6 +95,7 @@ public final class Main extends JavaPlugin {
             getRequirementsManager().resetReset("default");
         }
         playerEggDataManager.checkReset();
+        eggManager.spawnEggParticle();
     }
 
     @Override
@@ -288,7 +288,7 @@ public final class Main extends JavaPlugin {
     }
 
     public PlayerEggDataManager getPlayerEggDataManager() {
-        return new PlayerEggDataManager();
+        return playerEggDataManager;
     }
 
     public static HashMap<Player, PlayerMenuUtility> getPlayerMenuUtilityMap() {

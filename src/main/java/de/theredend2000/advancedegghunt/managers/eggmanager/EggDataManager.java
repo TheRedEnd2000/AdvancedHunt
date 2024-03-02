@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,28 +18,49 @@ public class EggDataManager {
 
     private final Main plugin;
     private final File dataFolder;
+    private HashMap<String, FileConfiguration> eggsConfigs;
 
     public EggDataManager(Main plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
+        eggsConfigs = new HashMap<>();
 
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
-        if(savedEggSections().size() < 1) {
+        if(savedEggSectionFiles().size() < 1) {
             createEggSectionFile("default", true);
             Main.setupDefaultCollection = true;
         }
     }
 
     public void initEggs() {
-        List<String> savedEggSections = new ArrayList<>(plugin.getEggDataManager().savedEggSections());
+        List<String> savedEggSections = new ArrayList<>(plugin.getEggDataManager().savedEggSectionFiles());
         for(String section : savedEggSections)
-            getPlacedEggs(section);
+            loadEggData(section);
+    }
+
+    public List<String> savedEggSectionFiles(){
+        List<String> eggsSections = new ArrayList<>();
+        File eggsSectionsFolder = new File(dataFolder + "/eggs/");
+
+        if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
+            File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+
+            if (playerFiles != null) {
+                for (File playerFile : playerFiles) {
+                    String fileName = playerFile.getName();
+                    String sectionName = fileName.substring(0, fileName.length() - 4);
+                    eggsSections.add(sectionName);
+                }
+            }
+        }
+        return eggsSections;
     }
 
     private void loadEggData(String section) {
-        getPlacedEggs(section);
+        FileConfiguration config = YamlConfiguration.loadConfiguration(getFile(section));
+        eggsConfigs.put(section, config);
     }
 
     private File getFile(String section) {
@@ -46,8 +68,7 @@ public class EggDataManager {
     }
 
     public FileConfiguration getPlacedEggs(String section) {
-        File playerFile = getFile(section);
-        return YamlConfiguration.loadConfiguration(playerFile);
+        return eggsConfigs.get(section);
     }
 
     public void savePlacedEggs(String section,FileConfiguration config) {
@@ -84,21 +105,7 @@ public class EggDataManager {
         return false;
     }
     public List<String> savedEggSections() {
-        List<String> eggsSections = new ArrayList<>();
-        File eggsSectionsFolder = new File(dataFolder + "/eggs/");
-
-        if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
-            File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> name.endsWith(".yml"));
-
-            if (playerFiles != null) {
-                for (File playerFile : playerFiles) {
-                    String fileName = playerFile.getName();
-                    String sectionName = fileName.substring(0, fileName.length() - 4);
-                    eggsSections.add(sectionName);
-                }
-            }
-        }
-        return eggsSections;
+        return new ArrayList<>(eggsConfigs.keySet());
     }
 
     public void deleteCollection(String section) {

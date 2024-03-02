@@ -35,7 +35,7 @@ public class PlayerEggDataManager {
     }
 
     private void loadPlayerData(UUID uuid) {
-        FileConfiguration config = getPlayerData(uuid);
+        FileConfiguration config = YamlConfiguration.loadConfiguration(getFile(uuid));
         playerConfigs.put(uuid, config);
     }
 
@@ -44,8 +44,7 @@ public class PlayerEggDataManager {
     }
 
     public FileConfiguration getPlayerData(UUID uuid) {
-        File playerFile = getFile(uuid);
-        return YamlConfiguration.loadConfiguration(playerFile);
+        return playerConfigs.get(uuid);
     }
 
     public void savePlayerData(UUID uuid,FileConfiguration config) {
