@@ -132,14 +132,12 @@ public final class Main extends JavaPlugin {
     }
 
     public void checkCommandFeedback(){
-        if(XMaterial.supports(9)) {
-            if (getConfig().getBoolean("Settings.DisableCommandFeedback")) {
-                for (World worlds : Bukkit.getServer().getWorlds())
-                    worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
-            } else {
-                for (World worlds : Bukkit.getServer().getWorlds())
-                    worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
-            }
+        if (getConfig().getBoolean("Settings.DisableCommandFeedback")) {
+            for (World worlds : Bukkit.getServer().getWorlds())
+                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+        } else {
+            for (World worlds : Bukkit.getServer().getWorlds())
+                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
         }
     }
 

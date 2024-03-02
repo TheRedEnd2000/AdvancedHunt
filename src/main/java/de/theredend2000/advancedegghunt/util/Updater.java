@@ -23,7 +23,7 @@ public class Updater implements Listener {
     public Updater(Main plugin){
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this,plugin);
-        isOutdated();
+        //isOutdated();
     }
 
     public boolean isOutdated(Player player) {
@@ -62,7 +62,7 @@ public class Updater implements Listener {
         return false;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    //@EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         boolean updates = plugin.getConfig().getBoolean("Settings.Updater");

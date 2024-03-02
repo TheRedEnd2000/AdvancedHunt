@@ -21,11 +21,13 @@ public class PlayerEggDataManager {
     private Main plugin;
     private File dataFolder;
     private HashMap<UUID, FileConfiguration> playerConfigs;
+    private HashMap<UUID, File> playerFiles;
 
     public PlayerEggDataManager() {
         plugin = Main.getInstance();
         dataFolder = plugin.getDataFolder();
         playerConfigs = new HashMap<>();
+        playerFiles = new HashMap<>();
     }
 
     public void initPlayers() {
@@ -35,17 +37,23 @@ public class PlayerEggDataManager {
     }
 
     private void loadPlayerData(UUID uuid) {
-        FileConfiguration config = this.getPlayerData(uuid);
+        FileConfiguration config = getPlayerData(uuid);
         this.playerConfigs.put(uuid, config);
     }
 
     private File getFile(UUID uuid) {
-        return new File(String.valueOf(this.dataFolder) + "/playerdata/", String.valueOf(uuid) + ".yml");
+        if(!playerFiles.containsKey(uuid))
+            return new File(this.dataFolder + "/playerdata/", uuid + ".yml");
+        return playerFiles.get(uuid);
     }
 
     public FileConfiguration getPlayerData(UUID uuid) {
         File playerFile = this.getFile(uuid);
-        return YamlConfiguration.loadConfiguration(playerFile);
+        if(!playerConfigs.containsKey(uuid)) {
+            Bukkit.broadcastMessage("loaded "+uuid);
+            this.playerConfigs.put(uuid, YamlConfiguration.loadConfiguration(playerFile));
+        }
+        return playerConfigs.get(uuid);
     }
 
     public void savePlayerData(UUID uuid, FileConfiguration config) {
@@ -73,7 +81,7 @@ public class PlayerEggDataManager {
                 var5.printStackTrace();
             }
         }
-
+        this.playerConfigs.put(uuid, config);
         this.loadPlayerData(uuid);
         this.savePlayerData(uuid, config);
         this.setDeletionType(DeletionTypes.Noting, uuid);
