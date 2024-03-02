@@ -50,7 +50,6 @@ public class PlayerEggDataManager {
     public FileConfiguration getPlayerData(UUID uuid) {
         File playerFile = this.getFile(uuid);
         if(!playerConfigs.containsKey(uuid)) {
-            Bukkit.broadcastMessage("loaded "+uuid);
             this.playerConfigs.put(uuid, YamlConfiguration.loadConfiguration(playerFile));
         }
         return playerConfigs.get(uuid);

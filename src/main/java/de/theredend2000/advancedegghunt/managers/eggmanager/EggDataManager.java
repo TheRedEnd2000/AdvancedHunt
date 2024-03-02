@@ -16,11 +16,13 @@ public class EggDataManager {
     private final Main plugin;
     private final File dataFolder;
     private HashMap<String, FileConfiguration> eggsConfigs;
+    private HashMap<String, File> eggsFile;
 
     public EggDataManager(Main plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
         eggsConfigs = new HashMap<>();
+        eggsFile = new HashMap<>();
 
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
@@ -48,20 +50,20 @@ public class EggDataManager {
     }
 
     private File getFile(String section) {
-        return new File(this.dataFolder + "/eggs/", section + ".yml");
+        if(!eggsFile.containsKey(section))
+            eggsFile.put(section,new File(this.dataFolder + "/eggs/", section + ".yml"));
+        return eggsFile.get(section);
     }
 
     public FileConfiguration getPlacedEggs(String section) {
         File playerFile = this.getFile(section);
         if(!eggsConfigs.containsKey(section)) {
-            Bukkit.broadcastMessage("loaded section "+section);
             this.eggsConfigs.put(section, YamlConfiguration.loadConfiguration(playerFile));
         }
         return eggsConfigs.get(section);
     }
 
     public void savePlacedEggs(String section, FileConfiguration config) {
-        Bukkit.broadcastMessage("executed");
         try {
             config.save(this.getFile(section));
         } catch (IOException var4) {
@@ -105,26 +107,22 @@ public class EggDataManager {
 
     public List<String> savedEggSections() {
         List<String> eggsSections = new ArrayList();
-        if(eggsConfigs.isEmpty()){
-            File eggsSectionsFolder = new File(String.valueOf(this.dataFolder) + "/eggs/");
-            if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
-                File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> {
-                    return name.endsWith(".yml");
-                });
-                if (playerFiles != null) {
-                    File[] var4 = playerFiles;
-                    int var5 = playerFiles.length;
+        File eggsSectionsFolder = new File(this.dataFolder + "/eggs/");
+        if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
+            File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> {
+                return name.endsWith(".yml");
+            });
+            if (playerFiles != null) {
+                File[] var4 = playerFiles;
+                int var5 = playerFiles.length;
 
-                    for(int var6 = 0; var6 < var5; ++var6) {
-                        File playerFile = var4[var6];
-                        String fileName = playerFile.getName();
-                        String sectionName = fileName.substring(0, fileName.length() - 4);
-                        eggsSections.add(sectionName);
-                    }
+                for(int var6 = 0; var6 < var5; ++var6) {
+                    File playerFile = var4[var6];
+                    String fileName = playerFile.getName();
+                    String sectionName = fileName.substring(0, fileName.length() - 4);
+                    eggsSections.add(sectionName);
                 }
             }
-        }else{
-            eggsSections.addAll(eggsConfigs.keySet());
         }
         return eggsSections;
     }

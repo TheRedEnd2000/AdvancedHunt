@@ -296,12 +296,13 @@ public class EggManager {
     }
 
     public void spawnEggParticle(){
+        List<String> sections = plugin.getEggDataManager().savedEggSections();
             new BukkitRunnable() {
                 double time = 0;
 
                 @Override
                 public void run() {
-                    for(String sections : plugin.getEggDataManager().savedEggSections()) {
+                    for(String sections : sections) {
                         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(sections);
                     time += 0.025;
                     if (!placedEggs.contains("PlacedEggs.")) {
