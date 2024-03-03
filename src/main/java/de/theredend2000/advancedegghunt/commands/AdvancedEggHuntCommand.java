@@ -48,8 +48,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             eggManager.startEggPlacing(player);
                             Main.getInstance().getPlaceEggsPlayers().add(player);
                             player.sendMessage(messageManager.getMessage(MessageKey.ENTER_PLACEMODE));
-                            player.getInventory().setItem(4,new ItemBuilder(XMaterial.NETHER_STAR).setDisplayname("§6§lEggs Types §7(Right-Click)").setLocalizedName("egghunt.eggs").build());
-                            player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayname("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup","§7or type §e/egghunt placeEggs §7again.").setLocalizedName("egghunt.finish").setSoulbound(true).build());
+                            player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR).setDisplayname("§6§lEggs Types §7(Right-Click)").setLocalizedName("egghunt.eggs").build());
+                            player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayname("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.").setLocalizedName("egghunt.finish").setSoulbound(true).build());
                         }
                     }else if(args[0].equalsIgnoreCase("list")){
                         new EggListMenu(Main.getPlayerMenuUtility(player)).open();
@@ -154,7 +154,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     String name = args[1];
                     if(eggManager.containsPlayer(name)){
                         for(String collections : Main.getInstance().getEggDataManager().savedEggCollections())
-                            eggManager.resetStatsPlayer(name,collections);
+                            eggManager.resetStatsPlayer(name, collections);
                         sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
                     }else
                         sender.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
@@ -175,12 +175,12 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 1){
             if(sender.hasPermission(permission)) {
-                String[] tabs = {"placeEggs", "reload","reset", "list", "help", "settings","progress","show","commands","leaderboard","hint","collection"};
+                String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection"};
                 ArrayList<String> complete = new ArrayList<>();
                 Collections.addAll(complete, tabs);
                 return complete;
             }else{
-                String[] tabs = {"progress","leaderboard","hint","collection"};
+                String[] tabs = {"progress", "leaderboard", "hint", "collection"};
                 ArrayList<String> complete = new ArrayList<>();
                 Collections.addAll(complete, tabs);
                 return complete;

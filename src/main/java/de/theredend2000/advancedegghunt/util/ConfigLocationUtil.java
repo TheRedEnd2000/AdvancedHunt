@@ -12,7 +12,7 @@ public class ConfigLocationUtil {
     private Main plugin;
     private Location location;
     private String root;
-    public ConfigLocationUtil(Main plugin,Location location, String root){
+    public ConfigLocationUtil(Main plugin, Location location, String root){
         this.plugin = plugin;
         this.location = location;
         this.root = root;
@@ -26,7 +26,7 @@ public class ConfigLocationUtil {
         config.set(root + ".Z", location.getBlockZ());
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
-        Main.getInstance().getEggDataManager().savePlacedEggs(section,config);
+        Main.getInstance().getEggDataManager().savePlacedEggs(section, config);
     }
 
     public void saveBlockLocation(UUID uuid) {
@@ -37,7 +37,7 @@ public class ConfigLocationUtil {
         config.set(root + ".Z", location.getBlockZ());
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
-        plugin.getPlayerEggDataManager().savePlayerData(uuid,config);
+        plugin.getPlayerEggDataManager().savePlayerData(uuid, config);
     }
 
     public ConfigLocationUtil(Main plugin, String root) {

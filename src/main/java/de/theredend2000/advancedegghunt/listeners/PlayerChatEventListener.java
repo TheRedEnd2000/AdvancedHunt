@@ -55,34 +55,34 @@ public class PlayerChatEventListener implements Listener {
                         }
                     }
                 }
-                setConfiguration(String.valueOf(nextNumber), event.getMessage(),player);
+                setConfiguration(String.valueOf(nextNumber), event.getMessage(), player);
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", String.valueOf(nextNumber)));
                 id = String.valueOf(nextNumber);
             } else {
-                setConfiguration("0", event.getMessage(),player);
+                setConfiguration("0", event.getMessage(), player);
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", "0"));
                 id = "0";
             }
             Main.getInstance().getPlayerAddCommand().remove(player);
-            Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
+            Main.getInstance().getInventoryManager().createCommandSettingsMenu(player, id);
         }else {
             String id = Main.getInstance().getConfig().getString("Edit." + player.getUniqueId() + ".commandID");
             placedEggs.set("Rewards." + id + ".command", event.getMessage());
-            Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
-            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CHANGED).replaceAll("%ID%",id));
-            placedEggs.set("Edit." + player.getUniqueId(),null);
-            Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
+            Main.getInstance().getEggDataManager().savePlacedEggs(section1, placedEggs);
+            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CHANGED).replaceAll("%ID%", id));
+            placedEggs.set("Edit." + player.getUniqueId(), null);
+            Main.getInstance().getEggDataManager().savePlacedEggs(section1, placedEggs);
             Main.getInstance().getPlayerAddCommand().remove(player);
-            Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
+            Main.getInstance().getInventoryManager().createCommandSettingsMenu(player, id);
         }
     }
-    private void setConfiguration(String id, String command,Player player){
+    private void setConfiguration(String id, String command, Player player){
         String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         placedEggs.set("Rewards." + id + ".command", command);
         placedEggs.set("Rewards." + id + ".enabled", true);
         placedEggs.set("Rewards." + id + ".type", 0);
-        Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
+        Main.getInstance().getEggDataManager().savePlacedEggs(section, placedEggs);
     }
 
     private void runTimeForPlayers(){
@@ -97,14 +97,14 @@ public class PlayerChatEventListener implements Listener {
                     if(currenttime == 0){
                         if(player != null){
                             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_EXPIRED));
-                            placedEggs.set("Edit." + player.getUniqueId(),null);
-                            Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
+                            placedEggs.set("Edit." + player.getUniqueId(), null);
+                            Main.getInstance().getEggDataManager().savePlacedEggs(section1, placedEggs);
                         }
                         return;
                     }
-                    Main.getInstance().getPlayerAddCommand().put(player,currenttime-1);
+                    Main.getInstance().getPlayerAddCommand().put(player, currenttime-1);
                 }
             }
-        }.runTaskTimer(Main.getInstance(),0,20);
+        }.runTaskTimer(Main.getInstance(), 0, 20);
     }
 }

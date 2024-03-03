@@ -27,7 +27,7 @@ public class Config {
         if(!folder.exists())
             folder.mkdirs();
 
-        cfgFile = new File(folder,file);
+        cfgFile = new File(folder, file);
         if(!cfgFile.exists()){
             try {
                 cfgFile.createNewFile();

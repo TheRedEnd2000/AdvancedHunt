@@ -55,13 +55,13 @@ public class PlayerInteractEventListener implements Listener {
                 player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
                 return;
             }
-            if (!eggManager.hasFound(player, id,collections)) {
+            if (!eggManager.hasFound(player, id, collections)) {
                 if(!Main.getInstance().getRequirementsManager().canBeAccessed(collections)){
                     player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
                     return;
                 }
                 if(Main.getInstance().getRequirementsManager().getOverallTime(collections) <= 0)
-                    Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(),collections,id);
+                    Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(), collections, id);
                 eggManager.saveFoundEggs(player, event.getClickedBlock(), id, collections);
                 Location loc = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
                 if (Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"))
@@ -73,7 +73,7 @@ public class PlayerInteractEventListener implements Listener {
                             boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
                             if (placedEggs.getInt("Rewards." + key + ".type") == 1 && enabled) {
                                 String cmd = placedEggs.getString("Rewards." + key + ".command");
-                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player,collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
+                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
                             }
                         }
                     }
@@ -84,7 +84,7 @@ public class PlayerInteractEventListener implements Listener {
                             boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
                             if (placedEggs.getInt("Rewards." + key + ".type") == 0 && enabled) {
                                 String cmd = placedEggs.getString("Rewards." + key + ".command").replaceAll("&", "§");
-                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player,collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
+                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
                             }
                         }
                     }

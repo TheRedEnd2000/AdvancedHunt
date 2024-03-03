@@ -70,8 +70,8 @@ public final class Main extends JavaPlugin {
         plugin = this;
         setupDefaultCollection = false;
         saveDefaultConfig();
-        PREFIX = ChatColor.translateAlternateColorCodes('&',getConfig().getString("prefix"));
-        Metrics metrics = new Metrics(this,19495);
+        PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("prefix"));
+        Metrics metrics = new Metrics(this, 19495);
         refreshCooldown = new HashMap<String, Long>();
         placeEggsPlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
@@ -106,7 +106,7 @@ public final class Main extends JavaPlugin {
         for(ArmorStand a : showedArmorstands){
             a.remove();
         }
-        getConfig().set("Edit",null);
+        getConfig().set("Edit", null);
         saveConfig();
     }
 
@@ -155,7 +155,7 @@ public final class Main extends JavaPlugin {
         new ExplodeEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
-        new HintInventoryCreator(null,null,false);
+        new HintInventoryCreator(null, null, false);
         new RequirementsListeners(this);
         new ResetListeners(this);
     }

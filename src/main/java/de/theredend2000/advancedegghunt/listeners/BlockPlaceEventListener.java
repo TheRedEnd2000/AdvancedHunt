@@ -13,7 +13,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 public class BlockPlaceEventListener implements Listener {
 
     public BlockPlaceEventListener(){
-        Bukkit.getPluginManager().registerEvents(this,Main.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
 
@@ -30,7 +30,7 @@ public class BlockPlaceEventListener implements Listener {
 
         if(player.hasPermission(permission)){
             String section = eggManager.getEggSectionFromPlayerData(player.getUniqueId());
-            eggManager.saveEgg(player, event.getBlockPlaced().getLocation(),section);
+            eggManager.saveEgg(player, event.getBlockPlaced().getLocation(), section);
             player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
         }else
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission));

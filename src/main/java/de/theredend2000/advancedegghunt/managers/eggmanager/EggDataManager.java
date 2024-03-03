@@ -46,7 +46,7 @@ public class EggDataManager {
 
     private File getFile(String section) {
         if(!eggsFile.containsKey(section))
-            eggsFile.put(section,new File(this.dataFolder + "/eggs/", section + ".yml"));
+            eggsFile.put(section, new File(this.dataFolder + "/eggs/", section + ".yml"));
         return eggsFile.get(section);
     }
 

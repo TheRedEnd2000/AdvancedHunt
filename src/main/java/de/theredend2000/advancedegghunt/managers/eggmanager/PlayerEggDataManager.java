@@ -40,7 +40,7 @@ public class PlayerEggDataManager {
 
     private File getFile(UUID uuid) {
         if(!playerFiles.containsKey(uuid))
-            playerFiles.put(uuid,new File(this.dataFolder + "/playerdata/", uuid + ".yml"));
+            playerFiles.put(uuid, new File(this.dataFolder + "/playerdata/", uuid + ".yml"));
         return playerFiles.get(uuid);
     }
 
@@ -131,11 +131,11 @@ public class PlayerEggDataManager {
                         for(String id : cfg.getConfigurationSection("FoundEggs." + sections).getKeys(false)) {
                             if (id.equals("Count") || id.equals("Name")) continue;
                             if (canReset(uuids, sections, id))
-                                plugin.getEggManager().resetStatsPlayerEgg(uuids,sections,id);
+                                plugin.getEggManager().resetStatsPlayerEgg(uuids, sections, id);
                         }
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(plugin,20,20);
+        }.runTaskTimerAsynchronously(plugin, 20, 20);
     }
 }

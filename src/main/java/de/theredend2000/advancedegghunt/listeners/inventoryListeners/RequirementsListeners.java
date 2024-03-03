@@ -22,7 +22,7 @@ public class RequirementsListeners implements Listener {
 
     public RequirementsListeners(Main plugin){
         this.plugin = plugin;
-        Bukkit.getPluginManager().registerEvents(this,plugin);
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         messageManager = plugin.getMessageManager();
     }
 

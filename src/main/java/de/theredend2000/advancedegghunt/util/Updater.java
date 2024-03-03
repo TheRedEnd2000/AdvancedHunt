@@ -18,7 +18,7 @@ public class Updater implements Listener {
 
     public Updater(Main plugin){
         this.plugin = plugin;
-        Bukkit.getPluginManager().registerEvents(this,plugin);
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         //isOutdated();
     }
 

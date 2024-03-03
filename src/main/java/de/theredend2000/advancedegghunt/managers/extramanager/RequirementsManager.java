@@ -229,36 +229,36 @@ public class RequirementsManager {
         return isContained;
     }
 
-    public void changeActivity(String section,boolean active){
+    public void changeActivity(String section, boolean active){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         for(int i = 0; i < 24; i++){
-            placedEggs.set("Requirements.Hours." + i,active);
+            placedEggs.set("Requirements.Hours." + i, active);
         }
         for(String weekday : DateTimeUtil.getWeekList()){
-            placedEggs.set("Requirements.Weekday." + weekday,active);
+            placedEggs.set("Requirements.Weekday." + weekday, active);
         }
         for(String month : DateTimeUtil.getMonthList()){
-            placedEggs.set("Requirements.Month." + month,active);
+            placedEggs.set("Requirements.Month." + month, active);
         }
         int currentYear = DateTimeUtil.getCurrentYear();
         for (int year = currentYear; year < (currentYear + 28);year++) {
-            placedEggs.set("Requirements.Year." + year,active);
+            placedEggs.set("Requirements.Year." + year, active);
         }
         for(String season : DateTimeUtil.getSeasonList()){
-            placedEggs.set("Requirements.Season." + season,active);
+            placedEggs.set("Requirements.Season." + season, active);
         }
-        plugin.getEggDataManager().savePlacedEggs(section,placedEggs);
+        plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
     }
 
     public void resetReset(String section){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
-        placedEggs.set("Reset.Year",0);
-        placedEggs.set("Reset.Month",0);
-        placedEggs.set("Reset.Day",0);
-        placedEggs.set("Reset.Hour",0);
-        placedEggs.set("Reset.Minute",0);
-        placedEggs.set("Reset.Second",0);
-        plugin.getEggDataManager().savePlacedEggs(section,placedEggs);
+        placedEggs.set("Reset.Year", 0);
+        placedEggs.set("Reset.Month", 0);
+        placedEggs.set("Reset.Day", 0);
+        placedEggs.set("Reset.Hour", 0);
+        placedEggs.set("Reset.Minute", 0);
+        placedEggs.set("Reset.Second", 0);
+        plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
     }
 
     public int getOverallTime(String section){
@@ -342,7 +342,7 @@ public class RequirementsManager {
         }
     }
 
-    public String getActives(Requirements requirements,String section){
+    public String getActives(Requirements requirements, String section){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         switch (requirements){
             case Hours:

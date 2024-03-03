@@ -39,7 +39,7 @@ public class InventoryClickEventListener implements Listener {
     private MessageManager messageManager;
 
     public InventoryClickEventListener(){
-        Bukkit.getPluginManager().registerEvents(this,Main.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
         messageManager = Main.getInstance().getMessageManager();
     }
 
@@ -134,7 +134,7 @@ public class InventoryClickEventListener implements Listener {
                     }
                 }
             }
-            Main.getInstance().getConfig().set("PlaceEggs." + nextNumber + ".type",event.getCurrentItem().getType().name().toUpperCase());
+            Main.getInstance().getConfig().set("PlaceEggs." + nextNumber + ".type", event.getCurrentItem().getType().name().toUpperCase());
             Main.getInstance().saveConfig();
             new EggPlaceMenu(Main.getPlayerMenuUtility(player)).open();
         }

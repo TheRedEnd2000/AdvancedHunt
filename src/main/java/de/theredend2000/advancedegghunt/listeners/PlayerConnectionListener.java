@@ -19,7 +19,7 @@ public class PlayerConnectionListener implements Listener {
                 Main.getInstance().getSortTypeLeaderboard().put(player, LeaderboardSortTypes.ALL);
             }
         }
-        Bukkit.getPluginManager().registerEvents(this,Main.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
     @EventHandler
@@ -30,7 +30,7 @@ public class PlayerConnectionListener implements Listener {
         }
         Main.getInstance().getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
         FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
-        Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(),playerConfig);
+        Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
         if(player.isOp()){
             if(!Main.getInstance().getMessageManager().isUpToDate())
                 player.sendMessage(Main.PREFIX + "§cThere is a newer version of your messages file. Please reinstall it.");
