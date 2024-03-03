@@ -609,70 +609,72 @@ public class EggManager {
     public void convertEggData() {
         File eggsFile = new File(plugin.getDataFolder(), "eggs.yml");
 
-        if (eggsFile.exists() && isVersionLessThan("2.1.0")) {
-            Bukkit.getConsoleSender().sendMessage("§cAdvancedEggHunt found the old configuration system.\n §cIt is now changing to the new one.\n§4THIS CAN TAKE A WHILE!");
-            FileConfiguration eggsConfig = YamlConfiguration.loadConfiguration(eggsFile);
-
-            Bukkit.broadcastMessage("§4AdvancedEggHunt IS UPDATING THEIR CONFIGURATION SYSTEM PLEASE DONT MOVE UTIL FINISHED");
-            for(Player player : Bukkit.getOnlinePlayers()){
-                if(player.isOp())
-                    player.sendMessage("§cTHE BEST IS WHEN NOBODY IS ON THE SERVER DURING THE CONVERT. §4CONSOLE SHOWS THE PROGRESS");
-            }
-            if (eggsConfig.contains("Eggs")) {
-                File oldFile = new File(plugin.getDataFolder() + "/eggs/",   "eggs.yml");
-                FileConfiguration placedEggsConfig = YamlConfiguration.loadConfiguration(oldFile);
-
-                placedEggsConfig.set("PlacedEggs", eggsConfig.getConfigurationSection("Eggs"));
-                placedEggsConfig.set("MaxEggs", eggsConfig.getInt("MaxEggs"));
-                try {
-                    placedEggsConfig.save(oldFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Bukkit.getConsoleSender().sendMessage("§aAdvancedEggHunt converted all egg locations!");
-
-                ArrayList<UUID> convertPlayers = new ArrayList<>();
-
-                for (String uuids : eggsConfig.getConfigurationSection("FoundEggs.").getKeys(false)) {
-                    UUID uuid = UUID.fromString(uuids);
-                    convertPlayers.add(uuid);
-                }
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        if (!convertPlayers.isEmpty()) {
-                            List<UUID> playersToConvert = convertPlayers.subList(0, Math.min(5, convertPlayers.size()));
-
-                            for (UUID uuid : playersToConvert) {
-                                plugin.getPlayerEggDataManager().createPlayerFile(uuid);
-                                FileConfiguration playerEggsConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-                                ConfigurationSection foundEggsSection = eggsConfig.getConfigurationSection("FoundEggs." + uuid);
-                                if (foundEggsSection != null) {
-                                    playerEggsConfig.set("FoundEggs", foundEggsSection);
-                                    plugin.getPlayerEggDataManager().savePlayerData(uuid, playerEggsConfig);
-                                }
-                                Bukkit.getConsoleSender().sendMessage("§eConverted player data of " + uuid + ".");
-                            }
-
-                            convertPlayers.removeAll(playersToConvert);
-                        }else{
-                            cancel();
-                            Bukkit.broadcastMessage("§aUPDATING DONE!");
-
-                            try {
-                                if (eggsFile.delete()) {
-                                    Bukkit.getConsoleSender().sendMessage("§aeggs.yml was converted successfully.");
-                                } else {
-                                    Bukkit.getConsoleSender().sendMessage("§ceggs.yml can't be deleted.");
-                                }
-                            } catch (SecurityException e) {
-                                Bukkit.getConsoleSender().sendMessage("§4There was an error while deleting the eggs.yml file: " + e.getMessage());
-                            }
-                            Bukkit.getConsoleSender().sendMessage("§aAdvancedEggHunt converted all data to the new system.\n§2The plugin is now running flawless again\n§4Please report bugs on the discord: §9https://discord.gg/qapvQMUt34");
-                        }
-                    }
-                }.runTaskTimer(plugin, 0, 60);
-            }
+        if (!eggsFile.exists() || !isVersionLessThan("2.1.0")) {
+            return;
         }
+        Bukkit.getConsoleSender().sendMessage("§cAdvancedEggHunt found the old configuration system.\n §cIt is now changing to the new one.\n§4THIS CAN TAKE A WHILE!");
+        FileConfiguration eggsConfig = YamlConfiguration.loadConfiguration(eggsFile);
+
+        Bukkit.broadcastMessage("§4AdvancedEggHunt IS UPDATING THEIR CONFIGURATION SYSTEM PLEASE DONT MOVE UTIL FINISHED");
+        for(Player player : Bukkit.getOnlinePlayers()){
+            if(player.isOp())
+                player.sendMessage("§cTHE BEST IS WHEN NOBODY IS ON THE SERVER DURING THE CONVERT. §4CONSOLE SHOWS THE PROGRESS");
+        }
+        if (!eggsConfig.contains("Eggs")) {
+            return;
+        }
+        File oldFile = new File(plugin.getDataFolder() + "/eggs/",   "eggs.yml");
+        FileConfiguration placedEggsConfig = YamlConfiguration.loadConfiguration(oldFile);
+
+        placedEggsConfig.set("PlacedEggs", eggsConfig.getConfigurationSection("Eggs"));
+        placedEggsConfig.set("MaxEggs", eggsConfig.getInt("MaxEggs"));
+        try {
+            placedEggsConfig.save(oldFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Bukkit.getConsoleSender().sendMessage("§aAdvancedEggHunt converted all egg locations!");
+
+        ArrayList<UUID> convertPlayers = new ArrayList<>();
+
+        for (String uuids : eggsConfig.getConfigurationSection("FoundEggs.").getKeys(false)) {
+            UUID uuid = UUID.fromString(uuids);
+            convertPlayers.add(uuid);
+        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!convertPlayers.isEmpty()) {
+                    List<UUID> playersToConvert = convertPlayers.subList(0, Math.min(5, convertPlayers.size()));
+
+                    for (UUID uuid : playersToConvert) {
+                        plugin.getPlayerEggDataManager().createPlayerFile(uuid);
+                        FileConfiguration playerEggsConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
+                        ConfigurationSection foundEggsSection = eggsConfig.getConfigurationSection("FoundEggs." + uuid);
+                        if (foundEggsSection != null) {
+                            playerEggsConfig.set("FoundEggs", foundEggsSection);
+                            plugin.getPlayerEggDataManager().savePlayerData(uuid, playerEggsConfig);
+                        }
+                        Bukkit.getConsoleSender().sendMessage("§eConverted player data of " + uuid + ".");
+                    }
+
+                    convertPlayers.removeAll(playersToConvert);
+                }else{
+                    cancel();
+                    Bukkit.broadcastMessage("§aUPDATING DONE!");
+
+                    try {
+                        if (eggsFile.delete()) {
+                            Bukkit.getConsoleSender().sendMessage("§aeggs.yml was converted successfully.");
+                        } else {
+                            Bukkit.getConsoleSender().sendMessage("§ceggs.yml can't be deleted.");
+                        }
+                    } catch (SecurityException e) {
+                        Bukkit.getConsoleSender().sendMessage("§4There was an error while deleting the eggs.yml file: " + e.getMessage());
+                    }
+                    Bukkit.getConsoleSender().sendMessage("§aAdvancedEggHunt converted all data to the new system.\n§2The plugin is now running flawless again\n§4Please report bugs on the discord: §9https://discord.gg/qapvQMUt34");
+                }
+            }
+        }.runTaskTimer(plugin, 0, 60);
     }
 }
