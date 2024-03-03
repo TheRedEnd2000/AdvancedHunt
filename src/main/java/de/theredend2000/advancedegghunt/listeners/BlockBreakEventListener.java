@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 
 
 public class BlockBreakEventListener implements Listener {
@@ -24,11 +25,13 @@ public class BlockBreakEventListener implements Listener {
 
     @EventHandler
     public void onDestroyEgg(BlockBreakEvent event){
-        EggManager eggManager = Main.getInstance().getEggManager();
-        SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if(eggManager.containsEgg(event.getBlock())){
+
+        EggManager eggManager = Main.getInstance().getEggManager();
+        SoundManager soundManager = Main.getInstance().getSoundManager();
+
+        if(eggManager.containsEgg(block)){
             String section = eggManager.getEggSection(block);
             String permission = Main.getInstance().getConfig().getString("Permissions.BreakEggPermission");
             if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
@@ -48,4 +51,12 @@ public class BlockBreakEventListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onBlockFromToEvent(BlockFromToEvent event) {
+        Block block = event.getBlock();
+        EggManager eggManager = Main.getInstance().getEggManager();
+
+        if(eggManager.containsEgg(block))
+            event.setCancelled(true);
+    }
 }
