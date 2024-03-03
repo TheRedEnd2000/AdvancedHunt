@@ -107,11 +107,10 @@ public class EggDataManager {
                 return name.endsWith(".yml");
             });
             if (playerFiles != null) {
-                File[] var4 = playerFiles;
-                int var5 = playerFiles.length;
+                int playerFilesLength = playerFiles.length;
 
-                for(int var6 = 0; var6 < var5; ++var6) {
-                    File playerFile = var4[var6];
+                for(int i = 0; i < playerFilesLength; ++i) {
+                    File playerFile = playerFiles[i];
                     String fileName = playerFile.getName();
                     String sectionName = fileName.substring(0, fileName.length() - 4);
                     eggsSections.add(sectionName);
@@ -157,11 +156,10 @@ public class EggDataManager {
                 return name.endsWith(".yml");
             });
             if (playerFiles != null) {
-                File[] var4 = playerFiles;
-                int var5 = playerFiles.length;
+                int playerFilesLength = playerFiles.length;
 
-                for(int var6 = 0; var6 < var5; ++var6) {
-                    File playerFile = var4[var6];
+                for(int i = 0; i < playerFilesLength; ++i) {
+                    File playerFile = playerFiles[i];
                     String fileName = playerFile.getName();
                     UUID playerUUID = UUID.fromString(fileName.substring(0, fileName.length() - 4));
                     playerUUIDs.add(playerUUID);
