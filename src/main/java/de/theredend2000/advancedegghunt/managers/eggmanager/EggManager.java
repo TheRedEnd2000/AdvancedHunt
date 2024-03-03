@@ -82,7 +82,7 @@ public class EggManager {
     }
 
     public void finishEggPlacing(Player player){
-        Config cfg = new Config(Main.getInstance(), player.getName());
+        Config cfg = new Config(Main.getInstance(), player.getUniqueId());
         String[] values = new String[]{cfg.getConfig().getString("inv"), cfg.getConfig().getString("armor")};
         ItemStack[][] items = Serialization.base64toInv(values);
         player.getInventory().clear();
@@ -91,7 +91,7 @@ public class EggManager {
     }
 
     public void startEggPlacing(Player player){
-        Config cfg = new Config(Main.getInstance(), player.getName());
+        Config cfg = new Config(Main.getInstance(), player.getUniqueId());
         String[] values = Serialization.invToBase64(player.getInventory());
         cfg.getConfig().set("inv", values[0]);
         cfg.getConfig().set("armor", values[1]);

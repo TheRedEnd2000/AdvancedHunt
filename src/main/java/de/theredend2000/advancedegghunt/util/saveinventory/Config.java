@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class Config {
     private Main plugin;
@@ -14,9 +15,9 @@ public class Config {
     private FileConfiguration cfg;
     private File cfgFile;
 
-    public Config(Main plugin, String file){
+    public Config(Main plugin, UUID file){
         this.plugin = plugin;
-        this.file = file + ".yml";
+        this.file = file.toString() + ".yml";
         folder = new File(plugin.getDataFolder() + "//invs//");
         cfg = null;
         cfgFile = null;

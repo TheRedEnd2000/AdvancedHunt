@@ -149,7 +149,7 @@ public class EggDataManager {
 
     public List<UUID> savedPlayers() {
         List<UUID> playerUUIDs = new ArrayList();
-        File playerDataFolder = new File(String.valueOf(this.dataFolder) + "/playerdata/");
+        File playerDataFolder = new File(this.dataFolder + "/playerdata/");
         if (playerDataFolder.exists() && playerDataFolder.isDirectory()) {
             File[] playerFiles = playerDataFolder.listFiles((dir, name) -> {
                 return name.endsWith(".yml");
