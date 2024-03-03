@@ -38,10 +38,16 @@ public class EggManager {
 
     private Main plugin;
     private MessageManager messageManager;
+    Particle eggNotFoundParticle;
+    Particle eggFoundParticle;
 
     public EggManager(){
         this.plugin = Main.getInstance();
         messageManager = Main.getInstance().getMessageManager();
+
+        eggNotFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
+        eggFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
+
     }
 
 
@@ -372,9 +378,9 @@ public class EggManager {
 
     public Particle getParticle(Player p, String key,String section){
         if(hasFound(p,key,section)){
-            return XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
+            return eggNotFoundParticle;
         }else {
-            return XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggFound").toUpperCase());
+            return eggFoundParticle;
         }
     }
 
