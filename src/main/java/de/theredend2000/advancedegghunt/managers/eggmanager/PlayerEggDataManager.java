@@ -95,7 +95,7 @@ public class PlayerEggDataManager {
     }
 
     public void setResetTimer(UUID uuid, String section, String id) {
-        FileConfiguration cfg = YamlConfiguration.loadConfiguration(this.getFile(uuid));
+        FileConfiguration cfg = getPlayerData(uuid);
         int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(section);
         if (currentSeconds != 0) {
             long toSet = System.currentTimeMillis() + (long)currentSeconds * 1000L;
@@ -110,7 +110,7 @@ public class PlayerEggDataManager {
     }
 
     public long getResetTimer(UUID uuid, String section, String id) {
-        FileConfiguration cfg = YamlConfiguration.loadConfiguration(this.getFile(uuid));
+        FileConfiguration cfg = getPlayerData(uuid);
         return !cfg.contains("FoundEggs." + section + "." + id + ".ResetCooldown") ? System.currentTimeMillis() + 1000000L : cfg.getLong("FoundEggs." + section + "." + id + ".ResetCooldown");
     }
 
