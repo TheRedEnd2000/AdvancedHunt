@@ -2,22 +2,17 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselect
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.ListPaginatedMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
-import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Objects;
 
 public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
@@ -42,7 +37,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player p = (Player) e.getWhoClicked();
 
-        ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggSections());
+        ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String selection : keys){
             if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(selection)){
                 if(e.getAction() == InventoryAction.PICKUP_ALL){
@@ -102,7 +97,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggSections());
+        ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         if(keys.isEmpty()){
             playerMenuUtility.getOwner().closeInventory();
             playerMenuUtility.getOwner().sendMessage("§cThere was an error please restart your server.");

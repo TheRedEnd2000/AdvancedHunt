@@ -11,10 +11,8 @@ import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManage
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
-import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
-import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import de.theredend2000.advancedegghunt.managers.CooldownManager;
@@ -25,7 +23,6 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManag
 import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
-import org.bstats.charts.CustomChart;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -33,8 +30,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.time.LocalDate;
 import java.util.*;
 
 public final class Main extends JavaPlugin {
@@ -109,7 +104,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void initData(){
-        List<String > sections = eggDataManager.savedEggSections();
+        List<String > sections = eggDataManager.savedEggCollections();
         playerEggDataManager.initPlayers();
         Bukkit.getConsoleSender().sendMessage("§2§l" +
                 "Loaded data of "+sections.size()+" player(s).");
@@ -197,8 +192,8 @@ public final class Main extends JavaPlugin {
     public void saveMessages() {
         try {
             this.messages.save(this.messagesData);
-        } catch (IOException var2) {
-            var2.printStackTrace();
+        } catch (IOException e) {
+            getLogger().severe(e.getMessage());
         }
     }
 

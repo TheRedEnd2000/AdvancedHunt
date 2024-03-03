@@ -5,7 +5,6 @@ import com.cryptomorin.xseries.particles.XParticle;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
-import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.Config;
@@ -25,14 +24,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class EggManager {
 
@@ -186,7 +180,7 @@ public class EggManager {
     }
 
     public boolean containsEgg(Block block){
-        for(String section : plugin.getEggDataManager().savedEggSections()) {
+        for(String section : plugin.getEggDataManager().savedEggCollections()) {
             if (!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
             for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
@@ -214,7 +208,7 @@ public class EggManager {
     }
 
     public String getEggSection(Block block){
-        for(String section : plugin.getEggDataManager().savedEggSections()) {
+        for(String section : plugin.getEggDataManager().savedEggCollections()) {
             if (!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
             for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
@@ -304,7 +298,7 @@ public class EggManager {
     public void spawnEggParticle(){
         if (!Main.getInstance().getConfig().getBoolean("Particle.enabled")) return;
 
-        List<String> collections = plugin.getEggDataManager().savedEggSections();
+        List<String> collections = plugin.getEggDataManager().savedEggCollections();
 
         new BukkitRunnable() {
             double time = 0;
@@ -425,7 +419,7 @@ public class EggManager {
     public boolean containsPlayer(String name){
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-            for(String sections : Main.getInstance().getEggDataManager().savedEggSections()) {
+            for(String sections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                 if (playerConfig == null || playerConfig.getString("FoundEggs.") == null) continue;
                 if(playerConfig.getString("FoundEggs."+sections) == null) continue;
                 if (playerConfig.getString("FoundEggs." + sections + ".Name").equals(name)) {
@@ -444,7 +438,7 @@ public class EggManager {
         }
     }
     public void showAllEggs(){
-        for(String sections : plugin.getEggDataManager().savedEggSections()) {
+        for(String sections : plugin.getEggDataManager().savedEggCollections()) {
             FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(sections);
             if (!placedEggs.contains("PlacedEggs.")) {
                 continue;

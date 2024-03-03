@@ -2,11 +2,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselect
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.ListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
-
-import java.util.ArrayList;
 
 public abstract class SelectionSelectPaginatedMenu extends SelectionSelectMenu {
 
@@ -50,7 +47,7 @@ public abstract class SelectionSelectPaginatedMenu extends SelectionSelectMenu {
         return maxItemsPerPage;
     }
     public int getMaxPages(){
-        int keys = Main.getInstance().getEggDataManager().savedEggSections().size();
+        int keys = Main.getInstance().getEggDataManager().savedEggCollections().size();
         if(keys == 0) return 1;
         return (int) Math.ceil((double) keys / getMaxItemsPerPage());
     }

@@ -1,5 +1,7 @@
 package de.theredend2000.advancedegghunt.util.saveinventory;
 
+import de.theredend2000.advancedegghunt.Main;
+
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,7 +24,7 @@ public class DatetimeUtils {
     public String getRelativeDate(long secondsToAdd) {
         try {
             return ZonedDateTime.now().plusSeconds(secondsToAdd).format(DATE_FORMATTER);
-        } catch (Exception var3) {
+        } catch (Exception e) {
             return "§cNOT FOUND";
         }
     }
@@ -30,8 +32,8 @@ public class DatetimeUtils {
     public String getNowDate() {
         try {
             return ZonedDateTime.now().format(DATE_FORMATTER);
-        } catch (Exception var1) {
-            var1.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             return "§cNOT FOUND";
         }
     }
@@ -39,8 +41,8 @@ public class DatetimeUtils {
     public String getNowTime() {
         try {
             return ZonedDateTime.now().format(TIME_FORMATTER);
-        } catch (Exception var1) {
-            var1.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             return "§cNOT FOUND";
         }
     }
@@ -48,8 +50,8 @@ public class DatetimeUtils {
     public String getNowYear() {
         try {
             return ZonedDateTime.now().format(YEAR_FORMATTER);
-        } catch (Exception var1) {
-            var1.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             return "§cNOT FOUND";
         }
     }
@@ -58,7 +60,7 @@ public class DatetimeUtils {
     public long getSeconds(String date) {
         try {
             return ZonedDateTime.parse(date, DATE_FORMATTER).toEpochSecond();
-        } catch (Exception var2) {
+        } catch (Exception e) {
             return -1L;
         }
     }
@@ -104,7 +106,7 @@ public class DatetimeUtils {
     public long getSecondsBetweenNowAndDate(String date) {
         try {
             return Duration.between(ZonedDateTime.now(getZoneId()), ZonedDateTime.parse(date, DATE_FORMATTER)).getSeconds();
-        } catch (Exception var2) {
+        } catch (Exception e) {
             return -1L;
         }
     }
@@ -113,7 +115,7 @@ public class DatetimeUtils {
         if (!time.equals("default")) {
             try {
                 return ZoneId.of(time);
-            } catch (Exception var2) {
+            } catch (Exception e) {
             }
         }
 
