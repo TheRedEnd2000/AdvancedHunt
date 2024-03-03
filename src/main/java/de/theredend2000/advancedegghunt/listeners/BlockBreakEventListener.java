@@ -62,7 +62,7 @@ public class BlockBreakEventListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockFromToEvent(PlayerBucketFillEvent event) {
+    public void onPlayerBucketFillEvent(PlayerBucketFillEvent event) {
         Block block = event.getBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 
