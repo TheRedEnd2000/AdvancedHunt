@@ -46,7 +46,7 @@ public class EggManager {
         messageManager = Main.getInstance().getMessageManager();
 
         eggNotFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
-        eggFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
+        eggFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggFound").toUpperCase());
 
     }
 
@@ -151,7 +151,7 @@ public class EggManager {
                         if(eggID.equalsIgnoreCase("Count") || eggID.equalsIgnoreCase("Name")) continue;
                         ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs."+section+"."+eggID);
                         if (location.loadLocation(uuids) != null) {
-                            if (block.getX() == location.loadLocation(player.getUniqueId()).getBlockX() && block.getY() == location.loadLocation(player.getUniqueId()).getBlockY() && block.getZ() == location.loadLocation(player.getUniqueId()).getBlockZ()) {
+                            if (block.getX() == location.loadLocation(uuids).getBlockX() && block.getY() == location.loadLocation(uuids).getBlockY() && block.getZ() == location.loadLocation(uuids).getBlockZ()) {
                                 playerConfig.set("FoundEggs."+section+"."+eggID, null);
                                 playerConfig.set("FoundEggs."+section+".Count", getPlayerCount(uuids,section) - 1);
                                 plugin.getPlayerEggDataManager().savePlayerData(uuids,playerConfig);
