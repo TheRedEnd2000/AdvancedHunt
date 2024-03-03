@@ -91,12 +91,10 @@ public class ConfigLocationUtil {
         FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root + ".World"));
-            double x = config.getDouble(root+".X"),
-                    y = config.getDouble(root+".Y"),
-                    z = config.getDouble(root+".Z");
-            float yaw = (float) config.getDouble(root+".Yaw"),
-                    pitch = (float) config.getDouble(root+".Pitch");
-            return new Location(world,x,y,z,yaw,pitch);
+            double x = config.getInt(root+".X"),
+                    y = config.getInt(root+".Y"),
+                    z = config.getInt(root+".Z");
+            return new Location(world,x,y,z);
         }else
             return  null;
 
@@ -106,12 +104,10 @@ public class ConfigLocationUtil {
         FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
         if(config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root + ".World"));
-            double x = config.getDouble(root+".X"),
-                    y = config.getDouble(root+".Y"),
-                    z = config.getDouble(root+".Z");
-            float yaw = (float) config.getDouble(root+".Yaw"),
-                    pitch = (float) config.getDouble(root+".Pitch");
-            return new Location(world,x,y,z,yaw,pitch);
+            double x = config.getInt(root+".X"),
+                    y = config.getInt(root+".Y"),
+                    z = config.getInt(root+".Z");
+            return new Location(world,x,y,z);
         }else
             return  null;
 

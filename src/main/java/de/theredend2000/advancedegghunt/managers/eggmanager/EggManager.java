@@ -325,6 +325,15 @@ public class EggManager {
                             int y = placedEggs.getInt("PlacedEggs." + key + ".Y");
                             int z = placedEggs.getInt("PlacedEggs." + key + ".Z");
                             Location startLocation = new Location(Bukkit.getWorld(world), x, y, z);
+                            int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
+                            for (Entity e : startLocation.getWorld().getNearbyEntities(startLocation, radius, radius, radius)) {
+                                if (e instanceof Player) {
+                                    Player p = (Player) e;
+                                    if (!hasFound(p, key,sections)) {
+                                        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(messageManager.getMessage(MessageKey.EGG_NEARBY)));
+                                    }
+                                }
+                            }
                             for (Entity e : startLocation.getWorld().getNearbyEntities(startLocation, 10, 10, 10)) {
                                 if (e instanceof Player) {
                                     Player p = (Player) e;
@@ -358,15 +367,6 @@ public class EggManager {
                                     p.spawnParticle(getParticle(p, key,sections), startX + time, startY, startZ, 0);
                                     p.spawnParticle(getParticle(p, key,sections), startX, startY - time, startZ, 0);
                                     p.spawnParticle(getParticle(p, key,sections), startX, startY, startZ + time, 0);
-                                }
-                            }
-                            int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
-                            for (Entity e : startLocation.getWorld().getNearbyEntities(startLocation, radius, radius, radius)) {
-                                if (e instanceof Player) {
-                                    Player p = (Player) e;
-                                    if (!hasFound(p, key,sections)) {
-                                        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(messageManager.getMessage(MessageKey.EGG_NEARBY)));
-                                    }
                                 }
                             }
                         }
