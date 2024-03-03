@@ -11,7 +11,6 @@ import java.util.Random;
 
 public class ExtraManager{
 
-
     public void spawnFireworkRocket(Location location) {
         Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
         firework.setSilent(true);

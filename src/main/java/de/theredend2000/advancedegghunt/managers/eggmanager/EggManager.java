@@ -420,8 +420,9 @@ public class EggManager {
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
             for(String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
-                if (playerConfig == null || playerConfig.getString("FoundEggs.") == null) continue;
-                if(playerConfig.getString("FoundEggs."+ collections) == null) continue;
+                if (playerConfig == null || playerConfig.getString("FoundEggs.") == null || playerConfig.getString("FoundEggs." + collections) == null) {
+                    continue;
+                }
                 if (playerConfig.getString("FoundEggs." + collections + ".Name").equals(name)) {
                     return true;
                 }
@@ -445,37 +446,38 @@ public class EggManager {
             }
             for (String key : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + key);
-                if (locationUtil.loadLocation(sections) != null) {
-                    String world = placedEggs.getString("PlacedEggs." + key + ".World");
-                    int x = placedEggs.getInt("PlacedEggs." + key + ".X");
-                    int y = placedEggs.getInt("PlacedEggs." + key + ".Y");
-                    int z = placedEggs.getInt("PlacedEggs." + key + ".Z");
-                    Location loc = new Location(Bukkit.getWorld(world), x, y, z).add(0.5, 0.5, 0.5);
-                    ArmorStand armorStand = loc.getWorld().spawn(loc, ArmorStand.class);
-                    armorStand.setGravity(false);
-                    armorStand.setInvulnerable(true);
-                    armorStand.setGlowing(true);
-                    armorStand.setCustomName("§dEgg #" + key + " for section §d§l" + sections);
-                    armorStand.setCustomNameVisible(true);
-                    armorStand.setSmall(true);
-                    armorStand.setInvisible(true);
-                    plugin.getShowedArmorstands().add(armorStand);
-                    new BukkitRunnable() {
-                        int count = Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow");
+                if (locationUtil.loadLocation(sections) == null) {
+                    continue;
+                }
+                String world = placedEggs.getString("PlacedEggs." + key + ".World");
+                int x = placedEggs.getInt("PlacedEggs." + key + ".X");
+                int y = placedEggs.getInt("PlacedEggs." + key + ".Y");
+                int z = placedEggs.getInt("PlacedEggs." + key + ".Z");
+                Location loc = new Location(Bukkit.getWorld(world), x, y, z).add(0.5, 0.5, 0.5);
+                ArmorStand armorStand = loc.getWorld().spawn(loc, ArmorStand.class);
+                armorStand.setGravity(false);
+                armorStand.setInvulnerable(true);
+                armorStand.setGlowing(true);
+                armorStand.setCustomName("§dEgg #" + key + " for section §d§l" + sections);
+                armorStand.setCustomNameVisible(true);
+                armorStand.setSmall(true);
+                armorStand.setInvisible(true);
+                plugin.getShowedArmorstands().add(armorStand);
+                new BukkitRunnable() {
+                    int count = Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow");
 
-                        @Override
-                        public void run() {
-                            count--;
-                            if (count == 0) {
-                                cancel();
-                                for (ArmorStand a : Main.getInstance().getShowedArmorstands()) {
-                                    a.remove();
-                                    plugin.getShowedArmorstands().remove(a);
-                                }
+                    @Override
+                    public void run() {
+                        count--;
+                        if (count == 0) {
+                            cancel();
+                            for (ArmorStand a : Main.getInstance().getShowedArmorstands()) {
+                                a.remove();
+                                plugin.getShowedArmorstands().remove(a);
                             }
                         }
-                    }.runTaskTimer(Main.getInstance(), 0, 20);
-                }
+                    }
+                }.runTaskTimer(Main.getInstance(), 0, 20);
             }
         }
     }
@@ -578,23 +580,23 @@ public class EggManager {
         String[] currentVersionParts = pluginVersion.split("\\.");
         String[] targetVersionParts = versionToCompare.split("\\.");
 
-        if (currentVersionParts.length == 3 && targetVersionParts.length == 3) {
-            int currentMajor = Integer.parseInt(currentVersionParts[0]);
-            int currentMinor = Integer.parseInt(currentVersionParts[1]);
-            int currentPatch = Integer.parseInt(currentVersionParts[2]);
-
-            int targetMajor = Integer.parseInt(targetVersionParts[0]);
-            int targetMinor = Integer.parseInt(targetVersionParts[1]);
-            int targetPatch = Integer.parseInt(targetVersionParts[2]);
-
-            if (currentMajor < targetMajor) {
-                return true;
-            } else if (currentMajor == targetMajor && currentMinor < targetMinor) {
-                return true;
-            } else return currentMajor == targetMajor && currentMinor == targetMinor && currentPatch < targetPatch;
+        if (currentVersionParts.length != 3 || targetVersionParts.length != 3) {
+            return false;
         }
 
-        return false;
+        int currentMajor = Integer.parseInt(currentVersionParts[0]);
+        int currentMinor = Integer.parseInt(currentVersionParts[1]);
+        int currentPatch = Integer.parseInt(currentVersionParts[2]);
+
+        int targetMajor = Integer.parseInt(targetVersionParts[0]);
+        int targetMinor = Integer.parseInt(targetVersionParts[1]);
+        int targetPatch = Integer.parseInt(targetVersionParts[2]);
+
+        if (currentMajor < targetMajor) {
+            return true;
+        } else if (currentMajor == targetMajor && currentMinor < targetMinor) {
+            return true;
+        } else return currentMajor == targetMajor && currentMinor == targetMinor && currentPatch < targetPatch;
     }
 
     public void convertEggData() {
