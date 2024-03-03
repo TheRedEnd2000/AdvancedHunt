@@ -46,7 +46,7 @@ public class PlayerInteractEventListener implements Listener {
             return;
         }
         for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
-            if (!eggManager.getEggSection(event.getClickedBlock()).equals(collections)) {
+            if (!eggManager.getEggCollection(event.getClickedBlock()).equals(collections)) {
                 continue;
             }
             String id = eggManager.getEggID(event.getClickedBlock(), collections);

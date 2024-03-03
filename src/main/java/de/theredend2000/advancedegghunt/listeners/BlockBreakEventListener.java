@@ -35,11 +35,11 @@ public class BlockBreakEventListener implements Listener {
         if (!eggManager.containsEgg(block)) {
             return;
         }
-        String section = eggManager.getEggSection(block);
+        String collection = eggManager.getEggCollection(block);
         String permission = Main.getInstance().getConfig().getString("Permissions.BreakEggPermission");
         if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
             if(player.hasPermission(permission)){
-                eggManager.removeEgg(player, block, section);
+                eggManager.removeEgg(player, block, collection);
                 player.playSound(player.getLocation(), soundManager.playEggBreakSound(), soundManager.getSoundVolume(), 1);
             }else {
                 player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission));
@@ -50,7 +50,7 @@ public class BlockBreakEventListener implements Listener {
                 player.sendMessage(messageManager.getMessage(MessageKey.ONLY_IN_PLACEMODE));
             event.setCancelled(true);
         }
-        eggManager.updateMaxEggs(section);
+        eggManager.updateMaxEggs(collection);
     }
 
     @EventHandler

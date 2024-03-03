@@ -32,7 +32,7 @@ public class InventoryManager {
     }
 
     public void createCommandSettingsMenu(Player player, String key) {
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         Inventory inventory = Bukkit.createInventory(player, 45, "Command configuration");
         int[] glass = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 17, 18, 26, 27, 28, 34, 35, 37, 38, 39, 40, 41, 42, 43, 44};

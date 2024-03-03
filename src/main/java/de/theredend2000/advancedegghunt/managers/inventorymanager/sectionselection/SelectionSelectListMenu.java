@@ -117,7 +117,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
             if (keys.get(index) == null) {
                 continue;
             }
-            String selectedSection = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+            String selectedSection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
             int maxEggs = Main.getInstance().getEggManager().getMaxEggs(keys.get(index));
             boolean applied = selectedSection.equals(keys.get(index));
             boolean permission = playerMenuUtility.getOwner().hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")));

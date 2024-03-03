@@ -260,8 +260,8 @@ public class InventoryClickEventListener implements Listener {
                     return;
                 }
                 String id = event.getInventory().getItem(22).getItemMeta().getLocalizedName();
-                String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
-                FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+                String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
+                FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
                 switch (event.getCurrentItem().getItemMeta().getLocalizedName()) {
                     case "command.close":
                         player.closeInventory();
@@ -279,7 +279,7 @@ public class InventoryClickEventListener implements Listener {
                         c.addExtra(clickme);
                         player.spigot().sendMessage(c);
                         placedEggs.set("Rewards." + id, null);
-                        Main.getInstance().getEggDataManager().savePlacedEggs(section, placedEggs);
+                        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                         new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
                         break;
                     case "command.type":
@@ -288,7 +288,7 @@ public class InventoryClickEventListener implements Listener {
                             placedEggs.set("Rewards." + id + ".type", 1);
                         } else if (type2 == 1)
                             placedEggs.set("Rewards." + id + ".type", 0);
-                        Main.getInstance().getEggDataManager().savePlacedEggs(section, placedEggs);
+                        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         inventoryManager.createCommandSettingsMenu(player, id);
                         player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_TYPE).replaceAll("%ID%", id).replaceAll("%TYPE%", String.valueOf((type2 == 1 ? 0 : 1))));
@@ -296,7 +296,7 @@ public class InventoryClickEventListener implements Listener {
                     case "command.enabled":
                         boolean enabled2 = placedEggs.getBoolean("Rewards." + id + ".enabled");
                         placedEggs.set("Rewards." + id + ".enabled", !enabled2);
-                        Main.getInstance().getEggDataManager().savePlacedEggs(section, placedEggs);
+                        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         inventoryManager.createCommandSettingsMenu(player, id);
                         player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ENABLED).replaceAll("%ID%", id).replaceAll("%ENABLED_WITH_COLOR%", (!enabled2 ? "§aenabled" : "§cdisabled")));

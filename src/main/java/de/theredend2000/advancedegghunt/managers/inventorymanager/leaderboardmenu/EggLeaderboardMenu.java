@@ -110,7 +110,7 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
 
     @Override
     public void setMenuItems() {
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         addMenuBorder();
         ArrayList<String> keys = new ArrayList<>();
         HashMap<String, Integer> leaderboard = new HashMap<>();

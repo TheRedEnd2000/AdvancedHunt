@@ -34,7 +34,7 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         SoundManager soundManager = Main.getInstance().getSoundManager();
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         Player p = (Player) e.getWhoClicked();
@@ -91,7 +91,7 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
 
     @Override
     public void setMenuItems(String playerUUID) {
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         addMenuBorder();
         ArrayList<String> keys = new ArrayList<>();

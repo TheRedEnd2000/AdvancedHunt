@@ -12,13 +12,13 @@ public class EggDataManager {
 
     private final Main plugin;
     private final File dataFolder;
-    private HashMap<String, FileConfiguration> eggsConfigs;
+    private HashMap<String, FileConfiguration> eggCollectionsConfigs;
     private HashMap<String, File> eggsFile;
 
     public EggDataManager(Main plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
-        eggsConfigs = new HashMap<>();
+        eggCollectionsConfigs = new HashMap<>();
         eggsFile = new HashMap<>();
 
         dataFolder.mkdirs();
@@ -38,23 +38,23 @@ public class EggDataManager {
         }
     }
 
-    private void loadEggData(String section) {
-        FileConfiguration config = getPlacedEggs(section);
-        if(!eggsConfigs.containsKey(section))
-            this.eggsConfigs.put(section, config);
+    private void loadEggData(String collection) {
+        FileConfiguration config = getPlacedEggs(collection);
+        if(!eggCollectionsConfigs.containsKey(collection))
+            this.eggCollectionsConfigs.put(collection, config);
     }
 
-    private File getFile(String section) {
-        if(!eggsFile.containsKey(section))
-            eggsFile.put(section, new File(this.dataFolder + "/eggs/", section + ".yml"));
-        return eggsFile.get(section);
+    private File getFile(String collection) {
+        if(!eggsFile.containsKey(collection))
+            eggsFile.put(collection, new File(this.dataFolder + "/eggs/", collection + ".yml"));
+        return eggsFile.get(collection);
     }
 
-    public FileConfiguration getPlacedEggs(String section) {
-        File playerFile = this.getFile(section);
-        if(!eggsConfigs.containsKey(section))
-            this.eggsConfigs.put(section, YamlConfiguration.loadConfiguration(playerFile));
-        return eggsConfigs.get(section);
+    public FileConfiguration getPlacedEggs(String collection) {
+        File playerFile = this.getFile(collection);
+        if(!eggCollectionsConfigs.containsKey(collection))
+            this.eggCollectionsConfigs.put(collection, YamlConfiguration.loadConfiguration(playerFile));
+        return eggCollectionsConfigs.get(collection);
     }
 
     public void savePlacedEggs(String section, FileConfiguration config) {
@@ -75,7 +75,7 @@ public class EggDataManager {
                 e.printStackTrace();
             }
         }
-        this.eggsConfigs.put(section, config);
+        this.eggCollectionsConfigs.put(section, config);
         this.loadEggData(section);
         this.savePlacedEggs(section, config);
         config.set("Enabled", enabled);

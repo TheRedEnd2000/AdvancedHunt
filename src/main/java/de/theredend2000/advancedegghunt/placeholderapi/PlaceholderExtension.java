@@ -32,17 +32,17 @@ public class PlaceholderExtension extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, String params) {
         if(params.equalsIgnoreCase("max_eggs")){
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+            String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             return String.valueOf(eggManager.getMaxEggs(section));
         }
 
         if(params.equalsIgnoreCase("found_eggs")) {
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+            String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             return String.valueOf(eggManager.getEggsFound(player, section));
         }
 
         if(params.equalsIgnoreCase("remaining_eggs")) {
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
+            String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             return String.valueOf(eggManager.getMaxEggs(section) - eggManager.getEggsFound(player, section));
         }
         if(params.equalsIgnoreCase("top_player_name")) {

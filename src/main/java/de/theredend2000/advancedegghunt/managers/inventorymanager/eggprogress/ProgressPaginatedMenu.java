@@ -49,7 +49,7 @@ public abstract class ProgressPaginatedMenu extends ProgressMenu {
     }
 
     public int getMaxPages(){
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         int keys = Main.getInstance().getEggManager().getMaxEggs(section);
         if(keys == 0) return 1;
         return (int) Math.ceil((double) keys / getMaxItemsPerPage());

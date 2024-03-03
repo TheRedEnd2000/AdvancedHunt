@@ -99,41 +99,41 @@ public class EggManager {
         player.getInventory().clear();
     }
 
-    public void saveEgg(Player player, Location location, String section){
-        if(plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")){
-            ConfigurationSection section2 = plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.");
+    public void saveEgg(Player player, Location location, String collection){
+        if(plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.")){
+            ConfigurationSection placedEggs = plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.");
             int nextNumber = 0;
-            Set<String> keys = section2.getKeys(false);
-            if (!keys.isEmpty()) {
-                for (int i = 0; i <= keys.size(); i++) {
+            Set<String> eggIds = placedEggs.getKeys(false);
+            if (!eggIds.isEmpty()) {
+                for (int i = 0; i <= eggIds.size(); i++) {
                     String key = Integer.toString(i);
-                    if (!keys.contains(key)) {
+                    if (!eggIds.contains(key)) {
                         nextNumber = i;
                         break;
                     }
                 }
             }
-            new ConfigLocationUtil(plugin, location, "PlacedEggs." + nextNumber).saveBlockLocation(section);
+            new ConfigLocationUtil(plugin, location, "PlacedEggs." + nextNumber).saveBlockLocation(collection);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", String.valueOf(nextNumber)));
         }else {
-            new ConfigLocationUtil(plugin, location, "PlacedEggs.0").saveBlockLocation(section);
+            new ConfigLocationUtil(plugin, location, "PlacedEggs.0").saveBlockLocation(collection);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", "0"));
         }
-        updateMaxEggs(section);
+        updateMaxEggs(collection);
     }
 
-    public void removeEgg(Player player, Block block, String section){
-        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
+    public void removeEgg(Player player, Block block, String collection){
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(collection);
         if(config.contains("PlacedEggs.")){
             Set<String> keys = new HashSet<>();
             keys.clear();
             for (String key : config.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 keys.add(key);
                 ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key);
-                if (location.loadLocation(section) != null) {
-                    if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
+                if (location.loadLocation(collection) != null) {
+                    if (block.getX() == location.loadLocation(collection).getBlockX() && block.getY() == location.loadLocation(collection).getBlockY() && block.getZ() == location.loadLocation(collection).getBlockZ()) {
                         config.set("PlacedEggs." + key, null);
-                        Main.getInstance().getEggDataManager().savePlacedEggs(section, config);
+                        Main.getInstance().getEggDataManager().savePlacedEggs(collection, config);
                         player.sendMessage(messageManager.getMessage(MessageKey.EGG_BROKEN).replaceAll("%ID%", key));
                         keys.remove(key);
                     }
@@ -141,14 +141,14 @@ public class EggManager {
             }
             for (UUID uuids : plugin.getEggDataManager().savedPlayers()) {
                 FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-                if(playerConfig.contains("FoundEggs." + section)) {
-                    for (String eggID : playerConfig.getConfigurationSection("FoundEggs." + section).getKeys(false)) {
+                if(playerConfig.contains("FoundEggs." + collection)) {
+                    for (String eggID : playerConfig.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
                         if(eggID.equalsIgnoreCase("Count") || eggID.equalsIgnoreCase("Name")) continue;
-                        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs." + section + "." + eggID);
+                        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs." + collection + "." + eggID);
                         if (location.loadLocation(uuids) != null) {
                             if (block.getX() == location.loadLocation(uuids).getBlockX() && block.getY() == location.loadLocation(uuids).getBlockY() && block.getZ() == location.loadLocation(uuids).getBlockZ()) {
-                                playerConfig.set("FoundEggs." + section + "." + eggID, null);
-                                playerConfig.set("FoundEggs." + section + ".Count", getPlayerCount(uuids, section) - 1);
+                                playerConfig.set("FoundEggs." + collection + "." + eggID, null);
+                                playerConfig.set("FoundEggs." + collection + ".Count", getPlayerCount(uuids, collection) - 1);
                                 plugin.getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
                             }
                         }
@@ -156,23 +156,23 @@ public class EggManager {
                 }
             }
             if(keys.isEmpty()){
-                plugin.getEggDataManager().getPlacedEggs(section).set("PlacedEggs", null);
-                plugin.getEggDataManager().savePlacedEggs(section, config);
+                plugin.getEggDataManager().getPlacedEggs(collection).set("PlacedEggs", null);
+                plugin.getEggDataManager().savePlacedEggs(collection, config);
             }
-            updateMaxEggs(section);
+            updateMaxEggs(collection);
         }
     }
 
-    public int getPlayerCount(UUID uuid, String section){
+    public int getPlayerCount(UUID uuid, String collection){
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-        return playerConfig.getInt("FoundEggs." + section + ".Count");
+        return playerConfig.getInt("FoundEggs." + collection + ".Count");
     }
 
-    public int getRandomNotFoundEgg(Player player, String section){
+    public int getRandomNotFoundEgg(Player player, String collection){
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(player.getUniqueId());
-        if(plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.") && playerConfig.contains("FoundEggs.")) {
-            for (int i = 0; i < getMaxEggs(section); i++) {
-                if (!hasFound(player, String.valueOf(i), section)) {
+        if(plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.") && playerConfig.contains("FoundEggs.")) {
+            for (int i = 0; i < getMaxEggs(collection); i++) {
+                if (!hasFound(player, String.valueOf(i), collection)) {
                     return i;
                 }
             }
@@ -181,12 +181,12 @@ public class EggManager {
     }
 
     public boolean containsEgg(Block block){
-        for(String section : plugin.getEggDataManager().savedEggCollections()) {
-            if (!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
-            for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
+        for(String collection : plugin.getEggDataManager().savedEggCollections()) {
+            if (!plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.")) continue;
+            for (String key : plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
-                if (location.loadLocation(section) != null) {
-                    if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
+                if (location.loadLocation(collection) != null) {
+                    if (block.getX() == location.loadLocation(collection).getBlockX() && block.getY() == location.loadLocation(collection).getBlockY() && block.getZ() == location.loadLocation(collection).getBlockZ()) {
                         return true;
                     }
                 }
@@ -195,12 +195,12 @@ public class EggManager {
         return false;
     }
 
-    public String getEggID(Block block, String section){
-        for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
-            if(!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
+    public String getEggID(Block block, String collection){
+        for (String key : plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.").getKeys(false)) {
+            if(!plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.")) continue;
             ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
-            if (location.loadLocation(section) != null) {
-                if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
+            if (location.loadLocation(collection) != null) {
+                if (block.getX() == location.loadLocation(collection).getBlockX() && block.getY() == location.loadLocation(collection).getBlockY() && block.getZ() == location.loadLocation(collection).getBlockZ()) {
                     return key;
                 }
             }
@@ -208,14 +208,14 @@ public class EggManager {
         return null;
     }
 
-    public String getEggSection(Block block){
-        for(String section : plugin.getEggDataManager().savedEggCollections()) {
-            if (!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
-            for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
+    public String getEggCollection(Block block){
+        for(String collection : plugin.getEggDataManager().savedEggCollections()) {
+            if (!plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.")) continue;
+            for (String key : plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
-                if (location.loadLocation(section) != null) {
-                    if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
-                        return section;
+                if (location.loadLocation(collection) != null) {
+                    if (block.getX() == location.loadLocation(collection).getBlockX() && block.getY() == location.loadLocation(collection).getBlockY() && block.getZ() == location.loadLocation(collection).getBlockZ()) {
+                        return collection;
                     }
                 }
             }
@@ -223,7 +223,7 @@ public class EggManager {
         return null;
     }
 
-    public String getEggSectionFromPlayerData(UUID uuid){
+    public String getEggCollectionFromPlayerData(UUID uuid){
         FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
         if(config.contains("SelectedSection")){
             return config.getString("SelectedSection");
@@ -231,69 +231,69 @@ public class EggManager {
         return null;
     }
 
-    public void saveFoundEggs(Player player, Block block, String id, String section){
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(section);
+    public void saveFoundEggs(Player player, Block block, String id, String collection){
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(player.getUniqueId());
         placedEggs.set("PlacedEggs." + id + ".TimesFound", placedEggs.contains("PlacedEggs." + id + ".TimesFound") ? placedEggs.getInt("PlacedEggs." + id + ".TimesFound") + 1 : 1);
-        Main.getInstance().getEggDataManager().savePlacedEggs(section, placedEggs);
-        playerConfig.set("FoundEggs." + section + ".Count", playerConfig.contains("FoundEggs." + section + ".Count") ? playerConfig.getInt("FoundEggs." + section + ".Count") + 1 : 1);
-        playerConfig.set("FoundEggs." + section + ".Name", player.getName());
-        new ConfigLocationUtil(plugin, block.getLocation(), "FoundEggs." + section + "." + id).saveBlockLocation(player.getUniqueId());
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+        playerConfig.set("FoundEggs." + collection + ".Count", playerConfig.contains("FoundEggs." + collection + ".Count") ? playerConfig.getInt("FoundEggs." + collection + ".Count") + 1 : 1);
+        playerConfig.set("FoundEggs." + collection + ".Name", player.getName());
+        new ConfigLocationUtil(plugin, block.getLocation(), "FoundEggs." + collection + "." + id).saveBlockLocation(player.getUniqueId());
         plugin.getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
         if(!Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards") || !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"))
-            player.sendMessage(messageManager.getMessage(MessageKey.EGG_FOUND).replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player, section))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs(section))));
+            player.sendMessage(messageManager.getMessage(MessageKey.EGG_FOUND).replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs(collection))));
     }
 
-    public int getTimesFound(String id, String section) {
-        return plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs." + id + ".TimesFound") ? plugin.getEggDataManager().getPlacedEggs(section).getInt("PlacedEggs." + id + ".TimesFound") : 0;
+    public int getTimesFound(String id, String collection) {
+        return plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs." + id + ".TimesFound") ? plugin.getEggDataManager().getPlacedEggs(collection).getInt("PlacedEggs." + id + ".TimesFound") : 0;
     }
 
-    public String getEggDatePlaced(String id, String section) {
-        return plugin.getEggDataManager().getPlacedEggs(section).getString("PlacedEggs." + id + ".Date");
+    public String getEggDatePlaced(String id, String collection) {
+        return plugin.getEggDataManager().getPlacedEggs(collection).getString("PlacedEggs." + id + ".Date");
     }
 
-    public String getEggTimePlaced(String id, String section) {
-        return plugin.getEggDataManager().getPlacedEggs(section).getString("PlacedEggs." + id + ".Time");
+    public String getEggTimePlaced(String id, String collection) {
+        return plugin.getEggDataManager().getPlacedEggs(collection).getString("PlacedEggs." + id + ".Time");
     }
 
-    public String getEggDateCollected(String uuid, String id, String section) {
+    public String getEggDateCollected(String uuid, String id, String collection) {
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid));
-        return playerConfig.getString("FoundEggs." + section + "." + id + ".Date");
+        return playerConfig.getString("FoundEggs." + collection + "." + id + ".Date");
     }
 
-    public String getEggTimeCollected(String uuid, String id, String section) {
+    public String getEggTimeCollected(String uuid, String id, String collection) {
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid));
-        return playerConfig.getString("FoundEggs." + section + "." + id + ".Time");
+        return playerConfig.getString("FoundEggs." + collection + "." + id + ".Time");
     }
 
-    public boolean hasFound(Player player, String id, String section){
+    public boolean hasFound(Player player, String id, String collection){
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(player.getUniqueId());
-        return playerConfig.contains("FoundEggs." + section + "." + id);
+        return playerConfig.contains("FoundEggs." + collection + "." + id);
     }
 
-    public int getMaxEggs(String section){
-        return plugin.getEggDataManager().getPlacedEggs(section).getInt("MaxEggs");
+    public int getMaxEggs(String collection){
+        return plugin.getEggDataManager().getPlacedEggs(collection).getInt("MaxEggs");
     }
 
-    public int getEggsFound(Player player, String section){
+    public int getEggsFound(Player player, String collection){
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(player.getUniqueId());
-        return playerConfig.getInt("FoundEggs." + section + ".Count");
+        return playerConfig.getInt("FoundEggs." + collection + ".Count");
     }
 
-    public void updateMaxEggs(String section){
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(section);
+    public void updateMaxEggs(String collection){
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         if(!placedEggs.contains("PlacedEggs.")){
             placedEggs.set("MaxEggs", 0);
-            Main.getInstance().getEggDataManager().savePlacedEggs(section, placedEggs);
+            Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
             return;
         }
         ArrayList<String> maxEggs = new ArrayList<>(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         placedEggs.set("MaxEggs", maxEggs.size());
-        Main.getInstance().getEggDataManager().savePlacedEggs(section, placedEggs);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
-    public boolean checkFoundAll(Player player, String section){
-        return getEggsFound(player, section) == getMaxEggs(section);
+    public boolean checkFoundAll(Player player, String collection){
+        return getEggsFound(player, collection) == getMaxEggs(collection);
     }
 
     public void spawnEggParticle() {
@@ -379,48 +379,48 @@ public class EggManager {
         }.runTaskTimer(Main.getInstance(), 0, 15);
     }
 
-    public Particle getParticle(Player p, String key, String section){
-        if(hasFound(p, key, section)){
+    public Particle getParticle(Player p, String key, String collection){
+        if(hasFound(p, key, collection)){
             return eggNotFoundParticle;
         }else {
             return eggFoundParticle;
         }
     }
 
-    public void resetStatsPlayer(String name, String section){
+    public void resetStatsPlayer(String name, String collection){
         ArrayList<String> eggID = new ArrayList<>();
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-            if(playerConfig.getString("FoundEggs." + section) == null) continue;
-            if(playerConfig.getString("FoundEggs." + section + ".Name").equals(name)) {
-                eggID.addAll(playerConfig.getConfigurationSection("FoundEggs." + section).getKeys(false));
-                playerConfig.set("FoundEggs." + section, null);
+            if(playerConfig.getString("FoundEggs." + collection) == null) continue;
+            if(playerConfig.getString("FoundEggs." + collection + ".Name").equals(name)) {
+                eggID.addAll(playerConfig.getConfigurationSection("FoundEggs." + collection).getKeys(false));
+                playerConfig.set("FoundEggs." + collection, null);
                 plugin.getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
             }
         }
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(section);
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         ConfigurationSection eggsSection = placedEggs.getConfigurationSection("PlacedEggs");
 
         if (eggsSection != null) {
             for (String ids : eggsSection.getKeys(false)) {
                 if (eggID.contains(ids)) {
-                    placedEggs.set("PlacedEggs." + ids + ".TimesFound", getTimesFound(ids, section) - 1);
-                    plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
+                    placedEggs.set("PlacedEggs." + ids + ".TimesFound", getTimesFound(ids, collection) - 1);
+                    plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                 }
             }
         }
     }
 
-    public void resetStatsPlayerEgg(UUID uuid, String section, String id){
+    public void resetStatsPlayerEgg(UUID uuid, String collection, String id){
         FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-        int count = getPlayerCount(uuid, section);
-        playerConfig.set("FoundEggs." + section + "." + id, null);
-        playerConfig.set("FoundEggs." + section + ".Count", count-1);
+        int count = getPlayerCount(uuid, collection);
+        playerConfig.set("FoundEggs." + collection + "." + id, null);
+        playerConfig.set("FoundEggs." + collection + ".Count", count-1);
         plugin.getPlayerEggDataManager().savePlayerData(uuid, playerConfig);
 
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(section);
-        placedEggs.set("PlacedEggs." + id + ".TimesFound", getTimesFound(id, section)-1);
-        plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+        placedEggs.set("PlacedEggs." + id + ".TimesFound", getTimesFound(id, collection)-1);
+        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
     public boolean containsPlayer(String name){
@@ -440,20 +440,20 @@ public class EggManager {
     public void resetStatsAll(){
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuids);
-            playerConfig.set("FoundEggs." + section, null);
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuids);
+            playerConfig.set("FoundEggs." + collection, null);
             plugin.getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
         }
     }
     public void showAllEggs(){
-        for(String sections : plugin.getEggDataManager().savedEggCollections()) {
-            FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(sections);
+        for(String collection : plugin.getEggDataManager().savedEggCollections()) {
+            FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
             if (!placedEggs.contains("PlacedEggs.")) {
                 continue;
             }
             for (String key : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + key);
-                if (locationUtil.loadLocation(sections) == null) {
+                if (locationUtil.loadLocation(collection) == null) {
                     continue;
                 }
                 String world = placedEggs.getString("PlacedEggs." + key + ".World");
@@ -465,7 +465,7 @@ public class EggManager {
                 armorStand.setGravity(false);
                 armorStand.setInvulnerable(true);
                 armorStand.setGlowing(true);
-                armorStand.setCustomName("§dEgg #" + key + " for section §d§l" + sections);
+                armorStand.setCustomName("§dEgg #" + key + " for collection §d§l" + collection);
                 armorStand.setCustomNameVisible(true);
                 armorStand.setSmall(true);
                 armorStand.setInvisible(true);
@@ -493,8 +493,8 @@ public class EggManager {
         HashMap<String, Integer> leaderboard = new HashMap<>();
         for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + section + ".Name"), playerConfig.getInt("FoundEggs." + section + ".Count"));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
+            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
         if(leaderboard.size() < 1){
             return "?????";
@@ -508,8 +508,8 @@ public class EggManager {
         HashMap<String, Integer> leaderboard = new HashMap<>();
         for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + section + ".Name"), playerConfig.getInt("FoundEggs." + section + ".Count"));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
+            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
         if(leaderboard.size() < 1){
             return -1;
@@ -524,8 +524,8 @@ public class EggManager {
         HashMap<String, Integer> leaderboard = new HashMap<>();
         for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + section + ".Name"), playerConfig.getInt("FoundEggs." + section + ".Count"));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
+            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
         if(leaderboard.size() < 2){
             return "?????";
@@ -539,8 +539,8 @@ public class EggManager {
         HashMap<String, Integer> leaderboard = new HashMap<>();
         for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + section + ".Name"), playerConfig.getInt("FoundEggs." + section + ".Count"));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
+            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
         if(leaderboard.size() < 2){
             return -1;
@@ -555,8 +555,8 @@ public class EggManager {
         HashMap<String, Integer> leaderboard = new HashMap<>();
         for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + section + ".Name"), playerConfig.getInt("FoundEggs." + section + ".Count"));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
+            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
         if(leaderboard.size() < 3){
             return "?????";
@@ -570,8 +570,8 @@ public class EggManager {
         HashMap<String, Integer> leaderboard = new HashMap<>();
         for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + section + ".Name"), playerConfig.getInt("FoundEggs." + section + ".Count"));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
+            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
         if(leaderboard.size() < 3){
             return -1;

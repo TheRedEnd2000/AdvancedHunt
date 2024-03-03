@@ -192,9 +192,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     ArrayList<String> complete = new ArrayList<>();
                     for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
                         if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.") == null) continue;
-                        for(String sections : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getConfigurationSection("FoundEggs.").getKeys(false)) {
-                            if(!complete.contains(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + sections + ".Name")))
-                                complete.add(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + sections + ".Name"));
+                        for(String eggIds : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getConfigurationSection("FoundEggs.").getKeys(false)) {
+                            if(!complete.contains(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggIds + ".Name")))
+                                complete.add(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggIds + ".Name"));
                         }
                     }
                     complete.add("all");

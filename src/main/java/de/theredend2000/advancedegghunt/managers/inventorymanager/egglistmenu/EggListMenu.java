@@ -37,7 +37,7 @@ public class EggListMenu extends ListPaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player p = (Player) e.getWhoClicked();
@@ -113,7 +113,7 @@ public class EggListMenu extends ListPaginatedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs.")){

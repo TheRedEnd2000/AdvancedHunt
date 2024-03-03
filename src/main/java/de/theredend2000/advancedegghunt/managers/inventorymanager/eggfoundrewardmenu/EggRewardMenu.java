@@ -36,7 +36,7 @@ public class EggRewardMenu extends RewardPaginatedMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
 
         ArrayList<String> keys = new ArrayList<>();
@@ -110,7 +110,7 @@ public class EggRewardMenu extends RewardPaginatedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("Rewards.")){
