@@ -76,9 +76,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }else if(args[0].equalsIgnoreCase("hint")){
                         int counter = 0;
                         int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
-                        for(String sections : Main.getInstance().getEggDataManager().savedEggCollections()) {
+                        for(String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                             counter++;
-                            if (!eggManager.checkFoundAll(player,sections) && eggManager.getMaxEggs(sections) >= 1) {
+                            if (!eggManager.checkFoundAll(player, collections) && eggManager.getMaxEggs(collections) >= 1) {
                                 if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
                                     long current = System.currentTimeMillis();
                                     long release = Main.getInstance().getCooldownManager().getCooldown(player);
@@ -103,8 +103,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         }
                         String name = args[1];
                         if(eggManager.containsPlayer(name)){
-                            for(String sections : Main.getInstance().getEggDataManager().savedEggCollections())
-                                eggManager.resetStatsPlayer(name,sections);
+                            for(String collections : Main.getInstance().getEggDataManager().savedEggCollections())
+                                eggManager.resetStatsPlayer(name, collections);
                             player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
                         }else
                             player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
@@ -122,9 +122,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }else if(args[0].equalsIgnoreCase("hint")){
                     int counter = 0;
                     int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
-                    for(String sections : Main.getInstance().getEggDataManager().savedEggCollections()) {
+                    for(String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                         counter++;
-                        if (!eggManager.checkFoundAll(player,sections) && eggManager.getMaxEggs(sections) >= 1) {
+                        if (!eggManager.checkFoundAll(player, collections) && eggManager.getMaxEggs(collections) >= 1) {
                             if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
                                 long current = System.currentTimeMillis();
                                 long release = Main.getInstance().getCooldownManager().getCooldown(player);
@@ -152,8 +152,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }
                     String name = args[1];
                     if(eggManager.containsPlayer(name)){
-                        for(String sections : Main.getInstance().getEggDataManager().savedEggCollections())
-                            eggManager.resetStatsPlayer(name,sections);
+                        for(String collections : Main.getInstance().getEggDataManager().savedEggCollections())
+                            eggManager.resetStatsPlayer(name,collections);
                         sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
                     }else
                         sender.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));

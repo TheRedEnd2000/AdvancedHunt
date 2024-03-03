@@ -419,10 +419,10 @@ public class EggManager {
     public boolean containsPlayer(String name){
         for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-            for(String sections : Main.getInstance().getEggDataManager().savedEggCollections()) {
+            for(String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                 if (playerConfig == null || playerConfig.getString("FoundEggs.") == null) continue;
-                if(playerConfig.getString("FoundEggs."+sections) == null) continue;
-                if (playerConfig.getString("FoundEggs." + sections + ".Name").equals(name)) {
+                if(playerConfig.getString("FoundEggs."+ collections) == null) continue;
+                if (playerConfig.getString("FoundEggs." + collections + ".Name").equals(name)) {
                     return true;
                 }
             }

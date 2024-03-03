@@ -104,14 +104,14 @@ public final class Main extends JavaPlugin {
     }
 
     private void initData(){
-        List<String > sections = eggDataManager.savedEggCollections();
+        List<String > collections = eggDataManager.savedEggCollections();
         playerEggDataManager.initPlayers();
         Bukkit.getConsoleSender().sendMessage("§2§l" +
-                "Loaded data of "+sections.size()+" player(s).");
+                "Loaded data of " + collections.size() + " player(s).");
         eggDataManager.initEggs();
-        Bukkit.getConsoleSender().sendMessage("§2§lLoaded data of "+sections.size()+" collection(s).");
-        for(String section : sections)
-            eggManager.updateMaxEggs(section);
+        Bukkit.getConsoleSender().sendMessage("§2§lLoaded data of " + collections.size() + " collection(s).");
+        for(String collection : collections)
+            eggManager.updateMaxEggs(collection);
     }
 
     private void initManagers(){

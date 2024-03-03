@@ -85,16 +85,16 @@ public class EggDataManager {
     }
 
     public boolean containsSectionFile(String section) {
-        Iterator var2 = this.savedEggCollections().iterator();
+        Iterator savedEggCollectionsIterator = this.savedEggCollections().iterator();
 
-        String sections;
+        String collection;
         do {
-            if (!var2.hasNext()) {
+            if (!savedEggCollectionsIterator.hasNext()) {
                 return false;
             }
 
-            sections = (String)var2.next();
-        } while(!sections.contains(section));
+            collection = (String)savedEggCollectionsIterator.next();
+        } while(!collection.contains(section));
 
         return true;
     }
