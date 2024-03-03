@@ -44,8 +44,8 @@ public class EggRewardMenu extends RewardPaginatedMenu {
             keys.addAll(placedEggs.getConfigurationSection("Rewards.").getKeys(false));
             for(String id : placedEggs.getConfigurationSection("Rewards.").getKeys(false)){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
-                    Main.getInstance().getInventoryManager().createCommandSettingsMenu(p,id);
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    Main.getInstance().getInventoryManager().createCommandSettingsMenu(p, id);
+                    p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
             }
         }
@@ -116,20 +116,20 @@ public class EggRewardMenu extends RewardPaginatedMenu {
         if(placedEggs.contains("Rewards.")){
             keys.addAll(placedEggs.getConfigurationSection("Rewards.").getKeys(false));
         }else
-            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Commands").setLore("§7You can add commands by using","§e/egghunt placeEggs§7.").build());
+            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Commands").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < getMaxItemsPerPage(); i++) {
                 index = getMaxItemsPerPage() * page + i;
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
-                    String command = placedEggs.getString("Rewards."+keys.get(index)+".command").replaceAll("§","&");
-                    boolean enabled = placedEggs.getBoolean("Rewards."+keys.get(index)+".enabled");
-                    int type = placedEggs.getInt("Rewards."+keys.get(index)+".type");
-                    inventory.addItem(new ItemBuilder(Main.getInstance().getMaterial(Main.getInstance().getConfig().getString("Settings.RewardInventoryMaterial"))).setDisplayname("§b§lCommand §7#"+keys.get(index)).setLore("","§9Information:","§7Command: §6"+command,"§7Command Enabled: "+(enabled ? "§atrue" : "§cfalse"),"§7Type: §6"+type,"","§a§lNote:","§2Type 0:","§7Type 0 means that this command will be","§7be executed if the player found §7§lone §7egg.","§2Type 1:","§7Type 1 means that this command will be","§7be executed if the player had found §7§lall §7egg.","","§eClick to configure the command.").setLocalizedName(keys.get(index)).build());
+                    String command = placedEggs.getString("Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
+                    boolean enabled = placedEggs.getBoolean("Rewards." + keys.get(index) + ".enabled");
+                    int type = placedEggs.getInt("Rewards." + keys.get(index) + ".type");
+                    inventory.addItem(new ItemBuilder(Main.getInstance().getMaterial(Main.getInstance().getConfig().getString("Settings.RewardInventoryMaterial"))).setDisplayname("§b§lCommand §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Type: §6" + type, "", "§a§lNote:", "§2Type 0:", "§7Type 0 means that this command will be", "§7be executed if the player found §7§lone §7egg.", "§2Type 1:", "§7Type 1 means that this command will be", "§7be executed if the player had found §7§lall §7egg.", "", "§eClick to configure the command.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else{
-            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Commands").setLore("§7You can add commands by using","§e/egghunt placeEggs§7.").build());
+            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Commands").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
         }
     }
 }

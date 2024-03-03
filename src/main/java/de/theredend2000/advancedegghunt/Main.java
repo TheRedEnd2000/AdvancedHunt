@@ -6,31 +6,38 @@ import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.RequirementsListeners;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.ResetListeners;
+import de.theredend2000.advancedegghunt.managers.CooldownManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
+import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
+import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
-import de.theredend2000.advancedegghunt.managers.CooldownManager;
-import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
-import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class Main extends JavaPlugin {
 
@@ -78,9 +85,9 @@ public final class Main extends JavaPlugin {
         cooldownManager = new CooldownManager(this);
         checkCommandFeedback();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            Bukkit.getConsoleSender().sendMessage(PREFIX+"§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
+            Bukkit.getConsoleSender().sendMessage(PREFIX + "§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
             new PlaceholderExtension().register();
-            Bukkit.getConsoleSender().sendMessage(PREFIX+"§2§lAll placeholders successfully enabled.");
+            Bukkit.getConsoleSender().sendMessage(PREFIX + "§2§lAll placeholders successfully enabled.");
         }
         getEggManager().convertEggData();
         initData();
@@ -163,7 +170,7 @@ public final class Main extends JavaPlugin {
 
     private void sendCurrentLanguage(){
         String lang = plugin.getConfig().getString("messages-lang");
-        Bukkit.getConsoleSender().sendMessage(PREFIX+"§7Language §6"+lang+" §7detected. File messages-"+lang+".yml loaded.");
+        Bukkit.getConsoleSender().sendMessage(PREFIX + "§7Language §6" + lang + " §7detected. File messages-" + lang + ".yml loaded.");
     }
 
     private void setupConfigs(){
@@ -173,7 +180,7 @@ public final class Main extends JavaPlugin {
 
     private void checkUpdatePath(){
         if(!messageManager.isUpToDate()){
-            Bukkit.getConsoleSender().sendMessage(PREFIX+"§cThere is a newer version of your messages file. Please reinstall them.");
+            Bukkit.getConsoleSender().sendMessage(PREFIX + "§cThere is a newer version of your messages file. Please reinstall them.");
         }
         if(getConfig().getDouble("config-version") < 2.8){
             File configFile = new File(getDataFolder(), "config.yml");
@@ -182,10 +189,10 @@ public final class Main extends JavaPlugin {
             reloadConfig();
             for(Player player : Bukkit.getOnlinePlayers()){
                 if(player.isOp()){
-                    player.sendMessage(PREFIX+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
+                    player.sendMessage(PREFIX + "§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
                 }
             }
-            Bukkit.getConsoleSender().sendMessage(PREFIX+"§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
+            Bukkit.getConsoleSender().sendMessage(PREFIX + "§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
         }
     }
 
@@ -205,7 +212,7 @@ public final class Main extends JavaPlugin {
             }
             return material;
         } catch (Exception ex) {
-            Bukkit.getConsoleSender().sendMessage("§4Material Error: "+ex);
+            Bukkit.getConsoleSender().sendMessage("§4Material Error: " + ex);
             return XMaterial.STONE;
         }
     }
@@ -217,7 +224,7 @@ public final class Main extends JavaPlugin {
 
     public static String getTexture(String texture){
         String prefix = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv";
-        texture = prefix+texture;
+        texture = prefix + texture;
         return texture;
     }
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();

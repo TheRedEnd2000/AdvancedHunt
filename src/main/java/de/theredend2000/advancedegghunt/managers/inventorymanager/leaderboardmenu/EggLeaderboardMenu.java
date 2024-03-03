@@ -117,7 +117,7 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
         if(Main.getInstance().getEggDataManager().savedPlayers().size() != 0){
             for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
-                leaderboard.put(playerConfig.getString("FoundEggs."+section+".Name"),playerConfig.getInt("FoundEggs."+section+".Count"));
+                leaderboard.put(playerConfig.getString("FoundEggs." + section + ".Name"), playerConfig.getInt("FoundEggs." + section + ".Count"));
             }
             for(int i = 0; i < leaderboard.size(); i++)
                 keys.add(String.valueOf(i));

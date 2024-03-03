@@ -42,10 +42,10 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
                 continue;
             }
             if(e.getAction() == InventoryAction.PICKUP_ALL){
-                Main.getInstance().getPlayerEggDataManager().savePlayerSection(p.getUniqueId(),selection);
-                p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                Main.getInstance().getPlayerEggDataManager().savePlayerSection(p.getUniqueId(), selection);
+                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 super.open();
-                p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%",selection));
+                p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", selection));
             }else if(e.getAction() == InventoryAction.PICKUP_HALF){
                 if(p.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")))) {
                     Main.getInstance().getInventoryManager().createEditCollectionMenu(p, section);
@@ -121,7 +121,7 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
             int maxEggs = Main.getInstance().getEggManager().getMaxEggs(keys.get(index));
             boolean applied = selectedSection.equals(keys.get(index));
             boolean permission = playerMenuUtility.getOwner().hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")));
-            inventory.addItem(new ItemBuilder(XMaterial.PAPER).withGlow(applied).setDisplayname("§6Collection: §6§l"+keys.get(index)+(applied ? " §a(selected)" : "")).setLore("","§9Collection Information:","§7   - Placed eggs: §6"+maxEggs,"","§aNote:","§7This collection applies to all actions that are carried out.","§7It can be changed at any time in this menu.","","§eLEFT-CLICK to select.",permission ? "§eRIGHT-CLICK to edit." : "§7§mRIGHT-CLICK to edit.").setLocalizedName(keys.get(index)).build());
+            inventory.addItem(new ItemBuilder(XMaterial.PAPER).withGlow(applied).setDisplayname("§6Collection: §6§l" + keys.get(index) + (applied ? " §a(selected)" : "")).setLore("", "§9Collection Information:", "§7   - Placed eggs: §6" + maxEggs, "", "§aNote:", "§7This collection applies to all actions that are carried out.", "§7It can be changed at any time in this menu.", "", "§eLEFT-CLICK to select.", permission ? "§eRIGHT-CLICK to edit." : "§7§mRIGHT-CLICK to edit.").setLocalizedName(keys.get(index)).build());
         }
     }
 }

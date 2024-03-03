@@ -214,10 +214,10 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("");
         player.sendMessage("§2§lInformation");
-        player.sendMessage("§7Name: §6"+Main.getInstance().getDescription().getName());
-        player.sendMessage("§7Plugin Version: §6"+Main.getInstance().getDescription().getVersion());
-        player.sendMessage("§7Api Version: §6"+Main.getInstance().getDescription().getAPIVersion());
-        player.sendMessage("§7Server Version: §6"+ getServer().getClass().getPackage().getName().split("\\.")[3]);
+        player.sendMessage("§7Name: §6" + Main.getInstance().getDescription().getName());
+        player.sendMessage("§7Plugin Version: §6" + Main.getInstance().getDescription().getVersion());
+        player.sendMessage("§7Api Version: §6" + Main.getInstance().getDescription().getAPIVersion());
+        player.sendMessage("§7Server Version: §6" + getServer().getClass().getPackage().getName().split("\\.")[3]);
         player.sendMessage("§7Author: §6XMC-PLUGINS");
         player.sendMessage("");
         player.sendMessage("§2§lCommands");

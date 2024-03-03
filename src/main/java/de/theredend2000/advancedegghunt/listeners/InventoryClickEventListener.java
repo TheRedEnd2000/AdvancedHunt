@@ -117,7 +117,7 @@ public class InventoryClickEventListener implements Listener {
         }
         if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
             for(String key : Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false)){
-                if(event.getCurrentItem().getType().name().toUpperCase().equals(Main.getInstance().getConfig().getString("PlaceEggs."+key+".type").toUpperCase())){
+                if(event.getCurrentItem().getType().name().toUpperCase().equals(Main.getInstance().getConfig().getString("PlaceEggs." + key + ".type").toUpperCase())){
                     player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
                     return;
                 }
@@ -134,7 +134,7 @@ public class InventoryClickEventListener implements Listener {
                     }
                 }
             }
-            Main.getInstance().getConfig().set("PlaceEggs."+nextNumber+".type",event.getCurrentItem().getType().name().toUpperCase());
+            Main.getInstance().getConfig().set("PlaceEggs." + nextNumber + ".type",event.getCurrentItem().getType().name().toUpperCase());
             Main.getInstance().saveConfig();
             new EggPlaceMenu(Main.getPlayerMenuUtility(player)).open();
         }

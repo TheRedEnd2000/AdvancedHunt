@@ -40,8 +40,8 @@ public class EggInformationMenu extends InformationPaginatedMenu {
         ArrayList<String> keys = new ArrayList<>();
         String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
-            if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundEggs."+id)){
-                Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs."+section+".Name"));
+            if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundEggs." + id)){
+                Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + section + ".Name"));
             }
         }
 
@@ -95,15 +95,15 @@ public class EggInformationMenu extends InformationPaginatedMenu {
 
     @Override
     public void setMenuItems(String eggId) {
-        inventory.setItem(0,new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).setDisplayname("§c").setLocalizedName(eggId).build());
+        inventory.setItem(0, new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).setDisplayname("§c").setLocalizedName(eggId).build());
         addMenuBorder(eggId);
         ArrayList<String> keys = new ArrayList<>();
         ArrayList<String> uuid = new ArrayList<>();
         String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
-            if(playerConfig.contains("FoundEggs."+section+"."+eggId)){
-                Collections.addAll(keys, playerConfig.getString("FoundEggs."+section+".Name"));
+            if(playerConfig.contains("FoundEggs." + section + "." + eggId)){
+                Collections.addAll(keys, playerConfig.getString("FoundEggs." + section + ".Name"));
                 Collections.addAll(uuid, String.valueOf(uuids));
             }
         }
@@ -114,10 +114,10 @@ public class EggInformationMenu extends InformationPaginatedMenu {
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
                     String maxEggs = String.valueOf(Main.getInstance().getEggManager().getMaxEggs(section));
-                    String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId,section);
-                    String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index),eggId,section);
-                    String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs."+section+".Count");
-                    inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(keys.get(index)).setDisplayname("§6§l"+keys.get(index)+" §7("+uuid.get(index)+")").setLore("§7"+keys.get(index)+" has found the §2egg #"+eggId+"§7.","","§9Information of "+keys.get(index)+":","§7Eggs found: §6"+eggsFound+"/"+maxEggs,"","§9Collected:","§7Date: §6"+date,"§7Time: §6"+time).setLocalizedName(keys.get(index)).build());
+                    String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId, section);
+                    String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index), eggId, section);
+                    String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs." + section + ".Count");
+                    inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(keys.get(index)).setDisplayname("§6§l" + keys.get(index) + " §7(" + uuid.get(index) + ")").setLore("§7" + keys.get(index) + " has found the §2egg #" + eggId + "§7.", "", "§9Information of " + keys.get(index) + ":", "§7Eggs found: §6" + eggsFound + "/" + maxEggs, "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time).setLocalizedName(keys.get(index)).build());
                 }
             }
         }else

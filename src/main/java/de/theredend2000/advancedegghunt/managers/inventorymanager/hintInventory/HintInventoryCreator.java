@@ -26,8 +26,8 @@ public class HintInventoryCreator implements Listener {
     private boolean clickedRight;
     private int lastClicked;
 
-    public HintInventoryCreator(Player player,Inventory inventory,boolean active){
-        Bukkit.getPluginManager().registerEvents(this,Main.getInstance());
+    public HintInventoryCreator(Player player, Inventory inventory, boolean active){
+        Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
         this.player = player;
         this.inventory = inventory;
         this.active = active;
@@ -58,12 +58,12 @@ public class HintInventoryCreator implements Listener {
                     inventory.clear();
                     currentSlot = getRandomSlot();
                     for (int i = 0; i<inventory.getSize();i++){inventory.setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-                    inventory.setItem(currentSlot,new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE).setDisplayname("§aConfirm").setLore("§6"+(currentCount+1)+"§7/§6"+Main.getInstance().getConfig().getInt("Settings.HintCount")).build());
+                    inventory.setItem(currentSlot, new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE).setDisplayname("§aConfirm").setLore("§6" + (currentCount + 1) + "§7/§6" + Main.getInstance().getConfig().getInt("Settings.HintCount")).build());
                     clickedRight = false;
                 }else
                     cancel();
             }
-        }.runTaskTimer(Main.getInstance(),40,Main.getInstance().getConfig().getInt("Settings.HintUpdateTime"));
+        }.runTaskTimer(Main.getInstance(), 40, Main.getInstance().getConfig().getInt("Settings.HintUpdateTime"));
     }
 
     private int getRandomSlot(){
@@ -83,11 +83,11 @@ public class HintInventoryCreator implements Listener {
                 }
                 if(event.getSlot() == currentSlot){
                     currentCount++;
-                    player.playSound(player.getLocation() ,soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                    player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     if(currentCount == Main.getInstance().getConfig().getInt("Settings.HintCount")){
                         player.closeInventory();
                         active = false;
-                        player.playSound(player.getLocation() ,soundManager.playAllEggsFound(),soundManager.getSoundVolume(), 1);
+                        player.playSound(player.getLocation(), soundManager.playAllEggsFound(), soundManager.getSoundVolume(), 1);
                         player.sendMessage(getReward(player));
                     }
                     clickedRight = true;
@@ -118,7 +118,7 @@ public class HintInventoryCreator implements Listener {
 
     public void fail(Player player){
         player.closeInventory();
-            player.playSound(player.getLocation() ,Main.getInstance().getSoundManager().playErrorSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
+            player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playErrorSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
         active = false;
     }
 }

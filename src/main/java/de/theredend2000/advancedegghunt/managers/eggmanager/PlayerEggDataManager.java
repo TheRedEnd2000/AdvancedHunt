@@ -128,7 +128,7 @@ public class PlayerEggDataManager {
                     FileConfiguration cfg = playerConfigs.get(uuids);
                     if(!cfg.contains("FoundEggs.")) return;
                     for(String sections : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
-                        for(String id : cfg.getConfigurationSection("FoundEggs."+sections).getKeys(false)) {
+                        for(String id : cfg.getConfigurationSection("FoundEggs." + sections).getKeys(false)) {
                             if (id.equals("Count") || id.equals("Name")) continue;
                             if (canReset(uuids, sections, id))
                                 plugin.getEggManager().resetStatsPlayerEgg(uuids,sections,id);

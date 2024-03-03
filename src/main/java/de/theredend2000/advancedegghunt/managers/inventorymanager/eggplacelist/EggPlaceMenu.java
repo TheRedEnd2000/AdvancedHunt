@@ -44,11 +44,11 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
             keys.addAll(Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false));
             for(String id : Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false)){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
-                    p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                    p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     if(e.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
-                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs."+id+".texture"))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map","§7that everyone can search and find it.").build());
+                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs." + id + ".texture"))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                     else
-                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map","§7that everyone can search and find it.").build());
+                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 }
             }
         }
@@ -112,7 +112,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
         if(Main.getInstance().getConfig().contains("PlaceEggs.")){
             keys.addAll(Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false));
         }else
-            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs").setLore("§7You can add commands by using","§e/egghunt placeEggs§7.").build());
+            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < getMaxItemsPerPage(); i++) {
                 index = getMaxItemsPerPage() * page + i;
@@ -120,9 +120,9 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
                 if (keys.get(index) != null){
                     XMaterial mat = Main.getInstance().getMaterial(Objects.requireNonNull(Main.getInstance().getConfig().getString("PlaceEggs." + keys.get(index) + ".type")).toUpperCase());
                     if(mat.equals(XMaterial.PLAYER_HEAD))
-                        inventory.addItem(new ItemBuilder(mat).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs."+keys.get(index)+".texture"))).setDisplayname("§b§lEggs Type #"+keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
+                        inventory.addItem(new ItemBuilder(mat).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs." + keys.get(index) + ".texture"))).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
                     else
-                        inventory.addItem(new ItemBuilder(mat).setDisplayname("§b§lEggs Type #"+keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
+                        inventory.addItem(new ItemBuilder(mat).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }

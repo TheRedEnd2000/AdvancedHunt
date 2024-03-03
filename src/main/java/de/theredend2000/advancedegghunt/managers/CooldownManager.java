@@ -2,18 +2,9 @@ package de.theredend2000.advancedegghunt.managers;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +23,7 @@ public class CooldownManager {
 
     public void setCooldown(Player player) {
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(getRewardFile());
-        long toSet = System.currentTimeMillis()+(Main.getInstance().getConfig().getLong("Settings.HintCooldownSeconds") * 1000);
+        long toSet = System.currentTimeMillis() + (Main.getInstance().getConfig().getLong("Settings.HintCooldownSeconds") * 1000);
         cfg.set(player.getUniqueId() + ".cooldownTime", toSet);
         try {
             cfg.save(getRewardFile());

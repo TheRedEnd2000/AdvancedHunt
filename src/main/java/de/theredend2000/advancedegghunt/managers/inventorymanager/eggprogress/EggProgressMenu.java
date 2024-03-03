@@ -98,7 +98,7 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }else
-            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs Available").setLore("§7There are no eggs no find","§7please contact an admin.").build());
+            inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs Available").setLore("§7There are no eggs no find", "§7please contact an admin.").build());
 
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < getMaxItemsPerPage(); i++) {
@@ -106,17 +106,17 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
                     boolean showcoordinates = Main.getInstance().getConfig().getBoolean("Settings.ShowCoordinatesWhenEggFoundInProgressInventory");
-                    String x = placedEggs.getString("PlacedEggs."+keys.get(index)+".X");
-                    String y = placedEggs.getString("PlacedEggs."+keys.get(index)+".Y");
-                    String z = placedEggs.getString("PlacedEggs."+keys.get(index)+".Z");
-                    boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index),section);
+                    String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
+                    String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
+                    String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
+                    boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index), section);
                     int random = new Random().nextInt(7);
-                    String date = Main.getInstance().getEggManager().getEggDateCollected(playerUUID,keys.get(index),section);
-                    String time = Main.getInstance().getEggManager().getEggTimeCollected(playerUUID,keys.get(index),section);
+                    String date = Main.getInstance().getEggManager().getEggDateCollected(playerUUID, keys.get(index), section);
+                    String time = Main.getInstance().getEggManager().getEggTimeCollected(playerUUID, keys.get(index), section);
                     if(showcoordinates && hasFound){
-                        inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#"+keys.get(index)+")").setLore("","§9Location:","§7X: §e"+x,"§7Y: §e"+y,"§7Z: §e"+z,"",(hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."),"","§9Collected:","§7Date: §6"+date,"§7Time: §6"+time,"").setLocalizedName(keys.get(index)).build());
+                        inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", "§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "").setLocalizedName(keys.get(index)).build());
                     }else if(hasFound && !showcoordinates) {
-                        inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."),"","§9Collected:","§7Date: §6"+date,"§7Time: §6"+time,"").setLocalizedName(keys.get(index)).build());
+                        inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "").setLocalizedName(keys.get(index)).build());
                     }else
                         inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet.")).setLocalizedName(keys.get(index)).build());
                 }

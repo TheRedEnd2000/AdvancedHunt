@@ -16,8 +16,8 @@ public class Config {
 
     public Config(Main plugin, String file){
         this.plugin = plugin;
-        this.file = file+".yml";
-        folder = new File(plugin.getDataFolder()+"//invs//");
+        this.file = file + ".yml";
+        folder = new File(plugin.getDataFolder() + "//invs//");
         cfg = null;
         cfgFile = null;
         reload();

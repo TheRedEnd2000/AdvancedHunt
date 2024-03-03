@@ -66,11 +66,11 @@ public class PlayerChatEventListener implements Listener {
             Main.getInstance().getPlayerAddCommand().remove(player);
             Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
         }else {
-            String id = Main.getInstance().getConfig().getString("Edit."+player.getUniqueId()+".commandID");
-            placedEggs.set("Rewards."+id+".command", event.getMessage());
+            String id = Main.getInstance().getConfig().getString("Edit." + player.getUniqueId() + ".commandID");
+            placedEggs.set("Rewards." + id + ".command", event.getMessage());
             Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CHANGED).replaceAll("%ID%",id));
-            placedEggs.set("Edit."+player.getUniqueId(),null);
+            placedEggs.set("Edit." + player.getUniqueId(),null);
             Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
             Main.getInstance().getPlayerAddCommand().remove(player);
             Main.getInstance().getInventoryManager().createCommandSettingsMenu(player,id);
@@ -79,9 +79,9 @@ public class PlayerChatEventListener implements Listener {
     private void setConfiguration(String id, String command,Player player){
         String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(player.getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
-        placedEggs.set("Rewards."+id+".command", command);
-        placedEggs.set("Rewards."+id+".enabled", true);
-        placedEggs.set("Rewards."+id+".type", 0);
+        placedEggs.set("Rewards." + id + ".command", command);
+        placedEggs.set("Rewards." + id + ".enabled", true);
+        placedEggs.set("Rewards." + id + ".type", 0);
         Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
     }
 
@@ -97,7 +97,7 @@ public class PlayerChatEventListener implements Listener {
                     if(currenttime == 0){
                         if(player != null){
                             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_EXPIRED));
-                            placedEggs.set("Edit."+player.getUniqueId(),null);
+                            placedEggs.set("Edit." + player.getUniqueId(),null);
                             Main.getInstance().getEggDataManager().savePlacedEggs(section1,placedEggs);
                         }
                         return;
