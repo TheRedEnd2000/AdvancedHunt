@@ -2,8 +2,6 @@ package de.theredend2000.advancedegghunt.listeners.inventoryListeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
-import de.theredend2000.advancedegghunt.util.DateTimeUtil;
-import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,8 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-
-import java.util.ArrayList;
 
 public class ResetListeners implements Listener {
 
@@ -155,5 +151,4 @@ public class ResetListeners implements Listener {
             }
         }
     }
-
 }

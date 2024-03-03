@@ -3,7 +3,6 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardme
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -48,6 +47,5 @@ public abstract class LeadeboardMenu implements InventoryHolder {
 
         return item;
     }
-
 }
 

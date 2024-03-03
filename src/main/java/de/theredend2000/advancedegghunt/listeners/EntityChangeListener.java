@@ -18,5 +18,4 @@ public class EntityChangeListener implements Listener {
         EggManager eggManager = Main.getInstance().getEggManager();
         if(eggManager.containsEgg(event.getBlock())) event.setCancelled(true);
     }
-
 }

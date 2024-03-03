@@ -2,7 +2,6 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu;
 
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -47,6 +46,5 @@ public abstract class ListMenu implements InventoryHolder {
 
         return item;
     }
-
 }
 

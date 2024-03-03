@@ -5,11 +5,11 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManag
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.RewardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egginformation.InformationMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.ListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.EggPlaceMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.PlaceMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.ProgressMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.LeadeboardMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.ListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
@@ -30,7 +30,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -446,5 +445,4 @@ public class InventoryClickEventListener implements Listener {
             }
         }
     }
-
 }

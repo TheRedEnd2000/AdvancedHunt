@@ -106,5 +106,4 @@ public class PlayerChatEventListener implements Listener {
             }
         }.runTaskTimer(Main.getInstance(),0,20);
     }
-
 }

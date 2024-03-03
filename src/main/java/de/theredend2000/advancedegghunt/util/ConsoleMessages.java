@@ -12,5 +12,4 @@ public class ConsoleMessages {
         s.sendMessage("§4PLEASE USE VERSIONS BETWEEN 1.13.x - 1.20.x");
         s.sendMessage("§4============================================================");
     }
-
 }

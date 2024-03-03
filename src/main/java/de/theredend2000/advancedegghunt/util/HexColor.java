@@ -138,5 +138,4 @@ public class HexColor {
 
         return b.toString();
     }
-
 }

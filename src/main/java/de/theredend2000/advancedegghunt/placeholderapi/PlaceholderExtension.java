@@ -4,7 +4,6 @@ package de.theredend2000.advancedegghunt.placeholderapi;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-
 import org.bukkit.entity.Player;
 
 public class PlaceholderExtension extends PlaceholderExpansion {
@@ -67,5 +66,4 @@ public class PlaceholderExtension extends PlaceholderExpansion {
 
         return null;
     }
-
 }

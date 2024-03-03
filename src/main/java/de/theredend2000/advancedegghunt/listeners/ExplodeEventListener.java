@@ -18,5 +18,4 @@ public class ExplodeEventListener implements Listener {
         EggManager eggManager = Main.getInstance().getEggManager();
         event.blockList().removeIf(eggManager::containsEgg);
     }
-
 }

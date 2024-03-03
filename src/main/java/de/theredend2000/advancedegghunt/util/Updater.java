@@ -3,17 +3,13 @@ package de.theredend2000.advancedegghunt.util;
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Objects;
 
 public class Updater implements Listener {
 
@@ -71,5 +67,4 @@ public class Updater implements Listener {
             if(isOutdated(player));
         }
     }
-
 }

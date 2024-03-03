@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Color;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -108,5 +107,4 @@ public class ItemBuilder {
         itemMeta.addEnchant(ench, level, true);
         return this;
     }
-
 }

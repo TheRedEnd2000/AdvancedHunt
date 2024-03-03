@@ -125,7 +125,6 @@ public class EggDataManager {
         if (sectionFile.exists()) {
             sectionFile.delete();
         }
-
     }
 
     private void addDefaultCommands(String section) {

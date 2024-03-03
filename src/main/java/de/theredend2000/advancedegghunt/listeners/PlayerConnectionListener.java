@@ -47,5 +47,4 @@ public class PlayerConnectionListener implements Listener {
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LEAVE_PLACEMODE));
         }
     }
-
 }

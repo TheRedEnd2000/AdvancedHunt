@@ -47,6 +47,5 @@ public abstract class SelectionSelectMenu implements InventoryHolder {
 
         return item;
     }
-
 }
 

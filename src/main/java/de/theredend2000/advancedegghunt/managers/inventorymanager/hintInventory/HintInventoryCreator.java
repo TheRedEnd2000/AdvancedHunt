@@ -14,7 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Random;
 
 public class HintInventoryCreator implements Listener {
 
@@ -121,7 +121,4 @@ public class HintInventoryCreator implements Listener {
             player.playSound(player.getLocation() ,Main.getInstance().getSoundManager().playErrorSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
         active = false;
     }
-
-
-
 }

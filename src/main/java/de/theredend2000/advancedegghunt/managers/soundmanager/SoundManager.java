@@ -33,5 +33,4 @@ public class SoundManager {
     public int getSoundVolume(){
         return Main.getInstance().getConfig().getInt("Settings.SoundVolume");
     }
-
 }
