@@ -110,10 +110,10 @@ public class HintInventoryCreator implements Listener {
             if (Main.getInstance().getEggManager().containsPlayer(player.getName())) {
                 if (Main.getInstance().getEggManager().checkFoundAll(player, sections)) continue;
                 int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, sections);
-                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".",sections);
-                if (location.loadBlockLocation() != null) {
+                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".");
+                if (location.loadLocation(sections) != null) {
                     int random = new Random().nextInt(2);
-                    return Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT).replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation().getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation().getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation().getBlockZ()) : "§k1");
+                    return Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT).replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation(sections).getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation(sections).getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation(sections).getBlockZ()) : "§k1");
                 }
             }
         }

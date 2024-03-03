@@ -49,9 +49,9 @@ public class EggListMenu extends ListPaginatedMenu {
             for(String id : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){
                     if(e.getAction() == InventoryAction.PICKUP_ALL){
-                        ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "PlacedEggs." + id,section);
-                        if (location.loadBlockLocation() != null)
-                            p.teleport(location.loadLocation().add(0.5,0,0.5));
+                        ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "PlacedEggs." + id);
+                        if (location.loadLocation(section) != null)
+                            p.teleport(location.loadLocation(section).add(0.5,0,0.5));
                         p.closeInventory();
                         p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.TELEPORT_TO_EGG).replaceAll("%ID%", id));
                         p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);

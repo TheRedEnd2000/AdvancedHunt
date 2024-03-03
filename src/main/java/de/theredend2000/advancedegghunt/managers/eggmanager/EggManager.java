@@ -118,10 +118,10 @@ public class EggManager {
                     }
                 }
             }
-            new ConfigLocationUtil(plugin, location, "PlacedEggs."+ nextNumber,section).saveBlockLocation();
+            new ConfigLocationUtil(plugin, location, "PlacedEggs."+ nextNumber).saveBlockLocation(section);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", String.valueOf(nextNumber)));
         }else {
-            new ConfigLocationUtil(plugin, location, "PlacedEggs.0",section).saveBlockLocation();
+            new ConfigLocationUtil(plugin, location, "PlacedEggs.0").saveBlockLocation(section);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%","0"));
         }
         updateMaxEggs(section);
@@ -134,9 +134,9 @@ public class EggManager {
             keys.clear();
             for (String key : config.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 keys.add(key);
-                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs."+key,section);
-                if (location.loadBlockLocation() != null) {
-                    if (block.getX() == location.loadLocation().getBlockX() && block.getY() == location.loadLocation().getBlockY() && block.getZ() == location.loadLocation().getBlockZ()) {
+                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs."+key);
+                if (location.loadLocation(section) != null) {
+                    if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
                         config.set("PlacedEggs."+key,null);
                         Main.getInstance().getEggDataManager().savePlacedEggs(section,config);
                         player.sendMessage(messageManager.getMessage(MessageKey.EGG_BROKEN).replaceAll("%ID%",key));
@@ -149,8 +149,8 @@ public class EggManager {
                 if(playerConfig.contains("FoundEggs."+section)) {
                     for (String eggID : playerConfig.getConfigurationSection("FoundEggs."+section).getKeys(false)) {
                         if(eggID.equalsIgnoreCase("Count") || eggID.equalsIgnoreCase("Name")) continue;
-                        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs."+section+"." + eggID,section);
-                        if (location.loadBlockLocation(uuids) != null) {
+                        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs."+section+"." + eggID);
+                        if (location.loadLocation(uuids) != null) {
                             if (block.getX() == location.loadLocation(player.getUniqueId()).getBlockX() && block.getY() == location.loadLocation(player.getUniqueId()).getBlockY() && block.getZ() == location.loadLocation(player.getUniqueId()).getBlockZ()) {
                                 playerConfig.set("FoundEggs."+section+"."+eggID, null);
                                 playerConfig.set("FoundEggs."+section+".Count", getPlayerCount(uuids,section) - 1);
@@ -189,9 +189,9 @@ public class EggManager {
         for(String section : plugin.getEggDataManager().savedEggSections()) {
             if (!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
             for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
-                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".",section);
-                if (location.loadBlockLocation() != null) {
-                    if (block.getX() == location.loadLocation().getBlockX() && block.getY() == location.loadLocation().getBlockY() && block.getZ() == location.loadLocation().getBlockZ()) {
+                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
+                if (location.loadLocation(section) != null) {
+                    if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
                         return true;
                     }
                 }
@@ -203,9 +203,9 @@ public class EggManager {
     public String getEggID(Block block,String section){
         for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
             if(!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
-            ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs."+key+".",section);
-            if (location.loadBlockLocation() != null) {
-                if (block.getX() == location.loadLocation().getBlockX() && block.getY() == location.loadLocation().getBlockY() && block.getZ() == location.loadLocation().getBlockZ()) {
+            ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs."+key+".");
+            if (location.loadLocation(section) != null) {
+                if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
                     return key;
                 }
             }
@@ -217,9 +217,9 @@ public class EggManager {
         for(String section : plugin.getEggDataManager().savedEggSections()) {
             if (!plugin.getEggDataManager().getPlacedEggs(section).contains("PlacedEggs.")) continue;
             for (String key : plugin.getEggDataManager().getPlacedEggs(section).getConfigurationSection("PlacedEggs.").getKeys(false)) {
-                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".",section);
-                if (location.loadBlockLocation() != null) {
-                    if (block.getX() == location.loadLocation().getBlockX() && block.getY() == location.loadLocation().getBlockY() && block.getZ() == location.loadLocation().getBlockZ()) {
+                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
+                if (location.loadLocation(section) != null) {
+                    if (block.getX() == location.loadLocation(section).getBlockX() && block.getY() == location.loadLocation(section).getBlockY() && block.getZ() == location.loadLocation(section).getBlockZ()) {
                         return section;
                     }
                 }
@@ -243,7 +243,7 @@ public class EggManager {
         Main.getInstance().getEggDataManager().savePlacedEggs(section,placedEggs);
         playerConfig.set("FoundEggs."+section+".Count", playerConfig.contains("FoundEggs."+section+".Count") ? playerConfig.getInt("FoundEggs."+section+".Count")+1 : 1);
         playerConfig.set("FoundEggs."+section+".Name", player.getName());
-        new ConfigLocationUtil(plugin,block.getLocation(),"FoundEggs."+section+"."+id,section).saveBlockLocation(player.getUniqueId(),playerConfig);
+        new ConfigLocationUtil(plugin,block.getLocation(),"FoundEggs."+section+"."+id).saveBlockLocation(player.getUniqueId());
         plugin.getPlayerEggDataManager().savePlayerData(player.getUniqueId(),playerConfig);
         if(!Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards") || !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"))
             player.sendMessage(messageManager.getMessage(MessageKey.EGG_FOUND).replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player,section))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs(section))));
@@ -321,8 +321,8 @@ public class EggManager {
                         continue;
                     }
                     for (String eggId : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
-                        ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + eggId,collection);
-                        if (locationUtil.loadBlockLocation() != null) {
+                        ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + eggId);
+                        if (locationUtil.loadLocation(collection) != null) {
                             String world = placedEggs.getString("PlacedEggs." + eggId + ".World");
                             int x = placedEggs.getInt("PlacedEggs." + eggId + ".X");
                             int y = placedEggs.getInt("PlacedEggs." + eggId + ".Y");
@@ -375,7 +375,7 @@ public class EggManager {
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 20);
+        }.runTaskTimer(Main.getInstance(), 0, 15);
     }
 
     public Particle getParticle(Player p, String key,String section){
@@ -450,8 +450,8 @@ public class EggManager {
                 continue;
             }
             for (String key : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
-                ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + key,sections);
-                if (locationUtil.loadBlockLocation() != null) {
+                ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + key);
+                if (locationUtil.loadLocation(sections) != null) {
                     String world = placedEggs.getString("PlacedEggs." + key + ".World");
                     int x = placedEggs.getInt("PlacedEggs." + key + ".X");
                     int y = placedEggs.getInt("PlacedEggs." + key + ".Y");
