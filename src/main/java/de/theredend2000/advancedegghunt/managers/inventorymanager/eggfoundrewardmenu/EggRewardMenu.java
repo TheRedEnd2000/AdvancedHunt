@@ -2,10 +2,9 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewar
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectMenu;
-import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -55,52 +54,56 @@ public class EggRewardMenu extends RewardPaginatedMenu {
             new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
-            p.closeInventory();
-            p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        }else if (e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-            if(Main.getInstance().getRefreshCooldown().containsKey(p.getName())){
-                if(Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                    return;
-                }
-            }
-            Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis()+ (3*1000));
-            new EggRewardMenu(Main.getPlayerMenuUtility(p)).open();
-            p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
-            if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
-                if (page == 0){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                }else{
-                    page = page - 1;
-                    super.open();
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                }
-            }else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")){
-                if (!((index + 1) >= keys.size())){
-                    page = page + 1;
-                    super.open();
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                }else{
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                }
-            }else if(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add command")){
-                if(Main.getInstance().getPlayerAddCommand().containsKey(p)){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.ONE_COMMAND));
-                    return;
-                }
+        switch (e.getCurrentItem().getType()) {
+            case BARRIER:
                 p.closeInventory();
-                Main.getInstance().getPlayerAddCommand().put(p,120);
-                TextComponent c = new TextComponent("\n\n\n\n\n"+Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND)+"\n\n");
-                TextComponent clickme = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
-                clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
-                c.addExtra(clickme);
-                p.spigot().sendMessage(c);
-            }
+                p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
+            case EMERALD_BLOCK:
+                if (Main.getInstance().getRefreshCooldown().containsKey(p.getName())) {
+                    if (Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                        return;
+                    }
+                }
+                Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis() + (3 * 1000));
+                new EggRewardMenu(Main.getPlayerMenuUtility(p)).open();
+                p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
+            case PLAYER_HEAD:
+                if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
+                    if (page == 0) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    } else {
+                        page = page - 1;
+                        super.open();
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    }
+                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
+                    if (!((index + 1) >= keys.size())) {
+                        page = page + 1;
+                        super.open();
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    } else {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    }
+                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add command")) {
+                    if (Main.getInstance().getPlayerAddCommand().containsKey(p)) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.ONE_COMMAND));
+                        return;
+                    }
+                    p.closeInventory();
+                    Main.getInstance().getPlayerAddCommand().put(p, 120);
+                    TextComponent c = new TextComponent("\n\n\n\n\n" + Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND) + "\n\n");
+                    TextComponent clickme = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
+                    clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
+                    c.addExtra(clickme);
+                    p.spigot().sendMessage(c);
+                }
+                break;
         }
     }
 

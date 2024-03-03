@@ -44,45 +44,51 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
             new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
-            p.closeInventory();
-            p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-        }else if (e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-            if(Main.getInstance().getRefreshCooldown().containsKey(p.getName())){
-                if(Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
-                    p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
+        switch (e.getCurrentItem().getType()) {
+            case BARRIER:
+                p.closeInventory();
+                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case EMERALD_BLOCK:
+                if (Main.getInstance().getRefreshCooldown().containsKey(p.getName())) {
+                    if (Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                        return;
+                    }
+                }
+                Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis() + (3 * 1000));
+                new EggLeaderboardMenu(Main.getPlayerMenuUtility(p)).open();
+                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case PLAYER_HEAD:
+                if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
+                    if (page == 0) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                    } else {
+                        page = page - 1;
+                        super.open();
+                        p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    }
+                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
+                    if (!((index + 1) >= keys.size())) {
+                        page = page + 1;
+                        super.open();
+                        p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    } else {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                    }
+                }
+                break;
+            case HOPPER:
+                if (!ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Sort")) {
                     return;
                 }
-            }
-            Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis()+ (3*1000));
-            new EggLeaderboardMenu(Main.getPlayerMenuUtility(p)).open();
-            p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-        }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
-            if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
-                if (page == 0){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                    p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
-                }else{
-                    page = page - 1;
-                    super.open();
-                    p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-                }
-            }else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")){
-                if (!((index + 1) >= keys.size())){
-                    page = page + 1;
-                    super.open();
-                    p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-                }else{
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                    p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
-                }
-            }
-        }else if(e.getCurrentItem().getType().equals(Material.HOPPER)){
-            if(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Sort")){
                 LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
                 Main.getInstance().getSortTypeLeaderboard().remove(playerMenuUtility.getOwner());
-                switch (sortTypes){
+                switch (sortTypes) {
                     case ALL:
                         Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner(), LeaderboardSortTypes.TOP10);
                         break;
@@ -96,9 +102,9 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
                         Main.getInstance().getSortTypeLeaderboard().put(playerMenuUtility.getOwner(), LeaderboardSortTypes.ALL);
                         break;
                 }
-                p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
+                p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                 super.open();
-            }
+                break;
         }
     }
 
@@ -120,10 +126,12 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
         if(keys != null && !keys.isEmpty()) {
             List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
             if(leaderList != null && !leaderList.isEmpty() && leaderList.get(0).getKey() != null){
-            for(int i = 0; i < getMaxItemsPerPage(); i++) {
-                index = getMaxItemsPerPage() * page + i;
-                if(index >= keys.size()) break;
-                if (keys.get(index) != null) {
+                for(int i = 0; i < getMaxItemsPerPage(); i++) {
+                    index = getMaxItemsPerPage() * page + i;
+                    if(index >= keys.size()) break;
+                    if (keys.get(index) == null) {
+                        continue;
+                    }
                     LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
                     leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
                     String playerName = leaderList.get(i).getKey();
@@ -148,7 +156,6 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
                                 inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName).setDisplayname("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")).setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= i ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (i - 9) + " place behind 10th place").build());
                             break;
                     }
-                }
                 }
             }else
                 inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());

@@ -2,10 +2,10 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -57,47 +57,51 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
             new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
-            p.closeInventory();
-            p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-        }else if (e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-            if(Main.getInstance().getRefreshCooldown().containsKey(p.getName())){
-                if(Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
-                    p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
-                    return;
+        switch (e.getCurrentItem().getType()) {
+            case BARRIER:
+                p.closeInventory();
+                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case EMERALD_BLOCK:
+                if (Main.getInstance().getRefreshCooldown().containsKey(p.getName())) {
+                    if (Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                        return;
+                    }
                 }
-            }
-            Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis()+ (3*1000));
-            new EggPlaceMenu(Main.getPlayerMenuUtility(p)).open();
-            p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-        }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
-            if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
-                if (page == 0){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                    p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
-                }else{
-                    page = page - 1;
-                    super.open();
-                    p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
+                Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis() + (3 * 1000));
+                new EggPlaceMenu(Main.getPlayerMenuUtility(p)).open();
+                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case PLAYER_HEAD:
+                if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
+                    if (page == 0) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                    } else {
+                        page = page - 1;
+                        super.open();
+                        p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    }
+                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
+                    if (!((index + 1) >= keys.size())) {
+                        page = page + 1;
+                        super.open();
+                        p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    } else {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                    }
+                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Information")) {
+                    TextComponent c = new TextComponent("§7Join the discord to get all information how to add custom egg textures. \n");
+                    TextComponent clickme = new TextComponent("§6§l[CLICK HERE]");
+                    clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§7Click to join.")));
+                    clickme.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/hNj9erE5EA"));
+                    c.addExtra(clickme);
+                    p.spigot().sendMessage(c);
                 }
-            }else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")){
-                if (!((index + 1) >= keys.size())){
-                    page = page + 1;
-                    super.open();
-                    p.playSound(p.getLocation(),soundManager.playInventorySuccessSound(),soundManager.getSoundVolume(), 1);
-                }else{
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                    p.playSound(p.getLocation(),soundManager.playInventoryFailedSound(),soundManager.getSoundVolume(), 1);
-                }
-            }else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Information")){
-                TextComponent c = new TextComponent("§7Join the discord to get all information how to add custom egg textures. \n");
-                TextComponent clickme = new TextComponent("§6§l[CLICK HERE]");
-                clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,TextComponent.fromLegacyText("§7Click to join.")));
-                clickme.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,"https://discord.gg/hNj9erE5EA"));
-                c.addExtra(clickme);
-                p.spigot().sendMessage(c);
-            }
+                break;
         }
     }
 
