@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ConfigLocationUtil {
-
     private Main plugin;
     private Location location;
     private String root;
