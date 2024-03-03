@@ -65,7 +65,7 @@ public class ConfigLocationUtil {
         if (config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root + ".World"));
             if (world != null) {
-                double x = config.getInt(root + ".X"),
+                int x = config.getInt(root + ".X"),
                         y = config.getInt(root + ".Y"),
                         z = config.getInt(root + ".Z");
                 return new Location(world, x, y, z);

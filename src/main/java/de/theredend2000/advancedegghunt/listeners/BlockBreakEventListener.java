@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
 
@@ -62,7 +63,7 @@ public class BlockBreakEventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerBucketFillEvent(PlayerBucketFillEvent event) {
+    public void onPlayerBucketFillEvent(PlayerBucketEmptyEvent event) {
         Block block = event.getBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 

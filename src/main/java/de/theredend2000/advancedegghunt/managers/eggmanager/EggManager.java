@@ -149,7 +149,7 @@ public class EggManager {
                 if(playerConfig.contains("FoundEggs."+section)) {
                     for (String eggID : playerConfig.getConfigurationSection("FoundEggs."+section).getKeys(false)) {
                         if(eggID.equalsIgnoreCase("Count") || eggID.equalsIgnoreCase("Name")) continue;
-                        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs."+section+"." + eggID);
+                        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "FoundEggs."+section+"."+eggID);
                         if (location.loadLocation(uuids) != null) {
                             if (block.getX() == location.loadLocation(player.getUniqueId()).getBlockX() && block.getY() == location.loadLocation(player.getUniqueId()).getBlockY() && block.getZ() == location.loadLocation(player.getUniqueId()).getBlockZ()) {
                                 playerConfig.set("FoundEggs."+section+"."+eggID, null);
