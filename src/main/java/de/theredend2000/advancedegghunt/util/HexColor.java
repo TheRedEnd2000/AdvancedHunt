@@ -10,25 +10,24 @@ public class HexColor {
 
     public static String color(final String textToTranslate) {
         final char altColorChar = '&';
-        final StringBuilder b = new StringBuilder();
-        final char[] mess = textToTranslate.toCharArray();
+        final StringBuilder stringBuilder = new StringBuilder();
+        final char[] textToTranslateCharArray = textToTranslate.toCharArray();
         boolean color = false, hashtag = false, doubleTag = false;
         char tmp;
 
-        for (int i = 0; i < mess.length; ) {
-
-            final char c = mess[i];
+        for (int i = 0; i < textToTranslateCharArray.length; ) {
+            final char c = textToTranslateCharArray[i];
 
             if (doubleTag) {
                 doubleTag = false;
 
                 final int max = i + 3;
 
-                if (max <= mess.length) {
+                if (max <= textToTranslateCharArray.length) {
                     boolean match = true;
 
                     for (int n = i; n < max; n++) {
-                        tmp = mess[n];
+                        tmp = textToTranslateCharArray[n];
                         if (!((tmp >= '0' && tmp <= '9') || (tmp >= 'a' && tmp <= 'f') || (tmp >= 'A' && tmp <= 'F'))) {
                             match = false;
                             break;
@@ -36,23 +35,23 @@ public class HexColor {
                     }
 
                     if (match) {
-                        b.append(ChatColor.COLOR_CHAR);
-                        b.append('x');
+                        stringBuilder.append(ChatColor.COLOR_CHAR);
+                        stringBuilder.append('x');
 
                         for (; i < max; i++) {
-                            tmp = mess[i];
-                            b.append(ChatColor.COLOR_CHAR);
-                            b.append(tmp);
-                            b.append(ChatColor.COLOR_CHAR);
-                            b.append(tmp);
+                            tmp = textToTranslateCharArray[i];
+                            stringBuilder.append(ChatColor.COLOR_CHAR);
+                            stringBuilder.append(tmp);
+                            stringBuilder.append(ChatColor.COLOR_CHAR);
+                            stringBuilder.append(tmp);
                         }
 
                         continue;
                     }
                 }
 
-                b.append(altColorChar);
-                b.append("##");
+                stringBuilder.append(altColorChar);
+                stringBuilder.append("##");
             }
 
             if (hashtag) {
@@ -66,11 +65,11 @@ public class HexColor {
 
                 final int max = i + 6;
 
-                if (max <= mess.length) {
+                if (max <= textToTranslateCharArray.length) {
                     boolean match = true;
 
                     for (int n = i; n < max; n++) {
-                        tmp = mess[n];
+                        tmp = textToTranslateCharArray[n];
                         if (!((tmp >= '0' && tmp <= '9') || (tmp >= 'a' && tmp <= 'f') || (tmp >= 'A' && tmp <= 'F'))) {
                             match = false;
                             break;
@@ -78,21 +77,20 @@ public class HexColor {
                     }
 
                     if (match) {
-                        b.append(ChatColor.COLOR_CHAR);
-                        b.append('x');
+                        stringBuilder.append(ChatColor.COLOR_CHAR);
+                        stringBuilder.append('x');
 
                         for (; i < max; i++) {
-                            b.append(ChatColor.COLOR_CHAR);
-                            b.append(mess[i]);
+                            stringBuilder.append(ChatColor.COLOR_CHAR);
+                            stringBuilder.append(textToTranslateCharArray[i]);
                         }
                         continue;
                     }
                 }
 
-                b.append(altColorChar);
-                b.append('#');
+                stringBuilder.append(altColorChar);
+                stringBuilder.append('#');
             }
-
 
             if (color) { // Color module
                 color = false;
@@ -104,13 +102,13 @@ public class HexColor {
                 }
 
                 if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || c == 'r' || (c >= 'k' && c <= 'o') || (c >= 'A' && c <= 'F') || c == 'R' || (c >= 'K' && c <= 'O')) {
-                    b.append(ChatColor.COLOR_CHAR);
-                    b.append(c);
+                    stringBuilder.append(ChatColor.COLOR_CHAR);
+                    stringBuilder.append(c);
                     i++;
                     continue;
                 }
 
-                b.append(altColorChar);
+                stringBuilder.append(altColorChar);
             }
 
             if (c == altColorChar) {
@@ -119,23 +117,23 @@ public class HexColor {
                 continue;
             }
 
-            b.append(c);
+            stringBuilder.append(c);
             i++;
 
         }
 
         if (color)
-            b.append(altColorChar);
+            stringBuilder.append(altColorChar);
         else
             if (hashtag) {
-                b.append(altColorChar);
-                b.append('#');
+                stringBuilder.append(altColorChar);
+                stringBuilder.append('#');
             } else
                 if (doubleTag) {
-                    b.append(altColorChar);
-                    b.append("##");
+                    stringBuilder.append(altColorChar);
+                    stringBuilder.append("##");
                 }
 
-        return b.toString();
+        return stringBuilder.toString();
     }
 }

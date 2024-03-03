@@ -316,53 +316,54 @@ public class EggManager {
                     }
                     for (String eggId : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                         ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + eggId);
-                        if (locationUtil.loadLocation(collection) != null) {
-                            String world = placedEggs.getString("PlacedEggs." + eggId + ".World");
-                            int x = placedEggs.getInt("PlacedEggs." + eggId + ".X");
-                            int y = placedEggs.getInt("PlacedEggs." + eggId + ".Y");
-                            int z = placedEggs.getInt("PlacedEggs." + eggId + ".Z");
-                            Location startLocation = new Location(Bukkit.getWorld(world), x, y, z);
-                            for (Entity entity : startLocation.getWorld().getNearbyEntities(startLocation, 10, 10, 10)) {
-                                if (!(entity instanceof Player)) {
-                                    continue;
-                                }
-                                Player player = (Player) entity;
-                                if (time > 2.0) {
-                                    double startX = startLocation.getX() - 1;
-                                    double startY = startLocation.getY();
-                                    double startZ = startLocation.getZ() + 1;
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, (startY), (startZ), 0);
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX + 2), (startY), (startZ - 3) + time, 0);
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX + 2), (startY + 3) - time, (startZ), 0);
-                                    continue;
-                                }
-                                if (time > 1.0) {
-                                    double startX = startLocation.getX();
-                                    double startY = startLocation.getY();
-                                    double startZ = startLocation.getZ() - 1;
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, startY, (startZ + 1), 0);
-                                    player.spawnParticle(getParticle(player, eggId, collection), startX, startY, startZ + time, 0);
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX), (startY + 2) - time, (startZ + 2), 0);
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX + 1), (startY + 2) - time, (startZ + 1), 0);
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, (startY + 1), (startZ + 2), 0);
-                                    player.spawnParticle(getParticle(player, eggId, collection), (startX + 1), (startY + 1), (startZ) + time, 0);
-                                    continue;
-                                }
-
-                                double startX = startLocation.getX();
-                                double startY = startLocation.getY() + 1.0;
-                                double startZ = startLocation.getZ();
-                                player.spawnParticle(getParticle(player, eggId, collection), startX + time, startY, startZ, 0);
-                                player.spawnParticle(getParticle(player, eggId, collection), startX, startY - time, startZ, 0);
-                                player.spawnParticle(getParticle(player, eggId, collection), startX, startY, startZ + time, 0);
+                        if (locationUtil.loadLocation(collection) == null) {
+                            continue;
+                        }
+                        String world = placedEggs.getString("PlacedEggs." + eggId + ".World");
+                        int x = placedEggs.getInt("PlacedEggs." + eggId + ".X");
+                        int y = placedEggs.getInt("PlacedEggs." + eggId + ".Y");
+                        int z = placedEggs.getInt("PlacedEggs." + eggId + ".Z");
+                        Location startLocation = new Location(Bukkit.getWorld(world), x, y, z);
+                        for (Entity entity : startLocation.getWorld().getNearbyEntities(startLocation, 10, 10, 10)) {
+                            if (!(entity instanceof Player)) {
+                                continue;
                             }
-                            int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
-                            for (Entity e : startLocation.getWorld().getNearbyEntities(startLocation, radius, radius, radius)) {
-                                if (e instanceof Player) {
-                                    Player p = (Player) e;
-                                    if (!hasFound(p, eggId, collection)) {
-                                        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(messageManager.getMessage(MessageKey.EGG_NEARBY)));
-                                    }
+                            Player player = (Player) entity;
+                            if (time > 2.0) {
+                                double startX = startLocation.getX() - 1;
+                                double startY = startLocation.getY();
+                                double startZ = startLocation.getZ() + 1;
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, (startY), (startZ), 0);
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX + 2), (startY), (startZ - 3) + time, 0);
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX + 2), (startY + 3) - time, (startZ), 0);
+                                continue;
+                            }
+                            if (time > 1.0) {
+                                double startX = startLocation.getX();
+                                double startY = startLocation.getY();
+                                double startZ = startLocation.getZ() - 1;
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, startY, (startZ + 1), 0);
+                                player.spawnParticle(getParticle(player, eggId, collection), startX, startY, startZ + time, 0);
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX), (startY + 2) - time, (startZ + 2), 0);
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX + 1), (startY + 2) - time, (startZ + 1), 0);
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, (startY + 1), (startZ + 2), 0);
+                                player.spawnParticle(getParticle(player, eggId, collection), (startX + 1), (startY + 1), (startZ) + time, 0);
+                                continue;
+                            }
+
+                            double startX = startLocation.getX();
+                            double startY = startLocation.getY() + 1.0;
+                            double startZ = startLocation.getZ();
+                            player.spawnParticle(getParticle(player, eggId, collection), startX + time, startY, startZ, 0);
+                            player.spawnParticle(getParticle(player, eggId, collection), startX, startY - time, startZ, 0);
+                            player.spawnParticle(getParticle(player, eggId, collection), startX, startY, startZ + time, 0);
+                        }
+                        int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
+                        for (Entity e : startLocation.getWorld().getNearbyEntities(startLocation, radius, radius, radius)) {
+                            if (e instanceof Player) {
+                                Player p = (Player) e;
+                                if (!hasFound(p, eggId, collection)) {
+                                    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(messageManager.getMessage(MessageKey.EGG_NEARBY)));
                                 }
                             }
                         }

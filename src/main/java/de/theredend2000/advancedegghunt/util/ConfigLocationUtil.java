@@ -4,11 +4,8 @@ import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class ConfigLocationUtil {
@@ -62,15 +59,16 @@ public class ConfigLocationUtil {
 
     public Location loadLocation(UUID uuid) {
         FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-        if (config.contains(root)) {
-            World world = Bukkit.getWorld(config.getString(root + ".World"));
-            if (world != null) {
-                int x = config.getInt(root + ".X"),
-                        y = config.getInt(root + ".Y"),
-                        z = config.getInt(root + ".Z");
-                return new Location(world, x, y, z);
-            }
+        if (!config.contains(root)) {
+            return null;
         }
-        return null;
+        World world = Bukkit.getWorld(config.getString(root + ".World"));
+        if (world == null) {
+            return null;
+        }
+        int x = config.getInt(root + ".X"),
+                y = config.getInt(root + ".Y"),
+                z = config.getInt(root + ".Z");
+        return new Location(world, x, y, z);
     }
 }

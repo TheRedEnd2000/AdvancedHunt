@@ -53,14 +53,15 @@ public class MessageManager {
     public String getMessage(MessageKey key) {
         String message = messagesConfig.getString(key.getPath());
         boolean prefix_enabled = Main.getInstance().getConfig().getBoolean("Settings.PluginPrefixEnabled");
-        if (message != null) {
-            if(key.name().equals("EGG_NEARBY")) return HexColor.color(message);
-            if(prefix_enabled)
-                message = HexColor.color(ChatColor.translateAlternateColorCodes('&', Main.PREFIX + message));
-            else
-                message = HexColor.color(ChatColor.translateAlternateColorCodes('&', message));
-            return message;
+        if (message == null) {
+            return "Message not found: " + key.name();
         }
-        return "Message not found: " + key.name();
+
+        if(key.name().equals("EGG_NEARBY")) return HexColor.color(message);
+        if(prefix_enabled)
+            message = HexColor.color(ChatColor.translateAlternateColorCodes('&', Main.PREFIX + message));
+        else
+            message = HexColor.color(ChatColor.translateAlternateColorCodes('&', message));
+        return message;
     }
 }
