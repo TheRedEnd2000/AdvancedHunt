@@ -23,6 +23,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,8 +33,9 @@ public class EggManager {
 
     private Main plugin;
     private MessageManager messageManager;
-    Particle eggNotFoundParticle;
-    Particle eggFoundParticle;
+    private Particle eggNotFoundParticle;
+    private Particle eggFoundParticle;
+    private BukkitTask spawnEggParticleTask;
 
     public EggManager(){
         this.plugin = Main.getInstance();
@@ -41,7 +43,6 @@ public class EggManager {
 
         eggNotFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
         eggFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggFound").toUpperCase());
-
     }
 
 
@@ -295,12 +296,17 @@ public class EggManager {
         return getEggsFound(player,section) == getMaxEggs(section);
     }
 
-    public void spawnEggParticle(){
-        if (!Main.getInstance().getConfig().getBoolean("Particle.enabled")) return;
+    public void spawnEggParticle() {
+        if (spawnEggParticleTask != null)
+            spawnEggParticleTask.cancel();
+
+        if (!Main.getInstance().getConfig().getBoolean("Particle.enabled")) {
+            return;
+        }
+
 
         List<String> collections = plugin.getEggDataManager().savedEggCollections();
-
-        new BukkitRunnable() {
+        spawnEggParticleTask = new BukkitRunnable() {
             double time = 0;
 
             @Override

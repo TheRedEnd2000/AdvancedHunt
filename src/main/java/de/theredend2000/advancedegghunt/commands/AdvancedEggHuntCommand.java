@@ -2,18 +2,18 @@ package de.theredend2000.advancedegghunt.commands;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
-import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.EggProgressMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
@@ -60,6 +60,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         Main.getInstance().reloadConfig();
                         Main.getInstance().checkCommandFeedback();
                         messageManager.reloadMessages();
+                        eggManager.spawnEggParticle();
                         player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
                     }else if(args[0].equalsIgnoreCase("help")){
                         sendHelp(player);
