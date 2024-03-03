@@ -19,17 +19,20 @@ public class BlockPlaceEventListener implements Listener {
 
     @EventHandler
     public void onPlaceEggEvent(BlockPlaceEvent event){
+        Player player = event.getPlayer();
+        if (!Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+            return;
+        }
+
         EggManager eggManager = Main.getInstance().getEggManager();
         SoundManager soundManager = Main.getInstance().getSoundManager();
-        Player player = event.getPlayer();
         String permission = Main.getInstance().getConfig().getString("Permissions.PlaceEggPermission");
-        if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-            if(player.hasPermission(permission)){
-                String section = eggManager.getEggSectionFromPlayerData(player.getUniqueId());
-                eggManager.saveEgg(player, event.getBlockPlaced().getLocation(),section);
-                player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
-            }else
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission));
-        }
+
+        if(player.hasPermission(permission)){
+            String section = eggManager.getEggSectionFromPlayerData(player.getUniqueId());
+            eggManager.saveEgg(player, event.getBlockPlaced().getLocation(),section);
+            player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
+        }else
+            player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission));
     }
 }

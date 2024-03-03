@@ -35,58 +35,63 @@ public class PlayerInteractEventListener implements Listener {
         Player player = event.getPlayer();
         Action action = event.getAction();
 
-        if((action.equals(Action.RIGHT_CLICK_BLOCK) && Main.getInstance().getConfig().getBoolean("Settings.RightClickEgg") && event.getHand() == EquipmentSlot.HAND) || (action.equals(Action.LEFT_CLICK_BLOCK) && Main.getInstance().getConfig().getBoolean("Settings.LeftClickEgg"))) {
-            if (event.getClickedBlock() != null) {
-                if (eggManager.containsEgg(event.getClickedBlock()) && !Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-                    for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
-                        if (eggManager.getEggSection(event.getClickedBlock()).equals(collections)) {
-                            String id = eggManager.getEggID(event.getClickedBlock(), collections);
-                            FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collections);
-                            if(!placedEggs.getBoolean("Enabled")){
-                                player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
-                                return;
+        if ((!action.equals(Action.RIGHT_CLICK_BLOCK) ||
+                    !Main.getInstance().getConfig().getBoolean("Settings.RightClickEgg") ||
+                    event.getHand() != EquipmentSlot.HAND) &&
+                (!action.equals(Action.LEFT_CLICK_BLOCK) ||
+                    !Main.getInstance().getConfig().getBoolean("Settings.LeftClickEgg")) ||
+                event.getClickedBlock() == null ||
+                !eggManager.containsEgg(event.getClickedBlock()) ||
+                Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+            return;
+        }
+        for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
+            if (!eggManager.getEggSection(event.getClickedBlock()).equals(collections)) {
+                continue;
+            }
+            String id = eggManager.getEggID(event.getClickedBlock(), collections);
+            FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collections);
+            if(!placedEggs.getBoolean("Enabled")){
+                player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
+                return;
+            }
+            if (!eggManager.hasFound(player, id,collections)) {
+                if(!Main.getInstance().getRequirementsManager().canBeAccessed(collections)){
+                    player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
+                    return;
+                }
+                if(Main.getInstance().getRequirementsManager().getOverallTime(collections) <= 0)
+                    Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(),collections,id);
+                eggManager.saveFoundEggs(player, event.getClickedBlock(), id, collections);
+                Location loc = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
+                if (Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"))
+                    extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
+                if (eggManager.checkFoundAll(player, collections)) {
+                    player.playSound(player.getLocation(), soundManager.playAllEggsFound(), 1, 1);
+                    if (Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward")) {
+                        for (String key : placedEggs.getConfigurationSection("Rewards.").getKeys(false)) {
+                            boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
+                            if (placedEggs.getInt("Rewards." + key + ".type") == 1 && enabled) {
+                                String cmd = placedEggs.getString("Rewards." + key + ".command");
+                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player,collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
                             }
-                            if (!eggManager.hasFound(player, id,collections)) {
-                                if(!Main.getInstance().getRequirementsManager().canBeAccessed(collections)){
-                                    player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
-                                    return;
-                                }
-                                if(Main.getInstance().getRequirementsManager().getOverallTime(collections) <= 0)
-                                    Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(),collections,id);
-                                eggManager.saveFoundEggs(player, event.getClickedBlock(), id, collections);
-                                Location loc = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
-                                if (Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"))
-                                    extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
-                                if (eggManager.checkFoundAll(player, collections)) {
-                                    player.playSound(player.getLocation(), soundManager.playAllEggsFound(), 1, 1);
-                                    if (Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward")) {
-                                        for (String key : placedEggs.getConfigurationSection("Rewards.").getKeys(false)) {
-                                            boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
-                                            if (placedEggs.getInt("Rewards." + key + ".type") == 1 && enabled) {
-                                                String cmd = placedEggs.getString("Rewards." + key + ".command");
-                                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player,collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
-                                    if (Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards")) {
-                                        for (String key : placedEggs.getConfigurationSection("Rewards.").getKeys(false)) {
-                                            boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
-                                            if (placedEggs.getInt("Rewards." + key + ".type") == 0 && enabled) {
-                                                String cmd = placedEggs.getString("Rewards." + key + ".command").replaceAll("&", "§");
-                                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player,collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                player.sendMessage(messageManager.getMessage(MessageKey.EGG_ALREADY_FOUND));
-                                player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
+                        }
+                    }
+                } else {
+                    player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
+                    if (Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards")) {
+                        for (String key : placedEggs.getConfigurationSection("Rewards.").getKeys(false)) {
+                            boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
+                            if (placedEggs.getInt("Rewards." + key + ".type") == 0 && enabled) {
+                                String cmd = placedEggs.getString("Rewards." + key + ".command").replaceAll("&", "§");
+                                Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replace("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player,collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
                             }
                         }
                     }
                 }
+            } else {
+                player.sendMessage(messageManager.getMessage(MessageKey.EGG_ALREADY_FOUND));
+                player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
             }
         }
     }
