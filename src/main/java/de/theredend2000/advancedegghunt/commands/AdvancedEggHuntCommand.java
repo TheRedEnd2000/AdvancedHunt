@@ -3,7 +3,6 @@ package de.theredend2000.advancedegghunt.commands;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
@@ -17,8 +16,6 @@ import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.*;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -78,8 +75,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("hint")){
                         int counter = 0;
-                        int max = Main.getInstance().getEggDataManager().savedEggSections().size();
-                        for(String sections : Main.getInstance().getEggDataManager().savedEggSections()) {
+                        int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
+                        for(String sections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                             counter++;
                             if (!eggManager.checkFoundAll(player,sections) && eggManager.getMaxEggs(sections) >= 1) {
                                 if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
@@ -106,7 +103,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         }
                         String name = args[1];
                         if(eggManager.containsPlayer(name)){
-                            for(String sections : Main.getInstance().getEggDataManager().savedEggSections())
+                            for(String sections : Main.getInstance().getEggDataManager().savedEggCollections())
                                 eggManager.resetStatsPlayer(name,sections);
                             player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
                         }else
@@ -124,8 +121,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                 }else if(args[0].equalsIgnoreCase("hint")){
                     int counter = 0;
-                    int max = Main.getInstance().getEggDataManager().savedEggSections().size();
-                    for(String sections : Main.getInstance().getEggDataManager().savedEggSections()) {
+                    int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
+                    for(String sections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                         counter++;
                         if (!eggManager.checkFoundAll(player,sections) && eggManager.getMaxEggs(sections) >= 1) {
                             if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.IgnoreCooldownPermission")))) {
@@ -155,7 +152,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }
                     String name = args[1];
                     if(eggManager.containsPlayer(name)){
-                        for(String sections : Main.getInstance().getEggDataManager().savedEggSections())
+                        for(String sections : Main.getInstance().getEggDataManager().savedEggCollections())
                             eggManager.resetStatsPlayer(name,sections);
                         sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
                     }else

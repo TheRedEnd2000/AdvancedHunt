@@ -1,11 +1,8 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,21 +24,18 @@ public class EggDataManager {
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
-        if(savedEggSections().size() < 1) {
+        if(savedEggCollections().size() < 1) {
             createEggSectionFile("default", true);
             Main.setupDefaultCollection = true;
         }
     }
 
     public void initEggs() {
-        List<String> savedEggSections = new ArrayList(this.plugin.getEggDataManager().savedEggSections());
-        Iterator var2 = savedEggSections.iterator();
+        List<String> savedEggCollections = new ArrayList(this.plugin.getEggDataManager().savedEggCollections());
 
-        while(var2.hasNext()) {
-            String section = (String)var2.next();
-            this.getPlacedEggs(section);
+        for (String collection : savedEggCollections) {
+            this.getPlacedEggs(collection);
         }
-
     }
 
     private void loadEggData(String section) {
@@ -66,8 +60,8 @@ public class EggDataManager {
     public void savePlacedEggs(String section, FileConfiguration config) {
         try {
             config.save(this.getFile(section));
-        } catch (IOException var4) {
-            var4.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -77,8 +71,8 @@ public class EggDataManager {
         if (!playerFile.exists()) {
             try {
                 playerFile.createNewFile();
-            } catch (IOException var6) {
-                var6.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         this.eggsConfigs.put(section, config);
@@ -91,7 +85,7 @@ public class EggDataManager {
     }
 
     public boolean containsSectionFile(String section) {
-        Iterator var2 = this.savedEggSections().iterator();
+        Iterator var2 = this.savedEggCollections().iterator();
 
         String sections;
         do {
@@ -105,7 +99,7 @@ public class EggDataManager {
         return true;
     }
 
-    public List<String> savedEggSections() {
+    public List<String> savedEggCollections() {
         List<String> eggsSections = new ArrayList();
         File eggsSectionsFolder = new File(this.dataFolder + "/eggs/");
         if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {

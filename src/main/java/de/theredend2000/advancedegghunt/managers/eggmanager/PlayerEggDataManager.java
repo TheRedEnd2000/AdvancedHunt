@@ -59,8 +59,8 @@ public class PlayerEggDataManager {
     public void savePlayerData(UUID uuid, FileConfiguration config) {
         try {
             config.save(this.getFile(uuid));
-        } catch (IOException var4) {
-            var4.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -77,8 +77,8 @@ public class PlayerEggDataManager {
         if (!playerFile.exists()) {
             try {
                 playerFile.createNewFile();
-            } catch (IOException var5) {
-                var5.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         this.playerConfigs.put(uuid, config);
@@ -108,8 +108,8 @@ public class PlayerEggDataManager {
 
             try {
                 cfg.save(this.getFile(uuid));
-            } catch (IOException var9) {
-                var9.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 

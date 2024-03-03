@@ -38,7 +38,7 @@ public class PlayerInteractEventListener implements Listener {
         if((action.equals(Action.RIGHT_CLICK_BLOCK) && Main.getInstance().getConfig().getBoolean("Settings.RightClickEgg") && event.getHand() == EquipmentSlot.HAND) || (action.equals(Action.LEFT_CLICK_BLOCK) && Main.getInstance().getConfig().getBoolean("Settings.LeftClickEgg"))) {
             if (event.getClickedBlock() != null) {
                 if (eggManager.containsEgg(event.getClickedBlock()) && !Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-                    for (String sections : Main.getInstance().getEggDataManager().savedEggSections()) {
+                    for (String sections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                         if (eggManager.getEggSection(event.getClickedBlock()).equals(sections)) {
                             String id = eggManager.getEggID(event.getClickedBlock(), sections);
                             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(sections);

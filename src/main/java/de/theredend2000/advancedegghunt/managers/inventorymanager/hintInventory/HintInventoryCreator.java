@@ -7,17 +7,13 @@ import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class HintInventoryCreator implements Listener {
@@ -106,7 +102,7 @@ public class HintInventoryCreator implements Listener {
 
     public String getReward(Player player){
         Main plugin = Main.getInstance();
-        for(String sections : plugin.getEggDataManager().savedEggSections()) {
+        for(String sections : plugin.getEggDataManager().savedEggCollections()) {
             if (Main.getInstance().getEggManager().containsPlayer(player.getName())) {
                 if (Main.getInstance().getEggManager().checkFoundAll(player, sections)) continue;
                 int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, sections);
