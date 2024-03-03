@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 
 
 public class BlockBreakEventListener implements Listener {
@@ -53,11 +54,19 @@ public class BlockBreakEventListener implements Listener {
 
     @EventHandler
     public void onBlockFromToEvent(BlockFromToEvent event) {
-        Block block = event.getBlock();
         Block toblock = event.getToBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 
-        if(eggManager.containsEgg(block) || eggManager.containsEgg(toblock))
+        if(eggManager.containsEgg(toblock))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockFromToEvent(PlayerBucketFillEvent event) {
+        Block block = event.getBlock();
+        EggManager eggManager = Main.getInstance().getEggManager();
+
+        if(eggManager.containsEgg(block))
             event.setCancelled(true);
     }
 }
