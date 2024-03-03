@@ -54,9 +54,10 @@ public class BlockBreakEventListener implements Listener {
     @EventHandler
     public void onBlockFromToEvent(BlockFromToEvent event) {
         Block block = event.getBlock();
+        Block toblock = event.getToBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 
-        if(eggManager.containsEgg(block))
+        if(eggManager.containsEgg(block) || eggManager.containsEgg(toblock))
             event.setCancelled(true);
     }
 }
