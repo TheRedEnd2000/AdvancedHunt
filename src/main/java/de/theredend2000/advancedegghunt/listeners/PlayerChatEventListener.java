@@ -90,15 +90,15 @@ public class PlayerChatEventListener implements Listener {
             @Override
             public void run() {
                 for(Player player : Main.getInstance().getPlayerAddCommand().keySet()){
-                    String section1 = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-                    FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section1);
+                    String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
+                    FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
                     int currenttime = Main.getInstance().getPlayerAddCommand().get(player);
                     Main.getInstance().getPlayerAddCommand().remove(player);
                     if(currenttime == 0){
                         if(player != null){
                             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_EXPIRED));
                             placedEggs.set("Edit." + player.getUniqueId(), null);
-                            Main.getInstance().getEggDataManager().savePlacedEggs(section1, placedEggs);
+                            Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                         }
                         return;
                     }

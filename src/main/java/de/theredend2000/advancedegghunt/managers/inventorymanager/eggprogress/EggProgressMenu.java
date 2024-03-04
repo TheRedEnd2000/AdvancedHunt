@@ -3,7 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -34,9 +34,9 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         SoundManager soundManager = Main.getInstance().getSoundManager();
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         Player p = (Player) e.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>();
@@ -45,7 +45,7 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
         }
 
         if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
-            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
+            new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         switch (e.getCurrentItem().getType()) {
@@ -91,8 +91,8 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
 
     @Override
     public void setMenuItems(String playerUUID) {
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         addMenuBorder();
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs.")){
@@ -109,10 +109,10 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
                     String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
                     String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
                     String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
-                    boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index), section);
+                    boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index), collection);
                     int random = new Random().nextInt(7);
-                    String date = Main.getInstance().getEggManager().getEggDateCollected(playerUUID, keys.get(index), section);
-                    String time = Main.getInstance().getEggManager().getEggTimeCollected(playerUUID, keys.get(index), section);
+                    String date = Main.getInstance().getEggManager().getEggDateCollected(playerUUID, keys.get(index), collection);
+                    String time = Main.getInstance().getEggManager().getEggTimeCollected(playerUUID, keys.get(index), collection);
                     if(showcoordinates && hasFound){
                         inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", "§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "").setLocalizedName(keys.get(index)).build());
                     }else if(hasFound && !showcoordinates) {

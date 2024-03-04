@@ -14,9 +14,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
+public class CollectionSelectListMenu extends SelectionSelectPaginatedMenu {
 
-    public SelectionSelectListMenu(PlayerMenuUtility playerMenuUtility) {
+    public CollectionSelectListMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
     }
 
@@ -32,9 +32,9 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        String section = Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName();
+        String collection = Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName();
         SoundManager soundManager = Main.getInstance().getSoundManager();
-        Player p = (Player) e.getWhoClicked();
+        Player player = (Player) e.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String selection : keys){
@@ -42,57 +42,57 @@ public class SelectionSelectListMenu extends SelectionSelectPaginatedMenu {
                 continue;
             }
             if(e.getAction() == InventoryAction.PICKUP_ALL){
-                Main.getInstance().getPlayerEggDataManager().savePlayerSection(p.getUniqueId(), selection);
-                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), selection);
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 super.open();
-                p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", selection));
+                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", selection));
             }else if(e.getAction() == InventoryAction.PICKUP_HALF){
-                if(p.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")))) {
-                    Main.getInstance().getInventoryManager().createEditCollectionMenu(p, section);
-                    p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                if(player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")))) {
+                    Main.getInstance().getInventoryManager().createEditCollectionMenu(player, collection);
+                    player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 }
             }
         }
 
         switch (e.getCurrentItem().getType()) {
             case BARRIER:
-                p.closeInventory();
-                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                player.closeInventory();
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case EMERALD_BLOCK:
-                if (Main.getInstance().getRefreshCooldown().containsKey(p.getName())) {
-                    if (Main.getInstance().getRefreshCooldown().get(p.getName()) > System.currentTimeMillis()) {
-                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
-                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
+                    if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
+                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                         return;
                     }
                 }
-                Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis() + (3 * 1000));
-                new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
-                p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
+                new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case PLAYER_HEAD:
                 if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
                     if (page == 0) {
-                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     } else {
                         page = page - 1;
                         super.open();
-                        p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                        player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
                     if (!((index + 1) >= keys.size())) {
                         page = page + 1;
                         super.open();
-                        p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                        player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     } else {
-                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                        p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add collection")) {
-                    Main.getInstance().getInventoryManager().createAddCollectionMenu(p);
-                    p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                    Main.getInstance().getInventoryManager().createAddCollectionMenu(player);
+                    player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                 }
                 break;
         }

@@ -24,11 +24,11 @@ public class RequirementsManager {
         this.plugin = Main.getInstance();
     }
 
-    public List<String> getListRequirementsLore(String section){
+    public List<String> getListRequirementsLore(String collection){
         String pre = "Requirements.";
         ArrayList<String> lore = new ArrayList<>();
         lore.add("§6§lListed:");
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         if (placedEggs.contains("Requirements.Hours")) {
             List<String> hoursList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Hours").getKeys(false));
 
@@ -178,9 +178,9 @@ public class RequirementsManager {
         return lore;
     }
 
-    public boolean canBeAccessed(String section){
+    public boolean canBeAccessed(String collection){
         String pre = "Requirements.";
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         String currentHour = String.valueOf(LocalTime.now().getHour());
         String currentWeekday = String.valueOf(DateTimeUtil.getWeek(Calendar.getInstance()));
         String currentMonth = String.valueOf(DateTimeUtil.getMonth(Calendar.getInstance()));
@@ -229,8 +229,8 @@ public class RequirementsManager {
         return isContained;
     }
 
-    public void changeActivity(String section, boolean active){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+    public void changeActivity(String collection, boolean active){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         for(int i = 0; i < 24; i++){
             placedEggs.set("Requirements.Hours." + i, active);
         }
@@ -247,22 +247,22 @@ public class RequirementsManager {
         for(String season : DateTimeUtil.getSeasonList()){
             placedEggs.set("Requirements.Season." + season, active);
         }
-        plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
+        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
-    public void resetReset(String section){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+    public void resetReset(String collection){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         placedEggs.set("Reset.Year", 0);
         placedEggs.set("Reset.Month", 0);
         placedEggs.set("Reset.Day", 0);
         placedEggs.set("Reset.Hour", 0);
         placedEggs.set("Reset.Minute", 0);
         placedEggs.set("Reset.Second", 0);
-        plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
+        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
-    public int getOverallTime(String section){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+    public int getOverallTime(String collection){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         int years = placedEggs.getInt("Reset.Year") * 365 * 24 * 60 * 60;
         int months = placedEggs.getInt("Reset.Month") * 30 * 24 * 60 * 60;
         int days = placedEggs.getInt("Reset.Day") * 24 * 60 * 60;
@@ -272,14 +272,14 @@ public class RequirementsManager {
         return years + months + days + hours + min + seconds;
     }
 
-    public String getConvertedTime(String section) {
+    public String getConvertedTime(String collection) {
         int years = 0;
         int months = 0;
         int days = 0;
         int hours = 0;
         int minutes = 0;
         int seconds = 0;
-        int duration = getOverallTime(section);
+        int duration = getOverallTime(collection);
 
         if (duration / (60 * 60 * 24 * 365) >= 1) {
             years = duration / (60 * 60 * 24 * 365);
@@ -310,8 +310,8 @@ public class RequirementsManager {
             return years + "Y " + months + "M " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
     }
 
-    public void removeAllEggBlocks(String section, UUID uuid){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+    public void removeAllEggBlocks(String collection, UUID uuid){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         if(placedEggs.contains("PlacedEggs.")){
             for(String ids : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
                 int x = placedEggs.getInt("PlacedEggs." + ids + ".X");
@@ -342,8 +342,8 @@ public class RequirementsManager {
         }
     }
 
-    public String getActives(Requirements requirements, String section){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+    public String getActives(Requirements requirements, String collection){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         switch (requirements){
             case Hours:
                 int hours = 0;

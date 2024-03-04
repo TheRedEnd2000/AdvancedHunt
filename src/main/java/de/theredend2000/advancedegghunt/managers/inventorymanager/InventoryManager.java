@@ -32,8 +32,8 @@ public class InventoryManager {
     }
 
     public void createCommandSettingsMenu(Player player, String key) {
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         Inventory inventory = Bukkit.createInventory(player, 45, "Command configuration");
         int[] glass = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 17, 18, 26, 27, 28, 34, 35, 37, 38, 39, 40, 41, 42, 43, 44};
         for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());}
@@ -66,18 +66,18 @@ public class InventoryManager {
         player.openInventory(inventory);
     }
 
-    public void createEditCollectionMenu(Player player, String section){
+    public void createEditCollectionMenu(Player player, String collection){
         Inventory inventory = Bukkit.createInventory(player, 45, "Collection editor");
         int[] glass = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44};
         for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         boolean enabled = placedEggs.getBoolean("Enabled");
-        inventory.setItem(4, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).setDisplayname("§6" + section).build());
+        inventory.setItem(4, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).setDisplayname("§6" + collection).build());
         //inventory.setItem(20, new ItemBuilder(XMaterial.PAPER).setDisplayname("§3Rename").setLore("§7Currently: " + name, "", "§eClick to change.").build());
         inventory.setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Status").setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.").build());
         inventory.setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4Delete").setLore("§8Check if your deletion type is correct. (WOODEN_AXE)", "", "§4§lYOU CAN NOT UNDO THIS", "", "§eClick to delete.").build());
-        inventory.setItem(13, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setDefaultLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(section)).build());
-        inventory.setItem(31, new ItemBuilder(XMaterial.REPEATER).setDisplayname("§3Reset §e§l(BETA)").setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(section), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.").build());
+        inventory.setItem(13, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setDefaultLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection)).build());
+        inventory.setItem(31, new ItemBuilder(XMaterial.REPEATER).setDisplayname("§3Reset §e§l(BETA)").setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(collection), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.").build());
         inventory.setItem(40, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build());
         DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(player.getUniqueId());
         inventory.setItem(44, new ItemBuilder(XMaterial.WOODEN_AXE).setDisplayname("§3Deletion Types").setLore("§8Every player can configure that himself.", "§7Change what happens after the deletion", "§7of an collection.", "", (deletionTypes == DeletionTypes.Noting ? "§b➤ " : "§7") + "Nothing", "§8All blocks that were eggs will stay. (includes player heads)", (deletionTypes == DeletionTypes.Player_Heads ? "§b➤ " : "§7") + "Player Heads", "§8All blocks that are player heads will be removed.", (deletionTypes == DeletionTypes.Everything ? "§b➤ " : "§7") + "Everything", "§8All blocks and will be set to air. (includes player heads)", "", "§eClick to change.").build());

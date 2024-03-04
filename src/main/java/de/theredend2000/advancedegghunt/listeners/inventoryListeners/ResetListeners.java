@@ -36,8 +36,8 @@ public class ResetListeners implements Listener {
         }
         Player player = (Player) event.getWhoClicked();
         event.setCancelled(true);
-        String section = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(section);
+        String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())) {
             case "Close":
                 player.closeInventory();
@@ -45,7 +45,7 @@ public class ResetListeners implements Listener {
                 break;
             case "Back":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                plugin.getInventoryManager().createEditCollectionMenu(player, section);
+                plugin.getInventoryManager().createEditCollectionMenu(player, collection);
                 break;
             case "Reset - Year":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -60,8 +60,8 @@ public class ResetListeners implements Listener {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Year", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                plugin.getResetInventoryManager().createSelectInventory(player, section);
+                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getResetInventoryManager().createSelectInventory(player, collection);
                 break;
             case "Reset - Month":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -76,8 +76,8 @@ public class ResetListeners implements Listener {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Month", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                plugin.getResetInventoryManager().createSelectInventory(player, section);
+                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getResetInventoryManager().createSelectInventory(player, collection);
                 break;
             case "Reset - Day":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -92,8 +92,8 @@ public class ResetListeners implements Listener {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Day", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                plugin.getResetInventoryManager().createSelectInventory(player, section);
+                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getResetInventoryManager().createSelectInventory(player, collection);
                 break;
             case "Reset - Hour":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -108,8 +108,8 @@ public class ResetListeners implements Listener {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Hour", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                plugin.getResetInventoryManager().createSelectInventory(player, section);
+                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getResetInventoryManager().createSelectInventory(player, collection);
                 break;
             case "Reset - Minute":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -124,8 +124,8 @@ public class ResetListeners implements Listener {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Minute", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                plugin.getResetInventoryManager().createSelectInventory(player, section);
+                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getResetInventoryManager().createSelectInventory(player, collection);
                 break;
             case "Reset - Second":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -140,13 +140,13 @@ public class ResetListeners implements Listener {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Second", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(section, placedEggs);
-                plugin.getResetInventoryManager().createSelectInventory(player, section);
+                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getResetInventoryManager().createSelectInventory(player, collection);
                 break;
             case "Reset all":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                plugin.getRequirementsManager().resetReset(section);
-                plugin.getResetInventoryManager().createSelectInventory(player, section);
+                plugin.getRequirementsManager().resetReset(collection);
+                plugin.getResetInventoryManager().createSelectInventory(player, collection);
                 break;
         }
     }

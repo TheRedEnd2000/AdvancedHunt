@@ -3,7 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egginformation.EggInformationMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
@@ -37,8 +37,8 @@ public class EggListMenu extends ListPaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player p = (Player) e.getWhoClicked();
 
@@ -51,8 +51,8 @@ public class EggListMenu extends ListPaginatedMenu {
                 }
                 if(e.getAction() == InventoryAction.PICKUP_ALL){
                     ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "PlacedEggs." + id);
-                    if (location.loadLocation(section) != null)
-                        p.teleport(location.loadLocation(section).add(0.5, 0, 0.5));
+                    if (location.loadLocation(collection) != null)
+                        p.teleport(location.loadLocation(collection).add(0.5, 0, 0.5));
                     p.closeInventory();
                     p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.TELEPORT_TO_EGG).replaceAll("%ID%", id));
                     p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -65,7 +65,7 @@ public class EggListMenu extends ListPaginatedMenu {
 
         if(e.getCurrentItem().getType().equals(Material.PAPER) &&
                 ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
-            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
+            new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
             return;
         }
 
@@ -113,8 +113,8 @@ public class EggListMenu extends ListPaginatedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
@@ -130,9 +130,9 @@ public class EggListMenu extends ListPaginatedMenu {
                     String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
                     String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
                     int random = new Random().nextInt(7);
-                    String date = Main.getInstance().getEggManager().getEggDatePlaced(keys.get(index), section);
-                    String time = Main.getInstance().getEggManager().getEggTimePlaced(keys.get(index), section);
-                    String timesFound = String.valueOf(Main.getInstance().getEggManager().getTimesFound(keys.get(index), section));
+                    String date = Main.getInstance().getEggManager().getEggDatePlaced(keys.get(index), collection);
+                    String time = Main.getInstance().getEggManager().getEggTimePlaced(keys.get(index), collection);
+                    String timesFound = String.valueOf(Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection));
                     inventory.addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setLocalizedName(keys.get(index)).build());
                 }
             }

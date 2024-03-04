@@ -9,7 +9,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.Eg
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.EggProgressMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
@@ -67,7 +67,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }else if(args[0].equalsIgnoreCase("settings")){
                         inventoryManager.createEggsSettingsInventory(player);
                     }else if(args[0].equalsIgnoreCase("collection")){
-                        new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                        new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("progress")){
                         new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
                     }else if(args[0].equalsIgnoreCase("commands")){
@@ -117,7 +117,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 if(args[0].equalsIgnoreCase("progress")){
                     new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
                 }else if(args[0].equalsIgnoreCase("collection")){
-                    new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                    new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
                 }else if(args[0].equalsIgnoreCase("leaderboard")){
                     new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                 }else if(args[0].equalsIgnoreCase("hint")){
@@ -192,9 +192,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     ArrayList<String> complete = new ArrayList<>();
                     for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
                         if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.") == null) continue;
-                        for(String eggIds : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getConfigurationSection("FoundEggs.").getKeys(false)) {
-                            if(!complete.contains(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggIds + ".Name")))
-                                complete.add(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggIds + ".Name"));
+                        for(String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getConfigurationSection("FoundEggs.").getKeys(false)) {
+                            if(!complete.contains(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggId + ".Name")))
+                                complete.add(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggId + ".Name"));
                         }
                     }
                     complete.add("all");
