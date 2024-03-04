@@ -3,7 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -54,7 +54,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
         }
 
         if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
-            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
+            new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         switch (e.getCurrentItem().getType()) {

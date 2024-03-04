@@ -25,7 +25,7 @@ public class EggDataManager {
         new File(dataFolder, "playerdata").mkdirs();
         new File(dataFolder, "eggs").mkdirs();
         if(savedEggCollections().size() < 1) {
-            createEggSectionFile("default", true);
+            createEggCollectionFile("default", true);
             Main.setupDefaultCollection = true;
         }
     }
@@ -57,17 +57,17 @@ public class EggDataManager {
         return eggCollectionsConfigs.get(collection);
     }
 
-    public void savePlacedEggs(String section, FileConfiguration config) {
+    public void savePlacedEggs(String collection, FileConfiguration config) {
         try {
-            config.save(this.getFile(section));
+            config.save(this.getFile(collection));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void createEggSectionFile(String section, boolean enabled) {
-        FileConfiguration config = this.getPlacedEggs(section);
-        File playerFile = this.getFile(section);
+    public void createEggCollectionFile(String collection, boolean enabled) {
+        FileConfiguration config = this.getPlacedEggs(collection);
+        File playerFile = this.getFile(collection);
         if (!playerFile.exists()) {
             try {
                 playerFile.createNewFile();
@@ -75,13 +75,13 @@ public class EggDataManager {
                 e.printStackTrace();
             }
         }
-        this.eggCollectionsConfigs.put(section, config);
-        this.loadEggData(section);
-        this.savePlacedEggs(section, config);
+        this.eggCollectionsConfigs.put(collection, config);
+        this.loadEggData(collection);
+        this.savePlacedEggs(collection, config);
         config.set("Enabled", enabled);
         config.set("RequirementsOrder", "OR");
-        this.savePlacedEggs(section, config);
-        this.addDefaultCommands(section);
+        this.savePlacedEggs(collection, config);
+        this.addDefaultRewardCommands(collection);
     }
 
     public boolean containsSectionFile(String section) {
@@ -100,7 +100,7 @@ public class EggDataManager {
     }
 
     public List<String> savedEggCollections() {
-        List<String> eggsSections = new ArrayList();
+        List<String> eggCollections = new ArrayList();
         File eggsSectionsFolder = new File(this.dataFolder + "/eggs/");
         if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
             File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> {
@@ -112,23 +112,23 @@ public class EggDataManager {
                 for(int i = 0; i < playerFilesLength; ++i) {
                     File playerFile = playerFiles[i];
                     String fileName = playerFile.getName();
-                    String sectionName = fileName.substring(0, fileName.length() - 4);
-                    eggsSections.add(sectionName);
+                    String collectionName = fileName.substring(0, fileName.length() - 4);
+                    eggCollections.add(collectionName);
                 }
             }
         }
-        return eggsSections;
+        return eggCollections;
     }
 
-    public void deleteCollection(String section) {
-        File sectionFile = this.getFile(section);
-        if (sectionFile.exists()) {
-            sectionFile.delete();
+    public void deleteCollection(String collection) {
+        File collectionFile = this.getFile(collection);
+        if (collectionFile.exists()) {
+            collectionFile.delete();
         }
     }
 
-    private void addDefaultCommands(String section) {
-        FileConfiguration config = this.getPlacedEggs(section);
+    private void addDefaultRewardCommands(String collection) {
+        FileConfiguration config = this.getPlacedEggs(collection);
         config.set("Rewards.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
         config.set("Rewards.0.enabled", true);
         config.set("Rewards.0.type", 0);
@@ -144,7 +144,7 @@ public class EggDataManager {
         config.set("Rewards.4.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
         config.set("Rewards.4.enabled", true);
         config.set("Rewards.4.type", 1);
-        this.savePlacedEggs(section, config);
+        this.savePlacedEggs(collection, config);
     }
 
     public List<UUID> savedPlayers() {

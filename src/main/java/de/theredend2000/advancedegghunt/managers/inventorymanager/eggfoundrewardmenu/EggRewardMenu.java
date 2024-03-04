@@ -3,7 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewar
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -36,8 +36,8 @@ public class EggRewardMenu extends RewardPaginatedMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
 
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("Rewards.")){
@@ -51,7 +51,7 @@ public class EggRewardMenu extends RewardPaginatedMenu {
         }
 
         if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
-            new SelectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
+            new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         switch (e.getCurrentItem().getType()) {
@@ -110,8 +110,8 @@ public class EggRewardMenu extends RewardPaginatedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("Rewards.")){
             keys.addAll(placedEggs.getConfigurationSection("Rewards.").getKeys(false));

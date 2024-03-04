@@ -10,7 +10,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.E
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.PlaceMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.ProgressMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.LeadeboardMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.SelectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -106,13 +106,13 @@ public class InventoryClickEventListener implements Listener {
             LeadeboardMenu menu = (LeadeboardMenu) holder;
             menu.handleMenu(event);
         }
-        if (holder instanceof SelectionSelectListMenu) {
+        if (holder instanceof CollectionSelectListMenu) {
             if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
             event.setCancelled(true);
             if (event.getCurrentItem() == null) {
                 return;
             }
-            SelectionSelectListMenu menu = (SelectionSelectListMenu) holder;
+            CollectionSelectListMenu menu = (CollectionSelectListMenu) holder;
             menu.handleMenu(event);
         }
         if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
@@ -365,7 +365,7 @@ public class InventoryClickEventListener implements Listener {
                         break;
                     case "Back":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                        new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
                         break;
                     case "Create":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -375,8 +375,8 @@ public class InventoryClickEventListener implements Listener {
                             return;
                         }
                         if (!Main.getInstance().getEggDataManager().containsSectionFile(name)) {
-                            Main.getInstance().getEggDataManager().createEggSectionFile(name, enabled);
-                            new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                            Main.getInstance().getEggDataManager().createEggCollectionFile(name, enabled);
+                            new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
                             playerConfig.set("CollectionEdit", null);
                             Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
                             Main.getInstance().getRequirementsManager().changeActivity(name, true);
@@ -416,7 +416,7 @@ public class InventoryClickEventListener implements Listener {
                         break;
                     case "Back":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        new SelectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                        new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
                         break;
                     case "Delete":
                         if (section.equalsIgnoreCase("default")) {

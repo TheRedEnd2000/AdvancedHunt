@@ -52,8 +52,8 @@ public abstract class RewardPaginatedMenu extends RewardMenu{
         return maxItemsPerPage;
     }
     public int getMaxPages(){
-        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
+        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("Rewards.")){
             keys.addAll(placedEggs.getConfigurationSection("Rewards.").getKeys(false));

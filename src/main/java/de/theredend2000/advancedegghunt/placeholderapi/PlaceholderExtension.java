@@ -32,18 +32,18 @@ public class PlaceholderExtension extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, String params) {
         if(params.equalsIgnoreCase("max_eggs")){
-            String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-            return String.valueOf(eggManager.getMaxEggs(section));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
+            return String.valueOf(eggManager.getMaxEggs(collection));
         }
 
         if(params.equalsIgnoreCase("found_eggs")) {
-            String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-            return String.valueOf(eggManager.getEggsFound(player, section));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
+            return String.valueOf(eggManager.getEggsFound(player, collection));
         }
 
         if(params.equalsIgnoreCase("remaining_eggs")) {
-            String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-            return String.valueOf(eggManager.getMaxEggs(section) - eggManager.getEggsFound(player, section));
+            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
+            return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player, collection));
         }
         if(params.equalsIgnoreCase("top_player_name")) {
             return eggManager.getTopPlayerName();

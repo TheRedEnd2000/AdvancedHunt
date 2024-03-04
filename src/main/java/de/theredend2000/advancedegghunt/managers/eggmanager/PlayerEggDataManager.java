@@ -60,9 +60,9 @@ public class PlayerEggDataManager {
         }
     }
 
-    public void savePlayerSection(UUID uuid, String section) {
+    public void savePlayerCollection(UUID uuid, String collection) {
         FileConfiguration config = this.getPlayerData(uuid);
-        config.set("SelectedSection", section);
+        config.set("SelectedSection", collection);
         this.savePlayerData(uuid, config);
     }
 
@@ -80,7 +80,7 @@ public class PlayerEggDataManager {
         this.loadPlayerData(uuid);
         this.savePlayerData(uuid, config);
         this.setDeletionType(DeletionTypes.Noting, uuid);
-        this.savePlayerSection(uuid, "default");
+        this.savePlayerCollection(uuid, "default");
     }
 
     public void setDeletionType(DeletionTypes deletionType, UUID uuid) {
@@ -94,12 +94,12 @@ public class PlayerEggDataManager {
         return DeletionTypes.valueOf(config.getString("DeletionType"));
     }
 
-    public void setResetTimer(UUID uuid, String section, String id) {
+    public void setResetTimer(UUID uuid, String collection, String id) {
         FileConfiguration cfg = getPlayerData(uuid);
-        int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(section);
+        int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(collection);
         if (currentSeconds != 0) {
             long toSet = System.currentTimeMillis() + (long)currentSeconds * 1000L;
-            cfg.set("FoundEggs." + section + "." + id + ".ResetCooldown", toSet);
+            cfg.set("FoundEggs." + collection + "." + id + ".ResetCooldown", toSet);
 
             try {
                 cfg.save(this.getFile(uuid));
@@ -109,14 +109,14 @@ public class PlayerEggDataManager {
         }
     }
 
-    public long getResetTimer(UUID uuid, String section, String id) {
+    public long getResetTimer(UUID uuid, String collection, String id) {
         FileConfiguration cfg = getPlayerData(uuid);
-        return !cfg.contains("FoundEggs." + section + "." + id + ".ResetCooldown") ? System.currentTimeMillis() + 1000000L : cfg.getLong("FoundEggs." + section + "." + id + ".ResetCooldown");
+        return !cfg.contains("FoundEggs." + collection + "." + id + ".ResetCooldown") ? System.currentTimeMillis() + 1000000L : cfg.getLong("FoundEggs." + collection + "." + id + ".ResetCooldown");
     }
 
-    public boolean canReset(UUID uuid, String section, String id) {
+    public boolean canReset(UUID uuid, String collection, String id) {
         long current = System.currentTimeMillis();
-        long millis = this.getResetTimer(uuid, section, id);
+        long millis = this.getResetTimer(uuid, collection, id);
         return current > millis;
     }
 
@@ -127,11 +127,11 @@ public class PlayerEggDataManager {
                 for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
                     FileConfiguration cfg = playerConfigs.get(uuids);
                     if(!cfg.contains("FoundEggs.")) return;
-                    for(String sections : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
-                        for(String id : cfg.getConfigurationSection("FoundEggs." + sections).getKeys(false)) {
-                            if (id.equals("Count") || id.equals("Name")) continue;
-                            if (canReset(uuids, sections, id))
-                                plugin.getEggManager().resetStatsPlayerEgg(uuids, sections, id);
+                    for(String collection : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
+                        for(String eggId : cfg.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
+                            if (eggId.equals("Count") || eggId.equals("Name")) continue;
+                            if (canReset(uuids, collection, eggId))
+                                plugin.getEggManager().resetStatsPlayerEgg(uuids, collection, eggId);
                         }
                     }
                 }

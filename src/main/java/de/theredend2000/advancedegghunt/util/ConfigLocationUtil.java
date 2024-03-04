@@ -18,15 +18,15 @@ public class ConfigLocationUtil {
         this.root = root;
     }
 
-    public void saveBlockLocation(String section) {
-        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
+    public void saveBlockLocation(String collection) {
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(collection);
         config.set(root + ".World", location.getWorld().getName());
         config.set(root + ".X", location.getBlockX());
         config.set(root + ".Y", location.getBlockY());
         config.set(root + ".Z", location.getBlockZ());
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
-        Main.getInstance().getEggDataManager().savePlacedEggs(section, config);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection, config);
     }
 
     public void saveBlockLocation(UUID uuid) {
@@ -43,8 +43,8 @@ public class ConfigLocationUtil {
     public ConfigLocationUtil(Main plugin, String root) {
         this(plugin, null, root);
     }
-    public Location loadLocation(String section) {
-        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(section);
+    public Location loadLocation(String collection) {
+        FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(collection);
         if (config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root + ".World"));
             if (world != null) {
