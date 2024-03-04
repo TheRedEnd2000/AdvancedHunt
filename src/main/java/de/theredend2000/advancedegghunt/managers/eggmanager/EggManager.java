@@ -489,97 +489,40 @@ public class EggManager {
         }
     }
 
-    public String getTopPlayerName(){
+    public String getLeaderboardPositionName(int position, UUID holder){
         HashMap<String, Integer> leaderboard = new HashMap<>();
-        for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-            FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
-        }
-        if(leaderboard.size() < 1){
-            return "?????";
+        if(Main.getInstance().getEggDataManager().savedPlayers().size() != 0){
+            for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
+                String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(holder);
+                FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
+                if(playerConfig.getString("FoundEggs."+collection) == null) continue;
+                leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
+            }
         }
         List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
-
-        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        return leaderList.get(0).getKey();
-    }
-    public int getTopPlayerEggsFound(){
-        HashMap<String, Integer> leaderboard = new HashMap<>();
-        for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-            FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
+        if (!leaderList.isEmpty() && position >= 0 && leaderList.size() > position) {
+            return String.valueOf(leaderList.get(position).getKey());
+        } else {
+            return String.valueOf(plugin.getConfig().getString("PlaceholderAPI.name"));
         }
-        if(leaderboard.size() < 1){
-            return -1;
-        }
-        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
 
-        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        return leaderList.get(0).getValue();
     }
 
-    public String getSecondPlayerName(){
+    public String getLeaderboardPositionCount(int position, UUID holder){
         HashMap<String, Integer> leaderboard = new HashMap<>();
-        for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-            FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
-        }
-        if(leaderboard.size() < 2){
-            return "?????";
+        if(Main.getInstance().getEggDataManager().savedPlayers().size() != 0){
+            for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
+                String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(holder);
+                FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
+                if(playerConfig.getString("FoundEggs."+collection) == null) continue;
+                leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
+            }
         }
         List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
-
-        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        return leaderList.get(1).getKey();
-    }
-    public int getSecondPlayerEggsFound(){
-        HashMap<String, Integer> leaderboard = new HashMap<>();
-        for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-            FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
-        }
-        if(leaderboard.size() < 2){
-            return -1;
-        }
-        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
-
-        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        return leaderList.get(1).getValue();
-    }
-
-    public String getThirdPlayerName(){
-        HashMap<String, Integer> leaderboard = new HashMap<>();
-        for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-            FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
-        }
-        if(leaderboard.size() < 3){
-            return "?????";
-        }
-        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
-
-        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        return leaderList.get(2).getKey();
-    }
-    public int getThirdPlayerEggsFound(){
-        HashMap<String, Integer> leaderboard = new HashMap<>();
-        for(UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-            FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuid);
-            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
-        }
-        if(leaderboard.size() < 3){
-            return -1;
-        }
-        List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
-
-        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        return leaderList.get(2).getValue();
+        if(!leaderList.isEmpty() && position >= 0 && leaderList.size() > position){
+            return String.valueOf(leaderList.get(position).getValue());
+        }else
+            return String.valueOf(plugin.getConfig().getString("PlaceholderAPI.count"));
     }
 
     private boolean isVersionLessThan(String versionToCompare) {

@@ -1,4 +1,4 @@
-config-version: 2.8
+config-version: 2.9
 
 # Change the language
 # Available: en (Englisch) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
@@ -87,6 +87,15 @@ Particle:
   type:
     EggFound: CRIT
     EggNotFound: VILLAGER_HAPPY
+
+# Change the messages that show up when no data for this placeholder is available
+PlaceholderAPI:
+  # Replacement for collection is null
+  collection: 'N/A'
+  # Replacement if the player name is null
+  name: 'N/A'
+  # Replacement if the count is null
+  count: '-1'
 
 
 PlaceEggs:
