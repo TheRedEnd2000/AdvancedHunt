@@ -1,34 +1,33 @@
 package de.theredend2000.advancedegghunt.managers.soundmanager;
 
-import com.cryptomorin.xseries.XSound;
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Sound;
 
 public class SoundManager {
 
     public Sound playEggAlreadyFoundSound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.EggAlreadyFoundSound")).parseSound();
+        return Main.getInstance().getPluginConfig().getEggAlreadyFoundSound();
     }
     public Sound playEggFoundSound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.PlayerFindEggSound")).parseSound();
+        return Main.getInstance().getPluginConfig().getPlayerFindEggSound();
     }
     public Sound playAllEggsFound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.AllEggsFoundSound")).parseSound();
+        return Main.getInstance().getPluginConfig().getAllEggsFoundSound();
     }
     public Sound playEggBreakSound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.EggBreakSound")).parseSound();
+        return Main.getInstance().getPluginConfig().getEggBreakSound();
     }
     public Sound playEggPlaceSound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.EggPlaceSound")).parseSound();
+        return Main.getInstance().getPluginConfig().getEggPlaceSound();
     }
     public Sound playErrorSound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.ErrorSound")).parseSound();
+        return Main.getInstance().getPluginConfig().getErrorSound();
     }
     public Sound playInventorySuccessSound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.InventoryClickSuccess")).parseSound();
+        return Main.getInstance().getPluginConfig().getInventoryClickSuccess();
     }
     public Sound playInventoryFailedSound() {
-        return XSound.valueOf(Main.getInstance().getPluginConfig().getString("Sounds.InventoryClickFailed")).parseSound();
+        return Main.getInstance().getPluginConfig().getInventoryClickFailed();
     }
     public int getSoundVolume(){
         return Main.getInstance().getPluginConfig().getSoundVolume();

@@ -1,10 +1,12 @@
 package de.theredend2000.advancedegghunt.configurations;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.particles.XParticle;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -175,8 +177,8 @@ public class PluginConfig extends Configuration {
 		getConfig().set("Settings.LeftClickEgg", LeftClickEgg);
 	}
 
-    public Integer getRightClickEgg() {
-        return getConfig().getInt("Settings.RightClickEgg");
+    public Boolean getRightClickEgg() {
+        return getConfig().getBoolean("Settings.RightClickEgg");
     }
 	public void setRightClickEgg(Integer RightClickEgg) {
 		getConfig().set("Settings.RightClickEgg", RightClickEgg);
@@ -206,57 +208,57 @@ public class PluginConfig extends Configuration {
     //endregion
 
     //region Sounds
-    public XMaterial getPlayerFindEggSound() {
-        return Main.getMaterial(getConfig().getString("Settings.PlayerFindEggSound"));
+    public Sound getPlayerFindEggSound() {
+        return XSound.valueOf(getConfig().getString("Settings.PlayerFindEggSound")).parseSound();
     }
 	public void setPlayerFindEggSound(XMaterial PlayerFindEggSound) {
 		getConfig().set("Settings.PlayerFindEggSound", PlayerFindEggSound.toString());
 	}
 
-    public XMaterial getEggAlreadyFoundSound() {
-        return Main.getMaterial(getConfig().getString("Settings.EggAlreadyFoundSound"));
+    public Sound getEggAlreadyFoundSound() {
+        return XSound.valueOf(getConfig().getString("Settings.EggAlreadyFoundSound")).parseSound();
     }
 	public void setEggAlreadyFoundSound(XMaterial EggAlreadyFoundSound) {
 		getConfig().set("Settings.EggAlreadyFoundSound", EggAlreadyFoundSound.toString());
 	}
 
-    public XMaterial getAllEggsFoundSound() {
-        return Main.getMaterial(getConfig().getString("Settings.AllEggsFoundSound"));
+    public Sound getAllEggsFoundSound() {
+        return XSound.valueOf(getConfig().getString("Settings.AllEggsFoundSound")).parseSound();
     }
 	public void setAllEggsFoundSound(XMaterial AllEggsFoundSound) {
 		getConfig().set("Settings.AllEggsFoundSound", AllEggsFoundSound.toString());
 	}
 
-    public XMaterial getEggBreakSound() {
-        return Main.getMaterial(getConfig().getString("Settings.EggBreakSound"));
+    public Sound getEggBreakSound() {
+        return XSound.valueOf(getConfig().getString("Settings.EggBreakSound")).parseSound();
     }
 	public void setEggBreakSound(XMaterial EggBreakSound) {
 		getConfig().set("Settings.EggBreakSound", EggBreakSound.toString());
 	}
 
-    public XMaterial getEggPlaceSound() {
-        return Main.getMaterial(getConfig().getString("Settings.EggPlaceSound"));
+    public Sound getEggPlaceSound() {
+        return XSound.valueOf(getConfig().getString("Settings.EggPlaceSound")).parseSound();
     }
 	public void setEggPlaceSound(XMaterial EggPlaceSound) {
 		getConfig().set("Settings.EggPlaceSound", EggPlaceSound.toString());
 	}
 
-    public XMaterial getErrorSound() {
-        return Main.getMaterial(getConfig().getString("Settings.ErrorSound"));
+    public Sound getErrorSound() {
+        return XSound.valueOf(getConfig().getString("Settings.ErrorSound")).parseSound();
     }
 	public void setErrorSound(XMaterial ErrorSound) {
 		getConfig().set("Settings.ErrorSound", ErrorSound.toString());
 	}
 
-    public XMaterial getInventoryClickSuccess() {
-        return Main.getMaterial(getConfig().getString("Settings.InventoryClickSuccess"));
+    public Sound getInventoryClickSuccess() {
+        return XSound.valueOf(getConfig().getString("Settings.InventoryClickSuccess")).parseSound();
     }
 	public void setInventoryClickSuccess(XMaterial InventoryClickSuccess) {
 		getConfig().set("Settings.InventoryClickSuccess", InventoryClickSuccess.toString());
 	}
 
-    public XMaterial getInventoryClickFailed() {
-        return Main.getMaterial(getConfig().getString("Settings.InventoryClickFailed"));
+    public Sound getInventoryClickFailed() {
+        return XSound.valueOf(getConfig().getString("Settings.InventoryClickFailed")).parseSound();
     }
 	public void setInventoryClickFailed(XMaterial InventoryClickFailed) {
 		getConfig().set("Settings.InventoryClickFailed", InventoryClickFailed.toString());

@@ -34,7 +34,7 @@ public class PlayerConnectionListener implements Listener {
         if(player.isOp()){
             if(!Main.getInstance().getMessageManager().isUpToDate())
                 player.sendMessage(Main.PREFIX + "§cThere is a newer version of your messages file. Please reinstall it.");
-            if(Main.getInstance().getPluginConfig().getDouble("config-version") < 2.5)
+            if(Main.getInstance().getPluginConfig().getConfigVersion() < 2.5)
                 player.sendMessage(Main.PREFIX + "§cThere is a newer version of your config file. Please reinstall it.");
         }
     }

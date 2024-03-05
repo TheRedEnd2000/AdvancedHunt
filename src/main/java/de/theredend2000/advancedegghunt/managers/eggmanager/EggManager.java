@@ -1,7 +1,6 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.particles.XParticle;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
@@ -41,8 +40,8 @@ public class EggManager {
         this.plugin = Main.getInstance();
         messageManager = Main.getInstance().getMessageManager();
 
-        eggNotFoundParticle = XParticle.getParticle(Main.getInstance().getPluginConfig().getString("Particle.type.EggNotFound").toUpperCase());
-        eggFoundParticle = XParticle.getParticle(Main.getInstance().getPluginConfig().getString("Particle.type.EggFound").toUpperCase());
+        eggNotFoundParticle = Main.getInstance().getPluginConfig().getEggNotFoundParticle();
+        eggFoundParticle = Main.getInstance().getPluginConfig().getEggFoundParticle();
     }
 
 
@@ -300,7 +299,7 @@ public class EggManager {
         if (spawnEggParticleTask != null)
             spawnEggParticleTask.cancel();
 
-        if (!Main.getInstance().getPluginConfig().getBoolean("Particle.enabled")) {
+        if (!Main.getInstance().getPluginConfig().getParticleEnabled()) {
             return;
         }
 

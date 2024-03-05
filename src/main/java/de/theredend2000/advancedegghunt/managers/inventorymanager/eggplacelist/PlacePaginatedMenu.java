@@ -52,7 +52,7 @@ public abstract class PlacePaginatedMenu extends PlaceMenu {
     }
     public int getMaxPages(){
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getPluginConfig().contains("PlaceEggs.")){
+        if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
         }
         if(keys.isEmpty()) return 1;

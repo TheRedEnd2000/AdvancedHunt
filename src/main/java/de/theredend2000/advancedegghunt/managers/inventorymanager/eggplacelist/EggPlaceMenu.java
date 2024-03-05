@@ -109,7 +109,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
     public void setMenuItems() {
         addMenuBorder();
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getPluginConfig().contains("PlaceEggs.")){
+        if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
         }else
             inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
