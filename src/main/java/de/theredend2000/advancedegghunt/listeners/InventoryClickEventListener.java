@@ -21,7 +21,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -116,15 +115,15 @@ public class InventoryClickEventListener implements Listener {
             menu.handleMenu(event);
         }
         if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
-            for(String key : Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false)){
-                if(event.getCurrentItem().getType().name().toUpperCase().equals(Main.getInstance().getConfig().getString("PlaceEggs." + key + ".type").toUpperCase())){
+            for(String key : Main.getInstance().getPluginConfig().getPlaceEggIds()){
+                if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key))){
                     player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
                     return;
                 }
             }
-            ConfigurationSection chestsSection = Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.");
+
             int nextNumber = 0;
-            Set<String> keys = chestsSection.getKeys(false);
+            Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
             if (!keys.isEmpty()) {
                 for (int i = 0; i <= keys.size(); i++) {
                     String key = Integer.toString(i);
@@ -134,7 +133,7 @@ public class InventoryClickEventListener implements Listener {
                     }
                 }
             }
-            Main.getInstance().getConfig().set("PlaceEggs." + nextNumber + ".type", event.getCurrentItem().getType().name().toUpperCase());
+            Main.getInstance().getPluginConfig().setPlaceEggType(nextNumber, event.getCurrentItem().getType().name().toUpperCase());
             Main.getInstance().saveConfig();
             new EggPlaceMenu(Main.getPlayerMenuUtility(player)).open();
         }
@@ -151,103 +150,103 @@ public class InventoryClickEventListener implements Listener {
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.foundoneegg":
-                        Main.getInstance().getConfig().set("Settings.PlayerFoundOneEggRewards", !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards"));
+                        Main.getInstance().getPluginConfig().setPlayerFoundOneEggRewards(!Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards());
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.foundalleggs":
-                        Main.getInstance().getConfig().set("Settings.PlayerFoundAllEggsReward", !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"));
+                        Main.getInstance().getPluginConfig().setPlayerFoundAllEggsReward(!Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward());
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.updater":
-                        Main.getInstance().getConfig().set("Settings.Updater", !Main.getInstance().getConfig().getBoolean("Settings.Updater"));
+                        Main.getInstance().getPluginConfig().setUpdater(!Main.getInstance().getPluginConfig().getUpdater());
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.commandfeedback":
-                        Main.getInstance().getConfig().set("Settings.DisableCommandFeedback", !Main.getInstance().getConfig().getBoolean("Settings.DisableCommandFeedback"));
+                        Main.getInstance().getPluginConfig().setDisableCommandFeedback(!Main.getInstance().getPluginConfig().getDisableCommandFeedback());
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.soundvolume":
-                        int currentVolume = Main.getInstance().getConfig().getInt("Settings.SoundVolume");
+                        int currentVolume = Main.getInstance().getPluginConfig().getSoundVolume();
                         if (event.getAction() == InventoryAction.PICKUP_ALL) {
                             if (currentVolume == 15) {
                                 player.sendMessage(messageManager.getMessage(MessageKey.SOUND_VOLUME));
                                 return;
                             }
-                            Main.getInstance().getConfig().set("Settings.SoundVolume", currentVolume + 1);
+                            Main.getInstance().getPluginConfig().setSoundVolume(currentVolume + 1);
 
                         } else if (event.getAction() == InventoryAction.PICKUP_HALF) {
                             if (currentVolume == 0) {
                                 player.sendMessage(messageManager.getMessage(MessageKey.SOUND_VOLUME));
                                 return;
                             }
-                            Main.getInstance().getConfig().set("Settings.SoundVolume", currentVolume - 1);
+                            Main.getInstance().getPluginConfig().setSoundVolume(currentVolume - 1);
                         }
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.armorstandglow":
-                        int currentTime = Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow");
+                        int currentTime = Main.getInstance().getPluginConfig().getArmorstandGlow();
                         if (event.getAction() == InventoryAction.PICKUP_ALL) {
                             if (currentTime == 120) {
                                 player.sendMessage(messageManager.getMessage(MessageKey.ARMORSTAND_GLOW));
                                 return;
                             }
-                            Main.getInstance().getConfig().set("Settings.ArmorstandGlow", currentTime + 1);
+                            Main.getInstance().getPluginConfig().setArmorstandGlow(currentTime + 1);
 
                         } else if (event.getAction() == InventoryAction.PICKUP_HALF) {
                             if (currentTime == 0) {
                                 player.sendMessage(messageManager.getMessage(MessageKey.ARMORSTAND_GLOW));
                                 return;
                             }
-                            Main.getInstance().getConfig().set("Settings.ArmorstandGlow", currentTime - 1);
+                            Main.getInstance().getPluginConfig().setArmorstandGlow(currentTime - 1);
                         }
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.showcoordinates":
-                        Main.getInstance().getConfig().set("Settings.ShowCoordinatesWhenEggFoundInProgressInventory", !Main.getInstance().getConfig().getBoolean("Settings.ShowCoordinatesWhenEggFoundInProgressInventory"));
+                        Main.getInstance().getPluginConfig().setShowCoordinatesWhenEggFoundInProgressInventory(!Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory());
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.eggnearbyradius":
-                        int currentRadius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
+                        int currentRadius = Main.getInstance().getPluginConfig().getShowEggsNearbyMessageRadius();
                         if (event.getAction() == InventoryAction.PICKUP_ALL) {
                             if (currentRadius == 50) {
                                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_RADIUS));
                                 return;
                             }
-                            Main.getInstance().getConfig().set("Settings.ShowEggsNearbyMessageRadius", currentRadius + 1);
+                            Main.getInstance().getPluginConfig().setShowEggsNearbyMessageRadius(currentRadius + 1);
 
                         } else if (event.getAction() == InventoryAction.PICKUP_HALF) {
                             if (currentRadius == 0) {
                                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_RADIUS));
                                 return;
                             }
-                            Main.getInstance().getConfig().set("Settings.ShowEggsNearbyMessageRadius", currentRadius - 1);
+                            Main.getInstance().getPluginConfig().setShowEggsNearbyMessageRadius(currentRadius - 1);
                         }
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.pluginprefix":
-                        Main.getInstance().getConfig().set("Settings.PluginPrefixEnabled", !Main.getInstance().getConfig().getBoolean("Settings.PluginPrefixEnabled"));
+                        Main.getInstance().getPluginConfig().setPluginPrefixEnabled(!Main.getInstance().getPluginConfig().getPluginPrefixEnabled());
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                         break;
                     case "settings.firework":
-                        Main.getInstance().getConfig().set("Settings.ShowFireworkAfterEggFound", !Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"));
+                        Main.getInstance().getPluginConfig().setShowFireworkAfterEggFound(!Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound());
                         Main.getInstance().saveConfig();
                         inventoryManager.createEggsSettingsInventory(player);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -321,7 +320,7 @@ public class InventoryClickEventListener implements Listener {
                         clickme3.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, placedEggs.getString("Rewards." + id + ".command")));
                         c2.addExtra(clickme3);
                         player.spigot().sendMessage(c2);
-                        Main.getInstance().getConfig().set("Edit." + player.getUniqueId() + ".commandID", id);
+                        Main.getInstance().getPluginConfig().set("Edit." + player.getUniqueId() + ".commandID", id);
                         Main.getInstance().saveConfig();
                         break;
                 }

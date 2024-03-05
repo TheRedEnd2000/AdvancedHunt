@@ -62,7 +62,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }else if(args[0].equalsIgnoreCase("show")){
                         if(plugin.getPermissionManager().checkCommandPermission(player,args[0])) {
                             eggManager.showAllEggs();
-                            player.sendMessage(messageManager.getMessage(MessageKey.EGG_VISIBLE).replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow"))));
+                            player.sendMessage(messageManager.getMessage(MessageKey.EGG_VISIBLE).replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow())));
                         }else
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
                     }else if(args[0].equalsIgnoreCase("reload")){

@@ -52,7 +52,7 @@ public class MessageManager {
 
     public String getMessage(MessageKey key) {
         String message = messagesConfig.getString(key.getPath());
-        boolean prefix_enabled = Main.getInstance().getConfig().getBoolean("Settings.PluginPrefixEnabled");
+        boolean prefix_enabled = Main.getInstance().getPluginConfig().getPluginPrefixEnabled();
         if (message == null) {
             return "Message not found: " + key.name();
         }

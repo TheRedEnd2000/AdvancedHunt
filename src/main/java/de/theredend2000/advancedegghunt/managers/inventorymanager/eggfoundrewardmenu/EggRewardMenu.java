@@ -125,7 +125,7 @@ public class EggRewardMenu extends RewardPaginatedMenu {
                     String command = placedEggs.getString("Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("Rewards." + keys.get(index) + ".enabled");
                     int type = placedEggs.getInt("Rewards." + keys.get(index) + ".type");
-                    inventory.addItem(new ItemBuilder(Main.getInstance().getMaterial(Main.getInstance().getConfig().getString("Settings.RewardInventoryMaterial"))).setDisplayname("§b§lCommand §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Type: §6" + type, "", "§a§lNote:", "§2Type 0:", "§7Type 0 means that this command will be", "§7be executed if the player found §7§lone §7egg.", "§2Type 1:", "§7Type 1 means that this command will be", "§7be executed if the player had found §7§lall §7egg.", "", "§eClick to configure the command.").setLocalizedName(keys.get(index)).build());
+                    inventory.addItem(new ItemBuilder(Main.getInstance().getMaterial(Main.getInstance().getPluginConfig().getRewardInventoryMaterial())).setDisplayname("§b§lCommand §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Type: §6" + type, "", "§a§lNote:", "§2Type 0:", "§7Type 0 means that this command will be", "§7be executed if the player found §7§lone §7egg.", "§2Type 1:", "§7Type 1 means that this command will be", "§7be executed if the player had found §7§lall §7egg.", "", "§eClick to configure the command.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else{

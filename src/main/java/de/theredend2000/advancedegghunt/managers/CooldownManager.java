@@ -23,7 +23,7 @@ public class CooldownManager {
 
     public void setCooldown(Player player) {
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(getRewardFile());
-        long toSet = System.currentTimeMillis() + (Main.getInstance().getConfig().getLong("Settings.HintCooldownSeconds") * 1000);
+        long toSet = System.currentTimeMillis() + (Main.getInstance().getPluginConfig().getHintCooldownSeconds() * 1000);
         cfg.set(player.getUniqueId() + ".cooldownTime", toSet);
         try {
             cfg.save(getRewardFile());

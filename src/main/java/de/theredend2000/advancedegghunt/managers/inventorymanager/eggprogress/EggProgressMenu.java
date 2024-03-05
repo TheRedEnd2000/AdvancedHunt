@@ -105,7 +105,7 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
                 index = getMaxItemsPerPage() * page + i;
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
-                    boolean showcoordinates = Main.getInstance().getConfig().getBoolean("Settings.ShowCoordinatesWhenEggFoundInProgressInventory");
+                    boolean showcoordinates = Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory();
                     String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
                     String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
                     String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");

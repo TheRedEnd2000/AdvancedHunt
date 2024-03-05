@@ -140,7 +140,7 @@ public final class Main extends JavaPlugin {
     }
 
     public void checkCommandFeedback(){
-        if (getConfig().getBoolean("Settings.DisableCommandFeedback")) {
+        if (pluginConfig.getDisableCommandFeedback()) {
             for (World worlds : Bukkit.getServer().getWorlds())
                 worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
         } else {
@@ -174,7 +174,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void sendCurrentLanguage(){
-        String lang = plugin.getConfig().getString("messages-lang");
+        String lang = pluginConfig.getLanguage();
         Bukkit.getConsoleSender().sendMessage(PREFIX + "§7Language §6" + lang + " §7detected. File messages-" + lang + ".yml loaded.");
     }
 
@@ -187,7 +187,7 @@ public final class Main extends JavaPlugin {
         if(!messageManager.isUpToDate()){
             Bukkit.getConsoleSender().sendMessage(PREFIX + "§cThere is a newer version of your messages file. Please reinstall them.");
         }
-        if(getConfig().getDouble("config-version") < 2.9){
+        if(pluginConfig.getConfigVersion() < 2.9){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
             saveDefaultConfig();
@@ -225,6 +225,10 @@ public final class Main extends JavaPlugin {
 
     public static Main getInstance() {
         return plugin;
+    }
+
+    public PluginConfig getPluginConfig(){
+        return pluginConfig;
     }
 
     public static String getTexture(String texture){

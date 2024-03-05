@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.MessageFormat;
+import java.util.Set;
 
 public class PluginConfig extends Configuration {
     private static volatile PluginConfig instance;
@@ -301,11 +302,24 @@ public class PluginConfig extends Configuration {
     //endregion
 
     //region PlaceEggs
-    public Integer getPlaceEggTexture(int id) {
-        return getConfig().getInt(MessageFormat.format("PlaceEggs.{0}.texture", id));
+    public Boolean hasPlaceEggs() {
+        return getConfig().contains("PlaceEggs.");
+    }
+    public Set<String> getPlaceEggIds() {
+        return getConfig().getConfigurationSection("PlaceEggs.").getKeys(false);
+    }
+    public String getPlaceEggTexture(String id) {
+        return getConfig().getString(MessageFormat.format("PlaceEggs.{0}.texture", id));
     }
 	public void setPlaceEggTexture(int id, Integer PlaceEggTexture) {
 		getConfig().set(MessageFormat.format("PlaceEggs.{0}.texture", id), PlaceEggTexture);
 	}
+
+    public String getPlaceEggType(String id) {
+        return getConfig().getString(MessageFormat.format("PlaceEggs.{0}.type", id));
+    }
+    public void setPlaceEggType(int id, String PlaceEggType) {
+        getConfig().set(MessageFormat.format("PlaceEggs.{0}.type", id), PlaceEggType);
+    }
     //endregion
 }

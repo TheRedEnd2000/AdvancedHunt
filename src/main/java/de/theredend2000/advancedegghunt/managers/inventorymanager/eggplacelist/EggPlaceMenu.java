@@ -40,13 +40,13 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
         Player p = (Player) e.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getConfig().contains("PlaceEggs.")){
-            keys.addAll(Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false));
-            for(String id : Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false)){
+        if(Main.getInstance().getPluginConfig().contains("PlaceEggs.")){
+            keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
+            for(String id : Main.getInstance().getPluginConfig().getPlaceEggIds()){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
                     p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     if(e.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
-                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs." + id + ".texture"))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                     else
                         p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 }
@@ -109,8 +109,8 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
     public void setMenuItems() {
         addMenuBorder();
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getConfig().contains("PlaceEggs.")){
-            keys.addAll(Main.getInstance().getConfig().getConfigurationSection("PlaceEggs.").getKeys(false));
+        if(Main.getInstance().getPluginConfig().contains("PlaceEggs.")){
+            keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
         }else
             inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
         if(keys != null && !keys.isEmpty()) {
@@ -118,9 +118,9 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
                 index = getMaxItemsPerPage() * page + i;
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
-                    XMaterial mat = Main.getInstance().getMaterial(Objects.requireNonNull(Main.getInstance().getConfig().getString("PlaceEggs." + keys.get(index) + ".type")).toUpperCase());
+                    XMaterial mat = Main.getInstance().getMaterial(Objects.requireNonNull(Main.getInstance().getPluginConfig().getPlaceEggType(keys.get(index))).toUpperCase());
                     if(mat.equals(XMaterial.PLAYER_HEAD))
-                        inventory.addItem(new ItemBuilder(mat).setSkullOwner(Main.getTexture(Main.getInstance().getConfig().getString("PlaceEggs." + keys.get(index) + ".texture"))).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
+                        inventory.addItem(new ItemBuilder(mat).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index)))).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
                     else
                         inventory.addItem(new ItemBuilder(mat).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
                 }

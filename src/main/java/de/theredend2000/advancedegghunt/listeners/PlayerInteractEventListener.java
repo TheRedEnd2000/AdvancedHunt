@@ -36,10 +36,10 @@ public class PlayerInteractEventListener implements Listener {
         Action action = event.getAction();
 
         if ((!action.equals(Action.RIGHT_CLICK_BLOCK) ||
-                    !Main.getInstance().getConfig().getBoolean("Settings.RightClickEgg") ||
+                    !Main.getInstance().getPluginConfig().getRightClickEgg() ||
                     event.getHand() != EquipmentSlot.HAND) &&
                 (!action.equals(Action.LEFT_CLICK_BLOCK) ||
-                    !Main.getInstance().getConfig().getBoolean("Settings.LeftClickEgg")) ||
+                    !Main.getInstance().getPluginConfig().getLeftClickEgg()) ||
                 event.getClickedBlock() == null ||
                 !eggManager.containsEgg(event.getClickedBlock()) ||
                 Main.getInstance().getPlaceEggsPlayers().contains(player)) {
@@ -64,11 +64,11 @@ public class PlayerInteractEventListener implements Listener {
                     Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(), collections, id);
                 eggManager.saveFoundEggs(player, event.getClickedBlock(), id, collections);
                 Location loc = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
-                if (Main.getInstance().getConfig().getBoolean("Settings.ShowFireworkAfterEggFound"))
+                if (Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound())
                     extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
                 if (eggManager.checkFoundAll(player, collections)) {
                     player.playSound(player.getLocation(), soundManager.playAllEggsFound(), 1, 1);
-                    if (Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward")) {
+                    if (Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward()) {
                         for (String key : placedEggs.getConfigurationSection("Rewards.").getKeys(false)) {
                             boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
                             if (placedEggs.getInt("Rewards." + key + ".type") == 1 && enabled) {
@@ -79,7 +79,7 @@ public class PlayerInteractEventListener implements Listener {
                     }
                 } else {
                     player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
-                    if (Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards")) {
+                    if (Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()) {
                         for (String key : placedEggs.getConfigurationSection("Rewards.").getKeys(false)) {
                             boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
                             if (placedEggs.getInt("Rewards." + key + ".type") == 0 && enabled) {

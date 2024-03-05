@@ -41,8 +41,8 @@ public class EggManager {
         this.plugin = Main.getInstance();
         messageManager = Main.getInstance().getMessageManager();
 
-        eggNotFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggNotFound").toUpperCase());
-        eggFoundParticle = XParticle.getParticle(Main.getInstance().getConfig().getString("Particle.type.EggFound").toUpperCase());
+        eggNotFoundParticle = XParticle.getParticle(Main.getInstance().getPluginConfig().getString("Particle.type.EggNotFound").toUpperCase());
+        eggFoundParticle = XParticle.getParticle(Main.getInstance().getPluginConfig().getString("Particle.type.EggFound").toUpperCase());
     }
 
 
@@ -240,7 +240,7 @@ public class EggManager {
         playerConfig.set("FoundEggs." + collection + ".Name", player.getName());
         new ConfigLocationUtil(plugin, block.getLocation(), "FoundEggs." + collection + "." + id).saveBlockLocation(player.getUniqueId());
         plugin.getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
-        if(!Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundOneEggRewards") || !Main.getInstance().getConfig().getBoolean("Settings.PlayerFoundAllEggsReward"))
+        if(!Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards() || !Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward())
             player.sendMessage(messageManager.getMessage(MessageKey.EGG_FOUND).replaceAll("%EGGS_FOUND%", String.valueOf(getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(getMaxEggs(collection))));
     }
 
@@ -300,7 +300,7 @@ public class EggManager {
         if (spawnEggParticleTask != null)
             spawnEggParticleTask.cancel();
 
-        if (!Main.getInstance().getConfig().getBoolean("Particle.enabled")) {
+        if (!Main.getInstance().getPluginConfig().getBoolean("Particle.enabled")) {
             return;
         }
 
@@ -364,7 +364,7 @@ public class EggManager {
                             player.spawnParticle(getParticle(player, eggId, collection), startX, startY - time, startZ, 0);
                             player.spawnParticle(getParticle(player, eggId, collection), startX, startY, startZ + time, 0);
                         }
-                        int radius = Main.getInstance().getConfig().getInt("Settings.ShowEggsNearbyMessageRadius");
+                        int radius = Main.getInstance().getPluginConfig().getShowEggsNearbyMessageRadius();
                         for (Entity e : startLocation.getWorld().getNearbyEntities(startLocation, radius, radius, radius)) {
                             if (e instanceof Player) {
                                 Player p = (Player) e;
@@ -471,7 +471,7 @@ public class EggManager {
                 armorStand.setInvisible(true);
                 plugin.getShowedArmorstands().add(armorStand);
                 new BukkitRunnable() {
-                    int count = Main.getInstance().getConfig().getInt("Settings.ArmorstandGlow");
+                    int count = Main.getInstance().getPluginConfig().getArmorstandGlow();
 
                     @Override
                     public void run() {
