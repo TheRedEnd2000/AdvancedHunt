@@ -9,16 +9,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.MessageFormat;
-import java.util.Map;
-
-import static java.util.Map.entry;
 
 public class PluginConfig extends Configuration {
     private static volatile PluginConfig instance;
-    private final Map<Double, ConfigurationVersion> ConfigUpdate = Map.ofEntries(
-            entry(1d, new ConfigurationVersion(Map.ofEntries(), Map.ofEntries())),
-            entry(2d, new ConfigurationVersion(Map.ofEntries(), Map.ofEntries()))
-    );
 
     private PluginConfig(JavaPlugin plugin) {
         super(plugin, "config.yml");
