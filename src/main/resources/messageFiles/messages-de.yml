@@ -3,7 +3,7 @@ version: 2.4
 no-permission-error: '&cDu hast die &6Berechtigung %PERMISSION% &cnicht.'
 command-not-found: '&cKein Befehl gefunden! &7Schreibe &e/egghunt help &7um alle Befehle zu sehen.'
 only-player: '&cNur Spieler können diesen Befehl benutzen.'
-reload-config: '&7Die Config wurde &aerfolgreich &eneu geladen&7.'
+reload-config: '&7Die Configuration wurde &aerfolgreich &eneu geladen&7.'
 player-not-found: '&7Das System hat &ckeinen Eintrag &7für den Spieler &a%PLAYER%&7.'
 
 egg-placed: '&aDu hast erfolgreich &aein neues Ei &2erstellt. &7(ID#%ID%)'

@@ -510,7 +510,7 @@ public class EggManager {
 
     public String getLeaderboardPositionCount(int position, UUID holder){
         HashMap<String, Integer> leaderboard = new HashMap<>();
-        if(Main.getInstance().getEggDataManager().savedPlayers().size() != 0){
+        if(!Main.getInstance().getEggDataManager().savedPlayers().isEmpty()){
             for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
                 String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(holder);
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
