@@ -36,17 +36,17 @@ public class BlockBreakEventListener implements Listener {
             return;
         }
         String collection = eggManager.getEggCollection(block);
-        String permission = Main.getInstance().getConfig().getString("Permissions.BreakEggPermission");
+        String per = "BreakEggPermission";
         if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-            if(player.hasPermission(permission)){
+            if(Main.getInstance().getPermissionManager().checkOtherPermission(player,per)){
                 eggManager.removeEgg(player, block, collection);
                 player.playSound(player.getLocation(), soundManager.playEggBreakSound(), soundManager.getSoundVolume(), 1);
             }else {
-                player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission));
+                player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Main.getInstance().getPermissionManager().getOtherPermission(player,per)));
                 event.setCancelled(true);
             }
         }else {
-            if(player.hasPermission(permission))
+            if(Main.getInstance().getPermissionManager().checkOtherPermission(player,per))
                 player.sendMessage(messageManager.getMessage(MessageKey.ONLY_IN_PLACEMODE));
             event.setCancelled(true);
         }

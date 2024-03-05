@@ -47,7 +47,7 @@ public class CollectionSelectListMenu extends SelectionSelectPaginatedMenu {
                 super.open();
                 player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", selection));
             }else if(e.getAction() == InventoryAction.PICKUP_HALF){
-                if(player.hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")))) {
+                if(Main.getInstance().getPermissionManager().checkOtherPermission(player,"ChangeCollectionsPermission")) {
                     Main.getInstance().getInventoryManager().createEditCollectionMenu(player, collection);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 }
@@ -120,7 +120,7 @@ public class CollectionSelectListMenu extends SelectionSelectPaginatedMenu {
             String selectedSection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
             int maxEggs = Main.getInstance().getEggManager().getMaxEggs(keys.get(index));
             boolean applied = selectedSection.equals(keys.get(index));
-            boolean permission = playerMenuUtility.getOwner().hasPermission(Objects.requireNonNull(Main.getInstance().getConfig().getString("Permissions.ChangeCollectionsPermission")));
+            boolean permission = Main.getInstance().getPermissionManager().checkOtherPermission(playerMenuUtility.getOwner(),"ChangeCollectionsPermission");
             inventory.addItem(new ItemBuilder(XMaterial.PAPER).withGlow(applied).setDisplayname("§6Collection: §6§l" + keys.get(index) + (applied ? " §a(selected)" : "")).setLore("", "§9Collection Information:", "§7   - Placed eggs: §6" + maxEggs, "", "§aNote:", "§7This collection applies to all actions that are carried out.", "§7It can be changed at any time in this menu.", "", "§eLEFT-CLICK to select.", permission ? "§eRIGHT-CLICK to edit." : "§7§mRIGHT-CLICK to edit.").setLocalizedName(keys.get(index)).build());
         }
     }

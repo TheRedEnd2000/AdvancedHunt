@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.RequirementsListeners;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.ResetListeners;
 import de.theredend2000.advancedegghunt.managers.CooldownManager;
+import de.theredend2000.advancedegghunt.managers.PermissionManager.PermissionManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
@@ -61,6 +62,7 @@ public final class Main extends JavaPlugin {
     private PlayerEggDataManager playerEggDataManager;
     private RequirementsManager requirementsManager;
     private ResetInventoryManager resetInventoryManager;
+    private PermissionManager permissionManager;
     private ResetListeners resetListeners;
     private MessageManager messageManager;
     public static String PREFIX = "";
@@ -132,6 +134,7 @@ public final class Main extends JavaPlugin {
         inventoryRequirementsManager = new InventoryRequirementsManager();
         requirementsManager = new RequirementsManager();
         resetInventoryManager = new ResetInventoryManager();
+        permissionManager = new PermissionManager();
     }
 
     public void checkCommandFeedback(){
@@ -310,5 +313,9 @@ public final class Main extends JavaPlugin {
 
     public ResetInventoryManager getResetInventoryManager() {
         return resetInventoryManager;
+    }
+
+    public PermissionManager getPermissionManager() {
+        return permissionManager;
     }
 }
