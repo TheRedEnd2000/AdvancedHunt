@@ -67,18 +67,18 @@ public class PluginConfig extends Configuration {
         getConfig().set(MessageFormat.format("Permissions.{0}.permission", permission.toString()), Permission);
     }
 
-    public Boolean getCommandPermissionEnabled(Permission.AdvancedEggHuntCommandPermissionCommand permission) {
-        return getConfig().getBoolean(MessageFormat.format("Permissions.AdvancedEggHuntCommandPermission.commands.{0}.use", permission.toString()));
+    public Boolean getPermissionEnabled(Permission.AdvancedEggHuntCommandPermissionCommand permission) {
+        return getConfig().getBoolean(MessageFormat.format("Permissions.{0}.use", permission.toString()));
     }
-    public void setCommandPermissionEnabled(Permission.AdvancedEggHuntCommandPermissionCommand permission, String Permission) {
-        getConfig().set(MessageFormat.format("Permissions.AdvancedEggHuntCommandPermission.commands.{0}.use", permission.toString()), Permission);
+    public void setPermissionEnabled(Permission.AdvancedEggHuntCommandPermissionCommand permission, String Permission) {
+        getConfig().set(MessageFormat.format("Permissions.{0}.use", permission.toString()), Permission);
     }
 
-    public String getCommandPermission(Permission.AdvancedEggHuntCommandPermissionCommand permission) {
-        return getConfig().getString(MessageFormat.format("Permissions.AdvancedEggHuntCommandPermission.commands.{0}.permission", permission.toString()));
+    public String getPermission(Permission.AdvancedEggHuntCommandPermissionCommand permission) {
+        return getConfig().getString(MessageFormat.format("Permissions.{0}.permission", permission.toString()));
     }
-    public void setCommandPermission(Permission.AdvancedEggHuntCommandPermissionCommand permission, String Permission) {
-        getConfig().set(MessageFormat.format("Permissions.AdvancedEggHuntCommandPermission.commands.{0}.permission", permission.toString()), Permission);
+    public void setPermission(Permission.AdvancedEggHuntCommandPermissionCommand permission, String Permission) {
+        getConfig().set(MessageFormat.format("Permissions.{0}.permission", permission.toString()), Permission);
     }
 
     //region Settings

@@ -18,5 +18,10 @@ public enum Permission {
         leaderboard,
         hint,
         reset;
+
+        @Override
+        public String toString() {
+            return "AdvancedEggHuntCommandPermission.commands." + this.name();
+        }
     }
 }

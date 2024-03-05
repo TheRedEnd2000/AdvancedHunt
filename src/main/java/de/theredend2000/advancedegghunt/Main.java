@@ -3,7 +3,6 @@ package de.theredend2000.advancedegghunt;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
-import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.RequirementsListeners;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.ResetListeners;
@@ -71,9 +70,6 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-
-        PluginConfig config = PluginConfig.getInstance(this);
-
         setupDefaultCollection = false;
         saveDefaultConfig();
         PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("prefix"));
