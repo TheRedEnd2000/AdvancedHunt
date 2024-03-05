@@ -30,6 +30,17 @@ public class EggDataManager {
         }
     }
 
+    public void reload() {
+        eggCollectionsConfigs = new HashMap<>();
+    }
+
+    public void unloadEggData(String collection) {
+        if (!eggCollectionsConfigs.containsKey(collection)) {
+            return;
+        }
+        eggCollectionsConfigs.remove(collection);
+    }
+
     public void initEggs() {
         List<String> savedEggCollections = new ArrayList(this.plugin.getEggDataManager().savedEggCollections());
 

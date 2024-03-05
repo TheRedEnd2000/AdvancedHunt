@@ -26,6 +26,17 @@ public class PlayerEggDataManager {
         playerFiles = new HashMap<>();
     }
 
+    public void reload() {
+        playerConfigs = new HashMap<>();
+    }
+
+    public void unloadPlayerData(UUID uuid) {
+        if (!playerConfigs.containsKey(uuid)) {
+            return;
+        }
+        playerConfigs.remove(uuid);
+    }
+
     public void initPlayers() {
         List<UUID> savedPlayers = new ArrayList<>(plugin.getEggDataManager().savedPlayers());
         for(UUID uuid : savedPlayers)

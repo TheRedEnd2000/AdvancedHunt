@@ -17,7 +17,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -69,6 +71,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             Main.getInstance().checkCommandFeedback();
                             messageManager.reloadMessages();
                             eggManager.spawnEggParticle();
+                            Main.getInstance().getPlayerEggDataManager().reload();
+                            Main.getInstance().getPlayerEggDataManager().reload();
                             player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
                         }else
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
