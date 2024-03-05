@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.configurations.enums;
+package de.theredend2000.advancedegghunt.util.enums;
 
 public enum Permission {
     BreakEggPermission,

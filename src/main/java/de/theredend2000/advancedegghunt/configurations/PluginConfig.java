@@ -3,7 +3,7 @@ package de.theredend2000.advancedegghunt.configurations;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.particles.XParticle;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.configurations.enums.Permission;
+import de.theredend2000.advancedegghunt.util.enums.Permission;
 import org.bukkit.Particle;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
