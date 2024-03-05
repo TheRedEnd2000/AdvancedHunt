@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.MessageFormat;
 import java.util.Set;
+import java.util.UUID;
 
 public class PluginConfig extends Configuration {
     private static volatile PluginConfig instance;
@@ -54,6 +55,7 @@ public class PluginConfig extends Configuration {
 		getConfig().set("prefix", Prefix);
 	}
 
+    //region Permission
     public Boolean getPermissionEnabled(Permission permission) {
         return getConfig().getBoolean(MessageFormat.format("Permissions.{0}.use", permission.toString()));
     }
@@ -80,6 +82,15 @@ public class PluginConfig extends Configuration {
     }
     public void setPermission(Permission.AdvancedEggHuntCommandPermissionCommand permission, String Permission) {
         getConfig().set(MessageFormat.format("Permissions.{0}.permission", permission.toString()), Permission);
+    }
+    //endregion
+
+    public String getEdit(UUID playerUuid) {
+        return getConfig().getString(MessageFormat.format("Edit.{0}.commandID", playerUuid));
+    }
+
+    public void setEdit(UUID playerUuid, String id) {
+        getConfig().set(MessageFormat.format("Edit.{0}.commandID", playerUuid), id);
     }
 
     //region Settings

@@ -66,7 +66,7 @@ public class PlayerChatEventListener implements Listener {
             Main.getInstance().getPlayerAddCommand().remove(player);
             Main.getInstance().getInventoryManager().createCommandSettingsMenu(player, id);
         }else {
-            String id = Main.getInstance().getPluginConfig().getString("Edit." + player.getUniqueId() + ".commandID");
+            String id = Main.getInstance().getPluginConfig().getEdit(player.getUniqueId());
             placedEggs.set("Rewards." + id + ".command", event.getMessage());
             Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CHANGED).replaceAll("%ID%", id));

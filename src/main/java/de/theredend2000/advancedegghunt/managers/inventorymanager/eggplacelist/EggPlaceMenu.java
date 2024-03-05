@@ -40,7 +40,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
         Player p = (Player) e.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>();
-        if(Main.getInstance().getPluginConfig().contains("PlaceEggs.")){
+        if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
             for(String id : Main.getInstance().getPluginConfig().getPlaceEggIds()){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;

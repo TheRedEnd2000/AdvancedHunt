@@ -320,7 +320,7 @@ public class InventoryClickEventListener implements Listener {
                         clickme3.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, placedEggs.getString("Rewards." + id + ".command")));
                         c2.addExtra(clickme3);
                         player.spigot().sendMessage(c2);
-                        Main.getInstance().getPluginConfig().set("Edit." + player.getUniqueId() + ".commandID", id);
+                        Main.getInstance().getPluginConfig().setEdit(player.getUniqueId(), id);
                         Main.getInstance().saveConfig();
                         break;
                 }
