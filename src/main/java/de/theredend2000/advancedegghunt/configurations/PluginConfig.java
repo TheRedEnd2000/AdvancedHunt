@@ -209,59 +209,59 @@ public class PluginConfig extends Configuration {
 
     //region Sounds
     public Sound getPlayerFindEggSound() {
-        return XSound.valueOf(getConfig().getString("Settings.PlayerFindEggSound")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.PlayerFindEggSound")).parseSound();
     }
 	public void setPlayerFindEggSound(XMaterial PlayerFindEggSound) {
-		getConfig().set("Settings.PlayerFindEggSound", PlayerFindEggSound.toString());
+		getConfig().set("Sounds.PlayerFindEggSound", PlayerFindEggSound.toString());
 	}
 
     public Sound getEggAlreadyFoundSound() {
-        return XSound.valueOf(getConfig().getString("Settings.EggAlreadyFoundSound")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.EggAlreadyFoundSound")).parseSound();
     }
 	public void setEggAlreadyFoundSound(XMaterial EggAlreadyFoundSound) {
-		getConfig().set("Settings.EggAlreadyFoundSound", EggAlreadyFoundSound.toString());
+		getConfig().set("Sounds.EggAlreadyFoundSound", EggAlreadyFoundSound.toString());
 	}
 
     public Sound getAllEggsFoundSound() {
-        return XSound.valueOf(getConfig().getString("Settings.AllEggsFoundSound")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.AllEggsFoundSound")).parseSound();
     }
 	public void setAllEggsFoundSound(XMaterial AllEggsFoundSound) {
-		getConfig().set("Settings.AllEggsFoundSound", AllEggsFoundSound.toString());
+		getConfig().set("Sounds.AllEggsFoundSound", AllEggsFoundSound.toString());
 	}
 
     public Sound getEggBreakSound() {
-        return XSound.valueOf(getConfig().getString("Settings.EggBreakSound")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.EggBreakSound")).parseSound();
     }
 	public void setEggBreakSound(XMaterial EggBreakSound) {
-		getConfig().set("Settings.EggBreakSound", EggBreakSound.toString());
+		getConfig().set("Sounds.EggBreakSound", EggBreakSound.toString());
 	}
 
     public Sound getEggPlaceSound() {
-        return XSound.valueOf(getConfig().getString("Settings.EggPlaceSound")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.EggPlaceSound")).parseSound();
     }
 	public void setEggPlaceSound(XMaterial EggPlaceSound) {
-		getConfig().set("Settings.EggPlaceSound", EggPlaceSound.toString());
+		getConfig().set("Sounds.EggPlaceSound", EggPlaceSound.toString());
 	}
 
     public Sound getErrorSound() {
-        return XSound.valueOf(getConfig().getString("Settings.ErrorSound")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.ErrorSound")).parseSound();
     }
 	public void setErrorSound(XMaterial ErrorSound) {
-		getConfig().set("Settings.ErrorSound", ErrorSound.toString());
+		getConfig().set("Sounds.ErrorSound", ErrorSound.toString());
 	}
 
     public Sound getInventoryClickSuccess() {
-        return XSound.valueOf(getConfig().getString("Settings.InventoryClickSuccess")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.InventoryClickSuccess")).parseSound();
     }
 	public void setInventoryClickSuccess(XMaterial InventoryClickSuccess) {
-		getConfig().set("Settings.InventoryClickSuccess", InventoryClickSuccess.toString());
+		getConfig().set("Sounds.InventoryClickSuccess", InventoryClickSuccess.toString());
 	}
 
     public Sound getInventoryClickFailed() {
-        return XSound.valueOf(getConfig().getString("Settings.InventoryClickFailed")).parseSound();
+        return XSound.valueOf(getConfig().getString("Sounds.InventoryClickFailed")).parseSound();
     }
 	public void setInventoryClickFailed(XMaterial InventoryClickFailed) {
-		getConfig().set("Settings.InventoryClickFailed", InventoryClickFailed.toString());
+		getConfig().set("Sounds.InventoryClickFailed", InventoryClickFailed.toString());
 	}
 
     //endregion
