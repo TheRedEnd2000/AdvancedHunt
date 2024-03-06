@@ -42,7 +42,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
         ArrayList<String> keys = new ArrayList<>();
         if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
-            for(String id : Main.getInstance().getPluginConfig().getPlaceEggIds()){
+            for(String id : keys){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
                     p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     if(e.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))

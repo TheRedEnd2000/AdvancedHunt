@@ -115,7 +115,8 @@ public class InventoryClickEventListener implements Listener {
             menu.handleMenu(event);
         }
         if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
-            for(String key : Main.getInstance().getPluginConfig().getPlaceEggIds()){
+            Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
+            for(String key : keys){
                 if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key))){
                     player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
                     return;
@@ -123,7 +124,6 @@ public class InventoryClickEventListener implements Listener {
             }
 
             int nextNumber = 0;
-            Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
             if (!keys.isEmpty()) {
                 for (int i = 0; i <= keys.size(); i++) {
                     String key = Integer.toString(i);
