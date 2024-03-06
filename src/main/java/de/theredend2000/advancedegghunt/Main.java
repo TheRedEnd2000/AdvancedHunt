@@ -18,7 +18,6 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManag
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.Updater;
@@ -160,7 +159,6 @@ public final class Main extends JavaPlugin {
         new ExplodeEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
-        new HintInventoryCreator(null, null, false);
         new RequirementsListeners(this);
         new ResetListeners(this);
     }
