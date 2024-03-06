@@ -2,12 +2,11 @@ package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.configurations.InventoryConfig;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
-import de.theredend2000.advancedegghunt.util.saveinventory.Config;
-import de.theredend2000.advancedegghunt.util.saveinventory.Serialization;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -81,20 +80,17 @@ public class EggManager {
     }
 
     public void finishEggPlacing(Player player){
-        Config cfg = new Config(Main.getInstance(), player.getUniqueId());
-        String[] values = new String[]{cfg.getConfig().getString("inv"), cfg.getConfig().getString("armor")};
-        ItemStack[][] items = Serialization.base64toInv(values);
+        InventoryConfig cfg = new InventoryConfig(Main.getInstance(), player.getUniqueId());
+        ItemStack[][] items = cfg.getInventory();
         player.getInventory().clear();
         player.getInventory().setContents(items[0]);
         player.getInventory().setArmorContents(items[1]);
     }
 
     public void startEggPlacing(Player player){
-        Config cfg = new Config(Main.getInstance(), player.getUniqueId());
-        String[] values = Serialization.invToBase64(player.getInventory());
-        cfg.getConfig().set("inv", values[0]);
-        cfg.getConfig().set("armor", values[1]);
-        cfg.saveInv();
+        InventoryConfig cfg = new InventoryConfig(Main.getInstance(), player.getUniqueId());
+        cfg.setInventory(player.getInventory());
+        cfg.saveData();
         player.getInventory().clear();
     }
 

@@ -15,13 +15,21 @@ public abstract class Configuration {
     protected JavaPlugin plugin;
     protected FileConfiguration config = null;
     protected File configFile = null;
-    protected String configName = null;
+    protected String configName;
+    private boolean template;
 
     public Configuration(JavaPlugin plugin, String configName) {
+        this(plugin, configName, true);
+    }
+    public Configuration(JavaPlugin plugin, String configName, boolean template) {
         this.plugin = plugin;
         this.configName = configName;
+        this.template = template;
 
-        this.saveDefaultConfig();
+        if (template)
+            this.saveDefaultConfig();
+        else
+            reloadConfig();
     }
 
     public void reloadConfig() {
@@ -61,7 +69,7 @@ public abstract class Configuration {
             this.configFile = new File(this.plugin.getDataFolder(), configName);
 
         if (!configFile.exists()) {
-            plugin.saveResource(this.configName, true);
+            plugin.saveResource(this.configName, false);
         }
     }
 }

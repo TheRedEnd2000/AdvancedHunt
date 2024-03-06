@@ -6,6 +6,6 @@ import java.text.MessageFormat;
 
 public class EggConfig extends Configuration {
     public EggConfig(JavaPlugin plugin, String configName) {
-        super(plugin, MessageFormat.format("/eggs/{0}", configName));
+        super(plugin, MessageFormat.format("/eggs/{0}.yml", configName), false);
     }
 }
