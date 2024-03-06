@@ -32,7 +32,7 @@ egg-nearby: '&3&lEGG NEARBY'
 
 sound-volume: '&cSound volume can only between &e0 and 15&c!'
 egg-visible: '&aAll Eggs are now visible for &6%TIME_VISIBLE% seconds&a.'
-armorstand-glow: '&cArmorstand glow can only between &e0 and 120&c!'
+armorstand-glow: '&cArmor stand glow can only between &e0 and 120&c!'
 egg-radius: '&cEgg nearby message can only between &e0 and 50&c!'
 
 command-type: '&7The &6command #%ID% &7will now execute at &2type %TYPE%&7.'
@@ -45,8 +45,8 @@ command-expired: '&7You have &cnot entered &7the &6command &7fast &3enough. &7&l
 one-command: '&cYou can only enter one command at a time.'
 command-changed: '&7You have &asuccessfully &3changed &7the &6command #%ID%&7.'
 
-foundeggs-reset: '&7All &eFoundEggs &7has been &creseted&7.'
-foundeggs-player-reset: '&7All &eFoundEggs &7of &a%PLAYER% &7has been &creseted&7.'
+foundeggs-reset: '&7All &eFoundEggs &7has been &creset&7.'
+foundeggs-player-reset: '&7All &eFoundEggs &7of &a%PLAYER% &7has been &creset&7.'
 
 activate-requirements: '&aActivated all requirements.'
 deactivate-requirements: '&cDeactivated all requirements.'
