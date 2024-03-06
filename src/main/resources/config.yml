@@ -1,7 +1,7 @@
 config-version: 2.9
 
 # Change the language
-# Available: en (Englisch) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
+# Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
 messages-lang: en
 
 prefix: '&f[&eAdvancedEggHunt&f] &r'
@@ -93,7 +93,7 @@ Settings:
   # If a firework should spawn after clicking an egg
   ShowFireworkAfterEggFound: true
 
-  # How long the armorstands are visible after typing /eggs show
+  # How long the armor stands are visible after typing /eggs show
   ArmorstandGlow: 10
 
   # In witch radius the player gets a message that he is near an egg
@@ -111,7 +111,7 @@ Settings:
   # If right-clicking an egg works
   RightClickEgg: true
 
-  # How many panes a player has to click bevor getting his reward
+  # How many panes a player has to click before getting their reward
   HintCount: 25
 
   # How long the cooldown on the hint inventory is ( in seconds )
