@@ -3,6 +3,7 @@ version: 2.2.7
 main: de.theredend2000.advancedegghunt.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI]
+
 commands:
   advancedegghunt:
     aliases:
@@ -11,3 +12,61 @@ commands:
       - egghunt
       - eggs
       - easter
+
+permissions:
+  advancedegghunt.command.placeEggs:
+    description: "Allow a player to enter and exit egg placing mode"
+  advancedegghunt.commands.list:
+    description: "List all placed eggs for the selected collection"
+  advancedegghunt.commands.show:
+    description: "Show the location of nearby placed eggs using glowing armor stands"
+  advancedegghunt.commands.help:
+    description: "Show a list of possible commands with short descriptions"
+  advancedegghunt.commands.collection:
+    description: "Change selected collection"
+  advancedegghunt.commands.progress:
+    description: "Shows the progress for eggs found"
+  advancedegghunt.commands.leaderboard:
+    description: "Shows the leaderboard for the egg hunt"
+  advancedegghunt.commands.hint:
+    description: "Shows a hint in the form of coordinates of a nearby egg that the player has not found yet"
+  advancedegghunt.commands.reset:
+    description: "Resets all plugin data"
+  advancedegghunt.commands.settings:
+    description: "Shows and allows for updating of config settings"
+  advancedegghunt.commands.reload:
+    description: "Reload plugin"
+  advancedegghunt.commands.commands:
+    description: "Reward commands that are ran when a player finds an egg"
+
+  BreakEggPermission:
+    description: ""
+  PlaceEggPermission:
+    description: ""
+  IgnoreCooldownPermission:
+    description: ""
+  ChangeCollectionsPermission:
+    description: ""
+
+  advancedegghunt.group.admin:
+    description: "Contains all essential admin permissions"
+    default: op
+    children:
+      advancedegghunt.commands.reload: true
+      advancedegghunt.commands.reset: true
+      advancedegghunt.commands.settings: true
+      advancedegghunt.commands.commands: true
+      advancedegghunt.group.default: true
+
+  advancedegghunt.group.default:
+    description: "Contains all essential default permissions"
+    default: true
+    children:
+      advancedegghunt.command.placeEggs: true
+      advancedegghunt.commands.list: true
+      advancedegghunt.commands.show: true
+      advancedegghunt.commands.help: true
+      advancedegghunt.commands.collection: true
+      advancedegghunt.commands.progress: true
+      advancedegghunt.commands.leaderboar: true
+      advancedegghunt.commands.hint: true
