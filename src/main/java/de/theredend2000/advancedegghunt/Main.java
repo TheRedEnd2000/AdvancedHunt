@@ -139,6 +139,7 @@ public final class Main extends JavaPlugin {
     }
 
     public void checkCommandFeedback(){
+        if (!pluginConfig.getForcedCommandFeedback()) return;
         if (pluginConfig.getDisableCommandFeedback()) {
             for (World worlds : Bukkit.getServer().getWorlds())
                 worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);

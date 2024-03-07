@@ -87,6 +87,9 @@ Settings:
   # That no commands will be sent to the operators
   DisableCommandFeedback: true
 
+  # Enabled forced sendCommandFeedback gamerule set in Settings.DisableCommandFeedback
+  ForcedCommandFeedback: false
+
   # Shows the coordinates in the progress inventory of the player
   ShowCoordinatesWhenEggFoundInProgressInventory: false
 

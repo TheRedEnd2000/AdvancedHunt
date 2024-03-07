@@ -132,6 +132,13 @@ public class PluginConfig extends Configuration {
 		getConfig().set("Settings.DisableCommandFeedback", DisableCommandFeedback);
 	}
 
+    public boolean getForcedCommandFeedback() {
+        return getConfig().getBoolean("Settings.ForcedCommandFeedback");
+    }
+    public void setForcedCommandFeedback(boolean DisableCommandFeedback) {
+        getConfig().set("Settings.ForcedCommandFeedback", DisableCommandFeedback);
+    }
+
     public boolean getShowCoordinatesWhenEggFoundInProgressInventory() {
         return getConfig().getBoolean("Settings.ShowCoordinatesWhenEggFoundInProgressInventory");
     }
