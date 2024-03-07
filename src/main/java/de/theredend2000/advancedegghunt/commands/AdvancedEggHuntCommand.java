@@ -134,7 +134,12 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         }else
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
                     } else if (args[0].equalsIgnoreCase("import")) {
+                        if (plugin.getPermissionManager().checkCommandPermission(player, args[0])) return true;
                         ItemStack item = player.getInventory().getItemInMainHand();
+                        if (!(item.getItemMeta() instanceof  SkullMeta)) {
+                            player.sendMessage("Failed");
+                            return true;
+                        }
                         PlayerProfile playerProfile = ((SkullMeta)item.getItemMeta()).getOwnerProfile();
                         if (playerProfile == null) {
                             player.sendMessage("Failed");
@@ -145,6 +150,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         String base64Texture = Base64.getEncoder().encodeToString(toEncode.getBytes()).replaceFirst(".+?mUv", "");
                         Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
                         Main.getInstance().getPluginConfig().saveData();
+                        player.sendMessage("Imported");
                     }
                     else
                         player.sendMessage(usage());
