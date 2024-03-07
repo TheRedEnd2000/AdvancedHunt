@@ -498,7 +498,7 @@ public class EggManager {
         if (!leaderList.isEmpty() && position >= 0 && leaderList.size() > position) {
             return String.valueOf(leaderList.get(position).getKey());
         } else {
-            return String.valueOf(plugin.getConfig().getString("PlaceholderAPI.name"));
+            return String.valueOf(plugin.getPluginConfig().getPlaceholderAPIName());
         }
 
     }
@@ -517,7 +517,7 @@ public class EggManager {
         if(!leaderList.isEmpty() && position >= 0 && leaderList.size() > position){
             return String.valueOf(leaderList.get(position).getValue());
         }else
-            return String.valueOf(plugin.getConfig().getString("PlaceholderAPI.count"));
+            return String.valueOf(plugin.getPluginConfig().getPlaceholderAPICount());
     }
 
     private boolean isVersionLessThan(String versionToCompare) {

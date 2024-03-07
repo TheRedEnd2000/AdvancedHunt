@@ -32,29 +32,29 @@ public class PlaceholderExtension extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, String params) {
         if (params.equalsIgnoreCase("selected_collection")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getCollection());
+            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(collection);
         }
         if (params.equalsIgnoreCase("collection_size")) {
             int collection = Main.getInstance().getEggDataManager().savedEggCollections().size();
-            if(collection == 0) return String.valueOf(Main.getInstance().getPluginConfig().getCollection());
+            if(collection == 0) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(collection);
         }
         if (params.equalsIgnoreCase("max_eggs")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getCollection());
+            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(eggManager.getMaxEggs(collection));
         }
 
         if (params.equalsIgnoreCase("found_eggs")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getCollection());
+            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(eggManager.getEggsFound(player, collection));
         }
 
         if (params.equalsIgnoreCase("remaining_eggs")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getCollection());
+            if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player, collection));
         }
 

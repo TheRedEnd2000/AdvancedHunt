@@ -61,7 +61,7 @@ public class Updater implements Listener {
     //@EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
-        boolean updates = plugin.getConfig().getBoolean("Settings.Updater");
+        boolean updates = plugin.getPluginConfig().getUpdater();
         if(updates){
             if(!player.isOp()) return;
             if(isOutdated(player));

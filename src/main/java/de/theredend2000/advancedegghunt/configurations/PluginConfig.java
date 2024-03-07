@@ -37,7 +37,7 @@ public class PluginConfig extends Configuration {
     }
 
     public double getConfigVersion() {
-        return getConfig().getDouble("config-version");
+        return getConfig().getDouble("config-version", -1);
     }
 	public void setConfigVersion(double ConfigVersion) {
 		getConfig().set("config-version", ConfigVersion);
@@ -292,24 +292,24 @@ public class PluginConfig extends Configuration {
     //endregion
 
     //region PlaceholderAPI
-    public String getCollection() {
+    public String getPlaceholderAPICollection() {
         return getConfig().getString("PlaceholderAPI.collection");
     }
-	public void setCollection(String Collection) {
+	public void setPlaceholderAPICollection(String Collection) {
 		getConfig().set("PlaceholderAPI.collection", Collection);
 	}
 
-    public String getName() {
+    public String getPlaceholderAPIName() {
         return getConfig().getString("PlaceholderAPI.name");
     }
-	public void setName(String Name) {
+	public void setPlaceholderAPIName(String Name) {
 		getConfig().set("PlaceholderAPI.name", Name);
 	}
 
-    public String getCount() {
+    public String getPlaceholderAPICount() {
         return getConfig().getString("PlaceholderAPI.count");
     }
-	public void setCount(String Count) {
+	public void setPlaceholderAPICount(String Count) {
 		getConfig().set("PlaceholderAPI.count", Count);
 	}
     //endregion
