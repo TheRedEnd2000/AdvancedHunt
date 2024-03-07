@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -324,7 +325,7 @@ public class PluginConfig extends Configuration {
     public String getPlaceEggTexture(String id) {
         return getConfig().getString(MessageFormat.format("PlaceEggs.{0}.texture", id));
     }
-	public void setPlaceEggTexture(int id, Integer PlaceEggTexture) {
+	public void setPlaceEggTexture(int id, String PlaceEggTexture) {
 		getConfig().set(MessageFormat.format("PlaceEggs.{0}.texture", id), PlaceEggTexture);
 	}
 
@@ -333,6 +334,13 @@ public class PluginConfig extends Configuration {
     }
     public void setPlaceEggType(int id, String PlaceEggType) {
         getConfig().set(MessageFormat.format("PlaceEggs.{0}.type", id), PlaceEggType);
+    }
+
+    public void setPlaceEggPlayerHead(String base64Texture) {
+        List<String> ids = List.copyOf(getPlaceEggIds());
+        int id = Integer.parseInt(ids.get(ids.size() - 1)) + 1;
+        setPlaceEggTexture(id, base64Texture);
+        setPlaceEggType(id, "PLAYER_HEAD");
     }
     //endregion
 }

@@ -16,8 +16,13 @@ import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -128,7 +133,20 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             }
                         }else
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
-                    }else
+                    } else if (args[0].equalsIgnoreCase("import")) {
+                        ItemStack item = player.getInventory().getItemInMainHand();
+                        PlayerProfile playerProfile = ((SkullMeta)item.getItemMeta()).getOwnerProfile();
+                        if (playerProfile == null) {
+                            player.sendMessage("Failed");
+                            return true;
+                        }
+                        URL textureURL = playerProfile.getTextures().getSkin();
+                        String toEncode = "{\"textures\":{\"SKIN\":{\"url\":\"" + textureURL.toString() + "\"}}}";
+                        String base64Texture = Base64.getEncoder().encodeToString(toEncode.getBytes()).replaceFirst(".+?mUv", "");
+                        Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
+                        Main.getInstance().getPluginConfig().saveData();
+                    }
+                    else
                         player.sendMessage(usage());
                 }else if(args.length == 2){
                     if(args[0].equalsIgnoreCase("reset")){
@@ -180,7 +198,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 1){
             ArrayList<String> complete = new ArrayList<>();
-            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection"};
+            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "import"};
             for(String permissions : tabs){
                 if(plugin.getPermissionManager().checkCommandPermission((Player) sender,permissions))
                     complete.add(permissions);
