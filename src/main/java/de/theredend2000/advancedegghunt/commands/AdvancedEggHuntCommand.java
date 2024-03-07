@@ -134,7 +134,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         }else
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
                     } else if (args[0].equalsIgnoreCase("import")) {
-                        if (plugin.getPermissionManager().checkCommandPermission(player, args[0])) return true;
+//                        if (plugin.getPermissionManager().checkCommandPermission(player, args[0])) return true;
                         ItemStack item = player.getInventory().getItemInMainHand();
                         if (!(item.getItemMeta() instanceof  SkullMeta)) {
                             player.sendMessage("Failed");
