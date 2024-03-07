@@ -68,5 +68,5 @@ permissions:
       advancedegghunt.commands.help: true
       advancedegghunt.commands.collection: true
       advancedegghunt.commands.progress: true
-      advancedegghunt.commands.leaderboar: true
+      advancedegghunt.commands.leaderboard: true
       advancedegghunt.commands.hint: true
