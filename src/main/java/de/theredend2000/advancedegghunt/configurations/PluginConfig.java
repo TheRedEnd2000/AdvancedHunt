@@ -7,9 +7,14 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +36,42 @@ public class PluginConfig extends Configuration {
             }
         }
         return instance;
+    }
+
+    private void updateConfig() throws IOException {
+        if (!configFile.exists()) {
+            saveDefaultConfig();
+            return;
+        }
+
+        FileConfiguration newConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(configFile.getName())));
+        FileConfiguration currentConfig = YamlConfiguration.loadConfiguration(configFile);
+
+        backupCurrentConfig(configFile);
+
+        saveDefaultConfig();
+
+        for (String key : newConfig.getKeys(true)) {
+            if (currentConfig.contains(key) && !newConfig.isConfigurationSection(key)) {
+                getConfig().set(key, currentConfig.get(key));
+            }
+        }
+
+        saveConfig();
+    }
+
+    // This method backs up the current configuration just in case something goes wrong
+    private void backupCurrentConfig(File configFile) throws IOException {
+        File backupFile = new File(plugin.getDataFolder(), "config-backup.yml");
+        if (backupFile.exists()) {
+            backupFile.delete();
+        }
+
+        if (!configFile.renameTo(backupFile)) {
+            throw new IOException("Could not create a backup of the config file!");
+        }
+
+        plugin.getLogger().info("The previous config.yml has been renamed to config-backup.yml.");
     }
 
     public void saveData() {
