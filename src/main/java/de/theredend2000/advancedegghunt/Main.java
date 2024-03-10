@@ -72,7 +72,6 @@ public final class Main extends JavaPlugin {
         plugin = this;
         pluginConfig = PluginConfig.getInstance(plugin);
         setupDefaultCollection = false;
-        saveDefaultConfig();
         PREFIX = ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix());
         Metrics metrics = new Metrics(this, 19495);
         refreshCooldown = new HashMap<String, Long>();

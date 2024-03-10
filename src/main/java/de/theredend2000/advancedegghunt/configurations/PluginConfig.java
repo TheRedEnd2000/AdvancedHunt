@@ -13,9 +13,12 @@ import org.jetbrains.annotations.Nullable;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 
 public class PluginConfig extends Configuration {
+    private static TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
+
     private static volatile PluginConfig instance;
 
     private PluginConfig(JavaPlugin plugin) {
@@ -31,6 +34,11 @@ public class PluginConfig extends Configuration {
             }
         }
         return instance;
+    }
+
+    @Override
+    public TreeMap<Double, ConfigUpgrader> getUpgrader() {
+        return upgraders;
     }
 
     public void saveData() {
