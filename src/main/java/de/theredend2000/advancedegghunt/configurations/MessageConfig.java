@@ -11,6 +11,11 @@ public class MessageConfig extends Configuration {
         super(plugin, MessageFormat.format("/messages/messages-{0}.yml", configName));
     }
 
+    @Override
+    public void registerUpgrader() {
+
+    }
+
     public static MessageConfig getInstance(JavaPlugin plugin, String configName) {
         if (instance == null) {
             synchronized (MessageConfig.class) {

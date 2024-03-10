@@ -8,4 +8,9 @@ public class EggConfig extends Configuration {
     public EggConfig(JavaPlugin plugin, String configName) {
         super(plugin, MessageFormat.format("/eggs/{0}.yml", configName), false);
     }
+
+    @Override
+    public void registerUpgrader() {
+
+    }
 }

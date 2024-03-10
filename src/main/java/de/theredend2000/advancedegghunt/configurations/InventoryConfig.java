@@ -32,4 +32,11 @@ public class InventoryConfig extends Configuration {
     public String getArmor() {
         return getConfig().getString("armor");
     }
+
+    @Override
+    public void registerUpgrader() {
+        upgraders.put(2.9, (oldConfig, NewConfig) -> {
+            configFile.getParentFile().delete();
+        });
+    }
 }

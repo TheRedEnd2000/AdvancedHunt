@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 public abstract class Configuration {
@@ -17,6 +19,8 @@ public abstract class Configuration {
     protected File configFile = null;
     protected String configName;
     private boolean template;
+    protected final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
+
 
     public Configuration(JavaPlugin plugin, String configName) {
         this(plugin, configName, true);
@@ -30,6 +34,60 @@ public abstract class Configuration {
             this.saveDefaultConfig();
         else
             reloadConfig();
+
+        registerUpgrader();
+        loadConfig();
+    }
+
+    public abstract void registerUpgrader();
+
+    public void loadConfig() {
+        double currentVersion = config.getDouble("config-version", 0.0);
+        double latestVersion = upgraders.lastKey();
+
+        if (currentVersion < latestVersion) {
+            upgradeConfig(currentVersion);
+        }
+    }
+
+    private void upgradeConfig(double currentVersion) {
+        YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFile);
+        File backupFile = new File(plugin.getDataFolder(), configName + ".bak");
+
+        try {
+            oldConfig.save(backupFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        YamlConfiguration newConfig = new YamlConfiguration();
+        newConfig.options().copyDefaults(true);
+
+        // Run the standard upgrade first to copy all keys from the old config
+        standardUpgrade(oldConfig, newConfig);
+
+        // Loop through each version above the current version and run the upgrade method
+        for (Map.Entry<Double, ConfigUpgrader> entry : upgraders.tailMap(currentVersion + 0.1, true).entrySet()) {
+            double version = entry.getKey();
+            ConfigUpgrader upgrader = entry.getValue();
+            if (upgrader != null) {
+                upgrader.upgrade(oldConfig, newConfig);
+            }
+        }
+
+        try {
+            newConfig.save(configFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        config = newConfig;
+    }
+    private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
+        // Copy all keys from the old config to the new config
+        for (String key : oldConfig.getKeys(true)) {
+            newConfig.set(key, oldConfig.get(key));
+        }
     }
 
     public void reloadConfig() {
@@ -71,5 +129,9 @@ public abstract class Configuration {
         if (!configFile.exists()) {
             plugin.saveResource(this.configName, false);
         }
+    }
+
+    public interface ConfigUpgrader {
+        void upgrade(YamlConfiguration oldConfig, YamlConfiguration NewConfig);
     }
 }
