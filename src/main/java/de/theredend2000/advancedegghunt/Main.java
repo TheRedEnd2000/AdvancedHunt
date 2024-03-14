@@ -20,6 +20,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventory
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
+import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
@@ -72,7 +73,7 @@ public final class Main extends JavaPlugin {
         plugin = this;
         pluginConfig = PluginConfig.getInstance(plugin);
         setupDefaultCollection = false;
-        PREFIX = ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix());
+        PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
         Metrics metrics = new Metrics(this, 19495);
         refreshCooldown = new HashMap<String, Long>();
         placeEggsPlayers = new ArrayList<>();
