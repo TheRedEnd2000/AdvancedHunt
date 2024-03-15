@@ -38,10 +38,6 @@ public class InventoryConfig extends Configuration {
         getConfig().set("armor", values[1]);
     }
 
-    public String getArmor() {
-        return getConfig().getString("armor");
-    }
-
     @Override
     public void registerUpgrader() {
         getUpgrader().put(2.9, (oldConfig, NewConfig) -> {

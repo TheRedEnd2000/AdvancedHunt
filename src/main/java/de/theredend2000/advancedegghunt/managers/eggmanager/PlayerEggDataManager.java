@@ -40,13 +40,7 @@ public class PlayerEggDataManager {
     public void initPlayers() {
         List<UUID> savedPlayers = new ArrayList<>(plugin.getEggDataManager().savedPlayers());
         for(UUID uuid : savedPlayers)
-            loadPlayerData(uuid);
-    }
-
-    private void loadPlayerData(UUID uuid) {
-        FileConfiguration config = getPlayerData(uuid);
-        if(!playerConfigs.containsKey(uuid))
-            this.playerConfigs.put(uuid, config);
+            getPlayerData(uuid);
     }
 
     private File getFile(UUID uuid) {
@@ -88,7 +82,6 @@ public class PlayerEggDataManager {
             }
         }
         this.playerConfigs.put(uuid, config);
-        this.loadPlayerData(uuid);
         this.savePlayerData(uuid, config);
         this.setDeletionType(DeletionTypes.Noting, uuid);
         this.savePlayerCollection(uuid, "default");
