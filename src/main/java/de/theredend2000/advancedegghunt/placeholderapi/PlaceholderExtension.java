@@ -60,12 +60,12 @@ public class PlaceholderExtension extends PlaceholderExpansion {
 
         if (params.matches("player_name_\\d+")) {
             int number = extractNumberFromPlaceholder(params);
-            return String.valueOf(eggManager.getLeaderboardPositionName(number-1,player.getUniqueId()));
+            return String.valueOf(eggManager.getLeaderboardPositionName(number-1, player.getUniqueId()));
         }
 
         if (params.matches("player_count_\\d+")) {
             int number = extractNumberFromPlaceholder(params);
-            return String.valueOf(eggManager.getLeaderboardPositionCount(number-1,player.getUniqueId()));
+            return String.valueOf(eggManager.getLeaderboardPositionCount(number-1, player.getUniqueId()));
         }
 
         return null;

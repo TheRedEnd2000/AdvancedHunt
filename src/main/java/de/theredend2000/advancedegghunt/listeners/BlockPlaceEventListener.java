@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.listeners;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
+import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -26,13 +27,12 @@ public class BlockPlaceEventListener implements Listener {
 
         EggManager eggManager = Main.getInstance().getEggManager();
         SoundManager soundManager = Main.getInstance().getSoundManager();
-        String per = "PlaceEggPermission";
 
-        if(Main.getInstance().getPermissionManager().checkOtherPermission(player,per)){
+        if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.PlaceEgg)){
             String collection = eggManager.getEggCollectionFromPlayerData(player.getUniqueId());
             eggManager.saveEgg(player, event.getBlockPlaced().getLocation(), collection);
             player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
         }else
-            player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Main.getInstance().getPermissionManager().getOtherPermission(player,per)));
+            player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.PlaceEgg.toString()));
     }
 }

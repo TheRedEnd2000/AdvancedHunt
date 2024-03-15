@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.particles.XParticle;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.util.enums.Permission;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -65,36 +64,6 @@ public class PluginConfig extends Configuration {
 	public void setPrefix(String Prefix) {
 		getConfig().set("prefix", Prefix);
 	}
-
-    //region Permission
-    public Boolean getPermissionEnabled(Permission permission) {
-        return getConfig().getBoolean(MessageFormat.format("Permissions.{0}.use", permission.toString()));
-    }
-	public void setPermissionEnabled(Permission permission, String Permission) {
-		getConfig().set(MessageFormat.format("Permissions.{0}.use", permission.toString()), Permission);
-	}
-
-    public String getPermission(Permission permission) {
-        return getConfig().getString(MessageFormat.format("Permissions.{0}.permission", permission.toString()));
-    }
-    public void setPermission(Permission permission, String Permission) {
-        getConfig().set(MessageFormat.format("Permissions.{0}.permission", permission.toString()), Permission);
-    }
-
-    public Boolean getPermissionEnabled(Permission.AdvancedEggHuntCommandPermissionCommand permission) {
-        return getConfig().getBoolean(MessageFormat.format("Permissions.{0}.use", permission.toString()));
-    }
-    public void setPermissionEnabled(Permission.AdvancedEggHuntCommandPermissionCommand permission, String Permission) {
-        getConfig().set(MessageFormat.format("Permissions.{0}.use", permission.toString()), Permission);
-    }
-
-    public String getPermission(Permission.AdvancedEggHuntCommandPermissionCommand permission) {
-        return getConfig().getString(MessageFormat.format("Permissions.{0}.permission", permission.toString()));
-    }
-    public void setPermission(Permission.AdvancedEggHuntCommandPermissionCommand permission, String Permission) {
-        getConfig().set(MessageFormat.format("Permissions.{0}.permission", permission.toString()), Permission);
-    }
-    //endregion
 
     public String getEdit(UUID playerUuid) {
         return getConfig().getString(MessageFormat.format("Edit.{0}.commandID", playerUuid));

@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.listeners;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
+import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
@@ -36,17 +37,16 @@ public class BlockBreakEventListener implements Listener {
             return;
         }
         String collection = eggManager.getEggCollection(block);
-        String per = "BreakEggPermission";
         if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-            if(Main.getInstance().getPermissionManager().checkOtherPermission(player,per)){
+            if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.BreakEgg)){
                 eggManager.removeEgg(player, block, collection);
                 player.playSound(player.getLocation(), soundManager.playEggBreakSound(), soundManager.getSoundVolume(), 1);
             }else {
-                player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Main.getInstance().getPermissionManager().getOtherPermission(player,per)));
+                player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.BreakEgg.toString()));
                 event.setCancelled(true);
             }
         }else {
-            if(Main.getInstance().getPermissionManager().checkOtherPermission(player,per))
+            if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.BreakEgg))
                 player.sendMessage(messageManager.getMessage(MessageKey.ONLY_IN_PLACEMODE));
             event.setCancelled(true);
         }

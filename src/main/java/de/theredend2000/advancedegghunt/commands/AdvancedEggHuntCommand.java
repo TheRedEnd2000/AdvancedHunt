@@ -11,6 +11,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.
 import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
@@ -45,7 +46,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             Player player = (Player) sender;
                 if(args.length == 1){
                     if(args[0].equalsIgnoreCase("placeEggs")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0])) {
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.placeEggs)) {
                             if (Main.getInstance().getPlaceEggsPlayers().contains(player)) {
                                 eggManager.finishEggPlacing(player);
                                 Main.getInstance().getPlaceEggsPlayers().remove(player);
@@ -58,20 +59,20 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                 player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayname("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.").setLocalizedName("egghunt.finish").setSoulbound(true).build());
                             }
                         }else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.placeEggs.toString()));
                     }else if(args[0].equalsIgnoreCase("list")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0]))
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.list))
                             new EggListMenu(Main.getPlayerMenuUtility(player)).open();
                         else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.list.toString()));
                     }else if(args[0].equalsIgnoreCase("show")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0])) {
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.show)) {
                             eggManager.showAllEggs();
                             player.sendMessage(messageManager.getMessage(MessageKey.EGG_VISIBLE).replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow())));
                         }else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.show.toString()));
                     }else if(args[0].equalsIgnoreCase("reload")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0])) {
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.reload)) {
                             Main.getInstance().reloadConfig();
                             Main.getInstance().checkCommandFeedback();
                             messageManager.reloadMessages();
@@ -80,45 +81,45 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             Main.getInstance().getEggDataManager().reload();
                             player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
                         }else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.reload.toString()));
                     }else if(args[0].equalsIgnoreCase("help")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0]))
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.help))
                             sendHelp(player);
                         else
-                           player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                           player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.help.toString()));
                     }else if(args[0].equalsIgnoreCase("settings")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0]))
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.settings))
                             inventoryManager.createEggsSettingsInventory(player);
                         else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.settings.toString()));
                     }else if(args[0].equalsIgnoreCase("collection")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0]))
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.collection))
                             new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
                         else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.collection.toString()));
                     }else if(args[0].equalsIgnoreCase("progress")) {
-                        if (plugin.getPermissionManager().checkCommandPermission(player, args[0]))
+                        if (plugin.getPermissionManager().checkPermission(player, Permission.Command.progress))
                             new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
                         else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.progress.toString()));
                     }else if(args[0].equalsIgnoreCase("commands")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0]))
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.commands))
                             new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
                         else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.commands.toString()));
                     }else if(args[0].equalsIgnoreCase("leaderboard")){
-                        if(plugin.getPermissionManager().checkCommandPermission(player,args[0]))
+                        if(plugin.getPermissionManager().checkPermission(player, Permission.Command.leaderboard))
                             new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                         else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.leaderboard.toString()));
                     }else if(args[0].equalsIgnoreCase("hint")) {
-                        if (plugin.getPermissionManager().checkCommandPermission(player, args[0])) {
+                        if (plugin.getPermissionManager().checkPermission(player, Permission.Command.hint)) {
                             int counter = 0;
                             int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
                             for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
                                 counter++;
                                 if (!eggManager.checkFoundAll(player, collections) && eggManager.getMaxEggs(collections) >= 1) {
-                                    if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !plugin.getPermissionManager().checkOtherPermission(player,"IgnoreCooldownPermission")) {
+                                    if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !plugin.getPermissionManager().checkPermission(player, Permission.IgnoreCooldown)) {
                                         long current = System.currentTimeMillis();
                                         long release = Main.getInstance().getCooldownManager().getCooldown(player);
                                         long millis = release - current;
@@ -132,9 +133,12 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                 }
                             }
                         }else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
-                    } /*else if (args[0].equalsIgnoreCase("import")) {
-//                        if (plugin.getPermissionManager().checkCommandPermission(player, args[0])) return true;
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.hint.toString()));
+                    } else if (args[0].equalsIgnoreCase("eggImport")) {
+                        if (plugin.getPermissionManager().checkPermission(player, Permission.Command.eggImport)) {
+                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.eggImport.toString()));
+                            return true;
+                        }
                         ItemStack item = player.getInventory().getItemInMainHand();
                         if (!(item.getItemMeta() instanceof  SkullMeta)) {
                             player.sendMessage("Failed");
@@ -153,7 +157,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         player.sendMessage("Imported");
                     }
                     else
-                        player.sendMessage(usage());*/
+                        player.sendMessage(usage());
                 }else if(args.length == 2){
                     if(args[0].equalsIgnoreCase("reset")){
                         if(args[1].equalsIgnoreCase("all")){
@@ -204,15 +208,15 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 1){
             ArrayList<String> complete = new ArrayList<>();
-            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "import"};
+            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport"};
             for(String permissions : tabs){
-                if(plugin.getPermissionManager().checkCommandPermission((Player) sender,permissions))
+                if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permissions)))
                     complete.add(permissions);
             }
             return complete;
         }
         if(args.length == 2){
-            if(plugin.getPermissionManager().checkCommandPermission((Player) sender,"reset")) {
+            if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
                 if(args[0].equalsIgnoreCase("reset")){
                     ArrayList<String> complete = new ArrayList<>();
                     for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){

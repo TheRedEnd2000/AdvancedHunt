@@ -1,12 +1,32 @@
 package de.theredend2000.advancedegghunt.util.enums;
 
+import de.theredend2000.advancedegghunt.Main;
+
+import java.text.MessageFormat;
+import java.util.logging.Level;
+
 public enum Permission {
-    BreakEggPermission,
-    PlaceEggPermission,
-    IgnoreCooldownPermission,
-    ChangeCollectionsPermission;
-    public enum AdvancedEggHuntCommandPermissionCommand {
+    BreakEgg,
+    PlaceEgg,
+    IgnoreCooldown,
+    ChangeCollections,
+    CreateCollection;
+    @Override
+    public String toString() {
+        return "AdvancedEggHunt." + this.name();
+    }
+
+    public static Permission getEnum(String value) {
+        try {
+            return valueOf(value);
+        } catch (IllegalArgumentException e) {
+            Main.getInstance().getLogger().log(Level.SEVERE, MessageFormat.format("Failed to convert {0} to Enum.", value), e);
+            return null;
+        }
+    }
+    public enum Command {
         placeEggs,
+        eggImport,
         list,
         show,
         reload,
@@ -21,7 +41,16 @@ public enum Permission {
 
         @Override
         public String toString() {
-            return "AdvancedEggHuntCommandPermission.commands." + this.name();
+            return "AdvancedEggHunt.Command." + this.name();
+        }
+
+        public static Command getEnum(String value) {
+            try {
+                return valueOf(value);
+            } catch (IllegalArgumentException e) {
+                Main.getInstance().getLogger().log(Level.SEVERE, MessageFormat.format("Failed to convert {0} to Enum.", value), e);
+                return null;
+            }
         }
     }
 }
