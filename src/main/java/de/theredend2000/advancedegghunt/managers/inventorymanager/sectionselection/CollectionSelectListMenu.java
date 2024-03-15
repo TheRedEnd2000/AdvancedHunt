@@ -91,8 +91,10 @@ public class CollectionSelectListMenu extends SelectionSelectPaginatedMenu {
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add collection")) {
-                    Main.getInstance().getInventoryManager().createAddCollectionMenu(player);
-                    player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                    if(player.hasPermission("advancedegghunt.createcollection")) {
+                        Main.getInstance().getInventoryManager().createAddCollectionMenu(player);
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                    }
                 }
                 break;
         }
