@@ -178,7 +178,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void setupConfigs(){
-        saveDefaultConfig();
+        saveDefaultConfig(); //TODO: REMOVE
         checkUpdatePath();
     }
 
@@ -189,7 +189,7 @@ public final class Main extends JavaPlugin {
         if(pluginConfig.getConfigVersion() < 2.9){
             File configFile = new File(getDataFolder(), "config.yml");
             configFile.delete();
-            saveDefaultConfig();
+            saveDefaultConfig(); //TODO: REMOVE
             reloadConfig();
             for(Player player : Bukkit.getOnlinePlayers()){
                 if(player.isOp()){

@@ -22,7 +22,7 @@ public class MessageManager {
     }
 
     public void reloadMessages() {
-        String lang = plugin.getConfig().getString("messages-lang");
+        String lang = plugin.getPluginConfig().getLanguage();
         if (lang == null)
             lang = "en";
 
