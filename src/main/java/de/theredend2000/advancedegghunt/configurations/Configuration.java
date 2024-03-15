@@ -37,7 +37,7 @@ public abstract class Configuration {
         reloadConfig();
 
         registerUpgrader();
-        loadConfig();
+        //loadConfig();
     }
 
     public abstract void registerUpgrader();
