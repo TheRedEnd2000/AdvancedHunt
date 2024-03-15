@@ -133,7 +133,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             }
                         }else
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%",plugin.getPermissionManager().getPermission(args[0])));
-                    } else if (args[0].equalsIgnoreCase("import")) {
+                    } /*else if (args[0].equalsIgnoreCase("import")) {
 //                        if (plugin.getPermissionManager().checkCommandPermission(player, args[0])) return true;
                         ItemStack item = player.getInventory().getItemInMainHand();
                         if (!(item.getItemMeta() instanceof  SkullMeta)) {
@@ -153,7 +153,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         player.sendMessage("Imported");
                     }
                     else
-                        player.sendMessage(usage());
+                        player.sendMessage(usage());*/
                 }else if(args.length == 2){
                     if(args[0].equalsIgnoreCase("reset")){
                         if(args[1].equalsIgnoreCase("all")){
