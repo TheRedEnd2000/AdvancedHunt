@@ -18,6 +18,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManag
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsInventory;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.HexColor;
@@ -65,6 +66,7 @@ public final class Main extends JavaPlugin {
     private ResetInventoryManager resetInventoryManager;
     private PermissionManager permissionManager;
     private ResetListeners resetListeners;
+    private EggRewardsInventory eggRewardsInventory;
     private MessageManager messageManager;
     public static String PREFIX = "";
     public static boolean setupDefaultCollection;
@@ -136,6 +138,7 @@ public final class Main extends JavaPlugin {
         requirementsManager = new RequirementsManager();
         resetInventoryManager = new ResetInventoryManager();
         permissionManager = new PermissionManager();
+        eggRewardsInventory = new EggRewardsInventory();
     }
 
     public void checkCommandFeedback(){
@@ -322,5 +325,9 @@ public final class Main extends JavaPlugin {
 
     public PermissionManager getPermissionManager() {
         return permissionManager;
+    }
+
+    public EggRewardsInventory getEggRewardsInventory() {
+        return eggRewardsInventory;
     }
 }

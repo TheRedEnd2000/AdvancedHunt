@@ -54,3 +54,7 @@ deactivate-requirements: '&cDeactivated all requirements.'
 collection-disabled: '&cThis collection is currently disabled.'
 collection-selected: '&7You selected the collection &6%SELECTION%'
 collection-deleted: '&aSuccessfully deleted collection &6%COLLECTION%'
+
+eggimport-hand: '&7Please hold the &eplayer head with the &2egg texture &7in your hand.'
+eggimport-failed-profile: '&cFailed to load a player profile.'
+eggimport-success: '&aSuccessfully &7imported'

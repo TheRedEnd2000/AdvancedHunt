@@ -50,6 +50,10 @@ public class PlayerInteractEventListener implements Listener {
                 continue;
             }
             String id = eggManager.getEggID(event.getClickedBlock(), collections);
+            if(player.hasPermission("EggRewards") && player.isSneaking()){
+                Main.getInstance().getEggRewardsInventory().open(player,id,collections);
+                return;
+            }
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collections);
             if(!placedEggs.getBoolean("Enabled")){
                 player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
