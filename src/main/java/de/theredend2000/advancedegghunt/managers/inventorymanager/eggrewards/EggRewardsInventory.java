@@ -32,7 +32,7 @@ public class EggRewardsInventory implements Listener {
     public EggRewardsInventory(){
         this.plugin = Main.getInstance();
         Bukkit.getPluginManager().registerEvents(this,plugin);
-        title = "Egg Rewardss";
+        title = "Egg Rewards";
     }
 
     public void open(Player owner,String id, String section){
