@@ -56,7 +56,7 @@ public class EggRewardsInventory implements Listener {
     }
 
     public void setMenuItems() {
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(owner.getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(owner.getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs."+id+".Rewards")){
@@ -81,7 +81,7 @@ public class EggRewardsInventory implements Listener {
     @EventHandler
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(p.getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(p.getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         if(!e.getView().getTitle().equals(title)) return;
         if(e.getCurrentItem() == null) return;
@@ -132,7 +132,7 @@ public class EggRewardsInventory implements Listener {
 
 
     public int getMaxPages(){
-        String section = Main.getInstance().getEggManager().getEggSectionFromPlayerData(owner.getUniqueId());
+        String section = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(owner.getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(section);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs."+id+".Rewards")){
