@@ -10,7 +10,8 @@ public enum Permission {
     PlaceEgg,
     IgnoreCooldown,
     ChangeCollections,
-    CreateCollection;
+    CreateCollection,
+    OpenRewards;
     @Override
     public String toString() {
         return "AdvancedEggHunt." + this.name();

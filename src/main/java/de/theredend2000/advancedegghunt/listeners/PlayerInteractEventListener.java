@@ -4,6 +4,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
+import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
@@ -50,7 +51,7 @@ public class PlayerInteractEventListener implements Listener {
                 continue;
             }
             String id = eggManager.getEggID(event.getClickedBlock(), collections);
-            if(player.hasPermission("EggRewards") && player.isSneaking()){
+            if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.OpenRewards) && player.isSneaking()){
                 Main.getInstance().getEggRewardsInventory().open(player,id,collections);
                 return;
             }
