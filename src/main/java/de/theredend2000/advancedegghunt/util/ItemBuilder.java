@@ -1,8 +1,8 @@
 package de.theredend2000.advancedegghunt.util;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -11,7 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -72,16 +71,22 @@ public class ItemBuilder {
         return itemStack;
     }
     public ItemBuilder setSkullOwner(String texture) {
-        try {
-            SkullMeta skullMeta = (SkullMeta) this.itemMeta;
-            GameProfile profile = new GameProfile(UUID.randomUUID(), texture);
-            profile.getProperties().put("textures", new Property("textures", texture));
-            Field field = skullMeta.getClass().getDeclaredField("profile");
-            field.setAccessible(true);
-            field.set(skullMeta, profile);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        itemStack = build();
+
+        NBT.modify(itemStack, nbt -> {
+            final ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
+
+            // The owner UUID. Note that skulls with the same UUID but different textures will misbehave and only one texture will load.
+            // They will share the texture. To avoid this limitation, it is recommended to use a random UUID.
+            skullOwnerCompound.setUUID("Id", UUID.randomUUID());
+
+            skullOwnerCompound.getOrCreateCompound("Properties")
+                    .getCompoundList("textures")
+                    .addCompound()
+                    .setString("Value", texture);
+        });
+
+        itemMeta = itemStack.getItemMeta();
         return this;
     }
     public ItemBuilder setColor(Color color) {

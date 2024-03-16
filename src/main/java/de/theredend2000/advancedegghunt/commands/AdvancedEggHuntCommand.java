@@ -14,16 +14,15 @@ import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.iface.ReadableNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -154,14 +153,23 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.sendMessage("Failed");
                             return true;
                         }
-                        PlayerProfile playerProfile = ((SkullMeta)item.getItemMeta()).getOwnerProfile();
-                        if (playerProfile == null) {
+
+                        String fullTexture = NBT.get(item, nbt -> {
+                            final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
+                            if (skullOwnerCompound == null) return null;
+                            var skullOwnerPropertiesCompound = skullOwnerCompound.getCompound("Properties");
+                            if (skullOwnerPropertiesCompound == null) return null;
+                            var skullOwnerPropertiesTexturesCompound = skullOwnerPropertiesCompound.getCompoundList("textures");
+                            if (skullOwnerPropertiesTexturesCompound == null) return null;
+
+                            return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
+                        });
+                        if (fullTexture == null) {
                             player.sendMessage("Failed");
                             return true;
                         }
-                        URL textureURL = playerProfile.getTextures().getSkin();
-                        String toEncode = "{\"textures\":{\"SKIN\":{\"url\":\"" + textureURL.toString() + "\"}}}";
-                        String base64Texture = Base64.getEncoder().encodeToString(toEncode.getBytes()).replaceFirst(".+?mUv", "");
+
+                        String base64Texture = fullTexture.replaceFirst(".+?mUv", "");
                         Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
                         Main.getInstance().getPluginConfig().saveData();
                         player.sendMessage("Imported");
