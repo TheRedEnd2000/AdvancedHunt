@@ -57,4 +57,4 @@ collection-deleted: '&aSuccessfully deleted collection &6%COLLECTION%'
 
 eggimport-hand: '&7Please hold the &eplayer head with the &2egg texture &7in your hand.'
 eggimport-failed-profile: '&cFailed to load a player profile.'
-eggimport-success: '&aSuccessfully &7imported'
+eggimport-success: '&aSuccessfully &7imported a new head to the &eplace eggs&7.'

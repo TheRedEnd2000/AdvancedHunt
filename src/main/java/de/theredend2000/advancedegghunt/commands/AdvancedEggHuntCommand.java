@@ -145,7 +145,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             }
                         }
                     } else if (args[0].equalsIgnoreCase("eggImport")) {
-                        if (plugin.getPermissionManager().checkPermission(player, Permission.Command.eggImport)) {
+                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.eggImport)) {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.eggImport.toString()));
                             return true;
                         }
