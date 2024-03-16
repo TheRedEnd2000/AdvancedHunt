@@ -4,14 +4,12 @@ import com.cryptomorin.xseries.XMaterial;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Color;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -42,13 +40,6 @@ public class ItemBuilder {
         if(s) {
             itemMeta.addEnchant(Enchantment.LURE, 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }
-        return this;
-    }
-    public ItemBuilder setSoulbound(boolean soulbound){
-        if(soulbound){
-            itemMeta.getPersistentDataContainer().set(
-                    NamespacedKey.minecraft("soulbound"), PersistentDataType.BYTE, (byte) 1);
         }
         return this;
     }
