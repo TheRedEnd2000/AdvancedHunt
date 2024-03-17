@@ -16,36 +16,52 @@ import java.util.logging.Level;
 
 public abstract class Configuration {
     protected JavaPlugin plugin;
-    protected FileConfiguration config = null;
+    protected YamlConfiguration config = null;
     protected File configFile = null;
     protected String configName;
+    private double latestVersion;
     private boolean template;
 
     public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
 
 
     public Configuration(JavaPlugin plugin, String configName) {
-        this(plugin, configName, true);
+        this(plugin, configName, true, -1d);
     }
+
+    public Configuration(JavaPlugin plugin, String configName, double latestVersion) {
+        this(plugin, configName, true, latestVersion);
+    }
+
     public Configuration(JavaPlugin plugin, String configName, boolean template) {
+        this(plugin, configName, template, -1d);
+    }
+
+    public Configuration(JavaPlugin plugin, String configName, boolean template, double latestVersion) {
         this.plugin = plugin;
         this.configName = configName;
         this.template = template;
+        this.latestVersion = latestVersion;
 
         if (template)
             this.saveDefaultConfig();
         reloadConfig();
 
         registerUpgrader();
-        //loadConfig();
+        loadConfig();
     }
 
     public abstract void registerUpgrader();
 
-    public void loadConfig() {
-        double currentVersion = config.getDouble("config-version", 0.0);
-        if (getUpgrader().isEmpty()) return;
-        double latestVersion = getUpgrader().lastKey();
+    protected void loadConfig() {
+        Double currentVersion = config.getDouble("config-version", 0.0);
+        if (latestVersion == -1d) {
+            InputStream defaultStream = this.plugin.getResource(configName);
+            if (defaultStream != null) {
+                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+                latestVersion = defaultConfig.getDouble("config-version", -1d);
+            }
+        }
 
         if (currentVersion < latestVersion) {
             upgradeConfig(currentVersion);
@@ -54,36 +70,35 @@ public abstract class Configuration {
 
     private void upgradeConfig(double currentVersion) {
         YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFile);
-        File backupFile = new File(plugin.getDataFolder(), configName + ".bak");
+//        File backupFile = new File(plugin.getDataFolder(), configName + ".bak");
+//
+//        try {
+//            oldConfig.save(backupFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } //TODO: See about reimplementing later
 
-        try {
-            oldConfig.save(backupFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        YamlConfiguration newConfig = new YamlConfiguration();
-        newConfig.options().copyDefaults(true);
+        configFile.delete();
+        reloadConfig();
 
         // Run the standard upgrade first to copy all keys from the old config
-        standardUpgrade(oldConfig, newConfig);
+        standardUpgrade(oldConfig, config);
 
         // Loop through each version above the current version and run the upgrade method
         for (Map.Entry<Double, ConfigUpgrader> entry : getUpgrader().tailMap(currentVersion + 0.1, true).entrySet()) {
-            double version = entry.getKey();
             ConfigUpgrader upgrader = entry.getValue();
             if (upgrader != null) {
-                upgrader.upgrade(oldConfig, newConfig);
+                upgrader.upgrade(oldConfig, config);
             }
         }
 
+        config.set("config-version", currentVersion);
+
         try {
-            newConfig.save(configFile);
+            config.save(configFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        config = newConfig;
     }
     private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
         // Copy all keys from the old config to the new config

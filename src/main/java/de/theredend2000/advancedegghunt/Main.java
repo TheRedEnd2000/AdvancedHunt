@@ -19,8 +19,8 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequi
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsInventory;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetsInventory;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetDataManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetsInventory;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.HexColor;
@@ -77,7 +77,6 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        pluginConfig = PluginConfig.getInstance(plugin);
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
         Metrics metrics = new Metrics(this, 19495);
@@ -86,8 +85,8 @@ public final class Main extends JavaPlugin {
         showedArmorstands = new ArrayList<>();
         playerAddCommand = new HashMap<>();
         sortTypeLeaderboard = new HashMap<>();
-        initManagers();
         setupConfigs();
+        initManagers();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
         initListeners();
         datetimeUtils = new DatetimeUtils();
@@ -187,26 +186,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void setupConfigs(){
-        saveDefaultConfig(); //TODO: REMOVE
-        checkUpdatePath();
-    }
-
-    private void checkUpdatePath(){
-        if(!messageManager.isUpToDate()){
-            Bukkit.getConsoleSender().sendMessage(PREFIX + "§cThere is a newer version of your messages file. Please reinstall them.");
-        }
-        if(pluginConfig.getConfigVersion() < 2.9){
-            File configFile = new File(getDataFolder(), "config.yml");
-            configFile.delete();
-            saveDefaultConfig(); //TODO: REMOVE
-            reloadConfig();
-            for(Player player : Bukkit.getOnlinePlayers()){
-                if(player.isOp()){
-                    player.sendMessage(PREFIX + "§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
-                }
-            }
-            Bukkit.getConsoleSender().sendMessage(PREFIX + "§cBecause of a newer version, your files got reinstalled. Please check your config.yml again.");
-        }
+        pluginConfig = PluginConfig.getInstance(plugin);
     }
 
     public void saveMessages() {

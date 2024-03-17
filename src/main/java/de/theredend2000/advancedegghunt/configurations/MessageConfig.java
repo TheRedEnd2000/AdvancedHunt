@@ -35,7 +35,7 @@ public class MessageConfig extends Configuration {
         return instance;
     }
 
-    public void saveData() {
-        saveConfig();
+    public String getMessage(String message) {
+        return getConfig().getString(message);
     }
 }
