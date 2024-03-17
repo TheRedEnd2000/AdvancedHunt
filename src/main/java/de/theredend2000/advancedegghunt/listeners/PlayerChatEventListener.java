@@ -1,7 +1,6 @@
 package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;

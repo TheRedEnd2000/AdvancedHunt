@@ -2,8 +2,6 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.RewardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egginformation.InformationMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.ListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.EggPlaceMenu;
@@ -76,15 +74,6 @@ public class InventoryClickEventListener implements Listener {
                 return;
             }
             InformationMenu menu = (InformationMenu) holder;
-            menu.handleMenu(event);
-        }
-        if (holder instanceof RewardMenu) {
-            if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
-            event.setCancelled(true);
-            if (event.getCurrentItem() == null) {
-                return;
-            }
-            RewardMenu menu = (RewardMenu) holder;
             menu.handleMenu(event);
         }
         if (holder instanceof PlaceMenu) {
