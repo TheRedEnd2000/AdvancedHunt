@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggfoundrewardmenu.EggRewardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.EggProgressMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
@@ -115,7 +114,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.commands.toString()));
                             return true;
                         }
-                        new EggRewardMenu(Main.getPlayerMenuUtility(player)).open();
+                        player.sendMessage("§cThis system is outdated. You can now change commands by SHIFT + RIGHT-CLICK an egg.");
                     } else if(args[0].equalsIgnoreCase("leaderboard")) {
                         if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.leaderboard)) {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.leaderboard.toString()));

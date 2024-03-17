@@ -31,25 +31,6 @@ public class InventoryManager {
         player.openInventory(inventory);
     }
 
-    public void createCommandSettingsMenu(Player player, String key) {
-        String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        Inventory inventory = Bukkit.createInventory(player, 45, "Command configuration");
-        int[] glass = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 17, 18, 26, 27, 28, 34, 35, 37, 38, 39, 40, 41, 42, 43, 44};
-        for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-        String command = placedEggs.getString("Rewards." + key + ".command").replaceAll("§", "&");
-        boolean enabled = placedEggs.getBoolean("Rewards." + key + ".enabled");
-        int type = placedEggs.getInt("Rewards." + key + ".type");
-        inventory.setItem(11, new ItemBuilder(XMaterial.COMMAND_BLOCK).setDisplayname("§3Change Command").setLore("§7You can change the command to any vanilla", "§7command or commands of plugins for the console types.", "", "§5Currently:", "§6§l" + command, "", "§2Available placeholders:", "§b- %PLAYER% --> Name of the player", "§b- & --> For color codes (&6=gold)", "§b- %EGGS_FOUND% --> How many eggs the player has found", "§b- %EGGS_MAX% --> How many eggs are placed", "§b- %PREFIX% --> The prefix of the plugin", "", "§eClick to change").setLocalizedName("command.command").build());
-        inventory.setItem(15, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Command Enabled").setLore("§7Change if the command will be executed", "§7if the player founds one or all eggs.", "", "§5Currently:", (enabled ? "§a§l✔ Enabled" : "§c§l❌ Disabled"), "", "§eClick to toggle.").setLocalizedName("command.enabled").build());
-        inventory.setItem(22, new ItemBuilder(Main.getInstance().getPluginConfig().getRewardInventoryMaterial()).setDisplayname("§b§lCommand §7#" + key).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Type: §6" + type, "", "§a§lNote:", "§2Type 0:", "§7Type 0 means that this command will be", "§7be executed if the player found §7§lone §7egg.", "§2Type 1:", "§7Type 1 means that this command will be", "§7be executed if the player had found §7§lall §7egg.").setLocalizedName(key).build());
-        inventory.setItem(29, new ItemBuilder(type == 0 ? XMaterial.WATER_BUCKET : XMaterial.LAVA_BUCKET).setDisplayname("§3Command Type").setLore("§7Change if the command will be executed", "§7if the player founds one or all eggs.", "", "§5Currently:", "§6§l" + type + " §7§l(" + (type == 0 ? "One egg found" : "All eggs found") + ")", "§8More information at the main information. (" + Main.getInstance().getPluginConfig().getRewardInventoryMaterial().toString().toUpperCase() + ")", "", "§eClick to toggle.").setLocalizedName("command.type").build());
-        inventory.setItem(33, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4Delete Command").setLore("", "§4§l! WARNING !", "§c§lYOU CAN NOT UNDO THIS ACTION", "", "§cAre you sure to delete command #" + key + "?", "", "§eClick to confirm.").setLocalizedName("command.delete").build());
-        inventory.setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayname("§eBack").setLocalizedName("command.back").build());
-        inventory.setItem(40, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").setLocalizedName("command.close").build());
-        player.openInventory(inventory);
-    }
-
     public void createAddCollectionMenu(Player player){
         Inventory inventory = Bukkit.createInventory(player, 45, "Collection creator");
         int[] glass = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44};

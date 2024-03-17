@@ -31,12 +31,6 @@ public class PlayerConnectionListener implements Listener {
         Main.getInstance().getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
         FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
         Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
-        if(player.isOp()){
-            if(!Main.getInstance().getMessageManager().isUpToDate())
-                player.sendMessage(Main.PREFIX + "§cThere is a newer version of your messages file. Please reinstall it.");
-            if(Main.getInstance().getPluginConfig().getConfigVersion() < 2.9)
-                player.sendMessage(Main.PREFIX + "§cThere is a newer version of your config file. Please reinstall it.");
-        }
     }
     @EventHandler
     public void onLeave(PlayerQuitEvent event){
