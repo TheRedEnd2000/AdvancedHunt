@@ -36,15 +36,12 @@ public enum MessageKey {
     ARMORSTAND_GLOW("armorstand-glow"),
     EGG_RADIUS("egg-radius"),
 
-    COMMAND_TYPE("command-type"),
-    COMMAND_ENABLED("command-enabled"),
     COMMAND_DELETE("command-delete"),
     NEW_COMMAND("new-command"),
     COMMAND_CANCEL("command-cancel"),
     COMMAND_ADD("command-add"),
     COMMAND_EXPIRED("command-expired"),
     ONE_COMMAND("one-command"),
-    COMMAND_CHANGED("command-changed"),
 
     FOUNDEGGS_RESET("foundeggs-reset"),
     FOUNDEGGS_PLAYER_RESET("foundeggs-player-reset"),
@@ -58,7 +55,15 @@ public enum MessageKey {
 
     EGGIMPORT_HAND("eggimport-hand"),
     EGGIMPORT_FAILED_PROFILE("eggimport-failed-profile"),
-    EGGIMPORT_SUCCESS("eggimport-success");
+    EGGIMPORT_SUCCESS("eggimport-success"),
+
+    PRESET_ALREADY_EXISTS("preset-already-exists"),
+    PRESET_SAVED("preset-saved"),
+    PRESET_FAILED_COMMANDS("preset-failed-commands"),
+    PRESET_LOADED("preset-loaded"),
+    PRESET_DELETE("preset-delete"),
+    PRESET_DEFAULT("preset-default"),
+    PRESET_NOT_DELETE_DEFAULT("preset-not-delete-default");
 
 
     private final String path;

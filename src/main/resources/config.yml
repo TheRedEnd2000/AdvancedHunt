@@ -38,9 +38,6 @@ Settings:
   # In witch radius the player gets a message that he is near an egg
   ShowEggsNearbyMessageRadius: 10
 
-  # What the material of the reward inventory is
-  RewardInventoryMaterial: PAPER
-
   # If the plugin prefix should show up
   PluginPrefixEnabled: true
 
@@ -58,6 +55,9 @@ Settings:
 
   # How long the update in the hint inventory is ( in ticks )
   HintUpdateTime: 20
+
+  # Name of the preset that loads after placing a new egg
+  DefaultPresetLoad: default
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP

@@ -19,6 +19,8 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequi
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsInventory;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetsInventory;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetDataManager;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.HexColor;
@@ -67,6 +69,8 @@ public final class Main extends JavaPlugin {
     private PermissionManager permissionManager;
     private ResetListeners resetListeners;
     private EggRewardsInventory eggRewardsInventory;
+    private PresetsInventory presetsInventory;
+    private PresetDataManager presetDataManager;
     private MessageManager messageManager;
     public static String PREFIX = "";
     public static boolean setupDefaultCollection;
@@ -139,6 +143,8 @@ public final class Main extends JavaPlugin {
         resetInventoryManager = new ResetInventoryManager();
         permissionManager = new PermissionManager();
         eggRewardsInventory = new EggRewardsInventory();
+        presetDataManager = new PresetDataManager(this);
+        presetsInventory = new PresetsInventory();
     }
 
     public void checkCommandFeedback(){
@@ -329,5 +335,13 @@ public final class Main extends JavaPlugin {
 
     public EggRewardsInventory getEggRewardsInventory() {
         return eggRewardsInventory;
+    }
+
+    public PresetDataManager getPresetDataManager() {
+        return presetDataManager;
+    }
+
+    public PresetsInventory getPresetsInventory() {
+        return presetsInventory;
     }
 }

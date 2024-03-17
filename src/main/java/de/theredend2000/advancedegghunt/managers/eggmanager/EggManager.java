@@ -110,9 +110,11 @@ public class EggManager {
             }
             new ConfigLocationUtil(plugin, location, "PlacedEggs." + nextNumber).saveBlockLocation(collection);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", String.valueOf(nextNumber)));
+            plugin.getPresetDataManager().loadPresetIntoEggCommands(plugin.getPluginConfig().getDefaultLoadingPreset(),collection,String.valueOf(nextNumber));
         }else {
             new ConfigLocationUtil(plugin, location, "PlacedEggs.0").saveBlockLocation(collection);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", "0"));
+            plugin.getPresetDataManager().loadPresetIntoEggCommands(plugin.getPluginConfig().getDefaultLoadingPreset(),collection,"0");
         }
         updateMaxEggs(collection);
     }

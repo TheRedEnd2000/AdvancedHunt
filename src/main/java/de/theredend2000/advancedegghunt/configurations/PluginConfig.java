@@ -327,6 +327,15 @@ public class PluginConfig extends Configuration {
         setPlaceEggType(id, "PLAYER_HEAD");
     }
 
+    public void setDefaultLoadingPreset(String preset){
+        getConfig().set("Settings.DefaultPresetLoad",preset);
+        saveConfig();
+    }
+
+    public String getDefaultLoadingPreset(){
+        return getConfig().getString("Settings.DefaultPresetLoad");
+    }
+
     @Override
     public void registerUpgrader() {
 

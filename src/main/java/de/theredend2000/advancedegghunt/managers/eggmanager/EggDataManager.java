@@ -92,7 +92,6 @@ public class EggDataManager {
         config.set("Enabled", enabled);
         config.set("RequirementsOrder", "OR");
         this.savePlacedEggs(collection, config);
-        this.addDefaultRewardCommands(collection);
     }
 
     public boolean containsSectionFile(String section) {
@@ -136,26 +135,6 @@ public class EggDataManager {
         if (collectionFile.exists()) {
             collectionFile.delete();
         }
-    }
-
-    private void addDefaultRewardCommands(String collection) {
-        FileConfiguration config = this.getPlacedEggs(collection);
-        config.set("Rewards.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
-        config.set("Rewards.0.enabled", true);
-        config.set("Rewards.0.type", 0);
-        config.set("Rewards.1.command", "give %PLAYER% diamond");
-        config.set("Rewards.1.enabled", true);
-        config.set("Rewards.1.type", 0);
-        config.set("Rewards.2.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
-        config.set("Rewards.2.enabled", true);
-        config.set("Rewards.2.type", 1);
-        config.set("Rewards.3.command", "give %PLAYER% diamond");
-        config.set("Rewards.3.enabled", true);
-        config.set("Rewards.3.type", 1);
-        config.set("Rewards.4.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
-        config.set("Rewards.4.enabled", true);
-        config.set("Rewards.4.type", 1);
-        this.savePlacedEggs(collection, config);
     }
 
     public List<UUID> savedPlayers() {
