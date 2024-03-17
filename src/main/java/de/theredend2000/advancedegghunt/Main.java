@@ -77,6 +77,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        setupConfigs();
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
         Metrics metrics = new Metrics(this, 19495);
@@ -85,7 +86,6 @@ public final class Main extends JavaPlugin {
         showedArmorstands = new ArrayList<>();
         playerAddCommand = new HashMap<>();
         sortTypeLeaderboard = new HashMap<>();
-        setupConfigs();
         initManagers();
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
         initListeners();
