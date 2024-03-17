@@ -44,16 +44,16 @@ public class EggRewardsInventory implements Listener {
 
     public EggRewardsInventory(){
         this.plugin = Main.getInstance();
-        Bukkit.getPluginManager().registerEvents(this,plugin);
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         messageManager = plugin.getMessageManager();
         title = "Egg Rewards";
     }
 
-    public void open(Player owner,String id, String collection){
+    public void open(Player owner, String id, String collection){
         this.owner = owner;
         this.collection = collection;
         this.id = id;
-        inventory = Bukkit.createInventory(owner,54,title);
+        inventory = Bukkit.createInventory(owner, 54, title);
         fill();
         this.owner.openInventory(inventory);
     }
@@ -61,12 +61,12 @@ public class EggRewardsInventory implements Listener {
     public void fill(){
         int[] glass = new int[]{0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,46,47,48,50,51,52,53};
         for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.WHITE_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-        inventory.setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)","","§eClick to scroll.").setDisplayname("§2Left").build());
+        inventory.setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left").build());
 
-        inventory.setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)","","§eClick to scroll.").setDisplayname("§2Right").build());
-        inventory.setItem(45, new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("","§7Saves the current listed commands","§7in a preset that you can load","§7for other eggs again.","","§2Note: §7You need at least 1 command to save a preset!","","§eClick to save a new preset.").build());
+        inventory.setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right").build());
+        inventory.setItem(45, new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other eggs again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.").build());
         inventory.setItem(46, new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build());
-        inventory.setItem(53, new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("","§bYou can also add custom items:","§7For that get your custom item in your","§7inventory and click it when this","§7menu is open. The item will","§7get converted into an command","§7and can then used as the other commands.","","§eClick to create a new reward").build());
+        inventory.setItem(53, new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.","","§eClick to create a new reward").build());
         inventory.setItem(49, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build());
         setMenuItems();
     }

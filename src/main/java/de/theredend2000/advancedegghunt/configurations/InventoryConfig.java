@@ -14,7 +14,7 @@ public class InventoryConfig extends Configuration {
     private static TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public InventoryConfig(JavaPlugin plugin, UUID configName) {
-        super(plugin, MessageFormat.format("invs/{0}.yml", configName.toString()),  false);
+        super(plugin, MessageFormat.format("invs/{0}.yml", configName.toString()), false);
     }
 
     @Override

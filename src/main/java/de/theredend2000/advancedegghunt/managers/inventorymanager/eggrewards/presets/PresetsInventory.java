@@ -32,16 +32,16 @@ public class PresetsInventory implements Listener {
 
     public PresetsInventory(){
         this.plugin = Main.getInstance();
-        Bukkit.getPluginManager().registerEvents(this,plugin);
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         messageManager = plugin.getMessageManager();
         title = "Presets";
     }
 
-    public void open(Player owner,String id, String collection){
+    public void open(Player owner, String id, String collection){
         this.owner = owner;
         this.collection = collection;
         this.id = id;
-        inventory = Bukkit.createInventory(owner,54,title);
+        inventory = Bukkit.createInventory(owner, 54, title);
         fill();
         this.owner.openInventory(inventory);
     }
@@ -49,9 +49,9 @@ public class PresetsInventory implements Listener {
     public void fill(){
         int[] glass = new int[]{0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,46,47,48,50,51,52,53};
         for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.WHITE_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-        inventory.setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)","","§eClick to scroll.").setDisplayname("§2Left").build());
+        inventory.setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left").build());
 
-        inventory.setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)","","§eClick to scroll.").setDisplayname("§2Right").build());
+        inventory.setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right").build());
         inventory.setItem(49, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build());
         inventory.setItem(45, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayname("§eBack").build());
         setMenuItems();
@@ -70,7 +70,7 @@ public class PresetsInventory implements Listener {
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
                     String defaultPreset = plugin.getPluginConfig().getDefaultLoadingPreset();
-                    inventory.addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§l" + keys.get(index)).setDefaultLore(presetDataManager.getAllCommandsAsLore(keys.get(index),keys.get(index).equals(defaultPreset))).setLocalizedName(keys.get(index)).build());
+                    inventory.addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§l" + keys.get(index)).setDefaultLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset))).setLocalizedName(keys.get(index)).build());
                 }
             }
         }else{
@@ -90,28 +90,28 @@ public class PresetsInventory implements Listener {
             if(e.getCurrentItem() == null || e.getCurrentItem().getItemMeta() == null) continue;
             if(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equals(presetName)){
                 if(e.getAction() == InventoryAction.PICKUP_ALL){
-                    p.sendMessage(messageManager.getMessage(MessageKey.PRESET_LOADED).replaceAll("%PRESET%",presetName));
-                    presetDataManager.loadPresetIntoEggCommands(presetName,collection,id);
-                    plugin.getEggRewardsInventory().open(owner,id,collection);
+                    p.sendMessage(messageManager.getMessage(MessageKey.PRESET_LOADED).replaceAll("%PRESET%", presetName));
+                    presetDataManager.loadPresetIntoEggCommands(presetName, collection, id);
+                    plugin.getEggRewardsInventory().open(owner, id, collection);
                 }else if(e.getAction() == InventoryAction.PICKUP_HALF){
                     if(!plugin.getPluginConfig().getDefaultLoadingPreset().equals(presetName)) {
                         presetDataManager.deletePreset(presetName);
-                        p.sendMessage(messageManager.getMessage(MessageKey.PRESET_DELETE).replaceAll("%PRESET%",presetName));
+                        p.sendMessage(messageManager.getMessage(MessageKey.PRESET_DELETE).replaceAll("%PRESET%", presetName));
                     }else
-                        p.sendMessage(messageManager.getMessage(MessageKey.PRESET_NOT_DELETE_DEFAULT).replaceAll("%PRESET%",presetName));
+                        p.sendMessage(messageManager.getMessage(MessageKey.PRESET_NOT_DELETE_DEFAULT).replaceAll("%PRESET%", presetName));
                     reopen();
                 }else if(e.getAction() == InventoryAction.CLONE_STACK){
                     plugin.getPluginConfig().setDefaultLoadingPreset(presetName);
-                    p.sendMessage(messageManager.getMessage(MessageKey.PRESET_DEFAULT).replaceAll("%PRESET%",presetName));
+                    p.sendMessage(messageManager.getMessage(MessageKey.PRESET_DEFAULT).replaceAll("%PRESET%", presetName));
                     reopen();
                 }
-                p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
             }
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
             p.closeInventory();
-            p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
+            p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
         }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
             if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
                 if (page == 0){

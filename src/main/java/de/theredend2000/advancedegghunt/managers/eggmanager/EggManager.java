@@ -110,11 +110,11 @@ public class EggManager {
             }
             new ConfigLocationUtil(plugin, location, "PlacedEggs." + nextNumber).saveBlockLocation(collection);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", String.valueOf(nextNumber)));
-            plugin.getPresetDataManager().loadPresetIntoEggCommands(plugin.getPluginConfig().getDefaultLoadingPreset(),collection,String.valueOf(nextNumber));
+            plugin.getPresetDataManager().loadPresetIntoEggCommands(plugin.getPluginConfig().getDefaultLoadingPreset(), collection, String.valueOf(nextNumber));
         }else {
             new ConfigLocationUtil(plugin, location, "PlacedEggs.0").saveBlockLocation(collection);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_PLACED).replaceAll("%ID%", "0"));
-            plugin.getPresetDataManager().loadPresetIntoEggCommands(plugin.getPluginConfig().getDefaultLoadingPreset(),collection,"0");
+            plugin.getPresetDataManager().loadPresetIntoEggCommands(plugin.getPluginConfig().getDefaultLoadingPreset(), collection, "0");
         }
         updateMaxEggs(collection);
     }
@@ -563,7 +563,7 @@ public class EggManager {
         if (!eggsConfig.contains("Eggs")) {
             return;
         }
-        File oldFile = new File(plugin.getDataFolder() + "/eggs/",   "eggs.yml");
+        File oldFile = new File(plugin.getDataFolder() + "/eggs/", "eggs.yml");
         FileConfiguration placedEggsConfig = YamlConfiguration.loadConfiguration(oldFile);
 
         placedEggsConfig.set("PlacedEggs", eggsConfig.getConfigurationSection("Eggs"));

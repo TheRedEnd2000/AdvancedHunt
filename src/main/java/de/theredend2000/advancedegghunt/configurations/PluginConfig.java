@@ -328,7 +328,7 @@ public class PluginConfig extends Configuration {
     }
 
     public void setDefaultLoadingPreset(String preset){
-        getConfig().set("Settings.DefaultPresetLoad",preset);
+        getConfig().set("Settings.DefaultPresetLoad", preset);
         saveConfig();
     }
 
