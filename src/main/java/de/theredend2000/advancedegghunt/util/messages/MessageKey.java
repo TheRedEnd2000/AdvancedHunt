@@ -54,7 +54,11 @@ public enum MessageKey {
 
     COLLECTION_DISABLED("collection-disabled"),
     COLLECTION_SELECTION("collection-selected"),
-    COLLECTION_DELETED("collection-deleted");
+    COLLECTION_DELETED("collection-deleted"),
+
+    EGGIMPORT_HAND("eggimport-hand"),
+    EGGIMPORT_FAILED_PROFILE("eggimport-failed-profile"),
+    EGGIMPORT_SUCCESS("eggimport-success");
 
 
     private final String path;
