@@ -1,4 +1,4 @@
-version: 2.4
+config-version: 2.4
 
 no-permission-error: '&cEi command ti bebohar korar jonno apnar kache &6%PERMISSION% er onumoti&c nei.'
 command-not-found: '&cKono command pawa jai ni! &7Onugroho kore sokol command dekhte &e/egghunt help &7type korun.'

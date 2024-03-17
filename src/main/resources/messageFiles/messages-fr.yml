@@ -1,4 +1,4 @@
-version: 2.4
+config-version: 2.4
 
 no-permission-error: '&cVous n''avez pas la &6%PERMISSION% permission&c pour utiliser cette commande.'
 command-not-found: '&cAucune commande trouvée! &7Veuillez taper &e/egghunt help &7pour voir toutes les commandes.'
