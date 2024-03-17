@@ -23,6 +23,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.pre
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetsInventory;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
+import de.theredend2000.advancedegghunt.util.Converter;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
@@ -106,6 +107,7 @@ public final class Main extends JavaPlugin {
         }
         playerEggDataManager.checkReset();
         eggManager.spawnEggParticle();
+        new Converter().convertAllSystems();
     }
 
     @Override
@@ -114,8 +116,6 @@ public final class Main extends JavaPlugin {
         for(ArmorStand a : showedArmorstands){
             a.remove();
         }
-        getConfig().set("Edit", null);
-        saveConfig();
     }
 
     private void initData(){
