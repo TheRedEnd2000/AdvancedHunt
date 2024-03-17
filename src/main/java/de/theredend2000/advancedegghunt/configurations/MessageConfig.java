@@ -11,7 +11,7 @@ public class MessageConfig extends Configuration {
     private static volatile MessageConfig instance;
 
     private MessageConfig(JavaPlugin plugin, String configName) {
-        super(plugin, MessageFormat.format("/messageFiles/messages-{0}.yml", configName));
+        super(plugin, MessageFormat.format("/messages/messages-{0}.yml", configName));
     }
 
     @Override
