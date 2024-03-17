@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -225,19 +226,20 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        ArrayList<String> complete = null;
         if(args.length == 1){
-            ArrayList<String> complete = new ArrayList<>();
+            complete = new ArrayList<>();
             String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport"};
             for(String permissions : tabs){
                 if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permissions)))
                     complete.add(permissions);
             }
-            return complete;
+            return FilterArguments(complete, args);
         }
         if(args.length == 2){
             if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
                 if(args[0].equalsIgnoreCase("reset")) {
-                    ArrayList<String> complete = new ArrayList<>();
+                    complete = new ArrayList<>();
                     for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()) {
                         if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.") == null) continue;
                         for(String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getConfigurationSection("FoundEggs.").getKeys(false)) {
@@ -246,15 +248,34 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         }
                     }
                     complete.add("all");
-                    return complete;
+                    return FilterArguments(complete, args);
                 }
             }
         }
         if(args.length >= 3){
-            ArrayList<String> complete = new ArrayList<>();
+            complete = new ArrayList<>();
             return complete;
         }
         return null;
+    }
+
+    private List<String> FilterArguments(List<String> arguments, String[] args) {
+        if (arguments == null)
+            return Collections.emptyList();;
+
+        if (!arguments.isEmpty()) {
+            int lastArgIndex = args.length-1;
+            List<String> result = new ArrayList<>();
+            for (String arg : arguments) {
+                if (arg.toLowerCase().startsWith(args[lastArgIndex].toLowerCase()))
+                    if (arg.toLowerCase().startsWith(args[lastArgIndex].toLowerCase()))
+                        result.add(arg);
+            }
+
+            return result;
+        }
+
+        return arguments;
     }
 
     private void sendHelp(Player player){
