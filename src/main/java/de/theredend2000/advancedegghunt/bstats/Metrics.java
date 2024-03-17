@@ -766,7 +766,7 @@ public class Metrics {
                 throw new IllegalArgumentException("JSON values must not be null");
             }
             String escapedValues =
-                    Arrays.stream(values).map(JsonObject::toString).collect(Collectors.joining(", "));
+                    Arrays.stream(values).map(JsonObject::toString).collect(Collectors.joining(","));
             appendFieldUnescaped(key, "[" + escapedValues + "]");
             return this;
         }
@@ -785,7 +785,7 @@ public class Metrics {
                 throw new IllegalArgumentException("JSON key must not be null");
             }
             if (hasAtLeastOneField) {
-                builder.append(", ");
+                builder.append(",");
             }
             builder.append("\"").append(escape(key)).append("\":").append(escapedValue);
             hasAtLeastOneField = true;
