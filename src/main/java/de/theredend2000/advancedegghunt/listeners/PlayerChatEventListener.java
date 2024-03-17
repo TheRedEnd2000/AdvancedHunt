@@ -51,8 +51,8 @@ public class PlayerChatEventListener implements Listener {
     }
 
     public void addCommand(FileConfiguration placedEggs,String id, String command, String collection,Player player){
-        if (placedEggs.contains("PlacedEggs."+id+".Rewards.")) {
-            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.");
+        if (placedEggs.contains("PlacedEggs." + id + ".Rewards.")) {
+            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.");
             int nextNumber = 0;
             Set<String> keys = rewardsSection.getKeys(false);
             if (!keys.isEmpty()) {
@@ -73,9 +73,9 @@ public class PlayerChatEventListener implements Listener {
     }
     private void setConfiguration(String commandID,String id, String command,String collection){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".command", command);
-        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".enabled", true);
-        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".foundAll", false);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command", command);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", true);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll", false);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 

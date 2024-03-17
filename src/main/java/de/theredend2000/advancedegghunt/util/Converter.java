@@ -25,10 +25,10 @@ public class Converter {
                 for(String ids : placeEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
                     PresetDataManager presetDataManager = plugin.getPresetDataManager();
                     presetDataManager.loadPresetIntoEggCommands("default",collections,ids);
-                    Bukkit.getConsoleSender().sendMessage(Main.PREFIX+"§7Loaded preset §adefault §7into §ecollection "+collections+" §7at §begg #"+ids);
+                    Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§7Loaded preset §adefault §7into §ecollection " + collections + " §7at §begg #" + ids);
                 }
-                Bukkit.getConsoleSender().sendMessage(Main.PREFIX+"§2UPDATED THE COMMAND SYSTEM");
-                Bukkit.getConsoleSender().sendMessage(Main.PREFIX+"§2PLEASE CHECK YOUR COMMANDS!");
+                Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2UPDATED THE COMMAND SYSTEM");
+                Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2PLEASE CHECK YOUR COMMANDS!");
             }
         }
     }

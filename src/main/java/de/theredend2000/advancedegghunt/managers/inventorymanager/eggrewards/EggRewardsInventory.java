@@ -2,7 +2,6 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetDataManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -62,9 +61,9 @@ public class EggRewardsInventory implements Listener {
     public void fill(){
         int[] glass = new int[]{0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,46,47,48,50,51,52,53};
         for (int i = 0; i<glass.length;i++){inventory.setItem(glass[i], new ItemBuilder(XMaterial.WHITE_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-        inventory.setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b"+(page+1)+"§7/§b"+getMaxPages()+"§7)","","§eClick to scroll.").setDisplayname("§2Left").build());
+        inventory.setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)","","§eClick to scroll.").setDisplayname("§2Left").build());
 
-        inventory.setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b"+(page+1)+"§7/§b"+getMaxPages()+"§7)","","§eClick to scroll.").setDisplayname("§2Right").build());
+        inventory.setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)","","§eClick to scroll.").setDisplayname("§2Right").build());
         inventory.setItem(45, new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("","§7Saves the current listed commands","§7in a preset that you can load","§7for other eggs again.","","§2Note: §7You need at least 1 command to save a preset!","","§eClick to save a new preset.").build());
         inventory.setItem(46, new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build());
         inventory.setItem(53, new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("","§bYou can also add custom items:","§7For that get your custom item in your","§7inventory and click it when this","§7menu is open. The item will","§7get converted into an command","§7and can then used as the other commands.","","§eClick to create a new reward").build());
@@ -75,8 +74,8 @@ public class EggRewardsInventory implements Listener {
     public void setMenuItems() {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs."+id+".Rewards")){
-            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards").getKeys(false));
+        if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
+            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards").getKeys(false));
         }else
             inventory.setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward","§7or load a preset.").build());
         if(keys != null && !keys.isEmpty()) {
@@ -84,10 +83,10 @@ public class EggRewardsInventory implements Listener {
                 index = maxItemsPerPage * page + i;
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
-                    String command = placedEggs.getString("PlacedEggs."+id+".Rewards."+keys.get(index)+".command").replaceAll("§","&");
-                    boolean enabled = placedEggs.getBoolean("PlacedEggs."+id+".Rewards."+keys.get(index)+".enabled");
-                    boolean foundAll = placedEggs.getBoolean("PlacedEggs."+id+".Rewards."+keys.get(index)+".foundAll");
-                    inventory.addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§lReward §7#"+keys.get(index)).setLore("","§9Information:","§7Command: §6"+command,"§7Command Enabled: "+(enabled ? "§atrue" : "§cfalse"),"§7Action on: "+(foundAll ? "§6Found all eggs" : "§6Found one egg"),"","§eLEFT-CLICK to toggle enabled.","§eMIDDLE-CLICK to toggle action.","§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§","&");
+                    boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
+                    boolean foundAll = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".foundAll");
+                    inventory.addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("","§9Information:","§7Command: §6" + command,"§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Action on: " + (foundAll ? "§6Found all eggs" : "§6Found one egg"),"","§eLEFT-CLICK to toggle enabled.","§eMIDDLE-CLICK to toggle action.","§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
@@ -109,19 +108,19 @@ public class EggRewardsInventory implements Listener {
         }
 
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs."+id+".Rewards.")){
-            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.").getKeys(false));
-            for(String commandID : placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.").getKeys(false)){
+        if(placedEggs.contains("PlacedEggs." + id + ".Rewards.")){
+            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
+            for(String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)){
                 if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(commandID)){
                     if(e.getAction() == InventoryAction.PICKUP_ALL){
-                        placedEggs.set("PlacedEggs."+id+".Rewards."+commandID+".enabled", !placedEggs.getBoolean("PlacedEggs."+id+".Rewards."+commandID+".enabled"));
+                        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", !placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled"));
                         plugin.getEggDataManager().savePlacedEggs(collection,placedEggs);
                     }else if(e.getAction() == InventoryAction.PICKUP_HALF){
                         p.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%",commandID));
-                        placedEggs.set("PlacedEggs."+id+".Rewards."+commandID,null);
+                        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID,null);
                         plugin.getEggDataManager().savePlacedEggs(collection,placedEggs);
                     }else if(e.getAction() == InventoryAction.CLONE_STACK){
-                        placedEggs.set("PlacedEggs."+id+".Rewards."+commandID+".foundAll", !placedEggs.getBoolean("PlacedEggs."+id+".Rewards."+commandID+".foundAll"));
+                        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll", !placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll"));
                         plugin.getEggDataManager().savePlacedEggs(collection,placedEggs);
                     }
                     reopen();
@@ -147,7 +146,7 @@ public class EggRewardsInventory implements Listener {
             Main.getInstance().getPlayerEggDataManager().savePlayerData(p.getUniqueId(), playerConfig);
             p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
         }else if(e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)){
-            if(placedEggs.contains("PlacedEggs."+id+".Rewards.0")) {
+            if(placedEggs.contains("PlacedEggs." + id + ".Rewards.0")) {
                 new AnvilGUI.Builder()
                         .onClose(stateSnapshot -> {
                             if (!stateSnapshot.getText().isEmpty()) {
@@ -206,8 +205,8 @@ public class EggRewardsInventory implements Listener {
     public int getMaxPages(){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs."+id+".Rewards")){
-            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.").getKeys(false));
+        if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
+            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
         }
         if(keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
@@ -220,8 +219,8 @@ public class EggRewardsInventory implements Listener {
 
     private void addCommand(String id, String command, String collection){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        if (placedEggs.contains("PlacedEggs."+id+".Rewards.")) {
-            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.");
+        if (placedEggs.contains("PlacedEggs." + id + ".Rewards.")) {
+            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.");
             int nextNumber = 0;
             Set<String> keys = rewardsSection.getKeys(false);
             if (!keys.isEmpty()) {
@@ -241,9 +240,9 @@ public class EggRewardsInventory implements Listener {
 
     private void setConfiguration(String commandID,String id, String command,String collection){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".command", command);
-        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".enabled", true);
-        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".foundAll", false);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command", command);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", true);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll", false);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 

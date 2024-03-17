@@ -6,7 +6,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class PresetDataManager {
 
@@ -70,14 +73,14 @@ public class PresetDataManager {
     public void loadCommandsIntoPreset(String preset, String collection, String id){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
-        if(placedEggs.contains("PlacedEggs."+id+".Rewards.")) {
-            for (String commandID : placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.").getKeys(false)){
-                String command = placedEggs.getString("PlacedEggs."+id+".Rewards."+commandID+".command");
-                boolean enabled = placedEggs.getBoolean("PlacedEggs."+id+".Rewards."+commandID+".enabled");
-                boolean foundAll = placedEggs.getBoolean("PlacedEggs."+id+".Rewards."+commandID+".foundAll");
-                presets.set("Commands."+commandID+".command",command);
-                presets.set("Commands."+commandID+".enabled",enabled);
-                presets.set("Commands."+commandID+".foundAll",foundAll);
+        if(placedEggs.contains("PlacedEggs." + id + ".Rewards.")) {
+            for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)){
+                String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
+                boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
+                boolean foundAll = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll");
+                presets.set("Commands." + commandID + ".command",command);
+                presets.set("Commands." + commandID + ".enabled",enabled);
+                presets.set("Commands." + commandID + ".foundAll",foundAll);
                 savePreset(preset,presets);
             }
         }
@@ -86,15 +89,15 @@ public class PresetDataManager {
     public void loadPresetIntoEggCommands(String preset, String collection, String id){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
-        placedEggs.set("PlacedEggs."+id+".Rewards",null);
+        placedEggs.set("PlacedEggs." + id + ".Rewards",null);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection,placedEggs);
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
-            String command = presets.getString("Commands."+commandID+".command");
-            boolean enabled = presets.getBoolean("Commands."+commandID+".enabled");
-            boolean foundAll = presets.getBoolean("Commands."+commandID+".foundAll");
-            placedEggs.set("PlacedEggs."+id+".Rewards."+commandID+".command",command);
-            placedEggs.set("PlacedEggs."+id+".Rewards."+commandID+".enabled",enabled);
-            placedEggs.set("PlacedEggs."+id+".Rewards."+commandID+".foundAll",foundAll);
+            String command = presets.getString("Commands." + commandID + ".command");
+            boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
+            boolean foundAll = presets.getBoolean("Commands." + commandID + ".foundAll");
+            placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command",command);
+            placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled",enabled);
+            placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll",foundAll);
             Main.getInstance().getEggDataManager().savePlacedEggs(collection,placedEggs);
         }
     }
@@ -108,7 +111,7 @@ public class PresetDataManager {
         int counter = 0;
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
             if(counter < 10)
-                lore.add("§7- §b"+presets.getString("Commands."+commandID+".command"));
+                lore.add("§7- §b" + presets.getString("Commands." + commandID + ".command"));
             counter++;
         }
         if(counter > 10)

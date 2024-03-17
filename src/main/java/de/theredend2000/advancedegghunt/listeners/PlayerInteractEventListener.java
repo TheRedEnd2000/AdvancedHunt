@@ -73,22 +73,22 @@ public class PlayerInteractEventListener implements Listener {
                     extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
                 if (eggManager.checkFoundAll(player, collections)) {
                     player.playSound(player.getLocation(), soundManager.playAllEggsFound(), 1, 1);
-                    if(!placedEggs.contains("PlacedEggs."+id+".Rewards")) continue;
-                    for (String commandID : placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.").getKeys(false)) {
-                        boolean enabled = placedEggs.getBoolean("PlacedEggs."+id+".Rewards." + commandID + ".enabled");
-                        if (placedEggs.getBoolean("PlacedEggs."+id+".Rewards." + commandID + ".foundAll") && enabled) {
-                            String cmd = placedEggs.getString("PlacedEggs."+id+".Rewards." + commandID + ".command");
+                    if(!placedEggs.contains("PlacedEggs." + id + ".Rewards")) continue;
+                    for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)) {
+                        boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
+                        if (placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll") && enabled) {
+                            String cmd = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
                             Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
                         }
                     }
                 } else {
                     player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
                     if (Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()) {
-                        if(!placedEggs.contains("PlacedEggs."+id+".Rewards")) continue;
-                        for (String commandID : placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.").getKeys(false)) {
-                            boolean enabled = placedEggs.getBoolean("PlacedEggs."+id+".Rewards." + commandID + ".enabled");
-                            if (!placedEggs.getBoolean("PlacedEggs."+id+".Rewards." + commandID + ".foundAll") && enabled) {
-                                String cmd = placedEggs.getString("PlacedEggs."+id+".Rewards." + commandID + ".command");
+                        if(!placedEggs.contains("PlacedEggs." + id + ".Rewards")) continue;
+                        for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)) {
+                            boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
+                            if (!placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll") && enabled) {
+                                String cmd = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
                                 Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collections))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collections))).replaceAll("%PREFIX%", Main.PREFIX));
                             }
                         }
