@@ -79,6 +79,8 @@ public abstract class Configuration {
 //        } //TODO: See about reimplementing later
 
         configFile.delete();
+        if (template)
+            this.saveDefaultConfig();
         reloadConfig();
 
         // Run the standard upgrade first to copy all keys from the old config
@@ -92,13 +94,9 @@ public abstract class Configuration {
             }
         }
 
-        config.set("config-version", currentVersion);
+        config.set("config-version", latestVersion);
 
-        try {
-            config.save(configFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        saveConfig();
     }
     private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
         // Copy all keys from the old config to the new config
@@ -120,6 +118,15 @@ public abstract class Configuration {
         }
     }
 
+    protected void saveDefaultConfig() {
+        if (this.configFile == null)
+            this.configFile = new File(this.plugin.getDataFolder(), configName);
+
+        if (!configFile.exists()) {
+            plugin.saveResource(this.configName, false);
+        }
+    }
+
     protected FileConfiguration getConfig() {
         if (this.config == null)
             reloadConfig();
@@ -136,15 +143,6 @@ public abstract class Configuration {
             this.getConfig().save(this.configFile);
         } catch (IOException ex) {
             this.plugin.getLogger().log(Level.SEVERE, MessageFormat.format("Could not save config to {0}", this.configFile), ex);
-        }
-    }
-
-    protected void saveDefaultConfig() {
-        if (this.configFile == null)
-            this.configFile = new File(this.plugin.getDataFolder(), configName);
-
-        if (!configFile.exists()) {
-            plugin.saveResource(this.configName, false);
         }
     }
 
