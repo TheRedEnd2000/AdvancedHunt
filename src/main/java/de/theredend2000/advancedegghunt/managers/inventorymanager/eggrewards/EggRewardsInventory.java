@@ -104,7 +104,7 @@ public class EggRewardsInventory implements Listener {
 
         if(e.getClickedInventory().equals(p.getInventory())){
             convertItemIntoCommand(e.getCurrentItem(),id,collection);
-            p.sendMessage("§aSuccess");
+            p.sendMessage("§aSuccessfully added a new item.");
             reopen();
         }
 
