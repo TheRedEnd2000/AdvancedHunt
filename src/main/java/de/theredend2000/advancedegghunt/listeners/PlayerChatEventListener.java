@@ -42,29 +42,33 @@ public class PlayerChatEventListener implements Listener {
         }
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         if (playerConfig.contains("Change.")) {
-            if (placedEggs.contains("PlacedEggs."+id+".Rewards.")) {
-                ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.");
-                int nextNumber = 0;
-                Set<String> keys = rewardsSection.getKeys(false);
-                if (!keys.isEmpty()) {
-                    for (int i = 0; i <= keys.size(); i++) {
-                        String key = Integer.toString(i);
-                        if (!keys.contains(key)) {
-                            nextNumber = i;
-                            break;
-                        }
-                    }
-                }
-                setConfiguration(String.valueOf(nextNumber),id , event.getMessage(), collection);
-                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", String.valueOf(nextNumber)));
-            } else {
-                setConfiguration("0",id , event.getMessage(), collection);
-                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", "0"));
-            }
+            addCommand(placedEggs,id,event.getMessage(),collection,player);
             Main.getInstance().getPlayerAddCommand().remove(player);
             playerConfig.set("Change", null);
             Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
             Main.getInstance().getEggRewardsInventory().open(player,id,collection);
+        }
+    }
+
+    public void addCommand(FileConfiguration placedEggs,String id, String command, String collection,Player player){
+        if (placedEggs.contains("PlacedEggs."+id+".Rewards.")) {
+            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.");
+            int nextNumber = 0;
+            Set<String> keys = rewardsSection.getKeys(false);
+            if (!keys.isEmpty()) {
+                for (int i = 0; i <= keys.size(); i++) {
+                    String key = Integer.toString(i);
+                    if (!keys.contains(key)) {
+                        nextNumber = i;
+                        break;
+                    }
+                }
+            }
+            setConfiguration(String.valueOf(nextNumber),id , command, collection);
+            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", String.valueOf(nextNumber)));
+        } else {
+            setConfiguration("0",id , command, collection);
+            player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", "0"));
         }
     }
     private void setConfiguration(String commandID,String id, String command,String collection){

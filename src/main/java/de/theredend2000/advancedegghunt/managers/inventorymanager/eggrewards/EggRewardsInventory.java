@@ -7,12 +7,14 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.pre
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
+import de.tr7zw.nbtapi.NBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,10 +22,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 public class EggRewardsInventory implements Listener {
 
@@ -62,7 +67,7 @@ public class EggRewardsInventory implements Listener {
         inventory.setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b"+(page+1)+"§7/§b"+getMaxPages()+"§7)","","§eClick to scroll.").setDisplayname("§2Right").build());
         inventory.setItem(45, new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("","§7Saves the current listed commands","§7in a preset that you can load","§7for other eggs again.","","§2Note: §7You need at least 1 command to save a preset!","","§eClick to save a new preset.").build());
         inventory.setItem(46, new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build());
-        inventory.setItem(53, new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("§eClick to create a new reward").build());
+        inventory.setItem(53, new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("","§bYou can also add custom items:","§7For that get your custom item in your","§7inventory and click it when this","§7menu is open. The item will","§7get converted into an command","§7and can then used as the other commands.","","§eClick to create a new reward").build());
         inventory.setItem(49, new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build());
         setMenuItems();
     }
@@ -97,6 +102,12 @@ public class EggRewardsInventory implements Listener {
         if(e.getCurrentItem() == null) return;
         e.setCancelled(true);
 
+        if(e.getClickedInventory().equals(p.getInventory())){
+            convertItemIntoCommand(e.getCurrentItem(),id,collection);
+            p.sendMessage("§aSuccess");
+            reopen();
+        }
+
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs."+id+".Rewards.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.").getKeys(false));
@@ -106,7 +117,7 @@ public class EggRewardsInventory implements Listener {
                         placedEggs.set("PlacedEggs."+id+".Rewards."+commandID+".enabled", !placedEggs.getBoolean("PlacedEggs."+id+".Rewards."+commandID+".enabled"));
                         plugin.getEggDataManager().savePlacedEggs(collection,placedEggs);
                     }else if(e.getAction() == InventoryAction.PICKUP_HALF){
-                        p.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE));
+                        p.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%",commandID));
                         placedEggs.set("PlacedEggs."+id+".Rewards."+commandID,null);
                         plugin.getEggDataManager().savePlacedEggs(collection,placedEggs);
                     }else if(e.getAction() == InventoryAction.CLONE_STACK){
@@ -200,6 +211,40 @@ public class EggRewardsInventory implements Listener {
         }
         if(keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
+    }
+
+    public void convertItemIntoCommand(ItemStack itemStack,String id,String collection){
+        String itemNBT = NBT.get(itemStack, Object::toString);
+        addCommand(id,MessageFormat.format("give %PLAYER% {0}{1}", itemStack.getType().name().toLowerCase(), itemNBT),collection);
+    }
+
+    private void addCommand(String id, String command, String collection){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
+        if (placedEggs.contains("PlacedEggs."+id+".Rewards.")) {
+            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs."+id+".Rewards.");
+            int nextNumber = 0;
+            Set<String> keys = rewardsSection.getKeys(false);
+            if (!keys.isEmpty()) {
+                for (int i = 0; i <= keys.size(); i++) {
+                    String key = Integer.toString(i);
+                    if (!keys.contains(key)) {
+                        nextNumber = i;
+                        break;
+                    }
+                }
+            }
+            setConfiguration(String.valueOf(nextNumber),id , command, collection);
+        } else {
+            setConfiguration("0",id , command, collection);
+        }
+    }
+
+    private void setConfiguration(String commandID,String id, String command,String collection){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
+        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".command", command);
+        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".enabled", true);
+        placedEggs.set("PlacedEggs."+id+".Rewards." + commandID + ".foundAll", false);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
 }
