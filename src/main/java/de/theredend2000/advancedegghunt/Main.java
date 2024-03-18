@@ -165,7 +165,6 @@ public final class Main extends JavaPlugin {
         new PlayerInteractItemEvent();
         new Updater(this);
         new PlayerChatEventListener();
-        new ExplodeEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
         new RequirementsListeners(this);

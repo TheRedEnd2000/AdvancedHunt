@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 
@@ -69,5 +70,11 @@ public class BlockBreakEventListener implements Listener {
 
         if(eggManager.containsEgg(block))
             event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onExplode(EntityExplodeEvent event){
+        EggManager eggManager = Main.getInstance().getEggManager();
+        event.blockList().removeIf(eggManager::containsEgg);
     }
 }
