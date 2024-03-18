@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class LeaderboardPaginatedMenu extends LeadeboardMenu {
+public abstract class LeaderboardPaginatedMenu extends LeaderboardMenu {
 
     protected int page = 0;
     protected int maxItemsPerPage = 28;
@@ -20,6 +20,7 @@ public abstract class LeaderboardPaginatedMenu extends LeadeboardMenu {
     public LeaderboardPaginatedMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
     }
+
     public void addMenuBorder(){
         inventory.setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left").build());
 
@@ -68,6 +69,7 @@ public abstract class LeaderboardPaginatedMenu extends LeadeboardMenu {
     public int getMaxItemsPerPage() {
         return maxItemsPerPage;
     }
+
     public int getMaxPages(){
         ArrayList<String> keys = new ArrayList<>();
         HashMap<String, Integer> leaderboard = new HashMap<>();

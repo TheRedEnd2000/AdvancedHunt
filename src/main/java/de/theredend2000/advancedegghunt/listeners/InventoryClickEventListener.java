@@ -2,12 +2,8 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egginformation.InformationMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.ListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.EggPlaceMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.PlaceMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.ProgressMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.LeadeboardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
@@ -46,60 +42,16 @@ public class InventoryClickEventListener implements Listener {
         }
         Player player = (Player) event.getWhoClicked();
         InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof ListMenu) {
+        if (holder instanceof IInventoryMenu) {
             event.setCancelled(true);
             if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
             if (event.getCurrentItem() == null) {
                 return;
             }
-            ListMenu menu = (ListMenu) holder;
+            IInventoryMenu menu = (IInventoryMenu) holder;
             menu.handleMenu(event);
         }
-        if (holder instanceof ProgressMenu) {
-            if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
-            event.setCancelled(true);
-            if (event.getCurrentItem() == null) {
-                return;
-            }
-            ProgressMenu menu = (ProgressMenu) holder;
-            menu.handleMenu(event);
-        }
-        if (holder instanceof InformationMenu) {
-            if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
-            event.setCancelled(true);
-            if (event.getCurrentItem() == null) {
-                return;
-            }
-            InformationMenu menu = (InformationMenu) holder;
-            menu.handleMenu(event);
-        }
-        if (holder instanceof PlaceMenu) {
-            if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
-            event.setCancelled(true);
-            if (event.getCurrentItem() == null) {
-                return;
-            }
-            PlaceMenu menu = (PlaceMenu) holder;
-            menu.handleMenu(event);
-        }
-        if (holder instanceof LeadeboardMenu) {
-            if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
-            event.setCancelled(true);
-            if (event.getCurrentItem() == null) {
-                return;
-            }
-            LeadeboardMenu menu = (LeadeboardMenu) holder;
-            menu.handleMenu(event);
-        }
-        if (holder instanceof CollectionSelectListMenu) {
-            if(event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);
-            event.setCancelled(true);
-            if (event.getCurrentItem() == null) {
-                return;
-            }
-            CollectionSelectListMenu menu = (CollectionSelectListMenu) holder;
-            menu.handleMenu(event);
-        }
+
         if(player.getInventory().equals(event.getClickedInventory()) && player.getOpenInventory().getTitle().equals("Eggs place list")){
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
             for(String key : keys){
@@ -123,6 +75,7 @@ public class InventoryClickEventListener implements Listener {
             Main.getInstance().getPluginConfig().saveData();
             new EggPlaceMenu(Main.getPlayerMenuUtility(player)).open();
         }
+
         switch (event.getView().getTitle()) {
             case "Advanced Egg Settings":
                 if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) event.setCancelled(true);

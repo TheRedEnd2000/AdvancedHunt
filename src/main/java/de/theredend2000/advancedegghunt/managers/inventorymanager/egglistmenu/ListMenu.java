@@ -1,16 +1,15 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu;
 
 import com.cryptomorin.xseries.XMaterial;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenu;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-public abstract class ListMenu implements InventoryHolder {
+public abstract class ListMenu implements IInventoryMenu {
 
     protected PlayerMenuUtility playerMenuUtility;
     protected Inventory inventory;
@@ -19,10 +18,9 @@ public abstract class ListMenu implements InventoryHolder {
     public ListMenu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
     }
-    public abstract String getMenuName();
-    public abstract int getSlots();
-    public abstract void handleMenu(InventoryClickEvent e);
+
     public abstract void setMenuItems();
+
     public void open() {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
 
@@ -30,6 +28,7 @@ public abstract class ListMenu implements InventoryHolder {
 
         playerMenuUtility.getOwner().openInventory(inventory);
     }
+
     @Override
     public Inventory getInventory() {
         return inventory;
