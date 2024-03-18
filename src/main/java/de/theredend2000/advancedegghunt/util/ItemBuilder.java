@@ -18,23 +18,28 @@ import java.util.UUID;
 public class ItemBuilder {
     private ItemMeta itemMeta;
     private ItemStack itemStack;
+
     public ItemBuilder(XMaterial mat){
         itemStack = mat.parseItem();
         itemMeta = itemStack.getItemMeta();
     }
+
     public ItemBuilder setDisplayname(String s){
         itemMeta.setDisplayName(s);
         return this;
     }
+
     public ItemBuilder setLocalizedName(String s){
         itemMeta.setLocalizedName(s);
         return this;
     }
+
     public ItemBuilder setOwner(String name){
         SkullMeta skullMeta = (SkullMeta) this.itemMeta;
         skullMeta.setOwner(name);
         return this;
     }
+
     public ItemBuilder withGlow(boolean s){
         if(s) {
             itemMeta.addEnchant(Enchantment.LURE, 1, true);
@@ -42,18 +47,22 @@ public class ItemBuilder {
         }
         return this;
     }
+
     public ItemBuilder setLore(String... s){
         itemMeta.setLore(Arrays.asList(s));
         return this;
     }
+
     public ItemBuilder setDefaultLore(List<String> s){
         itemMeta.setLore(s);
         return this;
     }
+
     public ItemBuilder setUnbreakable(boolean s){
         itemMeta.setUnbreakable(s);
         return this;
     }
+
     public ItemBuilder addItemFlags(ItemFlag... s){
         itemMeta.addItemFlags(s);
         return this;
@@ -66,10 +75,12 @@ public class ItemBuilder {
                 ", itemStack=" + itemStack +
                 '}';
     }
+
     public ItemStack build(){
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
+
     public ItemBuilder setSkullOwner(String texture) {
         itemStack = build();
 
@@ -89,6 +100,7 @@ public class ItemBuilder {
         itemMeta = itemStack.getItemMeta();
         return this;
     }
+
     public ItemBuilder setColor(Color color) {
         try {
             LeatherArmorMeta armorMeta = (LeatherArmorMeta) this.itemMeta;
