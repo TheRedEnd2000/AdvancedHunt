@@ -6,7 +6,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.pre
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
-import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;

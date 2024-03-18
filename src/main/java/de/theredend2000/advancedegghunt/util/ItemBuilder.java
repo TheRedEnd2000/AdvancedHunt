@@ -1,8 +1,8 @@
 package de.theredend2000.advancedegghunt.util;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
