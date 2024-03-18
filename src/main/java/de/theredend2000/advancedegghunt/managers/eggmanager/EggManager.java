@@ -467,23 +467,24 @@ public class EggManager {
                 armorStand.setSmall(true);
                 armorStand.setInvisible(true);
                 plugin.getShowedArmorstands().add(armorStand);
-                new BukkitRunnable() {
-                    int count = Main.getInstance().getPluginConfig().getArmorstandGlow();
-
-                    @Override
-                    public void run() {
-                        count--;
-                        if (count == 0) {
-                            cancel();
-                            for (ArmorStand a : Main.getInstance().getShowedArmorstands()) {
-                                a.remove();
-                                plugin.getShowedArmorstands().remove(a);
-                            }
-                        }
-                    }
-                }.runTaskTimer(Main.getInstance(), 0, 20);
             }
         }
+
+        new BukkitRunnable() {
+            int count = Main.getInstance().getPluginConfig().getArmorstandGlow();
+
+            @Override
+            public void run() {
+                count--;
+                if (count == 0) {
+                    for (ArmorStand a : Main.getInstance().getShowedArmorstands()) {
+                        a.remove();
+                    }
+                    Main.getInstance().getShowedArmorstands().removeAll(Main.getInstance().getShowedArmorstands());
+                    cancel();
+                }
+            }
+        }.runTaskTimer(Main.getInstance(), 0, 20);
     }
 
     public String getLeaderboardPositionName(int position, UUID holder){
