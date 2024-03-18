@@ -1,7 +1,7 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.IInventoryMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;

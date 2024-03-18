@@ -1,10 +1,10 @@
 package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.IInventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.EggPlaceMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;

@@ -2,9 +2,9 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.egginformatio
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;

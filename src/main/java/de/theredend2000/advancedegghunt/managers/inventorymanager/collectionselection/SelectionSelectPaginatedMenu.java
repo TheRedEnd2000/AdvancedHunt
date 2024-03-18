@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;

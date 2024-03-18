@@ -2,8 +2,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egginformation.EggInformationMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.sectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
