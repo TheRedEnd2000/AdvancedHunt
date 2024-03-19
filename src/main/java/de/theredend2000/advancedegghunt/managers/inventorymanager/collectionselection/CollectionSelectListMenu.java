@@ -2,8 +2,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.collectionsel
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionCreator;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionEditor;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.CollectionCreator;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;

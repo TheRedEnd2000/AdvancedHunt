@@ -5,7 +5,6 @@ import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
-import de.theredend2000.advancedegghunt.listeners.inventoryListeners.RequirementsListeners;
 import de.theredend2000.advancedegghunt.listeners.inventoryListeners.ResetListeners;
 import de.theredend2000.advancedegghunt.managers.CooldownManager;
 import de.theredend2000.advancedegghunt.managers.PermissionManager.PermissionManager;
@@ -14,7 +13,6 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsInventory;
@@ -55,7 +53,6 @@ public final class Main extends JavaPlugin {
     public YamlConfiguration messages;
     public File messagesData;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
-    private InventoryRequirementsManager inventoryRequirementsManager;
     private PluginConfig pluginConfig;
     private CooldownManager cooldownManager;
     private EggDataManager eggDataManager;
@@ -134,7 +131,6 @@ public final class Main extends JavaPlugin {
         soundManager = new SoundManager();
         extraManager = new ExtraManager();
         playerEggDataManager = new PlayerEggDataManager();
-        inventoryRequirementsManager = new InventoryRequirementsManager();
         requirementsManager = new RequirementsManager();
         resetInventoryManager = new ResetInventoryManager();
         permissionManager = new PermissionManager();
@@ -164,7 +160,6 @@ public final class Main extends JavaPlugin {
         new PlayerChatEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
-        new RequirementsListeners(this);
         new ResetListeners(this);
     }
 
@@ -283,10 +278,6 @@ public final class Main extends JavaPlugin {
 
     public static HashMap<Player, PlayerMenuUtility> getPlayerMenuUtilityMap() {
         return playerMenuUtilityMap;
-    }
-
-    public InventoryRequirementsManager getInventoryRequirementsManager() {
-        return inventoryRequirementsManager;
     }
 
     public RequirementsManager getRequirementsManager() {

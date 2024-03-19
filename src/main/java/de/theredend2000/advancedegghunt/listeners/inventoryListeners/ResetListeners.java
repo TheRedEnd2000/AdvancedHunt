@@ -1,7 +1,7 @@
 package de.theredend2000.advancedegghunt.listeners.inventoryListeners;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionEditor;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;

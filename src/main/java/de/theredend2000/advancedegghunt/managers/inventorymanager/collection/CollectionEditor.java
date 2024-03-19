@@ -1,10 +1,11 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.collection;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.InventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.requirements.RequirementSelection;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
@@ -88,7 +89,7 @@ public class CollectionEditor extends InventoryMenu {
                 break;
             case "Requirements":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                Main.getInstance().getInventoryRequirementsManager().createSelectInventory(player, collection);
+                new RequirementSelection(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
             case "Reset (BETA)":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
