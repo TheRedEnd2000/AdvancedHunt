@@ -12,7 +12,6 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsInventory;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetDataManager;
@@ -60,7 +59,6 @@ public final class Main extends JavaPlugin {
     private ExtraManager extraManager;
     private PlayerEggDataManager playerEggDataManager;
     private RequirementsManager requirementsManager;
-    private ResetInventoryManager resetInventoryManager;
     private PermissionManager permissionManager;
     private EggRewardsInventory eggRewardsInventory;
     private PresetsInventory presetsInventory;
@@ -130,7 +128,6 @@ public final class Main extends JavaPlugin {
         extraManager = new ExtraManager();
         playerEggDataManager = new PlayerEggDataManager();
         requirementsManager = new RequirementsManager();
-        resetInventoryManager = new ResetInventoryManager();
         permissionManager = new PermissionManager();
         eggRewardsInventory = new EggRewardsInventory();
         presetDataManager = new PresetDataManager(this);
@@ -283,10 +280,6 @@ public final class Main extends JavaPlugin {
 
     public MessageManager getMessageManager() {
         return messageManager;
-    }
-
-    public ResetInventoryManager getResetInventoryManager() {
-        return resetInventoryManager;
     }
 
     public PermissionManager getPermissionManager() {
