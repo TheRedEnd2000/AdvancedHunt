@@ -2,9 +2,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.other;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egginformation.EggInformationMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
@@ -89,8 +88,8 @@ public class EggInfoTest extends PaginatedInventoryMenu {
     }
 
     @Override
-    public void handleMenu(InventoryClickEvent e) {
-        Player p = (Player) e.getWhoClicked();
+    public void handleMenu(InventoryClickEvent event) {
+        Player p = (Player) event.getWhoClicked();
         String id = getInventory().getItem(0).getItemMeta().getLocalizedName();
         ArrayList<String> keys = new ArrayList<>();
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
@@ -100,11 +99,11 @@ public class EggInfoTest extends PaginatedInventoryMenu {
             }
         }
 
-        if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+        if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
             new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        switch (e.getCurrentItem().getType()) {
+        switch (event.getCurrentItem().getType()) {
             case BARRIER:
                 p.closeInventory();
                 p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
@@ -118,11 +117,11 @@ public class EggInfoTest extends PaginatedInventoryMenu {
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis() + (3 * 1000));
-                new EggInformationMenu(Main.getPlayerMenuUtility(p)).open(getInventory().getItem(0).getItemMeta().getLocalizedName());
+                this.open(getInventory().getItem(0).getItemMeta().getLocalizedName());
                 p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case PLAYER_HEAD:
-                if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
+                if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
                     if (page == 0) {
                         p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
                         p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
@@ -131,7 +130,7 @@ public class EggInfoTest extends PaginatedInventoryMenu {
                         this.open(id);
                         p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     }
-                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
+                } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
                     if (!((index + 1) >= keys.size())) {
                         page = page + 1;
                         this.open(id);
@@ -140,7 +139,7 @@ public class EggInfoTest extends PaginatedInventoryMenu {
                         p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
                         p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     }
-                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Back")) {
+                } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Back")) {
                     new EggListMenu(Main.getPlayerMenuUtility(p)).open();
                     p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
