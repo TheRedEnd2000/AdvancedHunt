@@ -14,7 +14,6 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
 import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryRequirementsManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetInventoryManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
@@ -63,7 +62,6 @@ public final class Main extends JavaPlugin {
     private EggManager eggManager;
     private SoundManager soundManager;
     private ExtraManager extraManager;
-    private InventoryManager inventoryManager;
     private PlayerEggDataManager playerEggDataManager;
     private RequirementsManager requirementsManager;
     private ResetInventoryManager resetInventoryManager;
@@ -133,7 +131,6 @@ public final class Main extends JavaPlugin {
         messageManager = new MessageManager();
         eggDataManager = new EggDataManager(this);
         eggManager = new EggManager();
-        inventoryManager = new InventoryManager();
         soundManager = new SoundManager();
         extraManager = new ExtraManager();
         playerEggDataManager = new PlayerEggDataManager();
@@ -270,10 +267,6 @@ public final class Main extends JavaPlugin {
 
     public EggManager getEggManager() {
         return eggManager;
-    }
-
-    public InventoryManager getInventoryManager() {
-        return inventoryManager;
     }
 
     public ExtraManager getExtraManager() {

@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.common;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;

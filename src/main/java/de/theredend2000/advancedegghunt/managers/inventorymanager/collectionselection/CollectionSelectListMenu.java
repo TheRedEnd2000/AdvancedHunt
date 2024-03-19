@@ -2,6 +2,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.collectionsel
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionCreator;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
@@ -49,7 +51,7 @@ public class CollectionSelectListMenu extends SelectionSelectPaginatedMenu {
                 player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", selection));
             }else if(e.getAction() == InventoryAction.PICKUP_HALF){
                 if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.ChangeCollections)) {
-                    Main.getInstance().getInventoryManager().createEditCollectionMenu(player, collection);
+                    new CollectionEditor(Main.getPlayerMenuUtility(player)).open(collection);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 }
             }
@@ -93,7 +95,7 @@ public class CollectionSelectListMenu extends SelectionSelectPaginatedMenu {
                     }
                 } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add collection")) {
                     if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.CreateCollection)) {
-                        Main.getInstance().getInventoryManager().createAddCollectionMenu(player);
+                        new CollectionCreator(Main.getPlayerMenuUtility(player)).open();
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                 }

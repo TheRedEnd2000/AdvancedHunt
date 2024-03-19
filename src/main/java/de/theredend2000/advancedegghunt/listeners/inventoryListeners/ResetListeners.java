@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.listeners.inventoryListeners;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
@@ -45,7 +46,7 @@ public class ResetListeners implements Listener {
                 break;
             case "Back":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                plugin.getInventoryManager().createEditCollectionMenu(player, collection);
+                new CollectionEditor(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
             case "Reset - Year":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

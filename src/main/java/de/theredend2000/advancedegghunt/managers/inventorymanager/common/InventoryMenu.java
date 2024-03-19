@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.common;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
@@ -14,17 +14,22 @@ import org.jetbrains.annotations.NotNull;
 public abstract class InventoryMenu implements IInventoryMenu {
     protected PlayerMenuUtility playerMenuUtility;
     private Inventory inventory;
-    protected final ItemStack FILLER_GLASS = new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).setDisplayname(" ").build();
+    protected final ItemStack FILLER_GLASS;
     private final String inventoryName;
     protected final short slots;
     protected ItemStack[] inventoryContent;
 
-
     public InventoryMenu(PlayerMenuUtility playerMenuUtility, String inventoryName, short slots) {
+        this(playerMenuUtility, inventoryName, slots, XMaterial.GRAY_STAINED_GLASS_PANE);
+    }
+
+    public InventoryMenu(PlayerMenuUtility playerMenuUtility, String inventoryName, short slots, XMaterial fillerMaterial) {
         this.playerMenuUtility = playerMenuUtility;
         this.slots = slots % 9 == 0? slots : (short) (slots - (slots % 9));
         this.inventoryContent = new ItemStack[this.slots];
         this.inventoryName = inventoryName;
+
+        this.FILLER_GLASS = new ItemBuilder(fillerMaterial).setDisplayname(" ").build();
     }
 
     protected void addMenuBorder()

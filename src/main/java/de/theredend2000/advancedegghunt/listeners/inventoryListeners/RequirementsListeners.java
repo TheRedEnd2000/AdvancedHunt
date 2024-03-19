@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.listeners.inventoryListeners;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -40,7 +41,7 @@ public class RequirementsListeners implements Listener {
         switch (title) {
             case "Requirements - Selection": {
                 event.setCancelled(true);
-                String section = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
+                String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
                 switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())) {
                     case "Close":
                         player.closeInventory();
@@ -48,42 +49,42 @@ public class RequirementsListeners implements Listener {
                         break;
                     case "Back":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getInventoryManager().createEditCollectionMenu(player, section);
+                        new CollectionEditor(Main.getPlayerMenuUtility(player)).open(collection);
                         break;
                     case "Selection - Hours":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getInventoryRequirementsManager().createHourInventory(player, section);
+                        plugin.getInventoryRequirementsManager().createHourInventory(player, collection);
                         break;
                     case "Selection - Date":
                         player.sendMessage("§cThis requirement section is currently unavailable.");
                         break;
                     case "Selection - Weekday":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getInventoryRequirementsManager().createWeekdayInventory(player, section);
+                        plugin.getInventoryRequirementsManager().createWeekdayInventory(player, collection);
                         break;
                     case "Selection - Month":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getInventoryRequirementsManager().createMonthInventory(player, section);
+                        plugin.getInventoryRequirementsManager().createMonthInventory(player, collection);
                         break;
                     case "Selection - Year":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getInventoryRequirementsManager().createYearInventory(player, section);
+                        plugin.getInventoryRequirementsManager().createYearInventory(player, collection);
                         break;
                     case "Selection - Season":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getInventoryRequirementsManager().createSeasonInventory(player, section);
+                        plugin.getInventoryRequirementsManager().createSeasonInventory(player, collection);
                         break;
                     case "Activate all":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getRequirementsManager().changeActivity(section, true);
+                        plugin.getRequirementsManager().changeActivity(collection, true);
                         player.sendMessage(messageManager.getMessage(MessageKey.ACTIVATE_REQUIREMENTS));
-                        plugin.getInventoryRequirementsManager().createSelectInventory(player, section);
+                        plugin.getInventoryRequirementsManager().createSelectInventory(player, collection);
                         break;
                     case "Deactivate all":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                        plugin.getRequirementsManager().changeActivity(section, false);
+                        plugin.getRequirementsManager().changeActivity(collection, false);
                         player.sendMessage(messageManager.getMessage(MessageKey.DEACTIVATE_REQUIREMENTS));
-                        plugin.getInventoryRequirementsManager().createSelectInventory(player, section);
+                        plugin.getInventoryRequirementsManager().createSelectInventory(player, collection);
                         break;
                     case "Requirements Order":
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

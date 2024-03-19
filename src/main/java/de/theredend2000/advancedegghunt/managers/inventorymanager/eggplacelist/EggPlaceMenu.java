@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.Pl
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -17,11 +18,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
 
 public class EggPlaceMenu extends PlacePaginatedMenu {
+    private MessageManager messageManager;
 
     public EggPlaceMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
+        messageManager = Main.getInstance().getMessageManager();
     }
 
     @Override
@@ -35,29 +39,53 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
     }
 
     @Override
-    public void handleMenu(InventoryClickEvent e) {
+    public void handleMenu(InventoryClickEvent event) {
         SoundManager soundManager = Main.getInstance().getSoundManager();
-        Player p = (Player) e.getWhoClicked();
+        Player p = (Player) event.getWhoClicked();
+
+        if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())){
+            Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
+            for(String key : keys){
+                if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key))){
+                    super.playerMenuUtility.getOwner().sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
+                    return;
+                }
+            }
+
+            int nextNumber = 0;
+            if (!keys.isEmpty()) {
+                for (int i = 0; i <= keys.size(); i++) {
+                    String key = Integer.toString(i);
+                    if (!keys.contains(key)) {
+                        nextNumber = i;
+                        break;
+                    }
+                }
+            }
+            Main.getInstance().getPluginConfig().setPlaceEggType(nextNumber, event.getCurrentItem().getType().name().toUpperCase());
+            Main.getInstance().getPluginConfig().saveData();
+            this.open();
+        }
 
         ArrayList<String> keys = new ArrayList<>();
         if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
             for(String id : keys){
-                if(Objects.requireNonNull(e.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
+                if(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
                     p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                    if(e.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
-                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                    if(event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
+                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                     else
-                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(e.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                        p.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 }
             }
         }
 
-        if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+        if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
             new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        switch (e.getCurrentItem().getType()) {
+        switch (event.getCurrentItem().getType()) {
             case BARRIER:
                 p.closeInventory();
                 p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -75,7 +103,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
                 p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case PLAYER_HEAD:
-                if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
+                if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
                     if (page == 0) {
                         p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
                         p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
@@ -84,7 +112,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
                         super.open();
                         p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     }
-                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
+                } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
                     if (!((index + 1) >= keys.size())) {
                         page = page + 1;
                         super.open();
@@ -93,7 +121,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
                         p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
                         p.playSound(p.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
-                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Information")) {
+                } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Information")) {
                     TextComponent c = new TextComponent("§7Join the discord to get all information how to add custom egg textures. \n");
                     TextComponent clickme = new TextComponent("§6§l[CLICK HERE]");
                     clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§7Click to join.")));

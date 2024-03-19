@@ -3,7 +3,7 @@ package de.theredend2000.advancedegghunt.commands;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.InventoryManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.SettingsMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.EggProgressMenu;
@@ -42,7 +42,6 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         EggManager eggManager = Main.getInstance().getEggManager();
-        InventoryManager inventoryManager = Main.getInstance().getInventoryManager();
         if(sender instanceof Player){
             Player player = (Player) sender;
                 if(args.length == 1){
@@ -97,7 +96,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.settings.toString()));
                             return true;
                         }
-                        inventoryManager.createEggsSettingsInventory(player);
+                        new SettingsMenu(Main.getPlayerMenuUtility(player)).open();
                     } else if(args[0].equalsIgnoreCase("collection")) {
                         if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.collection)) {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.collection.toString()));
