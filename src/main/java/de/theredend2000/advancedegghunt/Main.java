@@ -5,7 +5,6 @@ import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
-import de.theredend2000.advancedegghunt.listeners.inventoryListeners.ResetListeners;
 import de.theredend2000.advancedegghunt.managers.CooldownManager;
 import de.theredend2000.advancedegghunt.managers.PermissionManager.PermissionManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
@@ -63,7 +62,6 @@ public final class Main extends JavaPlugin {
     private RequirementsManager requirementsManager;
     private ResetInventoryManager resetInventoryManager;
     private PermissionManager permissionManager;
-    private ResetListeners resetListeners;
     private EggRewardsInventory eggRewardsInventory;
     private PresetsInventory presetsInventory;
     private PresetDataManager presetDataManager;
@@ -160,7 +158,6 @@ public final class Main extends JavaPlugin {
         new PlayerChatEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
-        new ResetListeners(this);
     }
 
     private void giveAllItemsBack(){
