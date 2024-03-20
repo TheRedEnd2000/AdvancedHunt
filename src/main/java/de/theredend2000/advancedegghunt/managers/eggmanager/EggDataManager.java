@@ -68,6 +68,14 @@ public class EggDataManager {
         return eggCollectionsConfigs.get(collection);
     }
 
+    public void setRewards(String commandID, String id, String command, String collection){
+        FileConfiguration placedEggs = getPlacedEggs(collection);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command", command);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", true);
+        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll", false);
+        savePlacedEggs(collection, placedEggs);
+    }
+
     public void savePlacedEggs(String collection, FileConfiguration config) {
         try {
             config.save(this.getFile(collection));

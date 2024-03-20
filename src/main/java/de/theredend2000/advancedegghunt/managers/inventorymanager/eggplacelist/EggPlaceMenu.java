@@ -43,7 +43,7 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player p = (Player) event.getWhoClicked();
 
-        if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())){
+        if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) { //TODO: Check working as intended
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
             for(String key : keys){
                 if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key))){
