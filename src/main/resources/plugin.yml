@@ -53,6 +53,8 @@ permissions:
     description: ""
   AdvancedEggHunt.CreateCollection:
     description: ""
+  AdvancedEggHunt.OpenRewards:
+    description: ""
 
   AdvancedEggHunt.group.admin:
     description: "Contains all essential admin permissions"
@@ -72,6 +74,7 @@ permissions:
       AdvancedEggHunt.IgnoreCooldown: true
       AdvancedEggHunt.ChangeCollections: true
       AdvancedEggHunt.CreateCollection: true
+      AdvancedEggHunt.OpenRewards: true
 
       AdvancedEggHunt.group.default: true
 
