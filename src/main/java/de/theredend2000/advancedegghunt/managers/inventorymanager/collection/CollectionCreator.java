@@ -2,7 +2,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.collection;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionSelectMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.InventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
@@ -89,7 +89,7 @@ public class CollectionCreator extends InventoryMenu {
                 break;
             case "Back":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
                 break;
             case "Create":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -99,7 +99,7 @@ public class CollectionCreator extends InventoryMenu {
                 }
                 if (!Main.getInstance().getEggDataManager().containsSectionFile(name)) {
                     Main.getInstance().getEggDataManager().createEggCollectionFile(name, enabled);
-                    new CollectionSelectListMenu(Main.getPlayerMenuUtility(player)).open();
+                    new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
                     playerConfig.set("CollectionEdit", null);
                     Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
                     Main.getInstance().getRequirementsManager().changeActivity(name, true);

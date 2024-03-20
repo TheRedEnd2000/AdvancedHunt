@@ -2,7 +2,6 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
@@ -100,7 +99,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
         }
 
         if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
-            new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
+            new CollectionSelectMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());

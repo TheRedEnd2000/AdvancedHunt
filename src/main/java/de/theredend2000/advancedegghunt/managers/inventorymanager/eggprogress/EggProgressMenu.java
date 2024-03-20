@@ -2,7 +2,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.collectionselection.CollectionSelectListMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionSelectMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
@@ -45,7 +45,7 @@ public class EggProgressMenu extends ProgressPaginatedMenu {
         }
 
         if(e.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
-            new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
+            new CollectionSelectMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
         XMaterial material = XMaterial.matchXMaterial(e.getCurrentItem());
