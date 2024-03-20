@@ -340,5 +340,15 @@ public class PluginConfig extends Configuration {
     public void registerUpgrader() {
 
     }
+
+    //Downloader
+
+    public boolean getAutoDownloadAdvancedEggHunt() {
+        return getConfig().getBoolean("Download.AdvancedEggHunt");
+    }
+
+    public boolean getAutoDownloadNBTAPI() {
+        return getConfig().getBoolean("Download.NBT-API");
+    }
     //endregion
 }

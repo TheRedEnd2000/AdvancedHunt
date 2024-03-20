@@ -4,6 +4,13 @@ config-version: 2.9
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
 messages-lang: en
 
+#Auto download
+Download:
+  # Will be downloaded if a new plugin version is out
+  AdvancedEggHunt: true
+  # Will download for the plugin to work (This should not be disabled)
+  NBT-API: true
+
 prefix: '&f[&eAdvancedEggHunt&f] &r'
 
 Settings:

@@ -19,6 +19,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.pre
 import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.Converter;
+import de.theredend2000.advancedegghunt.util.Downloader;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.Updater;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
@@ -70,6 +71,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         setupConfigs();
+        new Downloader();
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
         Metrics metrics = new Metrics(this, 19495);
