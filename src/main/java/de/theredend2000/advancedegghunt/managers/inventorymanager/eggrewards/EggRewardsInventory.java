@@ -12,7 +12,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -129,71 +128,78 @@ public class EggRewardsInventory implements Listener {
             }
         }
 
-        if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
-            p.closeInventory();
-            p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        }else if(e.getCurrentItem().getType().equals(Material.GOLD_INGOT)){
-            p.closeInventory();
-            Main.getInstance().getPlayerAddCommand().put(p, 120);
-            TextComponent c = new TextComponent("\n\n\n\n\n" + Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND) + "\n\n");
-            TextComponent clickme = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
-            clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
-            c.addExtra(clickme);
-            p.spigot().sendMessage(c);
-            FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(p.getUniqueId());
-            playerConfig.set("Change.collection",collection);
-            playerConfig.set("Change.id",id);
-            Main.getInstance().getPlayerEggDataManager().savePlayerData(p.getUniqueId(), playerConfig);
-            p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        }else if(e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)){
-            if(placedEggs.contains("PlacedEggs." + id + ".Rewards.0")) {
-                new AnvilGUI.Builder()
-                        .onClose(stateSnapshot -> {
-                            if (!stateSnapshot.getText().isEmpty()) {
-                                PresetDataManager presetDataManager = Main.getInstance().getPresetDataManager();
-                                String preset = stateSnapshot.getText();
-                                if (!presetDataManager.containsPreset(preset)) {
-                                    presetDataManager.createPresetFile(stateSnapshot.getText());
-                                    presetDataManager.loadCommandsIntoPreset(preset, collection, id);
-                                    reopen();
-                                    p.sendMessage(messageManager.getMessage(MessageKey.PRESET_SAVED).replaceAll("%PRESET%",preset));
-                                } else {
-                                    p.sendMessage(messageManager.getMessage(MessageKey.PRESET_ALREADY_EXISTS).replaceAll("%PRESET%",preset));
-                                }
-                            }
-                        })
-                        .onClick((slot, stateSnapshot) -> {
-                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                        })
-                        .text("enter name")
-                        .title("Preset name")
-                        .plugin(Main.getInstance())
-                        .open(p);
+        XMaterial material = XMaterial.matchXMaterial(e.getCurrentItem());
+        switch (material) {
+            case BARRIER:
+                p.closeInventory();
                 p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }else
-                p.sendMessage(messageManager.getMessage(MessageKey.PRESET_FAILED_COMMANDS));
-        }else if(e.getCurrentItem().getType().equals(Material.EMERALD)){
-            Main.getInstance().getPresetsInventory().open(owner,id,collection);
-        }else if(e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
-            if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")){
-                if (page == 0){
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                }else{
-                    page = page - 1;
-                    reopen();
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
+            case GOLD_INGOT:
+                p.closeInventory();
+                Main.getInstance().getPlayerAddCommand().put(p, 120);
+                TextComponent c = new TextComponent("\n\n\n\n\n" + Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND) + "\n\n");
+                TextComponent clickme = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
+                clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
+                c.addExtra(clickme);
+                p.spigot().sendMessage(c);
+                FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(p.getUniqueId());
+                playerConfig.set("Change.collection", collection);
+                playerConfig.set("Change.id", id);
+                Main.getInstance().getPlayerEggDataManager().savePlayerData(p.getUniqueId(), playerConfig);
+                p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
+            case EMERALD_BLOCK:
+                if (placedEggs.contains("PlacedEggs." + id + ".Rewards.0")) {
+                    new AnvilGUI.Builder()
+                            .onClose(stateSnapshot -> {
+                                if (!stateSnapshot.getText().isEmpty()) {
+                                    PresetDataManager presetDataManager = Main.getInstance().getPresetDataManager();
+                                    String preset = stateSnapshot.getText();
+                                    if (!presetDataManager.containsPreset(preset)) {
+                                        presetDataManager.createPresetFile(stateSnapshot.getText());
+                                        presetDataManager.loadCommandsIntoPreset(preset, collection, id);
+                                        reopen();
+                                        p.sendMessage(messageManager.getMessage(MessageKey.PRESET_SAVED).replaceAll("%PRESET%", preset));
+                                    } else {
+                                        p.sendMessage(messageManager.getMessage(MessageKey.PRESET_ALREADY_EXISTS).replaceAll("%PRESET%", preset));
+                                    }
+                                }
+                            })
+                            .onClick((slot, stateSnapshot) -> {
+                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                            })
+                            .text("enter name")
+                            .title("Preset name")
+                            .plugin(Main.getInstance())
+                            .open(p);
+                    p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else
+                    p.sendMessage(messageManager.getMessage(MessageKey.PRESET_FAILED_COMMANDS));
+                break;
+            case EMERALD:
+                Main.getInstance().getPresetsInventory().open(owner, id, collection);
+                break;
+            case PLAYER_HEAD:
+                if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
+                    if (page == 0) {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    } else {
+                        page = page - 1;
+                        reopen();
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    }
+                } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
+                    if (!((index + 1) >= keys.size())) {
+                        page = page + 1;
+                        reopen();
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    } else {
+                        p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                        p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                    }
                 }
-            }else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")){
-                if (!((index + 1) >= keys.size())){
-                    page = page + 1;
-                    reopen();
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                }else{
-                    p.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                    p.playSound(p.getLocation(),Main.getInstance().getSoundManager().playInventoryFailedSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                }
-            }
+                break;
         }
     }
 
