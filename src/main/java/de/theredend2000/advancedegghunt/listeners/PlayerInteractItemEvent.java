@@ -1,5 +1,6 @@
 package de.theredend2000.advancedegghunt.listeners;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.EggPlaceMenu;
 import org.bukkit.Bukkit;
@@ -20,7 +21,7 @@ public class PlayerInteractItemEvent implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event){
         Player player = event.getPlayer();
-        if (!event.getItemDrop().getItemStack().getType().equals(Material.PLAYER_HEAD) ||
+        if (!event.getItemDrop().getItemStack().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()) ||
                 event.getItemDrop().getItemStack().getItemMeta() == null ||
                 !event.getItemDrop().getItemStack().getItemMeta().hasLocalizedName() ||
                 !event.getItemDrop().getItemStack().getItemMeta().getLocalizedName().equals("egghunt.finish") ||
