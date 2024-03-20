@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager.other;
+package de.theredend2000.advancedegghunt.managers.inventorymanager;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
-public class EggInfoTest extends PaginatedInventoryMenu {
+public class EggInformationMenu extends PaginatedInventoryMenu {
 
-    public EggInfoTest(PlayerMenuUtility playerMenuUtility) {
+    public EggInformationMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Egg information", (short) 54);
     }
 
