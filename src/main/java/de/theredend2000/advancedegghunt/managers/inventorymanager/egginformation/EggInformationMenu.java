@@ -49,7 +49,8 @@ public class EggInformationMenu extends InformationPaginatedMenu {
             new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        switch (e.getCurrentItem().getType()) {
+        XMaterial material = XMaterial.matchXMaterial(e.getCurrentItem());
+        switch (material) {
             case BARRIER:
                 p.closeInventory();
                 p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);

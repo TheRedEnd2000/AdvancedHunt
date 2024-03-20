@@ -69,7 +69,8 @@ public class EggListMenu extends ListPaginatedMenu {
             return;
         }
 
-        switch (e.getCurrentItem().getType()) {
+        XMaterial material = XMaterial.matchXMaterial(e.getCurrentItem());
+        switch (material) {
             case BARRIER:
                 p.closeInventory();
                 p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

@@ -44,7 +44,8 @@ public class EggLeaderboardMenu extends LeaderboardPaginatedMenu {
             new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        switch (e.getCurrentItem().getType()) {
+        XMaterial material = XMaterial.matchXMaterial(e.getCurrentItem());
+        switch (material) {
             case BARRIER:
                 p.closeInventory();
                 p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

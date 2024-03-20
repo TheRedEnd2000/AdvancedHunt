@@ -57,7 +57,8 @@ public class CollectionSelectListMenu extends SelectionSelectPaginatedMenu {
             }
         }
 
-        switch (e.getCurrentItem().getType()) {
+        XMaterial material = XMaterial.matchXMaterial(e.getCurrentItem());
+        switch (material) {
             case BARRIER:
                 player.closeInventory();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

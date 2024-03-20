@@ -85,7 +85,8 @@ public class EggPlaceMenu extends PlacePaginatedMenu {
             new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        switch (event.getCurrentItem().getType()) {
+        XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());
+        switch (material) {
             case BARRIER:
                 p.closeInventory();
                 p.playSound(p.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

@@ -103,7 +103,8 @@ public class EggInfoTest extends PaginatedInventoryMenu {
             new CollectionSelectListMenu(Main.getPlayerMenuUtility(p)).open();
         }
 
-        switch (event.getCurrentItem().getType()) {
+        XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());
+        switch (material) {
             case BARRIER:
                 p.closeInventory();
                 p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
