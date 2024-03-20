@@ -38,11 +38,12 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
     }
 
     public void open(String id, String collection) {
+        this.id = id;
+        this.collection = collection;
+
         super.addMenuBorder();
         addMenuBorderButtons();
         menuContent(collection);
-        this.id = id;
-        this.collection = collection;
 
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
