@@ -1,8 +1,8 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.common;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

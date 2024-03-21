@@ -1,7 +1,7 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.common;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 
 
 public abstract class PaginatedInventoryMenu extends InventoryMenu {

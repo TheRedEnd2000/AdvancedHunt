@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu;
+package de.theredend2000.advancedegghunt.util;
 
 import org.bukkit.entity.Player;
 
