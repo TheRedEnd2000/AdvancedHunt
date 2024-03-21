@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.soundmanager;
+package de.theredend2000.advancedegghunt.managers;
 
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Sound;

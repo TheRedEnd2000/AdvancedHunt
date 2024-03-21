@@ -1,8 +1,8 @@
 package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;

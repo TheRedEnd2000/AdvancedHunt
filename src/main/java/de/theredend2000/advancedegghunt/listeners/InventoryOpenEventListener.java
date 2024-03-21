@@ -1,9 +1,7 @@
 package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.PermissionManager.PermissionManager;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

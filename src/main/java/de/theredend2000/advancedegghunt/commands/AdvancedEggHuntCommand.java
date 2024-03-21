@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.*;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;

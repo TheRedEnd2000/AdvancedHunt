@@ -2,10 +2,10 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.CollectionCreator;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
-import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.Permission;

@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.extramanager;
+package de.theredend2000.advancedegghunt.managers;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;

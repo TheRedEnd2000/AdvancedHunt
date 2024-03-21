@@ -1,7 +1,7 @@
 package de.theredend2000.advancedegghunt.util;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetDataManager;
+import de.theredend2000.advancedegghunt.managers.PresetDataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 

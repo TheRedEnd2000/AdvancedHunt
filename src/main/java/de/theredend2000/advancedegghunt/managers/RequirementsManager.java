@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.extramanager;
+package de.theredend2000.advancedegghunt.managers;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;

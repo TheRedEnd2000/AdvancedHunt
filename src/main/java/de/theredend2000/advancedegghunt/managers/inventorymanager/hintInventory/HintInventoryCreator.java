@@ -2,7 +2,6 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;

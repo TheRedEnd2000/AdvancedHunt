@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.PermissionManager;
+package de.theredend2000.advancedegghunt.managers;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
