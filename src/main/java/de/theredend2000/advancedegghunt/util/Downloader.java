@@ -22,8 +22,8 @@ public class Downloader {
             String downloadFile = new File(plugin.getDataFolder().getParent()).getAbsolutePath();
             if(plugin.getPluginConfig().getAutoDownloadNBTAPI())
                 downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3",downloadFile);
-            if(plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() /*&& check is outdated*/)
-                downloadPluginFromSpigot(109085,downloadFile); //returns 403
+            /*if(plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && check is outdated)
+                downloadPluginFromSpigot(109085,downloadFile); //returns 403*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

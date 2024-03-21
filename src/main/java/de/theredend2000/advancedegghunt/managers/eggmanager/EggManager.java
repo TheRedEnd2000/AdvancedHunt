@@ -300,15 +300,12 @@ public class EggManager {
         if (!Main.getInstance().getPluginConfig().getParticleEnabled()) {
             return;
         }
-
-
-        List<String> collections = plugin.getEggDataManager().savedEggCollections();
         spawnEggParticleTask = new BukkitRunnable() {
             double time = 0;
 
             @Override
             public void run() {
-                for(String collection : collections) {
+                for(String collection : plugin.getEggDataManager().savedEggCollections()) {
                     FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
                     if (time > 3.0)
                         time = 0;

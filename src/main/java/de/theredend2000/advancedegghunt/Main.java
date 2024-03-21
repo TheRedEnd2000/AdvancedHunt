@@ -14,6 +14,8 @@ import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NbtApiException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
