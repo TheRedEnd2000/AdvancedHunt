@@ -4,11 +4,11 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionSelectMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.EggProgressMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.LeaderboardMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.SettingsMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.egglistmenu.EggListMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggprogress.EggProgressMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.hintInventory.HintInventoryCreator;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.leaderboardmenu.EggLeaderboardMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -120,7 +120,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.leaderboard.toString()));
                             return true;
                         }
-                        new EggLeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
+                        new LeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
                     } else if(args[0].equalsIgnoreCase("hint")) {
                         if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.hint)) {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.hint.toString()));

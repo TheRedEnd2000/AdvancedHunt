@@ -2,7 +2,7 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggplacelist.EggPlaceMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.EggPlaceMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
