@@ -54,7 +54,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER).setDisplayname("§2Sort");
         switch (sortTypes){
             case ALL:
-                itemBuilder = itemBuilder.setLore("", "§6 ➤Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
+                itemBuilder = itemBuilder.setLore("", "§6 ➤ Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
                 break;
             case TOP10:
                 itemBuilder = itemBuilder.setLore("", "§7Show the complete leaderboard", "§6➤ Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
