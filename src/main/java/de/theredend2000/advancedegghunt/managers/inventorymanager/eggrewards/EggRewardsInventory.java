@@ -220,7 +220,7 @@ public class EggRewardsInventory implements Listener {
 
     public void convertItemIntoCommand(ItemStack itemStack,String id,String collection){
         String itemNBT = NBT.get(itemStack, Object::toString);
-        addCommand(id,MessageFormat.format("give %PLAYER% {0}{1}", itemStack.getType().name().toLowerCase(), itemNBT),collection);
+        addCommand(id,MessageFormat.format("minecraft:give %PLAYER% {0}{1}", itemStack.getType().name().toLowerCase(), itemNBT),collection);
     }
 
     private void addCommand(String id, String command, String collection){
