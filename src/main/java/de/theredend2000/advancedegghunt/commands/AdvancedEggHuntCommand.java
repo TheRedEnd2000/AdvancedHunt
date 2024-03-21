@@ -135,6 +135,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                     return true;
                                 }
                                 new HintInventoryCreator(player, Bukkit.createInventory(player, 54, "Eggs Hint"), true);
+                                return true;
                             } else {
                                 if (counter == max)
                                     player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
