@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.EggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
@@ -37,7 +38,7 @@ public class PlayerChatEventListener implements Listener {
         if (event.getMessage().equalsIgnoreCase("cancel")) {
             Main.getInstance().getPlayerAddCommand().remove(player);
             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CANCEL));
-            Main.getInstance().getEggRewardsInventory().open(player, id, collection);
+            new EggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
             return;
         }
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
@@ -46,7 +47,7 @@ public class PlayerChatEventListener implements Listener {
             Main.getInstance().getPlayerAddCommand().remove(player);
             playerConfig.set("Change", null);
             Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
-            Main.getInstance().getEggRewardsInventory().open(player, id, collection);
+            new EggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
         }
     }
 

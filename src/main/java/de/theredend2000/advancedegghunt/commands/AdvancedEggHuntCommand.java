@@ -12,7 +12,6 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBTList;
-import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -133,7 +132,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                     player.sendMessage(Main.getInstance().getCooldownManager().getRemainingTime(millis));
                                     return true;
                                 }
-                                new HintInventoryCreator(player, Bukkit.createInventory(player, 54, "Eggs Hint"), true);
+                                new HintMenu(Main.getPlayerMenuUtility(player)).open(true);
                                 return true;
                             } else {
                                 if (counter == max)

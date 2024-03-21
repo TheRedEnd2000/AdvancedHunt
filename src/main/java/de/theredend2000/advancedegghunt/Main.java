@@ -5,17 +5,10 @@ import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
-import de.theredend2000.advancedegghunt.managers.CooldownManager;
-import de.theredend2000.advancedegghunt.managers.PermissionManager.PermissionManager;
+import de.theredend2000.advancedegghunt.managers.*;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
-import de.theredend2000.advancedegghunt.managers.extramanager.ExtraManager;
-import de.theredend2000.advancedegghunt.managers.extramanager.RequirementsManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsInventory;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetDataManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.presets.PresetsInventory;
-import de.theredend2000.advancedegghunt.managers.soundmanager.SoundManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
@@ -57,8 +50,6 @@ public final class Main extends JavaPlugin {
     private PlayerEggDataManager playerEggDataManager;
     private RequirementsManager requirementsManager;
     private PermissionManager permissionManager;
-    private EggRewardsInventory eggRewardsInventory;
-    private PresetsInventory presetsInventory;
     private PresetDataManager presetDataManager;
     private MessageManager messageManager;
     public static String PREFIX = "";
@@ -127,9 +118,7 @@ public final class Main extends JavaPlugin {
         playerEggDataManager = new PlayerEggDataManager();
         requirementsManager = new RequirementsManager();
         permissionManager = new PermissionManager();
-        eggRewardsInventory = new EggRewardsInventory();
         presetDataManager = new PresetDataManager(this);
-        presetsInventory = new PresetsInventory();
     }
 
     public void checkCommandFeedback(){
@@ -284,15 +273,7 @@ public final class Main extends JavaPlugin {
         return permissionManager;
     }
 
-    public EggRewardsInventory getEggRewardsInventory() {
-        return eggRewardsInventory;
-    }
-
     public PresetDataManager getPresetDataManager() {
         return presetDataManager;
-    }
-
-    public PresetsInventory getPresetsInventory() {
-        return presetsInventory;
     }
 }

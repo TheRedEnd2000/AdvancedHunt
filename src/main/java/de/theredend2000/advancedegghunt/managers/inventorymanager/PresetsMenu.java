@@ -97,7 +97,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
                 case PICKUP_ALL:
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_LOADED).replaceAll("%PRESET%", presetName));
                     presetDataManager.loadPresetIntoEggCommands(presetName, collection, id);
-                    plugin.getEggRewardsInventory().open(super.playerMenuUtility.getOwner(), id, collection);
+                    new EggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
                     break;
                 case PICKUP_HALF:
                     if (!plugin.getPluginConfig().getDefaultLoadingPreset().equals(presetName)) {
@@ -143,7 +143,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Back")) {
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                    plugin.getEggRewardsInventory().open(super.playerMenuUtility.getOwner(), id, collection);
+                    new EggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
                 }
                 break;
         }

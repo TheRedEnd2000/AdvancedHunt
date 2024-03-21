@@ -204,7 +204,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case EMERALD:
-                Main.getInstance().getPresetsInventory().open(super.playerMenuUtility.getOwner(), id, collection);
+                new PresetsMenu(super.playerMenuUtility).open(id, collection);
                 break;
             case PLAYER_HEAD:
                 if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
