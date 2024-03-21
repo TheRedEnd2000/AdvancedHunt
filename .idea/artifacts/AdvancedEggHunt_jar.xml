@@ -3,9 +3,9 @@
     <output-path>$USER_HOME$/Documents/Server/plugins</output-path>
     <root id="archive" name="AdvancedEggHunt.jar">
       <element id="module-output" name="AdvancedEggHunt" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/tr7zw/item-nbt-api-plugin/2.12.2/item-nbt-api-plugin-2.12.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/cryptomorin/XSeries/9.8.0/XSeries-9.8.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/wesjd/anvilgui/1.7.0-SNAPSHOT/anvilgui-1.7.0-SNAPSHOT.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/tr7zw/item-nbt-api/2.12.2/item-nbt-api-2.12.2.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
