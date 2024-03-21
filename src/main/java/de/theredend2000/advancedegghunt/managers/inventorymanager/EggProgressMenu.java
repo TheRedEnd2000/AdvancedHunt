@@ -24,13 +24,13 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
 
     public void open() {
         super.addMenuBorder();
-        addMenuBorder();
+        addMenuBorderButtons();
         setMenuItems();
 
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
-    public void addMenuBorder() { //TODO: Fix page indexing
+    public void addMenuBorderButtons() { //TODO: Fix page indexing
         inventoryContent[48] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§2Left")
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build();
 
@@ -46,7 +46,7 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
     public void setMenuItems() {
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        addMenuBorder();
+        addMenuBorderButtons();
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));

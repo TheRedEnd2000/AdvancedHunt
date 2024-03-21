@@ -24,13 +24,13 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
 
     public void open(String eggId) {
         super.addMenuBorder();
-        addMenuBorder(eggId);
+        addMenuBorderButtons(eggId);
         setMenuItems(eggId);
 
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
-    public void addMenuBorder(String eggId){
+    public void addMenuBorderButtons(String eggId){
         inventoryContent[48] = new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages(eggId) + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left").build();
 
         inventoryContent[50] = new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages(eggId) + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right").build();
