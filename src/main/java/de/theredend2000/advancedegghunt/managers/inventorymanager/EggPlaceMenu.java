@@ -139,13 +139,14 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
         if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
             for(String id : keys){
-                if(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)){;
-                    player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                    if(event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
-                        player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
-                    else
-                        player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)) {
+                    continue;
                 }
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                if(event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
+                    player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                else
+                    player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
             }
         }
 

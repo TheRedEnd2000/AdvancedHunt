@@ -255,7 +255,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     private List<String> FilterArguments(List<String> arguments, String[] args) {
         if (arguments == null)
-            return Collections.emptyList();;
+            return Collections.emptyList();
 
         if (!arguments.isEmpty()) {
             int lastArgIndex = args.length-1;

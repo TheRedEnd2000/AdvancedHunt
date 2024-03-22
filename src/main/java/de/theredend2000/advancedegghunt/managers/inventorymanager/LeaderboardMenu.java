@@ -20,11 +20,12 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
     public LeaderboardMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Eggs leaderboard", (short) 54);
+
+        super.addMenuBorder();
+        addMenuBorderButtons();
     }
 
     public void open() {
-        super.addMenuBorder();
-        addMenuBorderButtons();
         getInventory().setContents(inventoryContent);
         setMenuItems();
 
@@ -35,9 +36,9 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§aRefresh").build();
 
-        String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
+        String selectedCollection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[45] = new ItemBuilder(XMaterial.PAPER).setDisplayname("§bSelected Collection")
-                .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.").build();
+                .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedCollection, "", "§eClick to change.").build();
     }
 
     public void setMenuItems() {

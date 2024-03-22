@@ -85,23 +85,23 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        String collection = Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName();
+        String selectedCollection = Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName();
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
-        for(String selection : keys){
-            if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(selection)) {
+        for(String collection : keys){
+            if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(collection)) {
                 continue;
             }
             if(event.getAction() == InventoryAction.PICKUP_ALL){
-                Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), selection);
+                Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), collection);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 open();
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", selection));
+                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", collection));
             }else if(event.getAction() == InventoryAction.PICKUP_HALF){
                 if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.ChangeCollections)) {
-                    new CollectionEditor(Main.getPlayerMenuUtility(player)).open(collection);
+                    new CollectionEditor(Main.getPlayerMenuUtility(player)).open(selectedCollection);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 }
             }

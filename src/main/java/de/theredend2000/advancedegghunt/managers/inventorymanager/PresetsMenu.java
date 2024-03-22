@@ -23,14 +23,16 @@ public class PresetsMenu extends PaginatedInventoryMenu {
         super(playerMenuUtility, "Presets", (short) 54);
         this.plugin = Main.getInstance();
         this.messageManager = this.plugin.getMessageManager();
+
+        super.addMenuBorder();
+        addMenuBorderButtons();
     }
 
     public void open(String id, String collection) {
         this.collection = collection;
         this.id = id;
 
-        super.addMenuBorder();
-        addMenuBorderButtons();
+        getInventory().setContents(inventoryContent);
         setMenuItems();
 
         playerMenuUtility.getOwner().openInventory(getInventory());
@@ -85,7 +87,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
         for(String presetName : presetDataManager.savedPresets()){
             if(event.getCurrentItem() == null || event.getCurrentItem().getItemMeta() == null) continue;
             if (!ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(presetName)) {
-                return;
+                continue;
             }
             switch (event.getAction()) {
                 case PICKUP_ALL:
