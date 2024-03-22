@@ -35,40 +35,29 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
         super(playerMenuUtility, "Egg Rewards", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
         this.plugin = Main.getInstance();
         messageManager = this.plugin.getMessageManager();
+
+        super.addMenuBorder();
+        addMenuBorderButtons();
     }
 
     public void open(String id, String collection) {
         this.id = id;
         this.collection = collection;
-
-        super.addMenuBorder();
-        addMenuBorderButtons();
         menuContent(collection);
 
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
     private void addMenuBorderButtons() {
-        inventoryContent[48] =  new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§2Left").setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").build();
-
-        inventoryContent[50] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§2Right").setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").build();
         inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other eggs again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.").build();
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
     }
 
-    public int getMaxPages(){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
-            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
-        }
-        if(keys.isEmpty()) return 1;
-        return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
-    }
-
     private void menuContent(String collection) {
+        getInventory().setContents(inventoryContent);
+
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
@@ -88,6 +77,23 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
             }
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward","§7or load a preset.").build());
+    }
+
+    public int getMaxPages(){
+        getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
+                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
+        getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
+                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
+
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
+        ArrayList<String> keys = new ArrayList<>();
+        if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
+            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
+        }
+        if(keys.isEmpty()) return 1;
+        return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
     }
 
     public void convertItemIntoCommand(ItemStack itemStack, String id, String collection){
@@ -151,6 +157,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                 }
                 open(id, collection);
                 player.playSound(player.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
             }
         }
 

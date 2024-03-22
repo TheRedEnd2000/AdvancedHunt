@@ -30,13 +30,16 @@ public class ResetMenu extends InventoryMenu {
     public void open(String collection) {
         super.addMenuBorder();
         addMenuBorderButtons(collection);
+        getInventory().setContents(inventoryContent);
         menuContent(collection);
 
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
     private void addMenuBorderButtons(String collection) {
-        inventoryContent[4] =  new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(plugin.getEggManager().getRandomEggTexture(new Random().nextInt(7))).setDisplayname("§6" + collection).build();
+        inventoryContent[4] =  new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(plugin.getEggManager().getRandomEggTexture(new Random().nextInt(7)))
+                .setDisplayname("§6" + collection).build();
 
         inventoryContent[37] = new ItemBuilder(XMaterial.RED_TERRACOTTA).setDisplayname("§cReset all").setLore("§eClick to reset all.").build();
 

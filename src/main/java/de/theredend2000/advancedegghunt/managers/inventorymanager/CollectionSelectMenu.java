@@ -22,20 +22,19 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
 
     public CollectionSelectMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Select collection", (short) 54);
+
+        super.addMenuBorder();
+        addMenuBorderButtons();
     }
 
     public void open() {
-        super.addMenuBorder();
-        addMenuBorderButtons();
+        getInventory().setContents(inventoryContent);
         setMenuItems();
 
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
     public void addMenuBorderButtons() {
-        inventoryContent[48] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§2Left").setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").build();
-
-        inventoryContent[50] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§2Right").setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").build();
         if(Main.getInstance().getPermissionManager().checkPermission(playerMenuUtility.getOwner(), Permission.CreateCollection))
             inventoryContent[51] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§5Add collection").setSkullOwner(Main.getTexture("NWQ4NjA0YjllMTk1MzY3Zjg1YTIzZDAzZDlkZDUwMzYzOGZjZmIwNWIwMDMyNTM1YmM0MzczNDQyMjQ4M2JkZSJ9fX0=")).build();
 
@@ -44,6 +43,13 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
     }
 
     public void setMenuItems() {
+        getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
+                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
+        getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
+                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
+
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         if(keys.isEmpty()){
             playerMenuUtility.getOwner().closeInventory();
