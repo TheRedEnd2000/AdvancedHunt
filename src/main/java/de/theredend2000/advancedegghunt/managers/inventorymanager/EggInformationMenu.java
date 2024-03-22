@@ -76,16 +76,6 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
 
 
     @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return 0;
-    }
-
-    @Override
     public void handleMenu(InventoryClickEvent event) {
         Player p = (Player) event.getWhoClicked();
         String id = getInventory().getItem(0).getItemMeta().getLocalizedName();

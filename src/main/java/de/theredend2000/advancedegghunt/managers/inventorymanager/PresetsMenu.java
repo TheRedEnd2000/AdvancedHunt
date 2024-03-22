@@ -73,16 +73,6 @@ public class PresetsMenu extends PaginatedInventoryMenu {
     }
 
     @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return 0;
-    }
-
-    @Override
     public void handleMenu(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         PresetDataManager presetDataManager = Main.getInstance().getPresetDataManager();

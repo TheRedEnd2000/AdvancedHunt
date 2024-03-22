@@ -70,14 +70,4 @@ public class RequirementYear extends InventoryMenu {
         if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Back"))
             new RequirementSelection(Main.getPlayerMenuUtility(player)).open(collection);
     }
-
-    @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return this.slots;
-    }
 }

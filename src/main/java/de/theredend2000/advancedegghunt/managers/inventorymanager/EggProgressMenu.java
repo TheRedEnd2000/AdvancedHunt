@@ -93,16 +93,6 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
     }
 
     @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return 0;
-    }
-
-    @Override
     public void handleMenu(InventoryClickEvent event) {
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         SoundManager soundManager = Main.getInstance().getSoundManager();

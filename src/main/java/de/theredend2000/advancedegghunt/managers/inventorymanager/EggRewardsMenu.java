@@ -229,14 +229,4 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                 break;
         }
     }
-
-    @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return this.slots;
-    }
 }

@@ -78,16 +78,6 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
     }
 
     @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return 0;
-    }
-
-    @Override
     public void handleMenu(InventoryClickEvent event) {
         String collection = Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName();
         SoundManager soundManager = Main.getInstance().getSoundManager();

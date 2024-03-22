@@ -163,14 +163,4 @@ public class SettingsMenu extends InventoryMenu {
                 break;
         }
     }
-
-    @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return this.slots;
-    }
 }

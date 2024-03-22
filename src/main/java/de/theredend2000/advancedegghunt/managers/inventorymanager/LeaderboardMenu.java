@@ -141,16 +141,6 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
     }
 
     @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return 0;
-    }
-
-    @Override
     public void handleMenu(InventoryClickEvent event) {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();

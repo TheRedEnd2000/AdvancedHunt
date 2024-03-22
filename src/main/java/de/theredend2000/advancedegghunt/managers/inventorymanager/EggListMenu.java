@@ -86,16 +86,6 @@ public class EggListMenu extends PaginatedInventoryMenu {
     }
 
     @Override
-    public String getMenuName() {
-        return null;
-    }
-
-    @Override
-    public int getSlots() {
-        return 0;
-    }
-
-    @Override
     public void handleMenu(InventoryClickEvent event) {
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
