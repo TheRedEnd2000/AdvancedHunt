@@ -47,7 +47,7 @@ public class RequirementSeason extends InventoryMenu {
         getInventory().setContents(inventoryContent);
         for(String season : new ArrayList<>(DateTimeUtil.getSeasonList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + season).setLore(getSeasonInformation(Seasons.valueOf(season)), "§7Makes that the eggs are only", "§7available in the season " + season, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to add " + season + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + season).setLore(getSeasonInformation(Seasons.valueOf(season)), "§7Makes that the eggs are only", "§7available in the season " + season, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + season + " to the requirements.").withGlow(enabled).build());
         }
     }
 

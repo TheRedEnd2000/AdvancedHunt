@@ -18,7 +18,6 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.NbtApiException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -74,7 +73,6 @@ public final class Main extends JavaPlugin {
         initListeners();
         datetimeUtils = new DatetimeUtils();
         cooldownManager = new CooldownManager(this);
-        checkCommandFeedback();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getConsoleSender().sendMessage(PREFIX + "§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
             new PlaceholderExtension().register();
@@ -121,17 +119,6 @@ public final class Main extends JavaPlugin {
         requirementsManager = new RequirementsManager();
         permissionManager = new PermissionManager();
         presetDataManager = new PresetDataManager(this);
-    }
-
-    public void checkCommandFeedback(){
-        if (!pluginConfig.getForcedCommandFeedback()) return;
-        if (pluginConfig.getDisableCommandFeedback()) {
-            for (World worlds : Bukkit.getServer().getWorlds())
-                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
-        } else {
-            for (World worlds : Bukkit.getServer().getWorlds())
-                worlds.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
-        }
     }
 
     private void initListeners(){

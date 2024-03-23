@@ -303,9 +303,11 @@ public class EggManager {
         spawnEggParticleTask = new BukkitRunnable() {
             double time = 0;
 
+            List<String> collections = plugin.getEggDataManager().savedEggCollections();
+
             @Override
             public void run() {
-                for(String collection : plugin.getEggDataManager().savedEggCollections()) {
+                for(String collection : collections) {
                     FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
                     if (time > 3.0)
                         time = 0;
@@ -462,7 +464,7 @@ public class EggManager {
                 armorStand.setCustomName("§dEgg #" + key + " for collection §d§l" + collection);
                 armorStand.setCustomNameVisible(true);
                 armorStand.setSmall(true);
-                armorStand.setInvisible(true);
+                armorStand.setVisible(false);
                 plugin.getShowedArmorstands().add(armorStand);
             }
         }

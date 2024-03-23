@@ -1,4 +1,4 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
@@ -184,7 +184,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case EMERALD_BLOCK:
-                if (!placedEggs.contains("PlacedEggs." + id + ".Rewards.0")) {
+                if (placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false).size() >= 1) {
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_FAILED_COMMANDS));
                     break;
                 }

@@ -46,7 +46,7 @@ public class RequirementYear extends InventoryMenu {
         getInventory().setContents(inventoryContent);
         for(int year = currentYear; year < (currentYear + 28);year++){
             boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.BEACON : XMaterial.RED_STAINED_GLASS).setDisplayname("§6Year " + year).setLore("§7Makes that the eggs are only", "§7available in the year " + year, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to add " + year + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.BEACON : XMaterial.RED_STAINED_GLASS).setDisplayname("§6Year " + year).setLore("§7Makes that the eggs are only", "§7available in the year " + year, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + year + " to the requirements.").withGlow(enabled).build());
         }
     }
 

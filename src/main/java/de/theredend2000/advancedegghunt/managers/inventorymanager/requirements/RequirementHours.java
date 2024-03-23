@@ -44,7 +44,7 @@ public class RequirementHours extends InventoryMenu {
         for(int i = 0; i < 24; i++){
             int index = ((9 + 1) + ((i / 7) * 9) + (i % 7));
             boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
-            getInventory().setItem(index, new ItemBuilder(enabled ? XMaterial.CLOCK : XMaterial.RED_STAINED_GLASS).setDisplayname("§6Hour " + i).setLore("§8Hours: (" + i + ":00-" + (i + 1) + ":00)", "§7Makes that the eggs are only", "§7available in the hour that starts with " + i, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to add hour " + i + " to the requirements.").withGlow(enabled).build());
+            getInventory().setItem(index, new ItemBuilder(enabled ? XMaterial.CLOCK : XMaterial.RED_STAINED_GLASS).setDisplayname("§6Hour " + i).setLore("§8Hours: (" + i + ":00-" + (i + 1) + ":00)", "§7Makes that the eggs are only", "§7available in the hour that starts with " + i, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" hour " + i + " to the requirements.").withGlow(enabled).build());
         }
     }
 

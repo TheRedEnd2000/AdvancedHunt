@@ -16,7 +16,7 @@ public class SettingsMenu extends InventoryMenu {
     private MessageManager messageManager;
 
     public SettingsMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Advanced Egg Settings", (short) 54, XMaterial.RED_STAINED_GLASS);
+        super(playerMenuUtility, "Advanced Egg Settings", (short) 54, XMaterial.RED_STAINED_GLASS_PANE);
         messageManager = Main.getInstance().getMessageManager();
     }
 

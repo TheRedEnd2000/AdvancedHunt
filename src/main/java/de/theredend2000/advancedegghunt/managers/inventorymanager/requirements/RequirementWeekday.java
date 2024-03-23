@@ -46,7 +46,7 @@ public class RequirementWeekday extends InventoryMenu {
         getInventory().setContents(inventoryContent);
         for(String weekdays : new ArrayList<>(DateTimeUtil.getWeekList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekdays);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.LIME_BED : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + weekdays).setLore("§7Makes that the eggs are only", "§7available on the weekday " + weekdays, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to add " + weekdays + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.LIME_BED : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + weekdays).setLore("§7Makes that the eggs are only", "§7available on the weekday " + weekdays, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + weekdays + " to the requirements.").withGlow(enabled).build());
         }
     }
 
