@@ -72,6 +72,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards").getKeys(false));
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
+
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < maxItemsPerPage; i++) {
                 index = maxItemsPerPage * page + i;
