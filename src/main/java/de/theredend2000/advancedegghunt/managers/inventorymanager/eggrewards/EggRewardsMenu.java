@@ -12,6 +12,7 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -77,11 +78,27 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
             for(int i = 0; i < maxItemsPerPage; i++) {
                 index = maxItemsPerPage * page + i;
                 if(index >= keys.size()) break;
-                if (keys.get(index) != null){
+                if (keys.get(index) != null) {
                     String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
                     boolean foundAll = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".foundAll");
-                    getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Action on: " + (foundAll ? "§6Found all eggs" : "§6Found one egg"), "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to toggle action.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
+                    XMaterial xMaterial = XMaterial.PAPER;
+                    if (startsWithGive) {
+                        String[] parts = command.split(" ");
+
+                        // Überprüfe, ob der Befehl mit "give" beginnt und genügend Teile hat
+                        if (parts.length >= 2 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
+                            // Extrahiere das Material aus dem Befehl
+                            String materialName = parts[2];
+                            Bukkit.broadcastMessage(materialName);
+
+                            // Erstelle den ItemStack basierend auf dem Material
+                            xMaterial = XMaterial.matchXMaterial(materialName).orElse(XMaterial.STONE);
+                        }
+                    }
+                    String itemNBT = NBT.get(xMaterial.parseItem(), Object::toString);
+                    getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(itemNBT).orElse(XMaterial.PAPER)).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Action on: " + (foundAll ? "§6Found all eggs" : "§6Found one egg"), "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to toggle action.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
