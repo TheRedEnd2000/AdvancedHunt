@@ -145,30 +145,25 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
     }
 
-    public void convertItemIntoCommand(ItemStack itemStack, String id, String collection){
+    public void convertItemIntoCommand(ItemStack itemStack, String collection){
         String itemNBT = NBT.get(itemStack, Object::toString);
-        addCommand(id, MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"GlobalRewards.");
+        addCommand(MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"GlobalRewards.");
     }
 
-    private void addCommand(String id, String command, String collection, String path){
+    private void addCommand(String command, String collection, String path){
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-        if (placedEggs.contains("GlobalRewards.")) {
-            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("GlobalRewards.");
-            int nextNumber = 0;
+        ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("GlobalRewards.");
+        int nextNumber = 0;
+        if (rewardsSection != null) {
             Set<String> keys = rewardsSection.getKeys(false);
-            if (!keys.isEmpty()) {
-                for (int i = 0; i <= keys.size(); i++) {
-                    String key = Integer.toString(i);
-                    if (!keys.contains(key)) {
-                        nextNumber = i;
-                        break;
-                    }
+            for (int i = 0; i <= keys.size(); i++) {
+                if (!keys.contains(Integer.toString(i))) {
+                    nextNumber = i;
+                    break;
                 }
             }
-            plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), command, collection,path);
-        } else {
-            plugin.getEggDataManager().setRewards("0", command, collection,path);
         }
+        plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), command, collection, path);
     }
 
     @Override
@@ -177,7 +172,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
 
         if(event.getClickedInventory().equals(player.getInventory())){
-            convertItemIntoCommand(event.getCurrentItem(), id, collection);
+            convertItemIntoCommand(event.getCurrentItem(), collection);
             player.sendMessage("§aSuccessfully added a new item.");
             menuContent(collection);
         }
