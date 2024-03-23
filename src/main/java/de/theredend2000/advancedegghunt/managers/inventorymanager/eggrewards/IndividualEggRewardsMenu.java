@@ -55,7 +55,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
-        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§cSwitch to Global").build();
+        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§bSwitch to Global").setSkullOwner(Main.getTexture("NTk3ZTRlMjdhMDRhZmE1ZjA2MTA4MjY1YTliZmI3OTc2MzAzOTFjN2YzZDg4MGQyNDRmNjEwYmIxZmYzOTNkOCJ9fX0=")).setLore("","§6Switch to Global:","§7Switching to global lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lall §7egg.","","§eClick to switch").build();
     }
 
     private void menuContent(String collection) {
@@ -82,7 +82,6 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 if (keys.get(index) != null) {
                     String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
-                    boolean foundAll = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".foundAll");
                     boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
                     XMaterial xMaterial = XMaterial.PAPER;
                     if (startsWithGive) {
@@ -99,7 +98,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                         }
                     }
                     String itemNBT = NBT.get(xMaterial.parseItem(), Object::toString);
-                    getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(itemNBT).orElse(XMaterial.PAPER)).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Action on: " + (foundAll ? "§6Found all eggs" : "§6Found one egg"), "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to toggle action.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(itemNBT).orElse(XMaterial.PAPER)).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
@@ -168,10 +167,6 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     case PICKUP_HALF:
                         player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%", commandID));
                         placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID, null);
-                        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
-                        break;
-                    case CLONE_STACK:
-                        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll", !placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll"));
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                         break;
                 }
