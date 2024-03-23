@@ -2,9 +2,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.PresetDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.GlobalPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -15,13 +14,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 
-public class PresetsMenu extends PaginatedInventoryMenu {
+public class GlobalPresetsMenu extends PaginatedInventoryMenu {
     private MessageManager messageManager;
     private Main plugin;
     private String id;
     private String collection;
-    public PresetsMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Presets", (short) 54);
+    public GlobalPresetsMenu(PlayerMenuUtility playerMenuUtility) {
+        super(playerMenuUtility, "Global Presets", (short) 54);
         this.plugin = Main.getInstance();
         this.messageManager = this.plugin.getMessageManager();
 
@@ -52,7 +51,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
-        PresetDataManager presetDataManager = Main.getInstance().getPresetDataManager();
+        GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
         ArrayList<String> keys = new ArrayList<>();
         if(presetDataManager.savedPresets().size() >= 1){
             keys.addAll(presetDataManager.savedPresets());
@@ -66,14 +65,14 @@ public class PresetsMenu extends PaginatedInventoryMenu {
             index = maxItemsPerPage * page + i;
             if(index >= keys.size()) break;
             if (keys.get(index) != null){
-                String defaultPreset = plugin.getPluginConfig().getDefaultLoadingPreset();
+                String defaultPreset = plugin.getPluginConfig().getDefaultGlobalLoadingPreset();
                 getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§l" + keys.get(index)).setDefaultLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset))).setLocalizedName(keys.get(index)).build());
             }
         }
     }
 
     public int getMaxPages(){
-        PresetDataManager presetDataManager = Main.getInstance().getPresetDataManager();
+        GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
         ArrayList<String> keys = new ArrayList<>(presetDataManager.savedPresets());
         if(keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
@@ -82,7 +81,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
     @Override
     public void handleMenu(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        PresetDataManager presetDataManager = Main.getInstance().getPresetDataManager();
+        GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
         if(event.getCurrentItem() == null) return;
 
         for(String presetName : presetDataManager.savedPresets()){
@@ -93,11 +92,11 @@ public class PresetsMenu extends PaginatedInventoryMenu {
             switch (event.getAction()) {
                 case PICKUP_ALL:
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_LOADED).replaceAll("%PRESET%", presetName));
-                    presetDataManager.loadPresetIntoEggCommands(presetName, collection, id);
-                    new EggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
+                    presetDataManager.loadPresetIntoCollectionCommands(presetName, collection);
+                    new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
                     break;
                 case PICKUP_HALF:
-                    if (!plugin.getPluginConfig().getDefaultLoadingPreset().equals(presetName)) {
+                    if (!plugin.getPluginConfig().getDefaultGlobalLoadingPreset().equals(presetName)) {
                         presetDataManager.deletePreset(presetName);
                         player.sendMessage(messageManager.getMessage(MessageKey.PRESET_DELETE).replaceAll("%PRESET%", presetName));
                     } else
@@ -105,7 +104,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
                     open(id, collection);
                     break;
                 case CLONE_STACK:
-                    plugin.getPluginConfig().setDefaultLoadingPreset(presetName);
+                    plugin.getPluginConfig().setDefaultGlobalLoadingPreset(presetName);
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_DEFAULT).replaceAll("%PRESET%", presetName));
                     open(id, collection);
                     break;
@@ -141,7 +140,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Back")) {
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                    new EggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
+                    new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
                 }
                 break;
         }

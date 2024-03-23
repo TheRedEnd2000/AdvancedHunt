@@ -63,8 +63,15 @@ Settings:
   # How long the update in the hint inventory is ( in ticks )
   HintUpdateTime: 20
 
+
+Presets:
+
   # Name of the preset that loads after placing a new egg
-  DefaultPresetLoad: default
+  DefaultIndividualPresetLoad: default
+
+  # Name of the preset that loads after placing a new egg
+  DefaultGlobalPresetLoad: default
+
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP

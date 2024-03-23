@@ -6,19 +6,14 @@ import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.managers.*;
-import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
-import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.*;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
-import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.NbtApiException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -51,7 +46,8 @@ public final class Main extends JavaPlugin {
     private PlayerEggDataManager playerEggDataManager;
     private RequirementsManager requirementsManager;
     private PermissionManager permissionManager;
-    private PresetDataManager presetDataManager;
+    private IndividualPresetDataManager individualPresetDataManager;
+    private GlobalPresetDataManager globalPresetDataManager;
     private MessageManager messageManager;
     public static String PREFIX = "";
     public static boolean setupDefaultCollection;
@@ -84,6 +80,7 @@ public final class Main extends JavaPlugin {
         if(setupDefaultCollection) {
             getRequirementsManager().changeActivity("default", true);
             getRequirementsManager().resetReset("default");
+            getGlobalPresetDataManager().loadPresetIntoCollectionCommands(getPluginConfig().getDefaultGlobalLoadingPreset(),"default");
         }
         playerEggDataManager.checkReset();
         eggManager.spawnEggParticle();
@@ -110,6 +107,8 @@ public final class Main extends JavaPlugin {
     }
 
     private void initManagers(){
+        individualPresetDataManager = new IndividualPresetDataManager(this);
+        globalPresetDataManager = new GlobalPresetDataManager(this);
         messageManager = new MessageManager();
         eggDataManager = new EggDataManager(this);
         eggManager = new EggManager();
@@ -118,7 +117,6 @@ public final class Main extends JavaPlugin {
         playerEggDataManager = new PlayerEggDataManager();
         requirementsManager = new RequirementsManager();
         permissionManager = new PermissionManager();
-        presetDataManager = new PresetDataManager(this);
     }
 
     private void initListeners(){
@@ -262,7 +260,11 @@ public final class Main extends JavaPlugin {
         return permissionManager;
     }
 
-    public PresetDataManager getPresetDataManager() {
-        return presetDataManager;
+    public IndividualPresetDataManager getIndividualPresetDataManager() {
+        return individualPresetDataManager;
+    }
+
+    public GlobalPresetDataManager getGlobalPresetDataManager() {
+        return globalPresetDataManager;
     }
 }

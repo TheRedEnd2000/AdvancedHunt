@@ -327,13 +327,22 @@ public class PluginConfig extends Configuration {
         setPlaceEggType(id, "PLAYER_HEAD");
     }
 
-    public void setDefaultLoadingPreset(String preset){
-        getConfig().set("Settings.DefaultPresetLoad", preset);
+    public void setDefaultIndividualLoadingPreset(String preset){
+        getConfig().set("Presets.DefaultIndividualPresetLoad", preset);
         saveConfig();
     }
 
-    public String getDefaultLoadingPreset(){
-        return getConfig().getString("Settings.DefaultPresetLoad");
+    public String getDefaultIndividualLoadingPreset(){
+        return getConfig().getString("Presets.DefaultIndividualPresetLoad");
+    }
+
+    public void setDefaultGlobalLoadingPreset(String preset){
+        getConfig().set("Presets.DefaultGlobalPresetLoad", preset);
+        saveConfig();
+    }
+
+    public String getDefaultGlobalLoadingPreset(){
+        return getConfig().getString("Presets.DefaultGlobalPresetLoad");
     }
 
     @Override

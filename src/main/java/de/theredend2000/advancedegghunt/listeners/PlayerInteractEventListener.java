@@ -4,7 +4,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.ExtraManager;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.EggRewardsMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.IndividualEggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
@@ -53,7 +53,7 @@ public class PlayerInteractEventListener implements Listener {
             }
             String id = eggManager.getEggID(event.getClickedBlock(), collection);
             if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.OpenRewards) && player.isSneaking()){
-                new EggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
+                new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
                 return;
             }
 
@@ -83,21 +83,21 @@ public class PlayerInteractEventListener implements Listener {
                 extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
             if (eggManager.checkFoundAll(player, collection)) {
                 player.playSound(player.getLocation(), soundManager.playAllEggsFound(), 1, 1);
-                if(!placedEggs.contains("PlacedEggs." + id + ".Rewards")) continue;
-                for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)) {
-                    boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
-                    if (placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll") && enabled) {
-                        String cmd = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
+                if(!placedEggs.contains("GlobalRewards.")) continue;
+                for (String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)) {
+                    boolean enabled = placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled");
+                    if (enabled) {
+                        String cmd = placedEggs.getString("GlobalRewards." + commandID + ".command");
                         Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                     }
                 }
             } else {
                 player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
                 if (Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()) {
-                    if(!placedEggs.contains("PlacedEggs." + id + ".Rewards")) continue;
+                    if(!placedEggs.contains("PlacedEggs." + id + ".Rewards.")) continue;
                     for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)) {
                         boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
-                        if (!placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".foundAll") && enabled) {
+                        if (enabled) {
                             String cmd = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
                             Bukkit.dispatchCommand((CommandSender) Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                         }

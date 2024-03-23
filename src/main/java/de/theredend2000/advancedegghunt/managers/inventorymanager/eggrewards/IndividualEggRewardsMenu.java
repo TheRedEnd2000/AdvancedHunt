@@ -2,7 +2,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.PresetDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
@@ -26,14 +26,14 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-public class EggRewardsMenu extends PaginatedInventoryMenu {
+public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
     private MessageManager messageManager;
     private Main plugin;
     private String id;
     private String collection;
 
-    public EggRewardsMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Egg Rewards", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
+    public IndividualEggRewardsMenu(PlayerMenuUtility playerMenuUtility) {
+        super(playerMenuUtility, "Individual Egg Rewards", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
         this.plugin = Main.getInstance();
         messageManager = this.plugin.getMessageManager();
 
@@ -55,6 +55,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
+        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§cSwitch to Global").build();
     }
 
     private void menuContent(String collection) {
@@ -117,13 +118,13 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
 
     public void convertItemIntoCommand(ItemStack itemStack, String id, String collection){
         String itemNBT = NBT.get(itemStack, Object::toString);
-        addCommand(id, MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection);
+        addCommand(id, MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"PlacedEggs." + id + ".Rewards.");
     }
 
-    private void addCommand(String id, String command, String collection){
+    private void addCommand(String id, String command, String collection,String path){
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-        if (placedEggs.contains("PlacedEggs." + id + ".Rewards.")) {
-            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.");
+        if (placedEggs.contains(path)) {
+            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection(path);
             int nextNumber = 0;
             Set<String> keys = rewardsSection.getKeys(false);
             if (!keys.isEmpty()) {
@@ -135,9 +136,9 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                     }
                 }
             }
-            plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), id, command, collection);
+            plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), command, collection,path);
         } else {
-            plugin.getEggDataManager().setRewards("0", id, command, collection);
+            plugin.getEggDataManager().setRewards("0", command, collection,path);
         }
     }
 
@@ -201,19 +202,20 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case EMERALD_BLOCK:
-                if (placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false).size() >= 1) {
+                if (placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false).size() < 1) {
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_FAILED_COMMANDS));
                     break;
                 }
                 new AnvilGUI.Builder()
                         .onClose(stateSnapshot -> {
                             if (!stateSnapshot.getText().isEmpty()) {
-                                PresetDataManager presetDataManager = Main.getInstance().getPresetDataManager();
+                                IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
                                 String preset = stateSnapshot.getText();
                                 if (!presetDataManager.containsPreset(preset)) {
                                     presetDataManager.createPresetFile(stateSnapshot.getText());
                                     presetDataManager.loadCommandsIntoPreset(preset, collection, id);
                                     menuContent(collection);
+                                    open(id,collection);
                                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_SAVED).replaceAll("%PRESET%", preset));
                                 } else {
                                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_ALREADY_EXISTS).replaceAll("%PRESET%", preset));
@@ -230,7 +232,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case EMERALD:
-                new PresetsMenu(super.playerMenuUtility).open(id, collection);
+                new IndividualPresetsMenu(super.playerMenuUtility).open(id, collection);
                 break;
             case PLAYER_HEAD:
                 if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
@@ -251,6 +253,8 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                         player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
                         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     }
+                } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Global")) {
+                    new GlobalEggRewardsMenu(super.playerMenuUtility).open(id,collection);
                 }
                 break;
         }
