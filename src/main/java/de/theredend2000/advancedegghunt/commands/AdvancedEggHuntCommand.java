@@ -170,7 +170,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             }
                         }
 
-                        String base64Texture = fullTexture.replaceFirst(".+?mUv", "");
+                        String base64Texture = fullTexture;
                         Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
                         Main.getInstance().getPluginConfig().saveData();
                         player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_SUCCESS));

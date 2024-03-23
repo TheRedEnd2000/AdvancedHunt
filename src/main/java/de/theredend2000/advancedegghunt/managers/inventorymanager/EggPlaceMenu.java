@@ -115,7 +115,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
 
-        if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) { //TODO: Check working as intended
+        if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) {
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
             String fullTexture = NBT.get(event.getCurrentItem(), nbt -> {
                 final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
