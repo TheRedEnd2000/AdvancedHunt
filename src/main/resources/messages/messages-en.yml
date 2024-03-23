@@ -65,4 +65,4 @@ preset-delete: '&7You have &asuccessfully &cdeleted &7the &epreset %PRESET%&7.'
 preset-default: '&7You changed the new &adefault loading &7preset to &e%PRESET%&7.'
 preset-not-delete-default: '&cYou cannot delete the preset that is selected as default loading preset.'
 
-setting-commandfeedback: 'Command Feedback has been discontinued. Either manually do "/gamerule sendCommandFeedback false" or remove the "minecraft.admin.command_feedback" permission.'
+setting-commandfeedback: '&aCommand Feedback has been &4discontinued.&a Either manually do "/gamerule sendCommandFeedback false" or remove the "minecraft.admin.command_feedback" permission.'
