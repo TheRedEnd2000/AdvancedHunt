@@ -8,6 +8,10 @@ import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadableNBTList;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -113,8 +117,23 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
 
         if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) { //TODO: Check working as intended
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
+            String fullTexture = NBT.get(event.getCurrentItem(), nbt -> {
+                final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
+                if (skullOwnerCompound == null) return null;
+                ReadableNBT skullOwnerPropertiesCompound = skullOwnerCompound.getCompound("Properties");
+                if (skullOwnerPropertiesCompound == null) return null;
+                ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesTexturesCompound = skullOwnerPropertiesCompound.getCompoundList("textures");
+                if (skullOwnerPropertiesTexturesCompound == null) return null;
+
+                return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
+            });
+
+            if (fullTexture != null) fullTexture = fullTexture.replaceFirst(".+?mUv", "");
             for(String key : keys){
-                if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key))){
+                if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key)) &&
+                        !(event.getCurrentItem().getType().name().equalsIgnoreCase(XMaterial.PLAYER_HEAD.name()) &&
+                                fullTexture != null &&
+                                !Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture))) {
                     super.playerMenuUtility.getOwner().sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
                     return;
                 }
@@ -131,6 +150,9 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                 }
             }
             Main.getInstance().getPluginConfig().setPlaceEggType(nextNumber, event.getCurrentItem().getType().name().toUpperCase());
+            if (fullTexture != null) {
+                Main.getInstance().getPluginConfig().setPlaceEggTexture(nextNumber, fullTexture);
+            }
             Main.getInstance().getPluginConfig().saveData();
             this.open();
             return;
