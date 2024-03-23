@@ -9,6 +9,7 @@ import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -21,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
     private MessageManager messageManager;
@@ -79,31 +81,46 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
                     boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
-                    XMaterial xMaterial = XMaterial.PAPER;
+                    ItemStack itemStack = XMaterial.PAPER.parseItem();
                     if (startsWithGive) {
                         String[] parts = command.split(" ", 3);
 
                         if (parts.length >= 2 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
                             String materialName = parts[2];
 
-                            xMaterial = getItem(materialName);
+                            itemStack = getItem(materialName);
                         }
                     }
-                    getInventory().addItem(new ItemBuilder(xMaterial).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
     }
 
-    public XMaterial getItem(String itemString) {
+    public ItemStack getItem(String itemString) {
         int metaDataStartIndex = itemString.indexOf('{');
+        int metaDataEndIndex = itemString.lastIndexOf('}');
+        if (metaDataEndIndex == -1) metaDataEndIndex = itemString.length() - 1;
+        else metaDataEndIndex += 1;
+        ItemStack itemStack;
 
-        Optional<XMaterial> material = XMaterial.matchXMaterial(itemString.substring(0, metaDataStartIndex));
+        Optional<XMaterial> material;
+        if (metaDataStartIndex == -1){
+            material = XMaterial.matchXMaterial(itemString);
+            if (material.isEmpty()) return XMaterial.PAPER.parseItem();
+            return material.get().parseItem();
+        }
 
-        if (material.isEmpty()) return XMaterial.PAPER;
+        material = XMaterial.matchXMaterial(itemString.substring(0, metaDataStartIndex));
 
-        return material.get();
+        if (material.isEmpty()) return XMaterial.PAPER.parseItem();
+
+        var json = itemString.substring(metaDataStartIndex, metaDataEndIndex);
+        var item = material.get().parseItem();
+        NBT.modify(item, (Consumer<ReadWriteItemNBT>) nbt -> nbt.mergeCompound(NBT.parseNBT(json)));
+
+        return item;
     }
 
     public int getMaxPages(){
@@ -118,6 +135,9 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
 
     public void convertItemIntoCommand(ItemStack itemStack, String id, String collection){
         String itemNBT = NBT.get(itemStack, Object::toString);
+        var item = XMaterial.PLAYER_HEAD.parseItem();
+        String json = NBT.get(itemStack, Object::toString);
+        NBT.modify(item, (Consumer<ReadWriteItemNBT>) nbt -> nbt.mergeCompound(NBT.parseNBT(json)));
         addCommand(id, MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"PlacedEggs." + id + ".Rewards.");
     }
 
