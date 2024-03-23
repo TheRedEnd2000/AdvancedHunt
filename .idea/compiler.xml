@@ -9,8 +9,5 @@
         <module name="AdvancedEggHunt" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="AdvancedEggHunt" target="11" />
-    </bytecodeTargetLevel>
   </component>
 </project>

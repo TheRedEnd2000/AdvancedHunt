@@ -1,4 +1,4 @@
-config-version: 3.0
+config-version: 3.1
 
 # Change the language
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
@@ -7,9 +7,9 @@ messages-lang: en
 #Auto download
 Download:
   # Will be downloaded if a new plugin version is out (Not working rn)
-  AdvancedEggHunt: true
+  AdvancedEggHunt: false
   # Will download for the plugin to work (This should not be disabled)
-  NBT-API: true
+  NBT-API: false
 
 prefix: '&f[&eAdvancedEggHunt&f] &r'
 
@@ -103,6 +103,18 @@ BlacklistedCommands:
   - minecraft:summon
   - stop
   - minecraft:stop
+  - restart
+  - minecraft:restart
+  - execute
+  - minecraft:execute
+  - setblock
+  - minecraft:setblock
+  - fill
+  - minecraft:fill
+  - reload
+  - minecraft:reload
+  - rl
+  - minecraft:rl
 
 
 PlaceEggs:

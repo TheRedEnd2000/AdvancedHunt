@@ -33,15 +33,22 @@ public class PlayerChatEventListener implements Listener {
             return;
         }
         event.setCancelled(true);
+
         FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
         if (playerConfig.contains("Change.")) {
             String id = playerConfig.getString("Change.id");
             String collection = playerConfig.getString("Change.collection");
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
+
             if (event.getMessage().equalsIgnoreCase("cancel")) {
                 Main.getInstance().getPlayerAddCommand().remove(player);
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CANCEL));
                 new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
+                return;
+            }
+
+            if(Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
             addCommand(placedEggs, id, event.getMessage(), collection, player,"PlacedEggs." + id + ".Rewards.");
@@ -49,15 +56,22 @@ public class PlayerChatEventListener implements Listener {
             playerConfig.set("Change", null);
             Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
             new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
+            return;
         }
         if (playerConfig.contains("GlobalChange.")) {
             String id = playerConfig.getString("GlobalChange.id");
             String collection = playerConfig.getString("GlobalChange.collection");
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
+
             if (event.getMessage().equalsIgnoreCase("cancel")) {
                 Main.getInstance().getPlayerAddCommand().remove(player);
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_CANCEL));
                 new GlobalEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
+                return;
+            }
+
+            if(Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
             addCommand(placedEggs, id, event.getMessage(), collection, player,"GlobalRewards.");
@@ -65,6 +79,7 @@ public class PlayerChatEventListener implements Listener {
             playerConfig.set("GlobalChange", null);
             Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
             new GlobalEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
+            return;
         }
     }
 

@@ -68,7 +68,7 @@ public class BlockBreakEventListener implements Listener {
     public void onPlayerBucketFillEvent(PlayerBucketEmptyEvent event) {
         var version = Bukkit.getBukkitVersion().split("-",2);
 
-        if (VersionComparator.isLessThan(version[0], "1.15")) return;
+        if (VersionComparator.isLessThan(version[0], "1.14.4")) return;
         Block block = event.getBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 

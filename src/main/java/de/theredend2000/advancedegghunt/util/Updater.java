@@ -26,11 +26,11 @@ public class Updater implements Listener {
 
     public boolean isOutdated(Player player) {
         try {
-            HttpURLConnection c = (HttpURLConnection)new URL("https://api.spigotmc.org/legacy/update.php?resource=" + key).openConnection();
-            String newVersion = new BufferedReader(new InputStreamReader(c.getInputStream())).readLine();
-            c.disconnect();
-            String oldVersion = plugin.getDescription().getVersion();
-            if(!newVersion.equals(oldVersion)) {
+            HttpURLConnection connection = (HttpURLConnection)new URL("https://api.spigotmc.org/legacy/update.php?resource=" + key).openConnection();
+            String newVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
+            connection.disconnect();
+            String oldVersion = plugin.getDescription().getVersion().substring(1);
+            if(VersionComparator.isLessThan(oldVersion, newVersion)) {
                 player.sendMessage(Main.PREFIX + "§aThere is a newer version available. Please update your plugin§a. §aVersion: §2§l" + oldVersion + "§6 --> §2§l" + newVersion);
                 return true;
             }
@@ -43,11 +43,11 @@ public class Updater implements Listener {
     }
     public boolean isOutdated() {
         try {
-            HttpURLConnection c = (HttpURLConnection)new URL("https://api.spigotmc.org/legacy/update.php?resource=" + key).openConnection();
-            String newVersion = new BufferedReader(new InputStreamReader(c.getInputStream())).readLine();
-            c.disconnect();
-            String oldVersion = plugin.getDescription().getVersion();
-            if(!newVersion.equals(oldVersion)) {
+            HttpURLConnection connection = (HttpURLConnection)new URL("https://api.spigotmc.org/legacy/update.php?resource=" + key).openConnection();
+            String newVersion = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
+            connection.disconnect();
+            String oldVersion = plugin.getDescription().getVersion().substring(1);
+            if(VersionComparator.isLessThan(oldVersion, newVersion)) {
                 Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§cYou do not have the most updated version of §eAdvancedEggHunt§c.");
                 Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§cPlease chance the version: §4" + oldVersion + "§6 --> §2§l" + newVersion);
                 return true;

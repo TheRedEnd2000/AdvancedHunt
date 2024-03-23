@@ -42,6 +42,7 @@ command-cancel: '&cDu hast die Aktion erfolgreich abgebrochen.'
 command-add: '&7Der &6Befehl #%ID% &7wurde &aerfolgreich &7hinzugefügt.'
 command-expired: '&7Du hast den &6Befehl &cnicht schnell genug &3eingegeben. &4Versuche es erneuert!'
 one-command: '&cDu kannst nur einen Befehl zu gleichen Zeit eingeben.'
+command-blacklisted: '&cDieser Command ist auf der Black-List!'
 
 foundeggs-reset: '&7Alle &egefundenen Eier &7wurden &czurückgesetzt&7.'
 foundeggs-player-reset: '&7Alle &egefunden Eier &7von &a%PLAYER% &7wurden &czurückgesetzt&7.'

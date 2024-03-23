@@ -42,6 +42,7 @@ command-cancel: '&cYou canceled the action successfully.'
 command-add: '&7The &6command #%ID% &7was added &asuccessfully&7.'
 command-expired: '&7You have &cnot entered &7the &6command &7fast &3enough. &7&lPlease try again!'
 one-command: '&cYou can only enter one command at a time.'
+command-blacklisted: '&cThis command is blacklisted!'
 
 foundeggs-reset: '&7All &eFoundEggs &7has been &creset&7.'
 foundeggs-player-reset: '&7All &eFoundEggs &7of &a%PLAYER% &7has been &creset&7.'
