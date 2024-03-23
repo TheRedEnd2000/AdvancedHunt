@@ -17,10 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -162,6 +159,16 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         if (fullTexture == null) {
                             player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_FAILED_PROFILE));
                             return true;
+                        }
+                        fullTexture = fullTexture.replaceFirst(".+?mUv", "");
+                        for(String key : Main.getInstance().getPluginConfig().getPlaceEggIds()){
+                            if(item.getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key)) &&
+                                    !(item.getType().name().equalsIgnoreCase(XMaterial.PLAYER_HEAD.name()) &&
+                                            fullTexture != null &&
+                                            !Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture))) {
+                                player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
+                                return true;
+                            }
                         }
 
                         String base64Texture = fullTexture.replaceFirst(".+?mUv", "");
