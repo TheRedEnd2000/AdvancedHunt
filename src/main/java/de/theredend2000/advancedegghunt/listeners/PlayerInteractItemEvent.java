@@ -1,6 +1,5 @@
 package de.theredend2000.advancedegghunt.listeners;
 
-import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.EggPlaceMenu;
 import org.bukkit.Bukkit;
@@ -21,15 +20,22 @@ public class PlayerInteractItemEvent implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event){
         Player player = event.getPlayer();
-        if (!event.getItemDrop().getItemStack().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()) ||
-                event.getItemDrop().getItemStack().getItemMeta() == null ||
-                !event.getItemDrop().getItemStack().getItemMeta().hasLocalizedName() ||
-                !event.getItemDrop().getItemStack().getItemMeta().getLocalizedName().equals("egghunt.finish") ||
-                !Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+        if (event.getItemDrop().getItemStack().getItemMeta() == null ||
+                !event.getItemDrop().getItemStack().getItemMeta().hasLocalizedName()) {
             return;
         }
-        event.getItemDrop().remove();
-        Bukkit.dispatchCommand(player, "egghunt placeEggs");
+
+        if (event.getItemDrop().getItemStack().getItemMeta().getLocalizedName().equals("egghunt.finish") &&
+                Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+            event.getItemDrop().remove();
+            Bukkit.dispatchCommand(player, "egghunt placeEggs");
+            return;
+        }
+
+        if (event.getItemDrop().getItemStack().getItemMeta().getLocalizedName().equals("egghunt.eggs")){
+            event.setCancelled(true);
+            return;
+        }
     }
 
     @EventHandler
