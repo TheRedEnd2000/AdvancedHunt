@@ -63,3 +63,5 @@ preset-loaded: '&7Die &eVoreinstellung %PRESET% &7wurde &aerfolgreich &7geladen.
 preset-delete: '&7Du hast &aerfolgreich &7die &eVoreinstellung %PRESET% &cgelöscht&7.'
 preset-default: '&7Du hast die &aStandard ladende &7Voreinstellung zu &e%PRESET% &7geändert.'
 preset-not-delete-default: '&cDu kannst die Standard ladende Voreinstellung nicht löschen.'
+
+setting-commandfeedback: '&aCommand Feedback wurde &4eingestellt. &aEntweder man benutzt nun dem Command "/gamerule sendCommandFeedback false" oder entfernt die Berechtigung "minecraft.admin.command_feedback".'
