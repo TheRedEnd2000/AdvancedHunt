@@ -43,6 +43,16 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
     public void open(String id, String collection) {
         this.id = id;
         this.collection = collection;
+
+        menuContent(collection);
+
+        playerMenuUtility.getOwner().openInventory(getInventory());
+    }
+
+    public void open(String collection) {
+        this.id = null;
+        this.collection = collection;
+
         menuContent(collection);
 
         playerMenuUtility.getOwner().openInventory(getInventory());
@@ -58,6 +68,13 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
     private void menuContent(String collection) {
         getInventory().setContents(inventoryContent);
 
+        getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
+                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
+        getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
+                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
+
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
@@ -67,7 +84,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < maxItemsPerPage; i++) {
                 index = maxItemsPerPage * page + i;
-                if(index >= keys.size()) break;
+                if(i >= keys.size()) break;
                 if (keys.get(index) != null){
                     String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§","&");
                     boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
@@ -80,13 +97,6 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
     }
 
     public int getMaxPages(){
-        getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
-                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
-        getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
-                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
-
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
