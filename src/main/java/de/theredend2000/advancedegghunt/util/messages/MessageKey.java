@@ -33,6 +33,7 @@ public enum MessageKey {
 
     SOUND_VOLUME("sound-volume"),
     EGG_VISIBLE("egg-visible"),
+    EGG_SHOW_WARNING("egg-show-warning"),
     ARMORSTAND_GLOW("armorstand-glow"),
     EGG_RADIUS("egg-radius"),
 

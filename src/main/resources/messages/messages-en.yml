@@ -32,6 +32,7 @@ egg-nearby: '&3&lEGG NEARBY'
 
 sound-volume: '&cSound volume can only between &e0 and 15&c!'
 egg-visible: '&aAll Eggs are now visible for &6%TIME_VISIBLE% seconds&a.'
+egg-show-warning: '&4WARNING: &aEggs are visible for all players.'
 armorstand-glow: '&cArmor stand glow can only between &e0 and 120&c!'
 egg-radius: '&cEgg nearby message can only between &e0 and 50&c!'
 
