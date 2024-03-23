@@ -156,16 +156,15 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
                             return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
                         });
+
                         if (fullTexture == null) {
                             player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_FAILED_PROFILE));
                             return true;
                         }
+
                         fullTexture = fullTexture.replaceFirst(".+?mUv", "");
                         for(String key : Main.getInstance().getPluginConfig().getPlaceEggIds()){
-                            if(item.getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key)) &&
-                                    !(item.getType().name().equalsIgnoreCase(XMaterial.PLAYER_HEAD.name()) &&
-                                            fullTexture != null &&
-                                            !Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture))) {
+                            if(Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture)) {
                                 player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
                                 return true;
                             }
