@@ -49,15 +49,6 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
-    public void open(String collection) {
-        this.id = null;
-        this.collection = collection;
-
-        menuContent(collection);
-
-        playerMenuUtility.getOwner().openInventory(getInventory());
-    }
-
     private void addMenuBorderButtons() {
         inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other eggs again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.").build();
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
@@ -80,20 +71,20 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards").getKeys(false));
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward","§7or load a preset.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < maxItemsPerPage; i++) {
                 index = maxItemsPerPage * page + i;
-                if(i >= keys.size()) break;
+                if(index >= keys.size()) break;
                 if (keys.get(index) != null){
-                    String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§","&");
+                    String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
                     boolean foundAll = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".foundAll");
-                    getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("","§9Information:","§7Command: §6" + command,"§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Action on: " + (foundAll ? "§6Found all eggs" : "§6Found one egg"),"","§eLEFT-CLICK to toggle enabled.","§eMIDDLE-CLICK to toggle action.","§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "§7Action on: " + (foundAll ? "§6Found all eggs" : "§6Found one egg"), "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to toggle action.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward","§7or load a preset.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
     }
 
     public int getMaxPages(){
@@ -126,7 +117,7 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                     }
                 }
             }
-            plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), id ,command, collection);
+            plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), id, command, collection);
         } else {
             plugin.getEggDataManager().setRewards("0", id, command, collection);
         }
@@ -166,8 +157,8 @@ public class EggRewardsMenu extends PaginatedInventoryMenu {
                         break;
                 }
                 open(id, collection);
-                player.playSound(player.getLocation(),Main.getInstance().getSoundManager().playInventorySuccessSound(),Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                break;
+                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                return;
             }
         }
 

@@ -133,6 +133,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
             Main.getInstance().getPluginConfig().setPlaceEggType(nextNumber, event.getCurrentItem().getType().name().toUpperCase());
             Main.getInstance().getPluginConfig().saveData();
             this.open();
+            return;
         }
 
         ArrayList<String> keys = new ArrayList<>();
@@ -147,11 +148,13 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                     player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 else
                     player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                return;
             }
         }
 
         if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+            return;
         }
 
         XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());

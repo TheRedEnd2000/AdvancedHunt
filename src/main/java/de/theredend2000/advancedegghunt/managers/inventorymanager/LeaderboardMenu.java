@@ -166,6 +166,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+            return;
         }
 
         XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());

@@ -62,8 +62,10 @@ public class RequirementWeekday extends InventoryMenu {
                 placedEggs.set("Requirements.Weekday." + weekdays, !enabled);
                 plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                 menuContent(collection);
+                return;
             }
         }
+
         if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Close"))
             player.closeInventory();
         if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Back"))

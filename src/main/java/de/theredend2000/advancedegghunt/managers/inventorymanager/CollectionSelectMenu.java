@@ -12,7 +12,6 @@ import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
@@ -94,16 +93,19 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
             if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(collection)) {
                 continue;
             }
-            if(event.getAction() == InventoryAction.PICKUP_ALL){
-                Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), collection);
-                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                open();
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", collection));
-            }else if(event.getAction() == InventoryAction.PICKUP_HALF){
-                if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.ChangeCollections)) {
-                    new CollectionEditor(Main.getPlayerMenuUtility(player)).open(selectedCollection);
+            switch (event.getAction()) {
+                case PICKUP_ALL:
+                    Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), collection);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                }
+                    open();
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", collection));
+                    return;
+                case PICKUP_HALF:
+                    if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.ChangeCollections)) {
+                        new CollectionEditor(Main.getPlayerMenuUtility(player)).open(selectedCollection);
+                        player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    }
+                    return;
             }
         }
 

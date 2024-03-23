@@ -3,13 +3,10 @@ package de.theredend2000.advancedegghunt.util;
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.logging.Logger;
 
 public class Downloader {
 
@@ -21,9 +18,9 @@ public class Downloader {
         try {
             String downloadFile = new File(plugin.getDataFolder().getParent()).getAbsolutePath();
             if(plugin.getPluginConfig().getAutoDownloadNBTAPI())
-                downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3",downloadFile);
+                downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3", downloadFile);
             /*if(plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && check is outdated)
-                downloadPluginFromSpigot(109085,downloadFile); //returns 403*/
+                downloadPluginFromSpigot(109085, downloadFile); //returns 403*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

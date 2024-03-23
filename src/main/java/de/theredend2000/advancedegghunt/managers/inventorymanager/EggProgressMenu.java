@@ -59,6 +59,7 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
         if (keys == null || keys.isEmpty()) {
             return;
         }
+
         for(int i = 0; i < getMaxItemsPerPage(); i++) {
             index = getMaxItemsPerPage() * page + i;
             if(index >= keys.size()) break;
@@ -109,6 +110,7 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
 
         if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+            return;
         }
 
         XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());

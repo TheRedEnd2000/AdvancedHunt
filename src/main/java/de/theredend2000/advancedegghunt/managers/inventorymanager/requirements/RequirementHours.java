@@ -60,8 +60,10 @@ public class RequirementHours extends InventoryMenu {
                 placedEggs.set("Requirements.Hours." + i, !enabled);
                 plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                 menuContent(collection);
+                return;
             }
         }
+
         if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Close"))
             player.closeInventory();
         if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Back"))

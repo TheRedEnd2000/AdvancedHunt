@@ -110,6 +110,7 @@ public class PresetsMenu extends PaginatedInventoryMenu {
                     break;
             }
             player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+            return;
         }
 
         XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());

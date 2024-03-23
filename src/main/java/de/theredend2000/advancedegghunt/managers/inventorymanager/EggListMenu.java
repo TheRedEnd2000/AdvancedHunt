@@ -111,15 +111,17 @@ public class EggListMenu extends PaginatedInventoryMenu {
                     player.closeInventory();
                     player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.TELEPORT_TO_EGG).replaceAll("%ID%", id));
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    return;
                 }else if(event.getAction() == InventoryAction.PICKUP_HALF){
                     new EggInformationMenu(Main.getPlayerMenuUtility(player)).open(id);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    return;
                 }
             }
         }
 
         if(event.getCurrentItem().getType().equals(Material.PAPER) &&
-                ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+                ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")) {
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
             return;
         }
