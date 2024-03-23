@@ -102,20 +102,6 @@ public class PluginConfig extends Configuration {
 		getConfig().set("Settings.PlayerFoundAllEggsReward", PlayerFoundAllEggsReward);
 	}
 
-    public boolean getDisableCommandFeedback() {
-        return getConfig().getBoolean("Settings.DisableCommandFeedback");
-    }
-	public void setDisableCommandFeedback(boolean DisableCommandFeedback) {
-		getConfig().set("Settings.DisableCommandFeedback", DisableCommandFeedback);
-	}
-
-    public boolean getForcedCommandFeedback() {
-        return getConfig().getBoolean("Settings.ForcedCommandFeedback");
-    }
-    public void setForcedCommandFeedback(boolean DisableCommandFeedback) {
-        getConfig().set("Settings.ForcedCommandFeedback", DisableCommandFeedback);
-    }
-
     public boolean getShowCoordinatesWhenEggFoundInProgressInventory() {
         return getConfig().getBoolean("Settings.ShowCoordinatesWhenEggFoundInProgressInventory");
     }

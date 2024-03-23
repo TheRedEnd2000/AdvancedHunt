@@ -64,7 +64,9 @@ public enum MessageKey {
     PRESET_LOADED("preset-loaded"),
     PRESET_DELETE("preset-delete"),
     PRESET_DEFAULT("preset-default"),
-    PRESET_NOT_DELETE_DEFAULT("preset-not-delete-default");
+    PRESET_NOT_DELETE_DEFAULT("preset-not-delete-default"),
+
+    SETTING_COMMANDFEEDBACK("setting-commandfeedback");
 
 
     private final String path;
