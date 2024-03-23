@@ -46,7 +46,7 @@ public class RequirementMonth extends InventoryMenu {
         getInventory().setContents(inventoryContent);
         for(String month : new ArrayList<>(DateTimeUtil.getMonthList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.GRASS_BLOCK : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + month).setLore("§7Makes that the eggs are only", "§7available in the month " + month, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to add " + month + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.GRASS_BLOCK : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + month).setLore("§7Makes that the eggs are only", "§7available in the month " + month, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + month + " to the requirements.").withGlow(enabled).build());
         }
     }
 

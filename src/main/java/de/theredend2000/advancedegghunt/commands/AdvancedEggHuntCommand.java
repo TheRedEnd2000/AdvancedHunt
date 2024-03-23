@@ -288,13 +288,14 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6/advancedegghunt help §7-> §bShows this help messages and information.");
         player.sendMessage("§6/advancedegghunt reload §7-> §bReloads the config.");
         player.sendMessage("§6/advancedegghunt list §7-> §bLists all placed eggs.");
-        player.sendMessage("§6/advancedegghunt placeEggs §7-> §bEnter Place-Mode the place or break eggs.");
+        player.sendMessage("§6/advancedegghunt placeEggs §7-> §bEnter Place-Mode to place or break eggs.");
         player.sendMessage("§6/advancedegghunt settings §7-> §bConfigure many settings of the plugin.");
         player.sendMessage("§6/advancedegghunt hint §7-> §bOpens the hint menu to find eggs easier.");
         player.sendMessage("§6/advancedegghunt progress §7-> §bView your progress of the eggs.");
         player.sendMessage("§6/advancedegghunt show §7-> §bSpawns an glowing armorstand at every egg.");
         player.sendMessage("§6/advancedegghunt commands §7-> §bChange commands or add more.");
         player.sendMessage("§6/advancedegghunt reset [player | all] §7-> §bResets the FoundEggs.");
+        player.sendMessage("§6/advancedegghunt eggImport §7-> §bImport a new place egg.");
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("§3-----------------------------------------");
     }
