@@ -32,6 +32,7 @@ egg-nearby: '&3&lEI IN DER NÄHE'
 
 sound-volume: '&cDie Sound Lautstärke kann nur zwischen &e0 und 15&c sein!'
 egg-visible: '&aAlle Eier sind nun für &6%TIME_VISIBLE% Sekunden&a sichtbar.'
+egg-show-warning: '&4ACHTUNG: &aDie Eier sind sichtbar für alle Spieler.'
 armorstand-glow: '&cRüstungsständer-Leuchten kann nur zwischen &e0 und 120&c sein!'
 egg-radius: '&cEi nahe kann nur zwischen &e0 und 50&c sein!'
 

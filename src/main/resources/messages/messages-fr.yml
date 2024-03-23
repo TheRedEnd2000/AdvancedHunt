@@ -32,6 +32,7 @@ egg-nearby: '&3&lOEUF À PROXIMITÉ'
 
 sound-volume: '&cLe volume sonore ne peut être compris qu''entre &e0 et 15&c!'
 egg-visible: '&aTous les oeufs sont maintenant visibles pour &6%TIME_VISIBLE% secondes&a.'
+egg-show-warning: 'NOT IMPLEMENTED'
 armorstand-glow: '&cLa lueur du support d''armure ne peut être comprise qu''entre &e0 et 120&c!'
 egg-radius: '&cLe message d''oeuf à proximité ne peut être compris qu''entre &e0 et 50&c!'
 
@@ -63,3 +64,5 @@ preset-loaded: '&7Le &epréréglage %PRESET% &7a été chargé avec &asuccès&7.
 preset-delete: '&7Vous avez &csupprimé avec &asuccès &7le &epréréglage %PRESET%&7.'
 preset-default: '&7Vous avez modifié le nouveau &7préréglage de &achargement par défaut &7en &e%PRESET%&7.'
 preset-not-delete-default: '&cVous ne pouvez pas supprimer le préréglage sélectionné comme préréglage de chargement par défaut.'
+
+setting-commandfeedback: 'NOT IMPLEMENTED'

@@ -32,6 +32,7 @@ egg-nearby: '&3&lTRỨNG Ở GẦN'
 
 sound-volume: '&cÂm lượng âm thanh chỉ có thể giữa &e0 và 15&c!'
 egg-visible: '&aTất cả Trứng đang được hiển thị trong &6%TIME_VISIBLE% giây&a.'
+egg-show-warning: 'NOT IMPLEMENTED'
 armorstand-glow: '&cGiá treo vật phẩm chỉ phát sáng với giá trị giữa &e0 và 120&c!'
 egg-radius: '&cPhạm vi hiển thị tin nhắn Trứng ở gần có giá trị ở giữa &e0 và 50&c!'
 
@@ -62,3 +63,5 @@ preset-failed-commands: '&cCó quá ít lệnh để lưu.'
 preset-loaded: '&eCài đặt %PRESET% &7đã được chạy &athành công&7.'
 preset-delete: '&7Bạn đã &cxoá &athành công &ecài đặt %PRESET%&7.'
 preset-default: '&7Bạn đã đổi cài đặt &amặc định &7thành &e%PRESET%&7.'
+
+setting-commandfeedback: 'NOT IMPLEMENTED'

@@ -32,6 +32,7 @@ egg-nearby: '&3&lKACHAKACHI DIM ROYECHE'
 
 sound-volume: '&cSobder matra shudu matro &e0 and 15&c er moddhe hote pare!'
 egg-visible: '&aSomosto Dim &6%TIME_VISIBLE% seconds&a er jonno dekha jabe.'
+egg-show-warning: 'NOT IMPLEMENTED'
 armorstand-glow: '&cArmorstand glow shudu matro &e0 and 120&c er moddhe hote pare!'
 egg-radius: '&cDim kachakachi thakar barta shudu matro &e0 and 50&c er moddhe hote pare!'
 
@@ -62,3 +63,5 @@ preset-failed-commands: '&cSongrokkhon korar jonno porjapto command nei'
 preset-loaded: '&ePreset %PRESET% &7ti &asofolvabe &7load hoyeche.'
 preset-delete: '&7Apni &asofolvabe &e%PRESET% preset &7ti &cmuche felechen.'
 preset-default: '&7Apni &e%PRESET%&7 preset tike notun &adefault loading &7e poriborton korechen.'
+
+setting-commandfeedback: 'NOT IMPLEMENTED'
