@@ -54,6 +54,19 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
         inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§bSwitch to Global").setSkullOwner(Main.getTexture("NTk3ZTRlMjdhMDRhZmE1ZjA2MTA4MjY1YTliZmI3OTc2MzAzOTFjN2YzZDg4MGQyNDRmNjEwYmIxZmYzOTNkOCJ9fX0=")).setLore("","§6Switch to Global:","§7Switching to global lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lall §7egg.","","§eClick to switch").build();
+        inventoryContent[7] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("MTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0="))
+                .setDisplayname("§9Information")
+                .setLore("§7The individual egg rewards count",
+                        "§7as §7§lone egg reward§7.",
+                        "§7This means if the player founds §7§lone egg§7,",
+                        "§7all commands that are in this inventory",
+                        "§7will get executed.",
+                        "",
+                        "§c§n§oThis commands will only count for this egg.",
+                        "",
+                        "§7You can save all listed commands as present",
+                        "§7to load it in other eggs or setting it as default.").build();
     }
 
     private void menuContent(String collection) {
