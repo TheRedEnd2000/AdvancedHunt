@@ -24,7 +24,6 @@ public class Converter {
     private void convertToNewCommandSystem() {
         for (String collection : plugin.getEggDataManager().savedEggCollections()) {
             FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-
             if (placedEggs.contains("Rewards.") && placedEggs.contains("PlacedEggs.")) {
                 ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("Rewards.");
                 ConfigurationSection placedEggsSection = placedEggs.getConfigurationSection("PlacedEggs.");
