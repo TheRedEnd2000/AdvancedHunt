@@ -12,7 +12,6 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,10 +20,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
     private MessageManager messageManager;
@@ -85,24 +81,29 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
                     XMaterial xMaterial = XMaterial.PAPER;
                     if (startsWithGive) {
-                        String[] parts = command.split(" ");
+                        String[] parts = command.split(" ", 3);
 
-                        // Überprüfe, ob der Befehl mit "give" beginnt und genügend Teile hat
                         if (parts.length >= 2 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
-                            // Extrahiere das Material aus dem Befehl
                             String materialName = parts[2];
-                            Bukkit.broadcastMessage(materialName);
 
-                            // Erstelle den ItemStack basierend auf dem Material
-                            xMaterial = XMaterial.matchXMaterial(materialName).orElse(XMaterial.STONE);
+                            xMaterial = getItem(materialName);
                         }
                     }
-                    String itemNBT = NBT.get(xMaterial.parseItem(), Object::toString);
-                    getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(itemNBT).orElse(XMaterial.PAPER)).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(xMaterial).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
+    }
+
+    public XMaterial getItem(String itemString) {
+        int metaDataStartIndex = itemString.indexOf('{');
+
+        Optional<XMaterial> material = XMaterial.matchXMaterial(itemString.substring(0, metaDataStartIndex));
+
+        if (material.isEmpty()) return XMaterial.PAPER;
+
+        return material.get();
     }
 
     public int getMaxPages(){
