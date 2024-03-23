@@ -7,6 +7,8 @@ import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.managers.*;
 import de.theredend2000.advancedegghunt.managers.eggmanager.*;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;

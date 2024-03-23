@@ -1,7 +1,6 @@
-package de.theredend2000.advancedegghunt.managers.eggmanager;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global;
 
 import de.theredend2000.advancedegghunt.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -12,21 +11,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class IndividualPresetDataManager {
+public class GlobalPresetDataManager {
 
     private final Main plugin;
     private final File dataFolder;
     private HashMap<String, FileConfiguration> presetConfigs;
     private HashMap<String, File> presetFile;
 
-    public IndividualPresetDataManager(Main plugin) {
+    public GlobalPresetDataManager(Main plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
         presetConfigs = new HashMap<>();
         presetFile = new HashMap<>();
 
         dataFolder.mkdirs();
-        new File(dataFolder, "presets/individual").mkdirs();
+        new File(dataFolder, "presets/global").mkdirs();
         if(savedPresets().size() == 0){
             createPresetFile("default");
             addDefaultRewardCommands("default");
@@ -52,7 +51,7 @@ public class IndividualPresetDataManager {
 
     private File getFile(String preset) {
         if(!presetFile.containsKey(preset))
-            presetFile.put(preset, new File(this.dataFolder + "/presets/individual", preset + ".yml"));
+            presetFile.put(preset, new File(this.dataFolder + "/presets/global", preset + ".yml"));
         return presetFile.get(preset);
     }
 
@@ -71,13 +70,13 @@ public class IndividualPresetDataManager {
         }
     }
 
-    public void loadCommandsIntoPreset(String preset, String collection, String id){
+    public void loadCommandsIntoPreset(String preset, String collection){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
-        if(placedEggs.contains("PlacedEggs." + id + ".Rewards.")) {
-            for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)){
-                String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
-                boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
+        if(placedEggs.contains("GlobalRewards.")) {
+            for (String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)){
+                String command = placedEggs.getString("GlobalRewards." + commandID + ".command");
+                boolean enabled = placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled");
                 presets.set("Commands." + commandID + ".command", command);
                 presets.set("Commands." + commandID + ".enabled", enabled);
                 savePreset(preset, presets);
@@ -85,16 +84,16 @@ public class IndividualPresetDataManager {
         }
     }
 
-    public void loadPresetIntoEggCommands(String preset, String collection, String id){
+    public void loadPresetIntoCollectionCommands(String preset, String collection){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
-        placedEggs.set("PlacedEggs." + id + ".Rewards", null);
+        placedEggs.set("GlobalRewards.", null);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
             String command = presets.getString("Commands." + commandID + ".command");
             boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
-            placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command", command);
-            placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", enabled);
+            placedEggs.set("GlobalRewards." + commandID + ".command", command);
+            placedEggs.set("GlobalRewards." + commandID + ".enabled", enabled);
             Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
         }
     }
@@ -155,18 +154,20 @@ public class IndividualPresetDataManager {
         return true;
     }
 
-    private void addDefaultRewardCommands(String preset) {
+    public void addDefaultRewardCommands(String preset) {
         FileConfiguration config = this.getPresets(preset);
         config.set("Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
         config.set("Commands.0.enabled", true);
         config.set("Commands.1.command", "give %PLAYER% diamond");
         config.set("Commands.1.enabled", true);
+        config.set("Commands.2.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
+        config.set("Commands.2.enabled", true);
         this.savePreset(preset, config);
     }
 
     public List<String> savedPresets() {
         List<String> presets = new ArrayList();
-        File presetsFolder = new File(this.dataFolder + "/presets/individual");
+        File presetsFolder = new File(this.dataFolder + "/presets/global");
         if (presetsFolder.exists() && presetsFolder.isDirectory()) {
             File[] playerFiles = presetsFolder.listFiles((dir, name) -> {
                 return name.endsWith(".yml");

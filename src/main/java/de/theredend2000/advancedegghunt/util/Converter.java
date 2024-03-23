@@ -1,8 +1,8 @@
 package de.theredend2000.advancedegghunt.util;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.eggmanager.GlobalPresetDataManager;
-import de.theredend2000.advancedegghunt.managers.eggmanager.IndividualPresetDataManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 

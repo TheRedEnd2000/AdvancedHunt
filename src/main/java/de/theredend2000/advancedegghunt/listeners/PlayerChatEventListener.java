@@ -1,8 +1,8 @@
 package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.GlobalEggRewardsMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.IndividualEggRewardsMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalEggRewardsMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualEggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;

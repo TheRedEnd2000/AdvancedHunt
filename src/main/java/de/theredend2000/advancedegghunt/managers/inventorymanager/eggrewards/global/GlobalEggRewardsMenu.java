@@ -1,15 +1,14 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.eggmanager.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualEggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -21,17 +20,19 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.MessageFormat;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
 
-public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
+public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
     private MessageManager messageManager;
     private Main plugin;
     private String id;
     private String collection;
 
-    public IndividualEggRewardsMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Individual Egg Rewards", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
+    public GlobalEggRewardsMenu(PlayerMenuUtility playerMenuUtility) {
+        super(playerMenuUtility, "Global Egg Rewards", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
         this.plugin = Main.getInstance();
         messageManager = this.plugin.getMessageManager();
 
@@ -53,7 +54,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
-        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§bSwitch to Global").setSkullOwner(Main.getTexture("NTk3ZTRlMjdhMDRhZmE1ZjA2MTA4MjY1YTliZmI3OTc2MzAzOTFjN2YzZDg4MGQyNDRmNjEwYmIxZmYzOTNkOCJ9fX0=")).setLore("","§6Switch to Global:","§7Switching to global lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lall §7egg.","","§eClick to switch").build();
+        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§bSwitch to Individual").setOwner(playerMenuUtility.getOwner().getName()).setLore("","§6Switch to Individual:","§7Switching to individual lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lone §7egg.","","§eClick to switch").build();
     }
 
     private void menuContent(String collection) {
@@ -68,66 +69,29 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
 
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
-            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards").getKeys(false));
+        if(placedEggs.contains("GlobalRewards.")){
+            keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
-
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < maxItemsPerPage; i++) {
                 index = maxItemsPerPage * page + i;
                 if(index >= keys.size()) break;
-                if (keys.get(index) != null) {
-                    String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
-                    boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
-                    boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
-                    ItemStack itemStack = XMaterial.PAPER.parseItem();
-                    if (startsWithGive) {
-                        String[] parts = command.split(" ", 3);
-
-                        if (parts.length >= 2 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
-                            String materialName = parts[2];
-
-                            itemStack = getItem(materialName);
-                        }
-                    }
-                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                if (keys.get(index) != null){
+                    String command = placedEggs.getString("GlobalRewards." + keys.get(index) + ".command").replaceAll("§", "&");
+                    boolean enabled = placedEggs.getBoolean("GlobalRewards." + keys.get(index) + ".enabled");
+                    getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
     }
 
-    public ItemStack getItem(String itemString) {
-        int metaDataStartIndex = itemString.indexOf('{');
-        int metaDataEndIndex = itemString.lastIndexOf('}');
-        if (metaDataEndIndex == -1) metaDataEndIndex = itemString.length() - 1;
-        else metaDataEndIndex += 1;
-        ItemStack itemStack;
-
-        Optional<XMaterial> material;
-        if (metaDataStartIndex == -1){
-            material = XMaterial.matchXMaterial(itemString);
-            if (material.isEmpty()) return XMaterial.PAPER.parseItem();
-            return material.get().parseItem();
-        }
-
-        material = XMaterial.matchXMaterial(itemString.substring(0, metaDataStartIndex));
-
-        if (material.isEmpty()) return XMaterial.PAPER.parseItem();
-
-        var json = itemString.substring(metaDataStartIndex, metaDataEndIndex);
-        var item = material.get().parseItem();
-        NBT.modify(item, (Consumer<ReadWriteItemNBT>) nbt -> nbt.mergeCompound(NBT.parseNBT(json)));
-
-        return item;
-    }
-
     public int getMaxPages(){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs." + id + ".Rewards")){
-            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
+        if(placedEggs.contains("GlobalRewards.")){
+            keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
         }
         if(keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
@@ -135,16 +99,13 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
 
     public void convertItemIntoCommand(ItemStack itemStack, String id, String collection){
         String itemNBT = NBT.get(itemStack, Object::toString);
-        var item = XMaterial.PLAYER_HEAD.parseItem();
-        String json = NBT.get(itemStack, Object::toString);
-        NBT.modify(item, (Consumer<ReadWriteItemNBT>) nbt -> nbt.mergeCompound(NBT.parseNBT(json)));
-        addCommand(id, MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"PlacedEggs." + id + ".Rewards.");
+        addCommand(id, MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"GlobalRewards.");
     }
 
-    private void addCommand(String id, String command, String collection,String path){
+    private void addCommand(String id, String command, String collection, String path){
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-        if (placedEggs.contains(path)) {
-            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection(path);
+        if (placedEggs.contains("GlobalRewards.")) {
+            ConfigurationSection rewardsSection = placedEggs.getConfigurationSection("GlobalRewards.");
             int nextNumber = 0;
             Set<String> keys = rewardsSection.getKeys(false);
             if (!keys.isEmpty()) {
@@ -174,20 +135,20 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         }
 
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs." + id + ".Rewards.")){
-            keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
-            for(String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)){
+        if(placedEggs.contains("GlobalRewards.")){
+            keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
+            for(String commandID : keys){
                 if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(commandID)) {
                     continue;
                 }
                 switch (event.getAction()) {
                     case PICKUP_ALL:
-                        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", !placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled"));
+                        placedEggs.set("GlobalRewards." + commandID + ".enabled", !placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled"));
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                         break;
                     case PICKUP_HALF:
                         player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%", commandID));
-                        placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID, null);
+                        placedEggs.set("GlobalRewards." + commandID, null);
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                         break;
                 }
@@ -212,24 +173,25 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 c.addExtra(clickme);
                 player.spigot().sendMessage(c);
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
-                playerConfig.set("Change.collection", collection);
-                playerConfig.set("Change.id", id);
+                playerConfig.set("GlobalChange.collection", collection);
+                playerConfig.set("GlobalChange.id", id);
                 Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case EMERALD_BLOCK:
-                if (placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false).size() < 1) {
+                if (placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false).size() < 1) {
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_FAILED_COMMANDS));
                     break;
                 }
                 new AnvilGUI.Builder()
                         .onClose(stateSnapshot -> {
                             if (!stateSnapshot.getText().isEmpty()) {
-                                IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
+                                GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
                                 String preset = stateSnapshot.getText();
                                 if (!presetDataManager.containsPreset(preset)) {
                                     presetDataManager.createPresetFile(stateSnapshot.getText());
-                                    presetDataManager.loadCommandsIntoPreset(preset, collection, id);
+                                    presetDataManager.loadCommandsIntoPreset(preset, collection);
+                                    presetDataManager.addDefaultRewardCommands(preset);
                                     menuContent(collection);
                                     open(id,collection);
                                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_SAVED).replaceAll("%PRESET%", preset));
@@ -248,7 +210,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case EMERALD:
-                new IndividualPresetsMenu(super.playerMenuUtility).open(id, collection);
+                new GlobalPresetsMenu(super.playerMenuUtility).open(id, collection);
                 break;
             case PLAYER_HEAD:
                 if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
@@ -269,8 +231,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                         player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
                         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     }
-                } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Global")) {
-                    new GlobalEggRewardsMenu(super.playerMenuUtility).open(id,collection);
+                } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Individual")) {
+                    new IndividualEggRewardsMenu(super.playerMenuUtility).open(id,collection);
                 }
                 break;
         }

@@ -1,8 +1,7 @@
-package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards;
+package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
-import de.theredend2000.advancedegghunt.managers.eggmanager.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
