@@ -210,11 +210,11 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
             case GOLD_INGOT:
                 player.closeInventory();
                 Main.getInstance().getPlayerAddCommand().put(player, 120);
-                TextComponent c = new TextComponent("\n\n\n\n\n" + Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND) + "\n\n");
+                TextComponent textComponent = new TextComponent("\n\n\n\n\n" + Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND) + "\n\n");
                 TextComponent clickme = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
                 clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
-                c.addExtra(clickme);
-                player.spigot().sendMessage(c);
+                textComponent.addExtra(clickme);
+                player.spigot().sendMessage(textComponent);
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
                 playerConfig.set("GlobalChange.collection", collection);
                 playerConfig.set("GlobalChange.id", id);
