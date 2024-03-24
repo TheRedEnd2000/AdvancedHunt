@@ -21,6 +21,7 @@ public class MessageManager {
             lang = "en";
 
         messageConfig = MessageConfig.getInstance(plugin, lang);
+        messageConfig.reloadConfig();
     }
 
     public String getMessage(MessageKey key) {

@@ -70,11 +70,13 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.reload.toString()));
                             return true;
                         }
-                        Main.getInstance().reloadConfig();
+                        Main.getInstance().getPluginConfig().reloadConfig();
                         messageManager.reloadMessages();
                         eggManager.spawnEggParticle();
                         Main.getInstance().getPlayerEggDataManager().reload();
                         Main.getInstance().getEggDataManager().reload();
+                        Main.getInstance().getGlobalPresetDataManager().reload();
+                        Main.getInstance().getIndividualPresetDataManager().reload();
                         player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
                     } else if(args[0].equalsIgnoreCase("help")) {
                         if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.help)) {
