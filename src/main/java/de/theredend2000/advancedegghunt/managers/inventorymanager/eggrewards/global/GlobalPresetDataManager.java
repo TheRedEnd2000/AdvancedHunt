@@ -148,7 +148,7 @@ public class GlobalPresetDataManager {
         FileConfiguration config = this.getPresets(preset);
         config.set("Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
         config.set("Commands.0.enabled", true);
-        config.set("Commands.1.command", "give %PLAYER% diamond");
+        config.set("Commands.1.command", "minecraft:give %PLAYER% diamond");
         config.set("Commands.1.enabled", true);
         config.set("Commands.2.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
         config.set("Commands.2.enabled", true);
