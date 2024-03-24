@@ -3,7 +3,6 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.gl
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualEggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -93,7 +92,7 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
                 case PICKUP_ALL:
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_LOADED).replaceAll("%PRESET%", presetName));
                     presetDataManager.loadPresetIntoCollectionCommands(presetName, collection);
-                    new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
+                    new GlobalEggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
                     break;
                 case PICKUP_HALF:
                     if (!plugin.getPluginConfig().getDefaultGlobalLoadingPreset().equals(presetName)) {
@@ -140,7 +139,7 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Back")) {
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                    new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
+                    new GlobalEggRewardsMenu(Main.getPlayerMenuUtility(super.playerMenuUtility.getOwner())).open(id, collection);
                 }
                 break;
         }

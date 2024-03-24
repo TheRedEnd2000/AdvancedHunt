@@ -1,15 +1,14 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual;
 
 import de.theredend2000.advancedegghunt.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class IndividualPresetDataManager {
@@ -21,12 +20,11 @@ public class IndividualPresetDataManager {
 
     public IndividualPresetDataManager(Main plugin) {
         this.plugin = plugin;
-        this.dataFolder = plugin.getDataFolder();
         presetConfigs = new HashMap<>();
         presetFile = new HashMap<>();
+        this.dataFolder = new File(plugin.getDataFolder(), "presets/individual");
 
         dataFolder.mkdirs();
-        new File(dataFolder, "presets/individual").mkdirs();
         if(savedPresets().size() == 0){
             createPresetFile("default");
             addDefaultRewardCommands("default");
@@ -52,7 +50,7 @@ public class IndividualPresetDataManager {
 
     private File getFile(String preset) {
         if(!presetFile.containsKey(preset))
-            presetFile.put(preset, new File(this.dataFolder + "/presets/individual", preset + ".yml"));
+            presetFile.put(preset, new File(this.dataFolder, preset + ".yml"));
         return presetFile.get(preset);
     }
 
@@ -141,18 +139,9 @@ public class IndividualPresetDataManager {
     }
 
     public boolean containsPreset(String preset) {
-        Iterator savedPresetsIterator = this.savedPresets().iterator();
-
-        String collection;
-        do {
-            if (!savedPresetsIterator.hasNext()) {
-                return false;
-            }
-
-            collection = (String)savedPresetsIterator.next();
-        } while(!collection.contains(preset));
-
-        return true;
+        String[] files = dataFolder.list();
+        if (files == null) return false;
+        return Arrays.asList(files).contains(preset + ".yml");
     }
 
     private void addDefaultRewardCommands(String preset) {
@@ -166,9 +155,8 @@ public class IndividualPresetDataManager {
 
     public List<String> savedPresets() {
         List<String> presets = new ArrayList();
-        File presetsFolder = new File(this.dataFolder + "/presets/individual");
-        if (presetsFolder.exists() && presetsFolder.isDirectory()) {
-            File[] playerFiles = presetsFolder.listFiles((dir, name) -> {
+        if (this.dataFolder.exists() && this.dataFolder.isDirectory()) {
+            File[] playerFiles = this.dataFolder.listFiles((dir, name) -> {
                 return name.endsWith(".yml");
             });
             if (playerFiles != null) {

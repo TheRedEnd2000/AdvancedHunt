@@ -7,8 +7,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class GlobalPresetDataManager {
@@ -20,12 +20,11 @@ public class GlobalPresetDataManager {
 
     public GlobalPresetDataManager(Main plugin) {
         this.plugin = plugin;
-        this.dataFolder = plugin.getDataFolder();
+        this.dataFolder = new File(plugin.getDataFolder(), "presets/global");
         presetConfigs = new HashMap<>();
         presetFile = new HashMap<>();
 
         dataFolder.mkdirs();
-        new File(dataFolder, "presets/global").mkdirs();
         if(savedPresets().size() == 0){
             createPresetFile("default");
             addDefaultRewardCommands("default");
@@ -51,7 +50,7 @@ public class GlobalPresetDataManager {
 
     private File getFile(String preset) {
         if(!presetFile.containsKey(preset))
-            presetFile.put(preset, new File(this.dataFolder + "/presets/global", preset + ".yml"));
+            presetFile.put(preset, new File(this.dataFolder, preset + ".yml"));
         return presetFile.get(preset);
     }
 
@@ -87,7 +86,7 @@ public class GlobalPresetDataManager {
     public void loadPresetIntoCollectionCommands(String preset, String collection){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
-        placedEggs.set("GlobalRewards.", null);
+        placedEggs.set("GlobalRewards", null);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
             String command = presets.getString("Commands." + commandID + ".command");
@@ -140,18 +139,9 @@ public class GlobalPresetDataManager {
     }
 
     public boolean containsPreset(String preset) {
-        Iterator savedPresetsIterator = this.savedPresets().iterator();
-
-        String collection;
-        do {
-            if (!savedPresetsIterator.hasNext()) {
-                return false;
-            }
-
-            collection = (String)savedPresetsIterator.next();
-        } while(!collection.contains(preset));
-
-        return true;
+        String[] files = dataFolder.list();
+        if (files == null) return false;
+        return Arrays.asList(files).contains(preset + ".yml");
     }
 
     public void addDefaultRewardCommands(String preset) {
@@ -167,9 +157,8 @@ public class GlobalPresetDataManager {
 
     public List<String> savedPresets() {
         List<String> presets = new ArrayList();
-        File presetsFolder = new File(this.dataFolder + "/presets/global");
-        if (presetsFolder.exists() && presetsFolder.isDirectory()) {
-            File[] playerFiles = presetsFolder.listFiles((dir, name) -> {
+        if (this.dataFolder.exists() && this.dataFolder.isDirectory()) {
+            File[] playerFiles = this.dataFolder.listFiles((dir, name) -> {
                 return name.endsWith(".yml");
             });
             if (playerFiles != null) {
