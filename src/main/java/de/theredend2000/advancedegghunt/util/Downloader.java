@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Level;
 
 public class Downloader {
 
@@ -57,10 +58,10 @@ public class Downloader {
             outputStream.close();
             inputStream.close();
 
-            System.out.println("Plugin downloaded: " + fileName);
+            plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + fileName);
             loadPlugin(saveFilePath);
         } else {
-            System.out.println("No plugin to download from SpigotMC. Server replied HTTP code: " + responseCode);
+            plugin.getLogger().log(Level.WARNING, "No plugin to download from SpigotMC. Server replied HTTP code: " + responseCode);
         }
         httpConn.disconnect();
     }
@@ -93,10 +94,10 @@ public class Downloader {
             outputStream.close();
             inputStream.close();
 
-            System.out.println("Plugin downloaded: " + fileName);
+            plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + fileName);
             loadPlugin(saveFilePath);
         } else {
-            System.out.println("No plugin to download from Modrinth. Server replied HTTP code: " + responseCode);
+            plugin.getLogger().log(Level.WARNING, "No plugin to download from Modrinth. Server replied HTTP code: " + responseCode);
         }
         httpConn.disconnect();
     }
@@ -140,9 +141,9 @@ public class Downloader {
             Plugin newPlugin = Bukkit.getPluginManager().loadPlugin(new File(filePath));
             if (newPlugin != null) {
                 Bukkit.getPluginManager().enablePlugin(newPlugin);
-                System.out.println("Plugin loaded and enabled successfully: " + newPlugin.getName());
+                plugin.getLogger().log(Level.INFO, "Plugin loaded and enabled successfully: " + newPlugin.getName());
             } else {
-                System.out.println("Failed to load the plugin.");
+                plugin.getLogger().log(Level.WARNING, "Failed to load the plugin.");
             }
         } catch (Exception e) {
             e.printStackTrace();
