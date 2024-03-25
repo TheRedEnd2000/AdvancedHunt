@@ -312,34 +312,38 @@ public class RequirementsManager {
 
     public void removeAllEggBlocks(String collection, UUID uuid){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        if(placedEggs.contains("PlacedEggs.")){
-            for(String ids : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
-                int x = placedEggs.getInt("PlacedEggs." + ids + ".X");
-                int y = placedEggs.getInt("PlacedEggs." + ids + ".Y");
-                int z = placedEggs.getInt("PlacedEggs." + ids + ".Z");
-                int chunkX = x >> 4;
-                int chunkZ = z >> 4;
-                World world = Bukkit.getWorld(Objects.requireNonNull(placedEggs.getString("PlacedEggs." + ids + ".World")));
-                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-                if(chunk.load()) {
-                    Location location = new Location(world, x, y, z);
-                    Block block = location.getBlock();
-                    DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(uuid);
-                    switch (deletionTypes){
-                        case Player_Heads:
-                            if(block.getType().equals(XMaterial.PLAYER_HEAD.parseMaterial())){
-                                new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
-                                Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at " + x + " " + y + " " + z + " to air.");
-                            }
-                            break;
-                        case Everything:
-                            new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
-                            Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at " + x + " " + y + " " + z + " to air.");
-                            break;
+        if (!placedEggs.contains("PlacedEggs.")) {
+            return;
+        }
+        for(String ids : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
+            int x = placedEggs.getInt("PlacedEggs." + ids + ".X");
+            int y = placedEggs.getInt("PlacedEggs." + ids + ".Y");
+            int z = placedEggs.getInt("PlacedEggs." + ids + ".Z");
+            int chunkX = x >> 4;
+            int chunkZ = z >> 4;
+            World world = Bukkit.getWorld(Objects.requireNonNull(placedEggs.getString("PlacedEggs." + ids + ".World")));
+            Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+            if (!chunk.load()) {
+                continue;
+            }
+            Location location = new Location(world, x, y, z);
+            Block block = location.getBlock();
+            DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(uuid);
+            switch (deletionTypes){
+                case Player_Heads:
+                    if(block.getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()) || block.getType().equals(XMaterial.PLAYER_WALL_HEAD.parseMaterial())){
+                        new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
+                        Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at " + x + " " + y + " " + z + " to air.");
                     }
-                }
+                    break;
+                case Everything:
+                    new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
+                    Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at " + x + " " + y + " " + z + " to air.");
+                    break;
             }
         }
+        Main.getInstance().getEggManager().spawnEggParticle();
+        Main.getInstance().getEggDataManager().reload();
     }
 
     public String getActives(Requirements requirements, String collection){
