@@ -49,7 +49,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
     }
 
     private void addMenuBorderButtons() {
-        inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other eggs again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other collections again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.").build();
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
