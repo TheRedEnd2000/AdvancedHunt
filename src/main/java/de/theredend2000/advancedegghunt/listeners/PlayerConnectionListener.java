@@ -4,7 +4,6 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,9 +28,8 @@ public class PlayerConnectionListener implements Listener {
             Main.getInstance().getSortTypeLeaderboard().put(player, LeaderboardSortTypes.ALL);
         }
         Main.getInstance().getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
-        FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
-        Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
     }
+
     @EventHandler
     public void onLeave(PlayerQuitEvent event){
         Player player = event.getPlayer();

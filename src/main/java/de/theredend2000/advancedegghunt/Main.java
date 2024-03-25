@@ -6,7 +6,9 @@ import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.managers.*;
-import de.theredend2000.advancedegghunt.managers.eggmanager.*;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
@@ -87,6 +89,9 @@ public final class Main extends JavaPlugin {
         playerEggDataManager.checkReset();
         eggManager.spawnEggParticle();
         new Converter().convertAllSystems();
+
+        for (Player player : Bukkit.getOnlinePlayers())
+            Main.getInstance().getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
     }
 
     @Override
