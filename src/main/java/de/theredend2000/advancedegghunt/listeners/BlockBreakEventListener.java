@@ -65,7 +65,7 @@ public class BlockBreakEventListener implements Listener {
 
     @EventHandler
     public void onPlayerBucketFillEvent(PlayerBucketEmptyEvent event) {
-        Block block = event.getBlockClicked();
+        Block block = event.getBlock();
         EggManager eggManager = Main.getInstance().getEggManager();
 
         if(eggManager.containsEgg(block))
