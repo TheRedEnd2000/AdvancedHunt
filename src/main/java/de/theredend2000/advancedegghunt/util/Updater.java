@@ -3,6 +3,8 @@ package de.theredend2000.advancedegghunt.util;
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -19,7 +21,7 @@ public class Updater implements Listener {
     public Updater(Main plugin){
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        //isOutdated();
+        isOutdated();
     }
 
     public boolean isOutdated(Player player) {
@@ -58,7 +60,7 @@ public class Updater implements Listener {
         return false;
     }
 
-    //@EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         boolean updates = plugin.getPluginConfig().getUpdater();
