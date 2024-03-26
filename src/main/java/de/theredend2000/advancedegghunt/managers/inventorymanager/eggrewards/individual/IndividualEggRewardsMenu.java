@@ -21,7 +21,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
@@ -184,13 +187,15 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
             convertItemIntoCommand(event.getCurrentItem(), id, collection);
             player.sendMessage("§aSuccessfully added a new item.");
             menuContent(collection);
+            return;
         }
 
         ArrayList<String> keys = new ArrayList<>();
         if(placedEggs.contains("PlacedEggs." + id + ".Rewards.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
             for(String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)){
-                if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(commandID)) {
+                if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
+                        !event.getCurrentItem().getItemMeta().getLocalizedName().equals(commandID)) {
                     continue;
                 }
                 switch (event.getAction()) {

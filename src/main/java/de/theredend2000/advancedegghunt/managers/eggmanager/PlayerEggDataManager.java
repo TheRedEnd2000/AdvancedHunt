@@ -74,12 +74,13 @@ public class PlayerEggDataManager {
     public void createPlayerFile(UUID uuid) {
         FileConfiguration config = this.getPlayerData(uuid);
         File playerFile = this.getFile(uuid);
-        if (!playerFile.exists()) {
-            try {
-                playerFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (playerFile.exists()) {
+            return;
+        }
+        try {
+            playerFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         this.playerConfigs.put(uuid, config);
         this.savePlayerData(uuid, config);

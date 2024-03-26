@@ -84,7 +84,6 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
         if(event.getCurrentItem() == null) return;
 
         for(String presetName : presetDataManager.savedPresets()){
-            if(event.getCurrentItem() == null || event.getCurrentItem().getItemMeta() == null) continue;
             if (!ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(presetName)) {
                 continue;
             }

@@ -92,7 +92,11 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
 
             XMaterial mat = Main.getInstance().getMaterial(Objects.requireNonNull(Main.getInstance().getPluginConfig().getPlaceEggType(keys.get(index))).toUpperCase());
             if(mat.equals(XMaterial.PLAYER_HEAD))
-                getInventory().setItem(slotIndex, new ItemBuilder(mat).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index)))).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
+                getInventory().setItem(slotIndex, new ItemBuilder(mat)
+                        .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index))))
+                        .setDisplayname("§b§lEggs Type #" + keys.get(index))
+                        .setLore("§eClick to get.")
+                        .setLocalizedName(keys.get(index)).build());
             else
                 getInventory().setItem(slotIndex, new ItemBuilder(mat).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
         }
@@ -162,12 +166,16 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
         if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
             for(String id : keys){
-                if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)) {
+                if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
+                        !event.getCurrentItem().getItemMeta().getLocalizedName().equals(id)) {
                     continue;
                 }
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                if(event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
-                    player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id))).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                if (event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
+                    player.getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
+                            .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)))
+                            .setDisplayname("§6Easter Egg")
+                            .setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 else
                     player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 return;

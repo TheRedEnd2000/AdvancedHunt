@@ -68,7 +68,11 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
             int maxEggs = Main.getInstance().getEggManager().getMaxEggs(keys.get(index));
             boolean applied = selectedSection.equals(keys.get(index));
             boolean permission = Main.getInstance().getPermissionManager().checkPermission(playerMenuUtility.getOwner(), Permission.ChangeCollections);
-            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PAPER).withGlow(applied).setDisplayname("§6Collection: §6§l" + keys.get(index) + (applied ? " §a(selected)" : "")).setLore("", "§9Collection Information:", "§7   - Placed eggs: §6" + maxEggs, "", "§aNote:", "§7This collection applies to all actions that are carried out.", "§7It can be changed at any time in this menu.", "", "§eLEFT-CLICK to select.", permission ? "§eRIGHT-CLICK to edit." : "§7§mRIGHT-CLICK to edit.").setLocalizedName(keys.get(index)).build());
+            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PAPER)
+                    .withGlow(applied)
+                    .setDisplayname("§6Collection: §6§l" + keys.get(index) + (applied ? " §a(selected)" : ""))
+                    .setLore("", "§9Collection Information:", "§7   - Placed eggs: §6" + maxEggs, "", "§aNote:", "§7This collection applies to all actions that are carried out.", "§7It can be changed at any time in this menu.", "", "§eLEFT-CLICK to select.", permission ? "§eRIGHT-CLICK to edit." : "§7§mRIGHT-CLICK to edit.")
+                    .setLocalizedName(keys.get(index)).build());
         }
     }
 
@@ -90,7 +94,8 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String collection : keys){
-            if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(collection)) {
+            if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
+                    !event.getCurrentItem().getItemMeta().getLocalizedName().equals(collection)) {
                 continue;
             }
             switch (event.getAction()) {

@@ -21,7 +21,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
@@ -181,7 +184,8 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("GlobalRewards.")){
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
             for(String commandID : keys){
-                if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(commandID)) {
+                if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
+                        !event.getCurrentItem().getItemMeta().getLocalizedName().equals(commandID)) {
                     continue;
                 }
                 switch (event.getAction()) {

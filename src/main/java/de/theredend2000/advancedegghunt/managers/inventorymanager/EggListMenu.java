@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Random;
 
 public class EggListMenu extends PaginatedInventoryMenu {
@@ -101,7 +100,8 @@ public class EggListMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
             for(String id : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
-                if (!Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName().equals(id)) {
+                if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
+                        !event.getCurrentItem().getItemMeta().getLocalizedName().equals(id)) {
                     continue;
                 }
                 if(event.getAction() == InventoryAction.PICKUP_ALL){

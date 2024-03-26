@@ -104,11 +104,12 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
         Player player = (Player) event.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>();
-        if(placedEggs.contains("PlacedEggs.")){
+        if (placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }
 
-        if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
+        if (event.getCurrentItem().getType().equals(Material.PAPER) &&
+                ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
             new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
             return;
         }

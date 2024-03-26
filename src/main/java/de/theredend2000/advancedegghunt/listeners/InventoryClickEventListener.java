@@ -24,7 +24,7 @@ public class InventoryClickEventListener implements Listener {
     public void onClickInventory(InventoryClickEvent event){
         if (!(event.getWhoClicked() instanceof Player) ||
                 event.getCurrentItem() == null ||
-                event.getCurrentItem().getItemMeta() == null) {
+                !event.getCurrentItem().hasItemMeta()) {
             return;
         }
 
