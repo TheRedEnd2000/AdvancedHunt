@@ -20,7 +20,7 @@ public class MessageManager {
         if (lang == null)
             lang = "en";
 
-        messageConfig = MessageConfig.getInstance(plugin, lang);
+        messageConfig = new MessageConfig(plugin, lang);
         messageConfig.reloadConfig();
     }
 
