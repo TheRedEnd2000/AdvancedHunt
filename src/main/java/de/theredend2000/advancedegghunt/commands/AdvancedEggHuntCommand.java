@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.*;
+import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -12,6 +13,7 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBTList;
+import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -77,6 +79,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                         Main.getInstance().getEggDataManager().reload();
                         Main.getInstance().getGlobalPresetDataManager().reload();
                         Main.getInstance().getIndividualPresetDataManager().reload();
+                        Main.PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', plugin.getPluginConfig().getPrefix()));
                         player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
                     } else if(args[0].equalsIgnoreCase("help")) {
                         if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.help)) {
