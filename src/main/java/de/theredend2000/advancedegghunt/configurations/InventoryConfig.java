@@ -5,7 +5,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -40,9 +39,6 @@ public class InventoryConfig extends Configuration {
 
     @Override
     public void registerUpgrader() {
-        getUpgrader().put(2.9, (oldConfig, NewConfig) -> {
-            File file = configFile.getParentFile();
-            deleteDir(file);
-        });
+
     }
 }
