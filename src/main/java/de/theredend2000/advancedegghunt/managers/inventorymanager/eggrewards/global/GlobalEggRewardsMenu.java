@@ -178,6 +178,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
             convertItemIntoCommand(event.getCurrentItem(), collection);
             player.sendMessage("§aSuccessfully added a new item.");
             menuContent(collection);
+            return;
         }
 
         ArrayList<String> keys = new ArrayList<>();
