@@ -1,26 +1,17 @@
-config-version: 2.8
+config-version: 2.9
 
 # Change the language
-# Available: en (Englisch) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
+# Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
 messages-lang: en
 
+#Auto download
+Download:
+  # Will be downloaded if a new plugin version is out (Not working rn)
+  AdvancedEggHunt: true
+  # Will download for the plugin to work (This should not be disabled)
+  NBT-API: true
+
 prefix: '&f[&eAdvancedEggHunt&f] &r'
-
-Permissions:
-  # Permission for the main commands
-  AdvancedEggHuntCommandPermission: advancedegghunt.main
-
-  # Permission for destroying an egg
-  BreakEggPermission: advancedegghunt.break
-
-  # Permission for placing an egg
-  PlaceEggPermission: advancedegghunt.place
-
-  # Permission for the hint cooldown
-  IgnoreCooldownPermission: advancedegghunt.cooldown
-
-  # Permission to change collections
-  ChangeCollectionsPermission: advancedegghunt.collection
 
 Settings:
 
@@ -36,23 +27,17 @@ Settings:
   # If the player find all eggs he gets a reward
   PlayerFoundAllEggsReward: true
 
-  # That no commands will be sent to the operators
-  DisableCommandFeedback: true
-
   # Shows the coordinates in the progress inventory of the player
   ShowCoordinatesWhenEggFoundInProgressInventory: false
 
   # If a firework should spawn after clicking an egg
   ShowFireworkAfterEggFound: true
 
-  # How long the armorstands are visible after typing /eggs show
+  # How long the armor stands are visible after typing /eggs show
   ArmorstandGlow: 10
 
   # In witch radius the player gets a message that he is near an egg
   ShowEggsNearbyMessageRadius: 10
-
-  # What the material of the reward inventory is
-  RewardInventoryMaterial: PAPER
 
   # If the plugin prefix should show up
   PluginPrefixEnabled: true
@@ -63,7 +48,7 @@ Settings:
   # If right-clicking an egg works
   RightClickEgg: true
 
-  # How many panes a player has to click bevor getting his reward
+  # How many panes a player has to click before getting their reward
   HintCount: 25
 
   # How long the cooldown on the hint inventory is ( in seconds )
@@ -71,6 +56,16 @@ Settings:
 
   # How long the update in the hint inventory is ( in ticks )
   HintUpdateTime: 20
+
+
+Presets:
+
+  # Name of the preset that loads after placing a new egg
+  DefaultIndividualPresetLoad: default
+
+  # Name of the preset that loads after placing a new egg
+  DefaultGlobalPresetLoad: default
+
 
 Sounds:
   PlayerFindEggSound: ENTITY_PLAYER_LEVELUP
@@ -87,6 +82,15 @@ Particle:
   type:
     EggFound: CRIT
     EggNotFound: VILLAGER_HAPPY
+
+# Change the messages that show up when no data for this placeholder is available
+PlaceholderAPI:
+  # Replacement for collection is null
+  collection: 'N/A'
+  # Replacement if the player name is null
+  name: 'N/A'
+  # Replacement if the count is null
+  count: '-1'
 
 
 PlaceEggs:

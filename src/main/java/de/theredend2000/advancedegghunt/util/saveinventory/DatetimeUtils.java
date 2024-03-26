@@ -1,7 +1,5 @@
 package de.theredend2000.advancedegghunt.util.saveinventory;
 
-import de.theredend2000.advancedegghunt.Main;
-
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -85,14 +83,15 @@ public class DatetimeUtils {
         int valueIndex;
         for(valueIndex = 0; valueIndex <= 6; ++valueIndex) {
             int value = values[valueIndex];
-            if (value > 0) {
-                String valueMessage = TIME_UNITS[valueIndex];
-                if (value > 1) {
-                    valueMessage = valueMessage + "S";
-                }
-
-                sentenceBuilder.append(value).append(" ").append("§cNOT FOUND").append(" ");
+            if (value <= 0) {
+                continue;
             }
+            String valueMessage = TIME_UNITS[valueIndex];
+            if (value > 1) {
+                valueMessage = valueMessage + "S";
+            }
+
+            sentenceBuilder.append(value).append(" ").append("§cNOT FOUND").append(" ");
         }
 
         valueIndex = sentenceBuilder.length();
