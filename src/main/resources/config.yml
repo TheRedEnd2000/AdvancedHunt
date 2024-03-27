@@ -7,9 +7,9 @@ messages-lang: en
 #Auto download
 Download:
   # Will be downloaded if a new plugin version is out (Not working rn)
-  AdvancedEggHunt: true
+  AdvancedEggHunt: false
   # Will download for the plugin to work (This should not be disabled)
-  NBT-API: true
+  NBT-API: false
 
 prefix: '&f[&eAdvancedEggHunt&f] &r'
 
