@@ -1,4 +1,4 @@
-config-version: 2.9
+config-version: 3.0
 
 # Change the language
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
@@ -91,6 +91,18 @@ PlaceholderAPI:
   name: 'N/A'
   # Replacement if the count is null
   count: '-1'
+
+
+# Add commands that cant be executed by the plugin
+BlacklistedCommands:
+  - op
+  - minecraft:op
+  - kill
+  - minecraft:kill
+  - summon
+  - minecraft:summon
+  - stop
+  - minecraft:stop
 
 
 PlaceEggs:
