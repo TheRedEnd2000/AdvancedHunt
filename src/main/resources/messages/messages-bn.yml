@@ -42,6 +42,7 @@ command-cancel: '&cApni sofolvabe kriyati batil korechen.'
 command-add: '&7Ei &6command #%ID% &7 ti &asofolvabe&7 zog kora hoyeche.'
 command-expired: '&7Apni &6command &7ti &3jothesto dhruto &7lekhen ni. &7&lOnugroho kore abar chesta korun!'
 one-command: '&cApni ekbar e shudumatro ekti command i likhte parben.'
+command-blacklisted: '&cCommand ti kalo talikavukto kora hoyeche!'
 
 foundeggs-reset: '&7Sokol &ePrapto Dim &creset&7 kora hoyeche.'
 foundeggs-player-reset: '&a%PLAYER% &7er sokol &ePrapto Dim &creset &7kora hoyeche.'
