@@ -103,6 +103,14 @@ BlacklistedCommands:
   - minecraft:summon
   - stop
   - minecraft:stop
+  - restart
+  - minecraft:restart
+  - execute
+  - minecraft:execute
+  - setblock
+  - minecraft:setblock
+  - fill
+  - minecraft:fill
 
 
 PlaceEggs:
