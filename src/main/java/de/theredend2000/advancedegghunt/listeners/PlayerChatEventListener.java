@@ -47,7 +47,7 @@ public class PlayerChatEventListener implements Listener {
                 return;
             }
 
-            if(!Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+            if(Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
@@ -70,7 +70,7 @@ public class PlayerChatEventListener implements Listener {
                 return;
             }
 
-            if(!Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+            if(Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
                 player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
