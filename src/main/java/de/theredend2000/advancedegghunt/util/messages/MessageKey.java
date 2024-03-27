@@ -43,6 +43,7 @@ public enum MessageKey {
     COMMAND_ADD("command-add"),
     COMMAND_EXPIRED("command-expired"),
     ONE_COMMAND("one-command"),
+    COMMAND_BLACKLISTED("command-blacklisted"),
 
     FOUNDEGGS_RESET("foundeggs-reset"),
     FOUNDEGGS_PLAYER_RESET("foundeggs-player-reset"),
