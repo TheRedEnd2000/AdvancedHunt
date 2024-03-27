@@ -25,10 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class Main extends JavaPlugin {
 
@@ -103,13 +100,14 @@ public final class Main extends JavaPlugin {
     }
 
     private void initData(){
-        List<String > collections = eggDataManager.savedEggCollections();
+        List<String > eggCollections = eggDataManager.savedEggCollections();
+        List<UUID> playerCollection = eggDataManager.savedPlayers();
         playerEggDataManager.initPlayers();
         Bukkit.getConsoleSender().sendMessage("§2§l" +
-                "Loaded data of " + collections.size() + " player(s).");
+                "Loaded data of " + playerCollection.size() + " player(s).");
         eggDataManager.initEggs();
-        Bukkit.getConsoleSender().sendMessage("§2§lLoaded data of " + collections.size() + " collection(s).");
-        for(String collection : collections)
+        Bukkit.getConsoleSender().sendMessage("§2§lLoaded data of " + eggCollections.size() + " collection(s).");
+        for(String collection : eggCollections)
             eggManager.updateMaxEggs(collection);
     }
 
