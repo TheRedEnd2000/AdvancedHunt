@@ -329,7 +329,7 @@ public class PluginConfig extends Configuration {
     }
 
     public boolean isCommandBlacklisted(String command){
-        return new ArrayList<>(getConfig().getStringList("BlacklistedCommands")).contains(command.split(" ")[0]);
+        return getConfig().getStringList("BlacklistedCommands").contains(command.split(" ")[0]);
     }
 
     @Override
