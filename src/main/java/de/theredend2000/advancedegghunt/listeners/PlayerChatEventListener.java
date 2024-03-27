@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
@@ -27,7 +27,7 @@ public class PlayerChatEventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event){
+    public void onPlayerChat(PlayerChatEvent event){
         Player player = event.getPlayer();
         if (!Main.getInstance().getPlayerAddCommand().containsKey(player)) {
             return;
@@ -47,6 +47,10 @@ public class PlayerChatEventListener implements Listener {
                 return;
             }
 
+            if(!Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+
+                return;
+            }
             addCommand(placedEggs, id, event.getMessage(), collection, player,"PlacedEggs." + id + ".Rewards.");
             Main.getInstance().getPlayerAddCommand().remove(player);
             playerConfig.set("Change", null);
@@ -66,6 +70,10 @@ public class PlayerChatEventListener implements Listener {
                 return;
             }
 
+            if(!Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
+
+                return;
+            }
             addCommand(placedEggs, id, event.getMessage(), collection, player,"GlobalRewards.");
             Main.getInstance().getPlayerAddCommand().remove(player);
             playerConfig.set("GlobalChange", null);
