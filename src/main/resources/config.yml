@@ -111,6 +111,10 @@ BlacklistedCommands:
   - minecraft:setblock
   - fill
   - minecraft:fill
+  - reload
+  - minecraft:reload
+  - rl
+  - minecraft:rl
 
 
 PlaceEggs:
