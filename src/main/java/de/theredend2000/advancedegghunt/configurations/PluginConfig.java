@@ -10,10 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 public class PluginConfig extends Configuration {
     private static TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
@@ -329,6 +326,10 @@ public class PluginConfig extends Configuration {
 
     public String getDefaultGlobalLoadingPreset(){
         return getConfig().getString("Presets.DefaultGlobalPresetLoad");
+    }
+
+    public boolean isCommandBlacklisted(String command){
+        return new ArrayList<>(getConfig().getStringList("BlacklistedCommands")).contains(command.split(" ")[0]);
     }
 
     @Override
