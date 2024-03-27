@@ -334,7 +334,23 @@ public class PluginConfig extends Configuration {
 
     @Override
     public void registerUpgrader() {
-
+        upgraders.put(3.1, (oldConfig, NewConfig) -> {
+            List<String> blacklistedCommands  = NewConfig.getStringList("BlacklistedCommands");
+            LinkedHashSet<String> blacklistedCommandsSet = new LinkedHashSet<String>(blacklistedCommands);
+            blacklistedCommandsSet.add("restart");
+            blacklistedCommandsSet.add("minecraft:restart");
+            blacklistedCommandsSet.add("execute");
+            blacklistedCommandsSet.add("minecraft:execute");
+            blacklistedCommandsSet.add("setblock");
+            blacklistedCommandsSet.add("minecraft:setblock");
+            blacklistedCommandsSet.add("fill");
+            blacklistedCommandsSet.add("minecraft:fill");
+            blacklistedCommandsSet.add("reload");
+            blacklistedCommandsSet.add("minecraft:reload");
+            blacklistedCommandsSet.add("rl");
+            blacklistedCommandsSet.add("minecraft:rl");
+            NewConfig.set("BlacklistedCommands", new ArrayList<>(blacklistedCommandsSet));
+        });
     }
 
     //Downloader
