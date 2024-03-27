@@ -48,7 +48,7 @@ public class PlayerChatEventListener implements Listener {
             }
 
             if(!Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
-
+                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
             addCommand(placedEggs, id, event.getMessage(), collection, player,"PlacedEggs." + id + ".Rewards.");
@@ -71,7 +71,7 @@ public class PlayerChatEventListener implements Listener {
             }
 
             if(!Main.getInstance().getPluginConfig().isCommandBlacklisted(event.getMessage())) {
-
+                player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_BLACKLISTED));
                 return;
             }
             addCommand(placedEggs, id, event.getMessage(), collection, player,"GlobalRewards.");
