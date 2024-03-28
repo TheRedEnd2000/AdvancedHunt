@@ -1,4 +1,4 @@
-config-version: 2.4
+config-version: 2.5
 
 no-permission-error: '&cVous n''avez pas la &6%PERMISSION% permission&c pour utiliser cette commande.'
 command-not-found: '&cAucune commande trouvée! &7Veuillez taper &e/egghunt help &7pour voir toutes les commandes.'
@@ -42,6 +42,9 @@ command-cancel: '&cVous avez annulé l''action avec succès.'
 command-add: '&7La &6commande #%ID% &7a été ajoutée avec &asuccès&7.'
 command-expired: '&7Vous n''avez &cpas entré &7la &6commande &7assez &3rapidement. &7&lVeuillez réessayer!'
 one-command: '&cVous ne pouvez saisir qu''une seule commande à la fois.'
+hint-timeout: '&cVous n''avez pas cliqué assez vite.'
+hint-cancelled: '&aVous avez réussi à annuler ceci.'
+command-blacklisted: '&cCette commande est sur liste noire!'
 
 foundeggs-reset: '&7Tous les &eOeufs Trouvés &7ont été &créinitialisés&7.'
 foundeggs-player-reset: '&7Tous les &eOeufs Trouvés &7de &a%PLAYER% &7ont été &créinitialisés&7.'

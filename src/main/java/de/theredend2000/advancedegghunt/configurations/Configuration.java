@@ -10,8 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.text.MessageFormat;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 
 public abstract class Configuration {
@@ -99,9 +98,25 @@ public abstract class Configuration {
         saveConfig();
     }
     private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
+        Set<String> allKeys = oldConfig.getKeys(true);
+
+        List<String> keyList = new ArrayList<>(allKeys);
+
+        keyList.sort((key1, key2) -> Integer.compare(key2.split("\\.").length, key1.split("\\.").length));
+
+        List<String> filteredKeys = new ArrayList<>();
+
+        for (String key : keyList) {
+            // Check if the key holds a value and not just subkeys
+            if (oldConfig.isSet(key) && !(oldConfig.isConfigurationSection(key))) {
+                filteredKeys.add(key);
+            }
+        }
+
         // Copy all keys from the old config to the new config
-        for (String key : oldConfig.getKeys(true)) {
-            newConfig.set(key, oldConfig.get(key));
+        for (String key : filteredKeys) {
+            if (newConfig.contains(key))
+                newConfig.set(key, oldConfig.get(key));
         }
     }
 

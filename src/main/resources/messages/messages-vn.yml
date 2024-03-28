@@ -42,6 +42,7 @@ command-cancel: '&cBạn đã hủy hành động thành công.'
 command-add: '6Lệnh #%ID% &7đã được thêm &athành công&7.'
 command-expired: '&7Bạn &ckhông nhập &6lệnh &3đủ &7nhanh. &7&lVui lòng thử lại!'
 one-command: '&cBạn chỉ có thể nhập một lệnh tại một lần.'
+command-blacklisted: '&cLệnh này đã bị cấm sử dụng!'
 
 foundeggs-reset: '&7Tất cả &eTrứng tìm từ trước &7đã được &creseted&7.'
 foundeggs-player-reset: '&7Tất cả &eTrứng tìm từ trước &7của &a%PLAYER% &7đã được &creseted&7.'

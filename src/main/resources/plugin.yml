@@ -1,5 +1,5 @@
 name: AdvancedEggHunt
-version: ${version}
+version: 3.0.3
 main: de.theredend2000.advancedegghunt.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI]
@@ -73,7 +73,6 @@ permissions:
 
       AdvancedEggHunt.BreakEgg: true
       AdvancedEggHunt.PlaceEgg: true
-      AdvancedEggHunt.IgnoreCooldown: true
       AdvancedEggHunt.ChangeCollections: true
       AdvancedEggHunt.CreateCollection: true
       AdvancedEggHunt.OpenRewards: true

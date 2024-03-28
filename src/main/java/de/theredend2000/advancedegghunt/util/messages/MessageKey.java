@@ -15,9 +15,13 @@ public enum MessageKey {
     EGG_ALREADY_FOUND("egg-already-found"),
     ALL_EGGS_FOUND("all-eggs-found"),
     NO_EGGS("no-eggs"),
+
     EGG_HINT("egg-hint"),
     HINT_COOLDOWN("hint-cooldown"),
     CLICKED_SAME("clicked-same"),
+    EGG_HINT_TIMEOUT("hint-timeout"),
+    EGG_HINT_CANCELLED("hint-cancelled"),
+
     EGG_NOT_ACCESSED("egg-not-accessed"),
 
     ONLY_IN_PLACEMODE("only-in-placemode"),

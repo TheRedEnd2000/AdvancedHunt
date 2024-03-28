@@ -8,6 +8,7 @@ import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -72,31 +73,32 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         }
         getInventory().setItem(51, itemBuilder.build());
 
-        if (Main.getInstance().getEggDataManager().savedPlayers().size() == 0) {
+        if (Main.getInstance().getEggDataManager().savedPlayers().isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());
             return;
         }
 
         for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
+            if (!playerConfig.contains("FoundEggs")) continue;
+
             leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
 
         for(int i = 0; i < leaderboard.size(); i++)
             keys.add(String.valueOf(i));
 
-        if (keys == null || keys.isEmpty()) {
+        if (keys.isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());
             return;
         }
 
         List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
-        if (leaderList == null || leaderList.isEmpty() || leaderList.get(0).getKey() == null) {
+        if (leaderList.isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());
             return;
         }
 
-        leaderboardLoop:
         for(int i = 0; i < getMaxItemsPerPage(); i++) {
             index = getMaxItemsPerPage() * page + i;
             if(index >= keys.size()) break;
@@ -121,18 +123,18 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                                 .setDisplayname("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
                                 .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!").build());
                     }
-                    break leaderboardLoop;
+                    break;
                 case TOP10:
                     if (i < 10) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
                                 .setDisplayname("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
                                 .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!").build());
                     }
-                    break leaderboardLoop;
+                    break;
                 case YOU:
                     if (playerName.equals(playerMenuUtility.getOwner().getName()))
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName).setDisplayname("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")).setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= i ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (i - 9) + " place behind 10th place").build());
-                    break leaderboardLoop;
+                    break;
             }
         }
     }

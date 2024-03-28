@@ -126,6 +126,7 @@ public final class Main extends JavaPlugin {
 
     private void initListeners(){
         new InventoryClickEventListener();
+        new InventoryCloseEventListener();
         new BlockPlaceEventListener();
         new BlockBreakEventListener();
         new PlayerInteractEventListener();

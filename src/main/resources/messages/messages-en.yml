@@ -1,4 +1,4 @@
-config-version: 2.4
+config-version: 2.5
 
 no-permission-error: '&cYou don`t have the &6%PERMISSION% permission&c to use this command.'
 command-not-found: '&cNo command found! &7Please type &e/egghunt help &7to see all command.'
@@ -17,6 +17,8 @@ no-eggs: '&cThere are no eggs placed.'
 egg-hint: '&2&lSUCCESS! &aAn egg was found at &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
 hint-cooldown: '&4&lON COOLDOWN! &cPlease wait &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'
 clicked-same: '&4&lFAILED! &cYou clicked the wrong glass pane, no glass pane or the same twice.'
+hint-timeout: '&cYou have not clicked fast enough.'
+hint-cancelled: '&aYou have successfully canceled this.'
 egg-not-accessed: '&cYou cannot access this right now.'
 
 only-in-placemode: '&cYou can only place or break eggs in build mode. Type &e/egghunt placeEggs &cto go in this mode.'

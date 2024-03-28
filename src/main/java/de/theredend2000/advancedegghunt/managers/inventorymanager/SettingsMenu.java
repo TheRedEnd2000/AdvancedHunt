@@ -43,6 +43,7 @@ public class SettingsMenu extends InventoryMenu {
         getInventory().setItem(19, new ItemBuilder(XMaterial.OAK_SIGN).setDisplayname("§3Nearby title radius").setLore("§7Change the radius of the egg nearby message for all players", "§7If radius equal 0 no title will be displayed.", "", "§7Currently: §6" + Main.getInstance().getPluginConfig().getShowEggsNearbyMessageRadius(), "§eLEFT-CLICK to add one.", "§eRIGHT-CLICK to remove one.").setLocalizedName("settings.eggnearbyradius").withGlow(true).build());
         getInventory().setItem(20, new ItemBuilder(XMaterial.NAME_TAG).setDisplayname("§3Show plugin prefix").setLore("§7If enabled the plugin prefix", "§7will show on each message.", "§cThis will effect every message in the messages.yml file.", "", Main.getInstance().getPluginConfig().getPluginPrefixEnabled() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setLocalizedName("settings.pluginprefix").withGlow(Main.getInstance().getPluginConfig().getPluginPrefixEnabled()).build());
         getInventory().setItem(21, new ItemBuilder(XMaterial.FIREWORK_ROCKET).setDisplayname("§3Firework").setLore("§7If this function is activated", "§7a firework will spawn if an egg is found.", "", Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setLocalizedName("settings.firework").withGlow(Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound()).build());
+        getInventory().setItem(22, new ItemBuilder(XMaterial.CLOCK).setDisplayname("§3Hint cooldown on fail").setLore("§7Set if the cooldown of the hint function", "§7applies if the player fails.", "", Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setLocalizedName("settings.hintcooldown").withGlow(Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail()).build());
     }
 
     @Override
@@ -154,6 +155,12 @@ public class SettingsMenu extends InventoryMenu {
                 break;
             case "settings.firework":
                 Main.getInstance().getPluginConfig().setShowFireworkAfterEggFound(!Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound());
+                Main.getInstance().getPluginConfig().saveData();
+                menuContent();
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case "settings.hintcooldown":
+                Main.getInstance().getPluginConfig().setHintApplyCooldownOnFails(!Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail());
                 Main.getInstance().getPluginConfig().saveData();
                 menuContent();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
