@@ -1,5 +1,5 @@
 name: AdvancedEggHunt
-version: ${version}
+version: 3.0.2
 main: de.theredend2000.advancedegghunt.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI]
