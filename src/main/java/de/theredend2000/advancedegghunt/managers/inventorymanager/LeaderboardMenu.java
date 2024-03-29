@@ -92,7 +92,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         }
 
         List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
-        if (leaderList.isEmpty() || leaderList.get(0).getKey() == null) {
+        if (leaderList.isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());
             return;
         }
