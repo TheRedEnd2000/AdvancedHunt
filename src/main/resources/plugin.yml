@@ -73,7 +73,6 @@ permissions:
 
       AdvancedEggHunt.BreakEgg: true
       AdvancedEggHunt.PlaceEgg: true
-      AdvancedEggHunt.IgnoreCooldown: true
       AdvancedEggHunt.ChangeCollections: true
       AdvancedEggHunt.CreateCollection: true
       AdvancedEggHunt.OpenRewards: true
