@@ -79,6 +79,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
+            if (!playerConfig.contains("FoundEggs")) continue;
+
             leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
 
