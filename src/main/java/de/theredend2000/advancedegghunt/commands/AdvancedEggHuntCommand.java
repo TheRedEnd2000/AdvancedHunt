@@ -147,7 +147,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                     player.sendMessage(Main.getInstance().getCooldownManager().getRemainingTime(millis));
                                     return true;
                                 }
-                                new HintMenu(Main.getPlayerMenuUtility(player)).open(true);
+                                new HintMenu(Main.getPlayerMenuUtility(player)).open();
                                 return true;
                             } else {
                                 if (counter == max)

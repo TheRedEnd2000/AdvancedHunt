@@ -32,22 +32,15 @@ public class HintMenu extends InventoryMenu {
         hintMenuInstances.put(playerMenuUtility.getOwner().getUniqueId(), this);
     }
 
-    public void cancelHintMenu() {
-        if (failTask == null) return;
-
-        failTask.cancel();
-        hintMenuInstances.remove(playerMenuUtility.getOwner().getUniqueId());
-    }
-
-    public void open(boolean active) {
+    public void open() {
         if (playerMenuUtility.getOwner() == null) {
             return;
         }
 
-        this.active = active;
         this.clickedCorrectSlot = true;
         this.currentCount = 0;
         this.lastClicked = -1;
+        this.active = true;
         random = new Random();
 
         playerMenuUtility.getOwner().openInventory(getInventory());
@@ -57,7 +50,7 @@ public class HintMenu extends InventoryMenu {
         new BukkitRunnable() {
             @Override
             public void run() {
-                UpdateFrame();
+                UpdateFrame(false);
             }
         }.runTaskLater(Main.getInstance(), 10);
         Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
@@ -71,13 +64,18 @@ public class HintMenu extends InventoryMenu {
         failTask = new BukkitRunnable() {
             @Override
             public void run() {
-                UpdateFrame();
+                UpdateFrame(true);
             }
         }.runTaskLater(Main.getInstance(), Main.getInstance().getPluginConfig().getHintUpdateTime() + friendlyHelp);
     }
 
-    private void UpdateFrame() {
-        if (!active) {
+    private void UpdateFrame(boolean timeout) {
+        if (!active)
+            return;
+
+        if (timeout) {
+            fail(playerMenuUtility.getOwner());
+            playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT_TIMEOUT));
             return;
         }
         if(!clickedCorrectSlot) {
@@ -101,9 +99,17 @@ public class HintMenu extends InventoryMenu {
     }
 
     public void fail(Player player){
+        this.active = false;
+        cancelHintMenu();
         player.closeInventory();
         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playErrorSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        active = false;
+    }
+
+    public void cancelHintMenu() {
+        hintMenuInstances.remove(playerMenuUtility.getOwner().getUniqueId());
+
+        if (failTask != null)
+            failTask.cancel();
     }
 
     public String getReward(Player player){
@@ -137,7 +143,6 @@ public class HintMenu extends InventoryMenu {
             playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
             if (currentCount == Main.getInstance().getPluginConfig().getHintCount()) {
                 playerMenuUtility.getOwner().closeInventory();
-                active = false;
                 playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playAllEggsFound(), soundManager.getSoundVolume(), 1);
                 playerMenuUtility.getOwner().sendMessage(getReward(playerMenuUtility.getOwner()));
             }
@@ -147,7 +152,7 @@ public class HintMenu extends InventoryMenu {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    UpdateFrame();
+                    UpdateFrame(false);
                     restartFailedTask();
                 }
             }.runTaskLater(Main.getInstance(), 5);
