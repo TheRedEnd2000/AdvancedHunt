@@ -163,7 +163,7 @@ public class PluginConfig extends Configuration {
 	}
 
     public Boolean getHintApplyCooldownOnFail() {
-        return getConfig().getBoolean("Settings.HintCooldownSeconds");
+        return getConfig().getBoolean("Settings.HintApplyCooldownOnFail");
     }
     public void setHintApplyCooldownOnFails(Boolean HintApplyCooldownOnFail) {
         getConfig().set("Settings.HintApplyCooldownOnFail", HintApplyCooldownOnFail);
