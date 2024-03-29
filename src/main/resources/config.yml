@@ -57,6 +57,7 @@ Settings:
   # How long the update in the hint inventory is ( in ticks )
   HintUpdateTime: 20
 
+  # If the cooldown should be applied to the hint command on a failed attempt
   HintApplyCooldownOnFail: true
 
 Presets:
