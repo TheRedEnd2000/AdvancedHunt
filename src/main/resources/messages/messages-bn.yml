@@ -17,6 +17,8 @@ no-eggs: '&cEkhane kono dim i boshano hoi ni.'
 egg-hint: '&2&lSHAFOLLO! &aUkto jaigai ekti dim pawa gelo &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
 hint-cooldown: '&4&lCOOLDOWN COLCHE! &cOnugroho kore &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c opekkha korun.'
 clicked-same: '&4&lBERTHO! &cApni click korechen ekti vul glass pane e, noito kono glass pane ei noi othoba ekoi glass pane e duibar.'
+hint-timeout: '&cApni jothesto dhruto click koren ni.'
+hint-cancelled: '&aApni sofolvabe eti batil korechen.'
 egg-not-accessed: '&cApni ei muhurte eti upolovdi korte parben nah.'
 
 only-in-placemode: '&cApni shudumatro build mode e dim boshate othoba sorate parben. Ei mode e jawar jonno &e/egghunt placeEggs &ctype korun.'

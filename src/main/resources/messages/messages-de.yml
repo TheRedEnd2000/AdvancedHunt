@@ -17,6 +17,8 @@ no-eggs: '&cEs sind keine Eier platziert.'
 egg-hint: '&aEin Ei wurde bei &6X: %X%&6, Y: %Y%&6, Z: %Z%&a gefunden.'
 hint-cooldown: '&4&lCOOLDOWN! &cBitte warte &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c um den Befehl erneuert auszuführen.'
 clicked-same: '&4&lFEHLGESCHLAGEN! &cDu hast die falsche Scheibe oder eine Scheibe doppelt gedrückt.'
+hint-timeout: '&cDu hast nicht schnell genug Gedrückt.'
+hint-cancelled: '&aDu dies das erfolgreich abgebrochen.'
 egg-not-accessed: '&cDu hast aktuell kein Zugang hierzu.'
 
 only-in-placemode: '&cDu kannst Eier nur im Platzier-Modus zerstören. Schreibe &e/egghunt placeEggs &cum in diesen Modus zu wechseln.'
