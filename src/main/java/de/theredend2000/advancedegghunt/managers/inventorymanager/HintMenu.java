@@ -53,7 +53,6 @@ public class HintMenu extends InventoryMenu {
                 UpdateFrame(false);
             }
         }.runTaskLater(Main.getInstance(), 10);
-        Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
     }
 
     private void restartFailedTask(){
@@ -99,6 +98,9 @@ public class HintMenu extends InventoryMenu {
     }
 
     public void fail(Player player){
+        if (Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail())
+            Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
+
         this.active = false;
         cancelHintMenu();
         player.closeInventory();
@@ -142,6 +144,7 @@ public class HintMenu extends InventoryMenu {
             currentCount++;
             playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
             if (currentCount == Main.getInstance().getPluginConfig().getHintCount()) {
+                Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
                 playerMenuUtility.getOwner().closeInventory();
                 playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playAllEggsFound(), soundManager.getSoundVolume(), 1);
                 playerMenuUtility.getOwner().sendMessage(getReward(playerMenuUtility.getOwner()));

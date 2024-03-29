@@ -158,9 +158,16 @@ public class PluginConfig extends Configuration {
     public Integer getHintCooldownSeconds() {
         return getConfig().getInt("Settings.HintCooldownSeconds");
     }
-	public void setHintCooldownSeconds(Integer HintCooldownSeconds) {
+	public void setHintCooldownSeconds(Boolean HintCooldownSeconds) {
 		getConfig().set("Settings.HintCooldownSeconds", HintCooldownSeconds);
 	}
+
+    public Boolean getHintApplyCooldownOnFail() {
+        return getConfig().getBoolean("Settings.HintCooldownSeconds");
+    }
+    public void setHintApplyCooldownOnFails(Integer HintApplyCooldownOnFail) {
+        getConfig().set("Settings.HintApplyCooldownOnFail", HintApplyCooldownOnFail);
+    }
 
     public Integer getHintUpdateTime() {
         return getConfig().getInt("Settings.HintUpdateTime");

@@ -1,4 +1,4 @@
-config-version: 3.1
+config-version: 3.2
 
 # Change the language
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
@@ -57,6 +57,7 @@ Settings:
   # How long the update in the hint inventory is ( in ticks )
   HintUpdateTime: 20
 
+  HintApplyCooldownOnFail: true
 
 Presets:
 
