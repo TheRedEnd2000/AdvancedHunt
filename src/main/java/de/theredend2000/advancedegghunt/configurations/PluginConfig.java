@@ -3,7 +3,6 @@ package de.theredend2000.advancedegghunt.configurations;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.particles.XParticle;
-import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.XHelper;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -128,10 +127,6 @@ public class PluginConfig extends Configuration {
 		getConfig().set("Settings.ShowEggsNearbyMessageRadius", ShowEggsNearbyMessageRadius);
 	}
 
-    public XMaterial getRewardInventoryMaterial() {
-        return Main.getMaterial(getConfig().getString("Settings.RewardInventoryMaterial"));
-    }
-
     public boolean getPluginPrefixEnabled() {
         return getConfig().getBoolean("Settings.PluginPrefixEnabled");
     }
@@ -245,7 +240,7 @@ public class PluginConfig extends Configuration {
 
     @Nullable
     public Particle getEggFoundParticle() {
-        return XParticle.getParticle(getConfig().getString("Particle.type.EggFound", "CRIT"));
+        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggFound", "CRIT"), XParticle.getParticle("CRIT"));
     }
 	public void setEggFoundParticle(Particle EggFoundParticle) {
 		getConfig().set("Particle.type.EggFound", EggFoundParticle.toString());
@@ -253,7 +248,7 @@ public class PluginConfig extends Configuration {
 
     @Nullable
     public Particle getEggNotFoundParticle() {
-        return XParticle.getParticle(getConfig().getString("Particle.type.EggNotFound", "VILLAGER_HAPPY"));
+        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggNotFound", "VILLAGER_HAPPY"), XParticle.getParticle("VILLAGER_HAPPY"));
     }
 	public void setEggNotFoundParticle(Particle EggNotFoundParticle) {
 		getConfig().set("Particle.type.EggNotFound", EggNotFoundParticle.toString());
