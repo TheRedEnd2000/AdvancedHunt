@@ -11,19 +11,32 @@ import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
 public class HintMenu extends InventoryMenu {
+    public static HashMap<UUID, HintMenu> hintMenuInstances = new HashMap<>();
     private boolean active;
     private int currentSlot;
     private int currentCount;
-    private boolean clickedRight;
+    private boolean clickedCorrectSlot;
     private int lastClicked;
     private Random random;
+    private BukkitTask failTask;
 
     public HintMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Eggs Hint", (short) 54);
+        hintMenuInstances.put(playerMenuUtility.getOwner().getUniqueId(), this);
+    }
+
+    public void cancelHintMenu() {
+        if (failTask == null) return;
+
+        failTask.cancel();
+        hintMenuInstances.remove(playerMenuUtility.getOwner().getUniqueId());
     }
 
     public void open(boolean active) {
@@ -32,7 +45,7 @@ public class HintMenu extends InventoryMenu {
         }
 
         this.active = active;
-        this.clickedRight = true;
+        this.clickedCorrectSlot = true;
         this.currentCount = 0;
         this.lastClicked = -1;
         random = new Random();
@@ -40,30 +53,43 @@ public class HintMenu extends InventoryMenu {
         playerMenuUtility.getOwner().openInventory(getInventory());
 
         for (int i = 0; i < getInventory().getSize(); i++){getInventory().setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());}
-        startAnimating();
-        Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
-    }
 
-    private void startAnimating(){
         new BukkitRunnable() {
             @Override
             public void run() {
-                if(active){
-                    if(!clickedRight) {
-                        fail(playerMenuUtility.getOwner());
-                        playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
-                        return;
-                    }
-
-                    getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());
-                    currentSlot = getRandomSlot();
-                    getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE).setDisplayname("§aConfirm").setLore("§6" + (currentCount + 1) + "§7/§6" + Main.getInstance().getPluginConfig().getHintCount()).build());
-                    clickedRight = false;
-                }else{
-                    cancel();
-                }
+                UpdateFrame();
             }
-        }.runTaskTimer(Main.getInstance(), 40, Main.getInstance().getPluginConfig().getHintUpdateTime());
+        }.runTaskLater(Main.getInstance(), 10);
+        Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
+    }
+
+    private void restartFailedTask(){
+        if (failTask != null) failTask.cancel();
+        int friendlyHelp = (60 - (20 * (currentCount - 1)));
+        if (friendlyHelp < 0) friendlyHelp = 0;
+
+        failTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                UpdateFrame();
+            }
+        }.runTaskLater(Main.getInstance(), Main.getInstance().getPluginConfig().getHintUpdateTime() + friendlyHelp);
+    }
+
+    private void UpdateFrame() {
+        if (!active) {
+            return;
+        }
+        if(!clickedCorrectSlot) {
+            fail(playerMenuUtility.getOwner());
+            playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
+            return;
+        }
+
+        getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());
+        currentSlot = getRandomSlot();
+        getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE).setDisplayname("§aConfirm").setLore("§6" + (currentCount + 1) + "§7/§6" + Main.getInstance().getPluginConfig().getHintCount()).build());
+        clickedCorrectSlot = false;
     }
 
     private int getRandomSlot(){
@@ -115,8 +141,16 @@ public class HintMenu extends InventoryMenu {
                 playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playAllEggsFound(), soundManager.getSoundVolume(), 1);
                 playerMenuUtility.getOwner().sendMessage(getReward(playerMenuUtility.getOwner()));
             }
-            clickedRight = true;
+            clickedCorrectSlot = true;
             lastClicked = currentSlot;
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    UpdateFrame();
+                    restartFailedTask();
+                }
+            }.runTaskLater(Main.getInstance(), 5);
         } else {
             fail(playerMenuUtility.getOwner());
             playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
