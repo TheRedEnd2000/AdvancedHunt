@@ -19,6 +19,7 @@ import java.util.UUID;
 
 public class HintMenu extends InventoryMenu {
     public static HashMap<UUID, HintMenu> hintMenuInstances = new HashMap<>();
+    private boolean active;
     private int currentSlot;
     private int currentCount;
     private boolean clickedCorrectSlot;
@@ -39,6 +40,7 @@ public class HintMenu extends InventoryMenu {
         this.clickedCorrectSlot = true;
         this.currentCount = 0;
         this.lastClicked = -1;
+        this.active = true;
         random = new Random();
 
         playerMenuUtility.getOwner().openInventory(getInventory());
@@ -68,6 +70,9 @@ public class HintMenu extends InventoryMenu {
     }
 
     private void UpdateFrame(boolean timeout) {
+        if (!active)
+            return;
+
         if (timeout) {
             fail(playerMenuUtility.getOwner());
             playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT_TIMEOUT));
@@ -94,6 +99,7 @@ public class HintMenu extends InventoryMenu {
     }
 
     public void fail(Player player){
+        this.active = false;
         cancelHintMenu();
         player.closeInventory();
         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playErrorSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
@@ -102,7 +108,8 @@ public class HintMenu extends InventoryMenu {
     public void cancelHintMenu() {
         hintMenuInstances.remove(playerMenuUtility.getOwner().getUniqueId());
 
-        if (failTask != null) failTask.cancel();
+        if (failTask != null)
+            failTask.cancel();
     }
 
     public String getReward(Player player){
