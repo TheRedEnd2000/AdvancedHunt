@@ -57,15 +57,13 @@ public class HintMenu extends InventoryMenu {
 
     private void restartFailedTask(){
         if (failTask != null) failTask.cancel();
-        int friendlyHelp = (60 - (20 * (currentCount - 1)));
-        if (friendlyHelp < 0) friendlyHelp = 0;
 
         failTask = new BukkitRunnable() {
             @Override
             public void run() {
                 UpdateFrame(true);
             }
-        }.runTaskLater(Main.getInstance(), Main.getInstance().getPluginConfig().getHintUpdateTime() + friendlyHelp);
+        }.runTaskLater(Main.getInstance(), Main.getInstance().getPluginConfig().getHintUpdateTime());
     }
 
     private void UpdateFrame(boolean timeout) {

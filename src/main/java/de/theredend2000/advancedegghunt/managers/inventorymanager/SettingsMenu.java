@@ -111,7 +111,7 @@ public class SettingsMenu extends InventoryMenu {
                     Main.getInstance().getPluginConfig().setArmorstandGlow(currentTime + 1);
 
                 } else if (event.getAction() == InventoryAction.PICKUP_HALF) {
-                    if (currentTime == 1) {
+                    if (currentTime == 0) {
                         player.sendMessage(messageManager.getMessage(MessageKey.ARMORSTAND_GLOW));
                         return;
                     }
