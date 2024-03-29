@@ -2,6 +2,7 @@ package de.theredend2000.advancedegghunt.listeners;
 
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.HintMenu;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +24,7 @@ public class InventoryCloseEventListener implements Listener {
 
         if (HintMenu.hintMenuInstances.containsKey(player.getUniqueId())) {
             HintMenu.hintMenuInstances.get(player.getUniqueId()).cancelHintMenu();
+            player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT_CANCELLED));
         }
     }
 
