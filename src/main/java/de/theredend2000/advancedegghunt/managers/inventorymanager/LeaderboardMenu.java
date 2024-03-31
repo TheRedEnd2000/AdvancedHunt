@@ -132,7 +132,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                     break;
                 case YOU:
                     if (playerName.equals(playerMenuUtility.getOwner().getName()))
-                        getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName).setDisplayname("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")).setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= i ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (i - 9) + " place behind 10th place").build());
+                        getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName).setDisplayname("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")).setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= i ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (i - 9) + " place behind 10th place").build());
                     break;
             }
         }
