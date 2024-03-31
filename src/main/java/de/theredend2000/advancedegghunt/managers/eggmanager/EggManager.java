@@ -496,7 +496,10 @@ public class EggManager {
                 leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
             }
         }
+
         List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
         if (!leaderList.isEmpty() && position >= 0 && leaderList.size() > position) {
             return String.valueOf(leaderList.get(position).getKey());
         } else {
@@ -515,7 +518,10 @@ public class EggManager {
                 leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
             }
         }
+
         List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
+        leaderList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
         if(!leaderList.isEmpty() && position >= 0 && leaderList.size() > position){
             return String.valueOf(leaderList.get(position).getValue());
         }else
