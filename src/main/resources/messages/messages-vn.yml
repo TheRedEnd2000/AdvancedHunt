@@ -1,4 +1,4 @@
-config-version: 2.4
+config-version: 2.5
 
 no-permission-error: '&cBạn không có quyền &6%PERMISSION% để sử dụng lệnh này.'
 command-not-found: '&cLệnh không tồn! &7Vui lòng nhập &e/egghunt help &7để xem tất cả các lệnh.'
@@ -17,6 +17,8 @@ no-eggs: '&cChưa có quả trứng nào được đặt.'
 egg-hint: '&2&lTHÀNH CÔNG! &aMột quả trứng đã được đặt ở &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
 hint-cooldown: '&4&lĐANG CHỜ! &cVui lòng đợi &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'
 clicked-same: '&4&lTHẤT BẠI! &cBạn đã bấm nhầm ô kính, không có ô kính nào hoặc giống nhau.'
+hint-timeout: '&cBạn bấm chưa đủ nhanh.'
+hint-cancelled: '&aBạn đã hủy thành công.'
 egg-not-accessed: '&cBạn không thể truy cập vào đây lúc này.'
 
 only-in-placemode: '&cBạn chỉ có thể đặt hoặc phá trứng ở chế độ xây cả plugin. Gõ &e/egghunt placeEggs &cđể bật chế độ này.'
