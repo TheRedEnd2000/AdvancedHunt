@@ -8,7 +8,6 @@ import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -78,9 +77,10 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
             return;
         }
 
-        for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
+        var t1 = Main.getInstance().getEggDataManager().savedPlayers();
+        for(UUID uuid : t1) {
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
-            if (!playerConfig.contains("FoundEggs")) continue;
+            if (!playerConfig.contains("FoundEggs") || !playerConfig.contains("FoundEggs." + collection)) continue;
 
             leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
         }
