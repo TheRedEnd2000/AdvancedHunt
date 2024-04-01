@@ -117,6 +117,16 @@ BlacklistedCommands:
   - minecraft:reload
   - rl
   - minecraft:rl
+  - luckperms:lp
+  - lp
+  - luckperms:perm
+  - perm
+  - luckperms:permission
+  - permission
+  - luckperms:permissions
+  - permissions
+  - luckperms:perms
+  - perms
 
 
 PlaceEggs:
