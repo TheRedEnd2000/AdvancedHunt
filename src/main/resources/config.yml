@@ -1,17 +1,37 @@
-config-version: 3.2
+config-version: 3.4
 
 # Change the language
-# Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
+# Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali) | zh (Simplified Chinese only messages no menus)
 messages-lang: en
+
+# Change the plugin name or the main purpose
+plugin-name-singular: "treasure"
+plugin-name-plural: "treasures"
+# The first command listed here is going to be the main command
+# IMPORTANT: COMMANDS WILL ONLY APPLY IF THE SERVER RESTARTS; A PLUGIN RELOAD WILL NOW CHANGE THIS!
+commands:
+  - "treasurehunt"
+  - "treasures"
+  - "advancedhunt"
+  - "aeh"
+  - "easter"
 
 #Auto download
 Download:
-  # Will be downloaded if a new plugin version is out (Not working rn)
-  AdvancedEggHunt: false
+  # Will be downloaded if a new plugin version is out
+  AdvancedHunt: true
   # Will download for the plugin to work (This should not be disabled)
-  NBT-API: false
+  NBT-API: true
+#  ProtocolLib: false
+  PlaceholderAPI: true
 
-prefix: '&f[&eAdvancedEggHunt&f] &r'
+# Experimental feature toggles
+# Remove the '#' and set to true to use
+Experimental:
+  # Enable ProtocolLib support (requires ProtocolLib plugin)
+#  ProtocolLibSupport: false
+
+prefix: '&f[&eAdvancedHunt&f] &r'
 
 Settings:
 
@@ -21,31 +41,31 @@ Settings:
   # If a message should be sent if the plugin has a newer version
   Updater: true
 
-  # If the player find on egg he gets a reward
+  # If the player find on treasure he gets a reward
   PlayerFoundOneEggRewards: true
 
-  # If the player find all eggs he gets a reward
+  # If the player find all treasures he gets a reward
   PlayerFoundAllEggsReward: true
 
   # Shows the coordinates in the progress inventory of the player
   ShowCoordinatesWhenEggFoundInProgressInventory: false
 
-  # If a firework should spawn after clicking an egg
+  # If a firework should spawn after clicking an treasure
   ShowFireworkAfterEggFound: true
 
-  # How long the armor stands are visible after typing /eggs show
+  # How long the armor stands are visible after typing /%PLUGIN_COMMAND% show
   ArmorstandGlow: 10
 
-  # In witch radius the player gets a message that he is near an egg
+  # In witch radius the player gets a message that he is near an treasure
   ShowEggsNearbyMessageRadius: 10
 
   # If the plugin prefix should show up
   PluginPrefixEnabled: true
 
-  # If left-clicking an egg works
+  # If left-clicking an treasure works
   LeftClickEgg: false
 
-  # If right-clicking an egg works
+  # If right-clicking an treasure works
   RightClickEgg: true
 
   # How many panes a player has to click before getting their reward
@@ -61,11 +81,10 @@ Settings:
   HintApplyCooldownOnFail: true
 
 Presets:
-
-  # Name of the preset that loads after placing a new egg
+  # Name of the preset that loads after placing a new treasure
   DefaultIndividualPresetLoad: default
 
-  # Name of the preset that loads after placing a new egg
+  # Name of the preset that loads after creating a new collection
   DefaultGlobalPresetLoad: default
 
 
@@ -78,6 +97,37 @@ Sounds:
   ErrorSound: BLOCK_NOTE_BLOCK_BASEDRUM
   InventoryClickSuccess: BLOCK_NOTE_BLOCK_CHIME
   InventoryClickFailed: BLOCK_NOTE_BLOCK_HAT
+
+
+# Rarity's display how rare the item is that you found
+# It will show up when you find an item
+# Smallest number: 0.0000001
+send-rarity-messages: true
+Rarity:
+  common:
+    display: '&fCOMMON'
+    min: 50
+    max: 100
+  uncommon:
+    display: '&aUNCOMMON'
+    min: 10
+    max: 50
+  rare:
+    display: '&9RARE'
+    min: 1
+    max: 10
+  epic:
+    display: '&5EPIC'
+    min: 0.1
+    max: 1
+  legendary:
+    display: '&6LEGENDARY'
+    min: 0.005
+    max: 0.1
+  mythic:
+    display: '&dMYTHIC'
+    min: 0.0000001 #0.0000001
+    max: 0.005
 
 Particle:
   enabled: true
@@ -117,9 +167,19 @@ BlacklistedCommands:
   - minecraft:reload
   - rl
   - minecraft:rl
+  - luckperms:lp
+  - lp
+  - luckperms:perm
+  - perm
+  - luckperms:permission
+  - permission
+  - luckperms:permissions
+  - permissions
+  - luckperms:perms
+  - perms
 
 
-PlaceEggs:
+Place:
   # You can only use textures if the type is a player head
   0:
     type: PLAYER_HEAD

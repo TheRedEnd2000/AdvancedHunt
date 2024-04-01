@@ -5,15 +5,17 @@ If you discover any bugs or have a feature request please use the discord linked
 
 ### Links
 * [Discord Invite](https://discord.gg/7x2fzYKucZ)
-* [Spigot](https://www.spigotmc.org/resources/advancedegghunt.109085/)
-* [Modrinth](https://modrinth.com/plugin/advancedegghunt)
-* [Wiki](https://github.com/TheRedEnd2000/AdvancedEggHunt/wiki)
+* [Spigot](https://www.spigotmc.org/resources/advancedhunt.109085/)
+* [Modrinth](https://modrinth.com/plugin/advancedhunt)
+* [Wiki](https://github.com/TheRedEnd2000/AdvancedHunt/wiki)
 
 ### Languages Supported:
 English | German | France (auracio) | Vietnamese (ThuongTr) | Bangla (Udoyy)
 
 ### Tested versions:
-1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20
+* Full support 1.14.4-1.21.x
+* Support for all features apart from stopping water breaking player heads when placed on it, 1.13-1.14.3
+* Limited level support(Legacy) 1.9.4-1.12.2
 
 ### Metrics collection
 AdvancedEggHunt collects anonymous server statistics through [bStats](https://bstats.org/), an open-source statistics service for Minecraft software.

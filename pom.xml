@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.theredend2000</groupId>
-    <artifactId>AdvancedEggHunt</artifactId>
-    <version>v3.0.4</version>
+    <artifactId>AdvancedHunt</artifactId>
+    <version>v3.1.0</version>
     <packaging>jar</packaging>
 
-    <name>AdvancedEggHunt</name>
+    <name>AdvancedHunt</name>
 
     <properties>
         <java.version>1.8</java.version>
@@ -22,7 +22,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
@@ -31,7 +31,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -41,14 +41,18 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <relocations>
-                                <relocation>
-                                    <pattern>de.tr7zw.changeme.nbtapi</pattern>
-                                    <shadedPattern>${shade.base}.nbtapi</shadedPattern>
-                                </relocation>
+<!--                                <relocation>-->
+<!--                                    <pattern>de.tr7zw.nbtapi</pattern>-->
+<!--                                    <shadedPattern>${shade.base}.nbtapi</shadedPattern>-->
+<!--                                </relocation>-->
                                 <relocation>
                                     <pattern>net.wesjd.anvilgui</pattern>
                                     <shadedPattern>${shade.base}.anvilgui</shadedPattern>
                                 </relocation>
+<!--                                <relocation>-->
+<!--                                    <pattern>com.comphenix.protocol</pattern>-->
+<!--                                    <shadedPattern>${shade.base}.ProtocolLib</shadedPattern>-->
+<!--                                </relocation>-->
                                 <relocation>
                                     <pattern>com.cryptomorin.xseries</pattern>
                                     <shadedPattern>${shade.base}.XSeries</shadedPattern>
@@ -61,7 +65,7 @@
             <plugin>
                 <groupId>net.md-5</groupId>
                 <artifactId>specialsource-maven-plugin</artifactId>
-                <version>1.2.2</version>
+                <version>2.0.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -126,6 +130,10 @@
             <url>https://repo.codemc.io/repository/maven-public/</url>
             <layout>default</layout>
         </repository>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -138,23 +146,30 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.11.5</version>
+            <version>2.11.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>9.9.0</version>
+            <version>11.3.0</version>
         </dependency>
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.9.2-SNAPSHOT</version>
+            <version>1.10.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.tr7zw</groupId>
-            <artifactId>item-nbt-api</artifactId>
-            <version>2.12.3</version>
+            <artifactId>item-nbt-api-plugin</artifactId>
+            <version>2.13.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>5.3.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
