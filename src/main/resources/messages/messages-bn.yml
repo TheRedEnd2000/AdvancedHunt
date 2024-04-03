@@ -12,6 +12,7 @@ teleport-to-egg: '&aApnake dim er kache teleport kora hoyeche #%ID%.'
 
 egg-found: '&aApni ekti dim khuje peyechen. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
 egg-already-found: '&cApni itimoddhe ei dim ti peyechen.'
+egg-already-found-by-player: '&cEi dim ti ithimoddhei onno ekjon player khuje peyeche.'
 all-eggs-found: '&cApni itimoddhe sobgulo dim khuje peyechen.'
 no-eggs: '&cEkhane kono dim i boshano hoi ni.'
 egg-hint: '&2&lSHAFOLLO! &aUkto jaigai ekti dim pawa gelo &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
