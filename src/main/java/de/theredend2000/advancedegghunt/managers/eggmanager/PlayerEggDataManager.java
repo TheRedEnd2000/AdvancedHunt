@@ -129,15 +129,15 @@ public class PlayerEggDataManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
-                    FileConfiguration cfg = playerConfigs.get(uuids);
+                for(UUID uuid : plugin.getEggDataManager().savedPlayers()){
+                    FileConfiguration cfg = playerConfigs.get(uuid);
                     if(cfg == null) continue;
-                    if(!cfg.contains("FoundEggs.")) return;
+                    if(!cfg.contains("FoundEggs.")) continue;
                     for(String collection : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
                         for(String eggId : cfg.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
                             if (eggId.equals("Count") || eggId.equals("Name")) continue;
-                            if (canReset(uuids, collection, eggId))
-                                plugin.getEggManager().resetStatsPlayerEgg(uuids, collection, eggId);
+                            if (canReset(uuid, collection, eggId))
+                                plugin.getEggManager().resetStatsPlayerEgg(uuid, collection, eggId);
                         }
                     }
                 }
