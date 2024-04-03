@@ -44,6 +44,8 @@ public class CollectionEditor extends InventoryMenu {
     private void menuContent(String collection) {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         boolean enabled = placedEggs.getBoolean("Enabled");
+        boolean oneplayer = placedEggs.getBoolean("OnePlayer");
+        boolean hideforplayer = placedEggs.getBoolean("HideForPlayer");
         DeletionTypes deletionType = Main.getInstance().getPlayerEggDataManager().getDeletionType(super.playerMenuUtility.getOwner().getUniqueId());
 
         getInventory().setItem(4, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).setDisplayname("§6" + collection).build());
@@ -52,6 +54,8 @@ public class CollectionEditor extends InventoryMenu {
         getInventory().setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4Delete").setLore("§8Check if your deletion type is correct. (WOODEN_AXE)", "", "§4§lYOU CAN NOT UNDO THIS", "", "§eClick to delete.").build());
         getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setDefaultLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection)).build());
         getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER).setDisplayname("§3Reset §e§l(BETA)").setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(collection), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.").build());
+        getInventory().setItem(42, new ItemBuilder(hideforplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Hide for player").setLore("", "§7If a player finds an egg it will not longer","§7be shown to them.","§cThis is only Client-Side", "", "§eClick to toggle.").build());
+        getInventory().setItem(43, new ItemBuilder(oneplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3One Player").setLore("", "§7Only one player can find the egg.","§7It is after finding not longer accessible.","","§cAfter disabling the feature all eggs that are","§cmaked as found will be reset.", "", "§eClick to toggle.").build());
 
         getInventory().setItem(44,  new ItemBuilder(XMaterial.WOODEN_AXE).setDisplayname("§3Deletion Types")
                 .setLore("§8Every player can configure that himself.",
@@ -77,6 +81,8 @@ public class CollectionEditor extends InventoryMenu {
 
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         boolean enabled = placedEggs.getBoolean("Enabled");
+        boolean oneplayer = placedEggs.getBoolean("OnePlayer");
+        boolean hideforplayer = placedEggs.getBoolean("HideForPlayer");
         switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())) {
             case "Close":
                 player.closeInventory();
@@ -131,6 +137,22 @@ public class CollectionEditor extends InventoryMenu {
                         break;
                 }
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                menuContent(collection);
+                break;
+            case "Hide for player":
+                /*player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                placedEggs.set("HideForPlayer", !hideforplayer);
+                Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+                menuContent(collection);*/
+                player.sendMessage("§cThis feature is coming soon.");
+                break;
+            case "One Player":
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                placedEggs.set("OnePlayer", !oneplayer);
+                Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+                if(oneplayer && placedEggs.contains("PlacedEggs."))
+                    for(String eggIDs : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false))
+                        Main.getInstance().getEggManager().markEggAsFound(collection,eggIDs,false);
                 menuContent(collection);
                 break;
         }

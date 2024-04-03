@@ -293,6 +293,17 @@ public class EggManager {
         return getEggsFound(player, collection) == getMaxEggs(collection);
     }
 
+    public void markEggAsFound(String collection, String eggID,boolean marked){
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+        placedEggs.set("PlacedEggs."+eggID+".markedAsFound",marked);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+    }
+
+    public boolean isMarkedAsFound(String collection, String eggID){
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+        return placedEggs.getBoolean("PlacedEggs."+eggID+".markedAsFound");
+    }
+
     public void spawnEggParticle() {
         if (spawnEggParticleTask != null)
             spawnEggParticleTask.cancel();

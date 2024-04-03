@@ -12,6 +12,7 @@ teleport-to-egg: '&aYou were teleported to egg #%ID%.'
 
 egg-found: '&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
 egg-already-found: '&cYou have already found this egg.'
+egg-already-found-by-player: '&cThis egg was already found by another player.'
 all-eggs-found: '&cYou have already found all eggs.'
 no-eggs: '&cThere are no eggs placed.'
 egg-hint: '&2&lSUCCESS! &aAn egg was found at &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'

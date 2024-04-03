@@ -13,6 +13,7 @@ public enum MessageKey {
 
     EGG_FOUND("egg-found"),
     EGG_ALREADY_FOUND("egg-already-found"),
+    EGG_ALREADY_FOUND_BY_PLAYER("egg-already-found-by-player"),
     ALL_EGGS_FOUND("all-eggs-found"),
     NO_EGGS("no-eggs"),
 

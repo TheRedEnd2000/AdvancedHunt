@@ -12,6 +12,7 @@ teleport-to-egg: '&aDu wurdest zu dem Ei #%ID% &ateleportiert&7.'
 
 egg-found: '&aDu hast ein Ei gefunden. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
 egg-already-found: '&cDu hast dieses Ei bereits gefunden.'
+egg-already-found-by-player: '&cDieses Ei wurde bereits von einem anderen Spieler gefunden.'
 all-eggs-found: '&cDu hast bereits alle Eier gefunden.'
 no-eggs: '&cEs sind keine Eier platziert.'
 egg-hint: '&aEin Ei wurde bei &6X: %X%&6, Y: %Y%&6, Z: %Z%&a gefunden.'

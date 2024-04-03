@@ -71,6 +71,10 @@ public class PlayerInteractEventListener implements Listener {
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
                 return;
             }
+            if(eggManager.isMarkedAsFound(collection,id)){
+                player.sendMessage(messageManager.getMessage(MessageKey.EGG_ALREADY_FOUND_BY_PLAYER));
+                return;
+            }
 
             if(Main.getInstance().getRequirementsManager().getOverallTime(collection) > 0)
                 Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(), collection, id);
@@ -80,6 +84,8 @@ public class PlayerInteractEventListener implements Listener {
 
             if (Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound())
                 extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
+            if(placedEggs.getBoolean("OnePlayer") && !eggManager.isMarkedAsFound(collection,id))
+                eggManager.markEggAsFound(collection,id,true);
             if (Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()) {
                 player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
                 if(!placedEggs.contains("PlacedEggs." + id + ".Rewards.")) continue;
