@@ -152,7 +152,7 @@ public class CollectionEditor extends InventoryMenu {
                 Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                 if(oneplayer && placedEggs.contains("PlacedEggs."))
                     for(String eggIDs : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false))
-                        Main.getInstance().getEggManager().markEggAsFound(collection,eggIDs,false);
+                        Main.getInstance().getEggManager().markEggAsFound(collection, eggIDs, false);
                 menuContent(collection);
                 break;
         }
