@@ -7,6 +7,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 public class ExtraManager{
@@ -60,5 +61,26 @@ public class ExtraManager{
                 return Color.YELLOW;
         }
         return null;
+    }
+
+    public String decimalToFraction(double decimal) {
+        BigDecimal bd = BigDecimal.valueOf(decimal);
+
+        int denominator = (int) Math.pow(10, bd.scale());
+
+        BigDecimal numeratorBd = bd.multiply(BigDecimal.valueOf(denominator));
+        long numerator = numeratorBd.longValue();
+
+        long gcd = gcd(numerator, denominator);
+        numerator /= gcd;
+        denominator /= gcd;
+        StringBuilder result = new StringBuilder();
+        result.append(numerator);
+        result.append("/").append(denominator);
+        return result.toString();
+    }
+
+    private long gcd(long a, long b) {
+        return b == 0 ? a : gcd(b, a % b);
     }
 }

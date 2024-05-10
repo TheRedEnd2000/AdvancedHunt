@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +67,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                         "§7all commands that are in this inventory",
                         "§7will get executed.",
                         "",
-                        "§c§n§oThis commands will count for the entire collection.",
+                        "§c§n§oThese commands will count for the entire collection.",
                         "",
                         "§7You can save all listed commands as present",
                         "§7to load it in other collections or setting it as default.").build();
@@ -96,6 +97,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     String command = placedEggs.getString("GlobalRewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("GlobalRewards." + keys.get(index) + ".enabled");
                     boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
+                    double chance = placedEggs.getDouble("GlobalRewards." + keys.get(index) + ".chance");
                     ItemStack itemStack = XMaterial.PAPER.parseItem();
                     if (startsWithGive) {
                         String[] parts = command.split(" ", 3);
@@ -106,7 +108,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                             itemStack = getItem(materialName);
                         }
                     }
-                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")", "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
@@ -193,14 +195,37 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     case PICKUP_ALL:
                         placedEggs.set("GlobalRewards." + commandID + ".enabled", !placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled"));
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        open(id, collection);
+                        break;
+                    case CLONE_STACK:
+                        new AnvilGUI.Builder()
+                                .onClose(stateSnapshot -> {
+                                    if (!stateSnapshot.getText().isEmpty()) {
+                                        if(stateSnapshot.getText().matches("[0-9.]+")){
+                                            placedEggs.set("GlobalRewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
+                                            plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                                            player.sendMessage("success "+stateSnapshot.getText());
+                                        }else
+                                            player.sendMessage("§cNo Number");
+                                        open(id,collection);
+                                    }
+                                })
+                                .onClick((slot, stateSnapshot) -> {
+                                    return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                                })
+                                .text(String.valueOf(placedEggs.getDouble("GlobalRewards." + commandID + ".chance")))
+                                .title("Change chance")
+                                .plugin(Main.getInstance())
+                                .open(player);
+                        player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                         break;
                     case PICKUP_HALF:
                         player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%", commandID));
                         placedEggs.set("GlobalRewards." + commandID, null);
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        open(id, collection);
                         break;
                 }
-                open(id, collection);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 return;
             }

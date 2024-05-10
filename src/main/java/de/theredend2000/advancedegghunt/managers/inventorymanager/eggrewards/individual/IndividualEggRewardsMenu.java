@@ -13,6 +13,7 @@ import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,6 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +69,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                         "§7all commands that are in this inventory",
                         "§7will get executed.",
                         "",
-                        "§c§n§oThis commands will only count for this egg.",
+                        "§c§n§oThese commands will only count for this egg.",
                         "",
                         "§7You can save all listed commands as present",
                         "§7to load it in other eggs or setting it as default.").build();
@@ -97,6 +100,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".command").replaceAll("§", "&");
                     boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".enabled");
                     boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
+                    double chance = placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + keys.get(index) + ".chance");
                     ItemStack itemStack = XMaterial.PAPER.parseItem();
                     if (startsWithGive) {
                         String[] parts = command.split(" ", 3);
@@ -107,7 +111,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                             itemStack = getItem(materialName);
                         }
                     }
-                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"), "", "§eLEFT-CLICK to toggle enabled.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")", "", "§eLEFT-CLICK to toggle enabled.","§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
@@ -202,14 +206,37 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     case PICKUP_ALL:
                         placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", !placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled"));
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        open(id, collection);
+                        break;
+                    case CLONE_STACK:
+                        new AnvilGUI.Builder()
+                                .onClose(stateSnapshot -> {
+                                    if (!stateSnapshot.getText().isEmpty()) {
+                                        if(stateSnapshot.getText().matches("[0-9.]+")){
+                                            placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
+                                            plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                                            player.sendMessage("success");
+                                        }else
+                                            player.sendMessage("§cNo Number");
+                                        open(id,collection);
+                                    }
+                                })
+                                .onClick((slot, stateSnapshot) -> {
+                                    return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                                })
+                                .text(String.valueOf(placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + commandID + ".chance")))
+                                .title("Change chance")
+                                .plugin(Main.getInstance())
+                                .open(player);
+                        player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                         break;
                     case PICKUP_HALF:
                         player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%", commandID));
                         placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID, null);
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        open(id, collection);
                         break;
                 }
-                open(id, collection);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 return;
             }

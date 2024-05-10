@@ -72,6 +72,7 @@ public class EggDataManager {
         FileConfiguration placedEggs = getPlacedEggs(collection);
         placedEggs.set(path + commandID + ".command", command);
         placedEggs.set(path + commandID + ".enabled", true);
+        placedEggs.set(path + commandID + ".chance", 100);
         savePlacedEggs(collection, placedEggs);
     }
 

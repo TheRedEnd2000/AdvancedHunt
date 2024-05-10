@@ -76,8 +76,10 @@ public class IndividualPresetDataManager {
             for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)){
                 String command = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
                 boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
+                double chance = placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + commandID + ".chance");
                 presets.set("Commands." + commandID + ".command", command);
                 presets.set("Commands." + commandID + ".enabled", enabled);
+                presets.set("Commands." + commandID + ".chance", chance);
                 savePreset(preset, presets);
             }
         }
@@ -91,8 +93,10 @@ public class IndividualPresetDataManager {
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
             String command = presets.getString("Commands." + commandID + ".command");
             boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
+            double chance = presets.getDouble("Commands." + commandID + ".chance");
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command", command);
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", enabled);
+            placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".chance", chance);
             Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
         }
     }
@@ -148,8 +152,10 @@ public class IndividualPresetDataManager {
         FileConfiguration config = this.getPresets(preset);
         config.set("Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
         config.set("Commands.0.enabled", true);
+        config.set("Commands.0.enabled", 100);
         config.set("Commands.1.command", "minecraft:give %PLAYER% diamond");
         config.set("Commands.1.enabled", true);
+        config.set("Commands.1.chance", 100);
         this.savePreset(preset, config);
     }
 

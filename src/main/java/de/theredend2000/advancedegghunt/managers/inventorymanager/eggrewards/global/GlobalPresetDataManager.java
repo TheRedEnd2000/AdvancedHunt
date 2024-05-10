@@ -76,8 +76,10 @@ public class GlobalPresetDataManager {
             for (String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)){
                 String command = placedEggs.getString("GlobalRewards." + commandID + ".command");
                 boolean enabled = placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled");
+                double chance = placedEggs.getDouble("GlobalRewards." + commandID + ".chance");
                 presets.set("Commands." + commandID + ".command", command);
                 presets.set("Commands." + commandID + ".enabled", enabled);
+                presets.set("Commands." + commandID + ".chance", chance);
                 savePreset(preset, presets);
             }
         }
@@ -91,8 +93,10 @@ public class GlobalPresetDataManager {
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
             String command = presets.getString("Commands." + commandID + ".command");
             boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
+            double chance = presets.getDouble("Commands." + commandID + ".chance");
             placedEggs.set("GlobalRewards." + commandID + ".command", command);
             placedEggs.set("GlobalRewards." + commandID + ".enabled", enabled);
+            placedEggs.set("GlobalRewards." + commandID + ".chance", chance);
             Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
         }
     }
@@ -146,10 +150,12 @@ public class GlobalPresetDataManager {
 
     public void addDefaultRewardCommands(String preset) {
         FileConfiguration config = this.getPresets(preset);
-        config.set("Commands.0.command", "minecraft:give %PLAYER% diamond");
+        config.set("Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
         config.set("Commands.0.enabled", true);
-        config.set("Commands.1.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
+        config.set("Commands.0.chance", 100);
+        config.set("Commands.1.command", "minecraft:give %PLAYER% diamond");
         config.set("Commands.1.enabled", true);
+        config.set("Commands.1.chance", 100);
         this.savePreset(preset, config);
     }
 

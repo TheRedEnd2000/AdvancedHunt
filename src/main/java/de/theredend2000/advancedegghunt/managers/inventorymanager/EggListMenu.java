@@ -70,35 +70,15 @@ public class EggListMenu extends PaginatedInventoryMenu {
             if (keys.get(index) == null) {
                 continue;
             }
-            int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-
-            //TODO does not work right now
-
-            World world = Bukkit.getWorld(placedEggs.getString("PlacedEggs." + keys.get(index) + ".World"));
+            int random = new Random().nextInt(7);
             String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
             String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
             String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
-            Block block = new Location(world,Integer.parseInt(x),Integer.parseInt(y),Integer.parseInt(z)).getBlock();
-            block.getLocation().getChunk().load();
-            String fullTexture = NBT.get(block.getState(), nbt -> {
-                final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
-                if (skullOwnerCompound == null) return null;
-                ReadableNBT skullOwnerPropertiesCompound = skullOwnerCompound.getCompound("Properties");
-                if (skullOwnerPropertiesCompound == null) return null;
-                ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesTexturesCompound = skullOwnerPropertiesCompound.getCompoundList("textures");
-                if (skullOwnerPropertiesTexturesCompound == null) return null;
-
-                return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
-            });
-            Bukkit.broadcastMessage(fullTexture);
-            String date = Main.getInstance().getEggManager().getEggDatePlaced(keys.get(index), collection);
-            String time = Main.getInstance().getEggManager().getEggTimePlaced(keys.get(index), collection);
-            String timesFound = String.valueOf(Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection));
-            XMaterial blockMaterial = XMaterial.matchXMaterial(block.getType());
-            if(blockMaterial.equals(XMaterial.PLAYER_HEAD))
-                getInventory().setItem(slotIndex, new ItemBuilder(blockMaterial).setSkullOwner(fullTexture).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setLocalizedName(keys.get(index)).build());
-            else
-                getInventory().setItem(slotIndex, new ItemBuilder(blockMaterial).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setLocalizedName(keys.get(index)).build());
+            String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
+            String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
+            int timesFound = Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection);
+            int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
+            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setLocalizedName(keys.get(index)).build());
         }
     }
 

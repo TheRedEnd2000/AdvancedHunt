@@ -15,6 +15,7 @@ public class Converter {
 
     public void convertAllSystems(){
         convertToNewCommandSystem();
+        addChances();
     }
 
     private void convertToNewCommandSystem() {
@@ -82,5 +83,59 @@ public class Converter {
             }
         }
         return maxIndex + 1;
+    }
+
+    public void addChances(){
+        boolean added = false;
+        for (String collection : plugin.getEggDataManager().savedEggCollections()) {
+            FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+            if (!placedEggs.contains("PlacedEggs.")) continue;
+            ConfigurationSection placedEggsSection = placedEggs.getConfigurationSection("PlacedEggs.");
+
+            if (placedEggsSection == null) continue;
+
+            for(String eggID : placedEggsSection.getKeys(false)){
+                for(String commandID : placedEggs.getConfigurationSection("PlacedEggs."+eggID+".Rewards.").getKeys(false)) {
+                    if (!placedEggs.contains("PlacedEggs." + eggID + ".Rewards." + commandID+".chance")){
+                        placedEggs.set("PlacedEggs." + eggID + ".Rewards." + commandID+".chance",100);
+                        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        added = true;
+                    }
+                }
+            }
+            for(String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)) {
+                if (!placedEggs.contains("GlobalRewards." + commandID+".chance")){
+                    placedEggs.set("GlobalRewards." + commandID+".chance",100);
+                    plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                    added = true;
+                }
+            }
+        }
+        for(String gPresets : plugin.getGlobalPresetDataManager().savedPresets()){
+            FileConfiguration presets = plugin.getGlobalPresetDataManager().getPresets(gPresets);
+            if (!presets.contains("Commands.")) continue;
+            for(String commandID : presets.getConfigurationSection("Commands.").getKeys(false)) {
+                if(!presets.contains("Commands."+commandID+".chance")){
+                    presets.set("Commands."+commandID+".chance",100);
+                    plugin.getGlobalPresetDataManager().savePreset(gPresets,presets);
+                    added = true;
+                }
+            }
+        }
+        for(String iPresets : plugin.getIndividualPresetDataManager().savedPresets()){
+            FileConfiguration presets = plugin.getIndividualPresetDataManager().getPresets(iPresets);
+            if (!presets.contains("Commands.")) continue;
+            for(String commandID : presets.getConfigurationSection("Commands.").getKeys(false)) {
+                if(!presets.contains("Commands."+commandID+".chance")){
+                    presets.set("Commands."+commandID+".chance",100);
+                    plugin.getIndividualPresetDataManager().savePreset(iPresets,presets);
+                    added = true;
+                }
+            }
+        }
+        if(added){
+            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2YOUR COMMAND SYSTEM WAS UPDATED");
+            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2IT NOW CONTAINS CHANCES");
+        }
     }
 }

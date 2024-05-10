@@ -108,7 +108,7 @@ public class PlayerChatEventListener implements Listener {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         placedEggs.set(path + commandID + ".command", command);
         placedEggs.set(path + commandID + ".enabled", true);
-        placedEggs.set(path + commandID + ".foundAll", false);
+        placedEggs.set(path + commandID + ".chance", 100);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
