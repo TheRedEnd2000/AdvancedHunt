@@ -5,6 +5,7 @@ command-not-found: '&cKein Befehl gefunden! &7Schreibe &e/egghunt help &7um alle
 only-player: '&cNur Spieler können diesen Befehl benutzen.'
 reload-config: '&7Die Config wurde &aerfolgreich &eneu geladen&7.'
 player-not-found: '&7Das System hat &ckeinen Eintrag &7für den Spieler &a%PLAYER%&7.'
+not-number: '&cBitte gebe eine Nummer an.'
 
 egg-placed: '&aDu hast erfolgreich &aein neues Ei &2erstellt. &7(ID#%ID%)'
 egg-broken: '&aDu hast erfolgreich &aein Ei &centfernt. &7(ID#%ID%)'
@@ -55,7 +56,8 @@ deactivate-requirements: '&cAlle Anforderungen wurden deaktiviert.'
 
 collection-disabled: '&cDiese Sammlung ist aktuell ausgeschalten.'
 collection-selected: '&7Du hast die Sammlung &6%SELECTION% &7ausgewählt.'
-collection-deleted: '&aDie Collection &6%COLLECTION% &awurde erfolgreich gelöscht.'
+collection-deleted: '&aDie Sammlung &6%COLLECTION% &awurde erfolgreich gelöscht.'
+chanced-chance: '&aDie Wahrscheinlichkeit wurde erfolgreich zu &e%CHANCE%% &ageändert.'
 
 eggimport-hand: '&7Bitte halte den &eSpieler Kopf &7mit der &2Ei textur &7in deiner Hand.'
 eggimport-failed-profile: '&cEs gab einen Fehler im Spielerprofile.'

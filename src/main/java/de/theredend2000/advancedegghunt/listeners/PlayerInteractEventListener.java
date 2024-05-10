@@ -1,5 +1,6 @@
 package de.theredend2000.advancedegghunt.listeners;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.ExtraManager;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
@@ -8,8 +9,11 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.ind
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,8 +22,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class PlayerInteractEventListener implements Listener {
 
@@ -97,8 +104,12 @@ public class PlayerInteractEventListener implements Listener {
                         String cmd = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
                         double chance = placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + commandID + ".chance") / 100;
                         double random = new Random().nextDouble();
-                        if(random < chance)
+                        boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
+                        if(random < chance) {
+                            if(startsWithGive)
+                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%",Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%",getItemName(cmd).getType().name()).replaceAll("%COUNT%",String.valueOf(getItemCount(cmd))));
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+                        }
                     }
                 }
             }
@@ -111,11 +122,70 @@ public class PlayerInteractEventListener implements Listener {
                         String cmd = placedEggs.getString("GlobalRewards." + commandID + ".command");
                         double chance = placedEggs.getDouble("GlobalRewards." + commandID + ".chance") / 100;
                         double random = new Random().nextDouble();
-                        if(random < chance)
+                        boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
+                        if(random < chance) {
+                            if(startsWithGive)
+                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%",Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%",getItemName(cmd).getType().name()).replaceAll("%COUNT%",String.valueOf(getItemCount(cmd))));
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+                        }
                     }
                 }
             }
         }
+    }
+
+    private ItemStack getItemName(String command){
+        boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
+        ItemStack itemStack = XMaterial.PAPER.parseItem();
+        if (startsWithGive) {
+            String[] parts = command.split(" ", 3);
+
+            if (parts.length >= 2 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
+                String materialName = parts[2];
+
+                itemStack = getItem(materialName);
+            }
+        }
+        return itemStack;
+    }
+
+    private int getItemCount(String command){
+        boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
+        int endcount = 1;
+        if (startsWithGive) {
+            String[] parts = command.split(" ", 4);
+
+            if (parts.length >= 4 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
+                int count = Integer.parseInt(parts[3]);
+
+                endcount = count;
+            }
+        }
+        return endcount;
+    }
+
+    public ItemStack getItem(String itemString) {
+        int metaDataStartIndex = itemString.indexOf('{');
+        int metaDataEndIndex = itemString.lastIndexOf('}');
+        if (metaDataEndIndex == -1) metaDataEndIndex = itemString.length() - 1;
+        else metaDataEndIndex += 1;
+        ItemStack itemStack;
+
+        Optional<XMaterial> material;
+        if (metaDataStartIndex == -1){
+            material = XMaterial.matchXMaterial(itemString);
+            if (material.isEmpty()) return XMaterial.PAPER.parseItem();
+            return material.get().parseItem();
+        }
+
+        material = XMaterial.matchXMaterial(itemString.substring(0, metaDataStartIndex));
+
+        if (material.isEmpty()) return XMaterial.PAPER.parseItem();
+
+        var json = itemString.substring(metaDataStartIndex, metaDataEndIndex);
+        var item = material.get().parseItem();
+        NBT.modify(item, (Consumer<ReadWriteItemNBT>) nbt -> nbt.mergeCompound(NBT.parseNBT(json)));
+
+        return item;
     }
 }

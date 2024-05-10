@@ -5,6 +5,7 @@ command-not-found: '&cLệnh không tồn! &7Vui lòng nhập &e/egghunt help &7
 only-player: '&cChỉ người chơi có thể dùng lệnh này.'
 reload-config: '&7Config đã được &enạp lại &athành công&7.'
 player-not-found: '&7Dữ liệu &ckhông tồn tại &7với tên &a%PLAYER%&7.'
+not-number: '&cVui lòng nhập một số.'
 
 egg-placed: '&aBạn đã &2tạo &amột quả trứng. &7(ID#%ID%)'
 egg-broken: '&aBạn đã &cgỡ &amột quả trứng. &7(ID#%ID%)'
@@ -55,6 +56,7 @@ deactivate-requirements: '&cĐã vô hiệu hóa tất cả các yêu cầu.'
 collection-disabled: '&cBộ sưu tập này hiện đã bị vô hiệu hóa.'
 collection-selected: '&7Bạn đã chọn bộ sưu tập &6%SELECTION%'
 collection-deleted: '&aĐã xóa bộ sưu tập &6%COLLECTION'
+chanced-chance: '&aĐổi thành công tỉ lệ thành &e%CHANCE%%&a.'
 
 eggimport-hand: '&7Vui lòng cầm &eđầu người chơi với &2trang trí mà bạn muốn &7trên tay chính.'
 eggimport-failed-profile: '&cLỗi khi chạy hồ sơ của người chơi.'

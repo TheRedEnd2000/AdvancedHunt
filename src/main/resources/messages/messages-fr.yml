@@ -5,6 +5,7 @@ command-not-found: '&cAucune commande trouvée! &7Veuillez taper &e/egghunt help
 only-player: '&cSeulement le joueur peut utiliser cette commande.'
 reload-config: '&7La configuration a été &erechargée &7avec &asuccès&7.'
 player-not-found: '&7Le système n''a &cpas d''entrée &7pour le joueur &a%PLAYER%&7.'
+not-number: '&cVeuillez entrer un numéro.'
 
 egg-placed: '&aVous avez &2créé &7avec succès &aun nouvel oeuf. &7(ID#%ID%)'
 egg-broken: '&aVous avez &csupprimer &7avec succès &aun oeuf. &7(ID#%ID%)'
@@ -55,6 +56,7 @@ deactivate-requirements: '&cDésactivé toutes les conditions requises.'
 collection-disabled: '&cCette collection est actuellement désactivée.'
 collection-selected: '&7Vous avez sélectionné la collection &6%SELECTION%'
 collection-deleted: '&aVous avez supprimée avec succès la collection &6%COLLECTION%'
+chanced-chance: '&aChance défini avec succès à &e%CHANCE%%&a.'
 
 eggimport-hand: '&7Veuillez tenir la tête du &ejoueur avec la &2texture de l''œuf &7dans votre main.'
 eggimport-failed-profile: '&cÉchec du chargement d''un profil de joueur.'

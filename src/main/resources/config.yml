@@ -79,6 +79,36 @@ Sounds:
   InventoryClickSuccess: BLOCK_NOTE_BLOCK_CHIME
   InventoryClickFailed: BLOCK_NOTE_BLOCK_HAT
 
+
+# Rarity's display how rare the item is that you found
+# It will show up when you find an item
+# Smallest number: 0.0000001
+Rarity:
+  common:
+    display: '&fCOMMON'
+    min: 50
+    max: 100
+  uncommon:
+    display: '&aUNCOMMON'
+    min: 10
+    max: 50
+  rare:
+    display: '&9RARE'
+    min: 1
+    max: 10
+  epic:
+    display: '&5EPIC'
+    min: 0.1
+    max: 1
+  legendary:
+    display: '&6LEGENDARY'
+    min: 0.005
+    max: 0.1
+  mythic:
+    display: '&dMYTHIC'
+    min: 0.0000001
+    max: 0.005
+
 Particle:
   enabled: true
   type:

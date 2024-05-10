@@ -5,6 +5,7 @@ command-not-found: '&cNo command found! &7Please type &e/egghunt help &7to see a
 only-player: '&cOnly player can use this command.'
 reload-config: '&7The config was &ereloaded &asuccessfully&7.'
 player-not-found: '&7The system has &cno entry &7for the player &a%PLAYER%&7.'
+not-number: '&cPlease enter a number.'
 
 egg-placed: '&aYou successfully &2created &aa new egg. &7(ID#%ID%)'
 egg-broken: '&aYou successfully &cremove &aan egg. &7(ID#%ID%)'
@@ -56,6 +57,8 @@ deactivate-requirements: '&cDeactivated all requirements.'
 collection-disabled: '&cThis collection is currently disabled.'
 collection-selected: '&7You selected the collection &6%SELECTION%'
 collection-deleted: '&aSuccessfully deleted collection &6%COLLECTION%'
+chanced-chance: '&aSuccessfully set chance to &e%CHANCE%%&a.'
+rarity-message: '%RARITY% DROP! &7You receive &b%ITEM% §7x%COUNT%'
 
 eggimport-hand: '&7Please hold the &eplayer head &7with the &2egg texture &7in your hand.'
 eggimport-failed-profile: '&cFailed to load a player profile.'

@@ -6,6 +6,7 @@ public enum MessageKey {
     ONLY_PLAYER("only-player"),
     RELOAD_CONFIG("reload-config"),
     PLAYER_NOT_FOUND("player-not-found"),
+    NOT_NUMBER("not-number"),
 
     EGG_PLACED("egg-placed"),
     EGG_BROKEN("egg-broken"),
@@ -59,6 +60,8 @@ public enum MessageKey {
     COLLECTION_DISABLED("collection-disabled"),
     COLLECTION_SELECTION("collection-selected"),
     COLLECTION_DELETED("collection-deleted"),
+    CHANCED_CHANCE("chanced-chance"),
+    RARITY_MESSAGE("rarity-message"),
 
     EGGIMPORT_HAND("eggimport-hand"),
     EGGIMPORT_FAILED_PROFILE("eggimport-failed-profile"),

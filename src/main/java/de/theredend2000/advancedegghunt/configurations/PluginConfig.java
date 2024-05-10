@@ -366,4 +366,16 @@ public class PluginConfig extends Configuration {
         return getConfig().getBoolean("Download.NBT-API");
     }
     //endregion
+
+    //Rarity
+
+    public List<String> getRarityList(){
+        return new ArrayList<>(config.getConfigurationSection("Rarity.").getKeys(false));
+    }
+
+    public String getRarityName(String rarity){
+        return config.getString("Rarity."+rarity.toLowerCase()+".display").replaceAll("&","§");
+    }
+
+    //endregion
 }

@@ -98,6 +98,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     boolean enabled = placedEggs.getBoolean("GlobalRewards." + keys.get(index) + ".enabled");
                     boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
                     double chance = placedEggs.getDouble("GlobalRewards." + keys.get(index) + ".chance");
+                    String rarity = plugin.getRarityManager().getRarity(chance);
                     ItemStack itemStack = XMaterial.PAPER.parseItem();
                     if (startsWithGive) {
                         String[] parts = command.split(" ", 3);
@@ -108,7 +109,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                             itemStack = getItem(materialName);
                         }
                     }
-                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")", "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
@@ -202,11 +203,14 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                                 .onClose(stateSnapshot -> {
                                     if (!stateSnapshot.getText().isEmpty()) {
                                         if(stateSnapshot.getText().matches("[0-9.]+")){
-                                            placedEggs.set("GlobalRewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
-                                            plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
-                                            player.sendMessage("success "+stateSnapshot.getText());
+                                            if(!(Double.parseDouble(stateSnapshot.getText()) < 0.0000001 || Double.parseDouble(stateSnapshot.getText()) > 100)) {
+                                                placedEggs.set("GlobalRewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
+                                                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                                                player.sendMessage(messageManager.getMessage(MessageKey.CHANCED_CHANCE).replaceAll("%CHANCE%", stateSnapshot.getText()));
+                                            }else
+                                                player.sendMessage("§cNot valid");
                                         }else
-                                            player.sendMessage("§cNo Number");
+                                            player.sendMessage(messageManager.getMessage(MessageKey.NOT_NUMBER));
                                         open(id,collection);
                                     }
                                 })

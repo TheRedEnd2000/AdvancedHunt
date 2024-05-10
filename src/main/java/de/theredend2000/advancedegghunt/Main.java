@@ -9,6 +9,7 @@ import de.theredend2000.advancedegghunt.managers.*;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
@@ -50,6 +51,7 @@ public final class Main extends JavaPlugin {
     private IndividualPresetDataManager individualPresetDataManager;
     private GlobalPresetDataManager globalPresetDataManager;
     private MessageManager messageManager;
+    private RarityManager rarityManager;
     public static String PREFIX = "";
     public static boolean setupDefaultCollection;
     @Override
@@ -122,6 +124,7 @@ public final class Main extends JavaPlugin {
         playerEggDataManager = new PlayerEggDataManager();
         requirementsManager = new RequirementsManager();
         permissionManager = new PermissionManager();
+        rarityManager = new RarityManager();
     }
 
     private void initListeners(){
@@ -272,5 +275,9 @@ public final class Main extends JavaPlugin {
 
     public GlobalPresetDataManager getGlobalPresetDataManager() {
         return globalPresetDataManager;
+    }
+
+    public RarityManager getRarityManager() {
+        return rarityManager;
     }
 }
