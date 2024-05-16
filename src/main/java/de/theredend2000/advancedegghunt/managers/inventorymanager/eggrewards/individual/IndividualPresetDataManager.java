@@ -121,7 +121,7 @@ public class IndividualPresetDataManager {
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command", command);
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", enabled);
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".chance", chance);
-            Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+            Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs); //TODO issue: Saves to often
         }
     }
 
