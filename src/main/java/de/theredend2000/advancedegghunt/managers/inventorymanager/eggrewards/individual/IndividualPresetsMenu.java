@@ -106,6 +106,9 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
                     player.sendMessage(messageManager.getMessage(MessageKey.PRESET_DEFAULT).replaceAll("%PRESET%", presetName));
                     open(id, collection);
                     break;
+                case DROP_ONE_SLOT:
+                    new IndividualConfirmMenu(super.playerMenuUtility).open(presetName,id, collection);
+                    break;
             }
             player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
             return;

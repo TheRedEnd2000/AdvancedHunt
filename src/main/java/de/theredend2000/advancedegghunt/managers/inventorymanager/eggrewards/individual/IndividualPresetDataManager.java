@@ -3,6 +3,8 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.in
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,6 +87,28 @@ public class IndividualPresetDataManager {
         }
     }
 
+    public void loadPresetIntoAllEggs(String preset, String collection, Player player){
+        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
+        ArrayList<String> ids = new ArrayList<>(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
+        new BukkitRunnable() {
+            int count = 0;
+            int max = ids.size();
+            @Override
+            public void run() {
+                if(count == max || ids.get(0) == null){
+                    player.sendMessage(Main.PREFIX+"§aSuccessfully loaded all eggs with the preset "+preset);
+                    cancel();
+                }
+                loadPresetIntoEggCommands(preset,collection,ids.get(0));
+                ids.remove(0);
+                count++;
+                player.sendMessage(Main.PREFIX+"§7Loading presets... ("+count+"/"+max+")");
+            }
+        }.runTaskTimer(plugin, 0, 10);
+    }
+
+    //TODO PERFORMANCE ERROR FIXING
+
     public void loadPresetIntoEggCommands(String preset, String collection, String id){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
@@ -124,6 +148,7 @@ public class IndividualPresetDataManager {
         lore.add("§eLEFT-CLICK to load.");
         lore.add("§eMIDDLE-CLICK to set it as default preset.");
         lore.add("§eRIGHT-CLICK to delete.");
+        lore.add("§eDROP to load it in all placed eggs.");
         return lore;
     }
 
@@ -152,7 +177,7 @@ public class IndividualPresetDataManager {
         FileConfiguration config = this.getPresets(preset);
         config.set("Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
         config.set("Commands.0.enabled", true);
-        config.set("Commands.0.enabled", 100);
+        config.set("Commands.0.chance", 100);
         config.set("Commands.1.command", "minecraft:give %PLAYER% diamond");
         config.set("Commands.1.enabled", true);
         config.set("Commands.1.chance", 100);

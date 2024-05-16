@@ -11,6 +11,7 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualConfirmMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;

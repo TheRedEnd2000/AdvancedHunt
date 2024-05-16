@@ -106,9 +106,9 @@ public class PlayerInteractEventListener implements Listener {
                         double random = new Random().nextDouble();
                         boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
                         if(random < chance) {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                             if(startsWithGive)
                                 player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%",Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%",getItemName(cmd).getType().name()).replaceAll("%COUNT%",String.valueOf(getItemCount(cmd))));
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                         }
                     }
                 }
@@ -124,9 +124,9 @@ public class PlayerInteractEventListener implements Listener {
                         double random = new Random().nextDouble();
                         boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
                         if(random < chance) {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                             if(startsWithGive)
                                 player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%",Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%",getItemName(cmd).getType().name()).replaceAll("%COUNT%",String.valueOf(getItemCount(cmd))));
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                         }
                     }
                 }
@@ -138,7 +138,7 @@ public class PlayerInteractEventListener implements Listener {
         boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
         ItemStack itemStack = XMaterial.PAPER.parseItem();
         if (startsWithGive) {
-            String[] parts = command.split(" ", 3);
+            String[] parts = command.split(" ");
 
             if (parts.length >= 2 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
                 String materialName = parts[2];
@@ -153,7 +153,7 @@ public class PlayerInteractEventListener implements Listener {
         boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
         int endcount = 1;
         if (startsWithGive) {
-            String[] parts = command.split(" ", 4);
+            String[] parts = command.split(" ");
 
             if (parts.length >= 4 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
                 int count = Integer.parseInt(parts[3]);
@@ -166,10 +166,9 @@ public class PlayerInteractEventListener implements Listener {
 
     public ItemStack getItem(String itemString) {
         int metaDataStartIndex = itemString.indexOf('{');
-        int metaDataEndIndex = itemString.lastIndexOf('}');
+        int metaDataEndIndex = itemString.lastIndexOf('}'); //TODO gets the first } and not the last idk why
         if (metaDataEndIndex == -1) metaDataEndIndex = itemString.length() - 1;
         else metaDataEndIndex += 1;
-        ItemStack itemStack;
 
         Optional<XMaterial> material;
         if (metaDataStartIndex == -1){

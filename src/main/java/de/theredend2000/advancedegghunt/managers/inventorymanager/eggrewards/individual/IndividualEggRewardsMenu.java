@@ -2,6 +2,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.in
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalEggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
@@ -18,16 +19,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
@@ -112,7 +111,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                             itemStack = getItem(materialName);
                         }
                     }
-                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.","§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.","§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.", "§eDROP to execute command.").setLocalizedName(keys.get(index)).build());
                 }
             }
         }else
@@ -239,6 +238,10 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                         placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID, null);
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                         open(id, collection);
+                        break;
+                    case DROP_ONE_SLOT:
+                        EggManager eggManager = plugin.getEggManager();
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Objects.requireNonNull(placedEggs.getString("PlacedEggs." + id + ".Rewards."+commandID+".command")).replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                         break;
                 }
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
