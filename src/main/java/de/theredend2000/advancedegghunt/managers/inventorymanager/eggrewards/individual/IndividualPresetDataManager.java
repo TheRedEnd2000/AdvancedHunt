@@ -112,8 +112,9 @@ public class IndividualPresetDataManager {
     public void loadPresetIntoEggCommands(String preset, String collection, String id){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
+
         placedEggs.set("PlacedEggs." + id + ".Rewards", null);
-        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
             String command = presets.getString("Commands." + commandID + ".command");
             boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
@@ -121,8 +122,9 @@ public class IndividualPresetDataManager {
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".command", command);
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", enabled);
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".chance", chance);
-            Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs); //TODO issue: Saves to often
         }
+
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
     }
 
     public List<String> getAllCommandsAsLore(String preset, boolean isDefault){
