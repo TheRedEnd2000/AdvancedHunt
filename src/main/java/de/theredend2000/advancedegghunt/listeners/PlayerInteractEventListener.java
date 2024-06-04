@@ -13,7 +13,6 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -107,6 +106,7 @@ public class PlayerInteractEventListener implements Listener {
                         boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
                         if(random < chance) {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+
                             if(startsWithGive)
                                 player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%",Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%",getItemName(cmd).getType().name()).replaceAll("%COUNT%",String.valueOf(getItemCount(cmd))));
                         }
@@ -138,7 +138,7 @@ public class PlayerInteractEventListener implements Listener {
         boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
         ItemStack itemStack = XMaterial.PAPER.parseItem();
         if (startsWithGive) {
-            String[] parts = command.split(" ");
+            String[] parts = command.split(" ", 3);
 
             if (parts.length >= 2 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
                 String materialName = parts[2];
@@ -153,7 +153,7 @@ public class PlayerInteractEventListener implements Listener {
         boolean startsWithGive = command.toLowerCase().startsWith("give") || command.toLowerCase().startsWith("minecraft:give");
         int endcount = 1;
         if (startsWithGive) {
-            String[] parts = command.split(" ");
+            String[] parts = command.split(" ", 3);
 
             if (parts.length >= 4 && (parts[0].equalsIgnoreCase("minecraft:give") || parts[0].equalsIgnoreCase("give"))) {
                 int count = Integer.parseInt(parts[3]);
