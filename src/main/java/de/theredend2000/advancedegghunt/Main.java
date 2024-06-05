@@ -11,8 +11,8 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualConfirmMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
+import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
@@ -53,6 +53,7 @@ public final class Main extends JavaPlugin {
     private GlobalPresetDataManager globalPresetDataManager;
     private MessageManager messageManager;
     private RarityManager rarityManager;
+    private EmbedCreator embedCreator;
     public static String PREFIX = "";
     public static boolean setupDefaultCollection;
     @Override
@@ -126,6 +127,7 @@ public final class Main extends JavaPlugin {
         requirementsManager = new RequirementsManager();
         permissionManager = new PermissionManager();
         rarityManager = new RarityManager();
+        embedCreator = new EmbedCreator();
     }
 
     private void initListeners(){
@@ -280,5 +282,9 @@ public final class Main extends JavaPlugin {
 
     public RarityManager getRarityManager() {
         return rarityManager;
+    }
+
+    public EmbedCreator getEmbedCreator() {
+        return embedCreator;
     }
 }

@@ -13,6 +13,7 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBTList;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -24,7 +25,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -245,29 +248,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.sendMessage("§cError exporting file: "+e.getMessage());
                         }
                         try {
-                            String playerName = player.getName();
-                            String embedContent = "{\n" +
-                                    "  \"content\": \"\",\n" +
-                                    "  \"embeds\": [\n" +
-                                    "    {\n" +
-                                    "      \"title\": \"NEW PRESET UPLOAD\",\n" +
-                                    "      \"description\": \"A new Preset was uploaded by " + playerName + "\",\n" +
-                                    "      \"color\": 65280,\n" +
-                                    "      \"fields\": [\n" +
-                                    "        {\n" +
-                                    "          \"name\": \"Preset Information\",\n" +
-                                    "          \"value\": \"Commands: \\\\nCommand 1\\\\nCommand 2\\\\nCommand 3\",\n" +
-                                    "          \"inline\": true\n" +
-                                    "        },\n" +
-                                    "        {\n" +
-                                    "          \"name\": \"User\",\n" +
-                                    "          \"value\": \"Name: " + playerName + "\",\n" +
-                                    "          \"inline\": true\n" +
-                                    "        }\n" +
-                                    "      ]\n" +
-                                    "    }\n" +
-                                    "  ]\n" +
-                                    "}";
+                            String embedContent = plugin.getEmbedCreator().getExportEmbedContent(player,presetname.replaceAll(".yml",""));
 
                             URL url = new URL("https://discord.com/api/webhooks/1247605763413901392/osrPzZs9DdIuFGThypmckHGgQ5UKHLgxC-lFdSzDNO9uJXbYIOAWkoqGu-OUUSGbSvFU");
                             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -389,7 +370,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        if(args.length == 2){
+        if(args.length == 3){
             if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.exportPreset)) {
                 if (args[0].equalsIgnoreCase("exportPreset")) {
                     complete = new ArrayList<>();
@@ -398,7 +379,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        if(args.length >= 3){
+        if(args.length >= 4){
             complete = new ArrayList<>();
             return complete;
         }
@@ -447,6 +428,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6/advancedegghunt commands §7-> §bChange commands or add more.");
         player.sendMessage("§6/advancedegghunt reset [player | all] §7-> §bResets the FoundEggs.");
         player.sendMessage("§6/advancedegghunt eggImport §7-> §bImport a new place egg.");
+        player.sendMessage("§6/advancedegghunt exportPreset §7-> §bExport a preset to the discord for other players.");
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("§3-----------------------------------------");
     }
