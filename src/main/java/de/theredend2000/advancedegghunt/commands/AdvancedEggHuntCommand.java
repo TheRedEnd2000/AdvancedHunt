@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.*;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
@@ -19,16 +18,15 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -391,7 +389,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        if(args.length == 3){
+        if(args.length == 2){
             if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.exportPreset)) {
                 if (args[0].equalsIgnoreCase("exportPreset")) {
                     complete = new ArrayList<>();
@@ -400,7 +398,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        if(args.length >= 4){
+        if(args.length >= 3){
             complete = new ArrayList<>();
             return complete;
         }
