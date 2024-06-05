@@ -62,20 +62,23 @@ public class EmbedCreator {
                 "      \"fields\": [\n" +
                 "        {\n" +
                 "          \"name\": \"Information\",\n" +
-                "          \"value\": \""+ field1 +"\",\n" +
+                "          \"value\": \"" + field1 + "\",\n" +
                 "          \"inline\": true\n" +
                 "        },\n" +
                 "        {\n" +
                 "          \"name\": \"User\",\n" +
-                "          \"value\": \""+field2+"\",\n" +
+                "          \"value\": \"" + field2 + "\",\n" +
                 "          \"inline\": true\n" +
-                "        },\n"+
+                "        },\n" +
                 "        {\n" +
-                "           \"name\":\"Preset\",\n" +
-                "           \"value\": \""+field3+"\",\n" +
-                "           \"inline\": true\n" +
-                "         }\n" +
-                "      ]\n" +
+                "          \"name\": \"Preset\",\n" +
+                "          \"value\": \"" + field3 + "\",\n" +
+                "          \"inline\": true\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"footer\": {\n" +
+                "        \"text\": \"Upload presets with: /eggs exportPreset <preset>\"\n" +
+                "      }\n" +
                 "    }\n" +
                 "  ]\n" +
                 "}";
