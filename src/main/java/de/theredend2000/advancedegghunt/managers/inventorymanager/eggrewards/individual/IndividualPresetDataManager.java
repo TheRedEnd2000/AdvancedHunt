@@ -1,6 +1,8 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual;
 
 import de.theredend2000.advancedegghunt.Main;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -87,9 +89,15 @@ public class IndividualPresetDataManager {
         }
     }
 
+    boolean isRunning;
+
     public void loadPresetIntoAllEggs(String preset, String collection, Player player){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         ArrayList<String> ids = new ArrayList<>(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
+        if(isRunning){
+            player.sendMessage("§cNo");
+            return;
+        }
         new BukkitRunnable() {
             int count = 0;
             int max = ids.size();
@@ -98,13 +106,15 @@ public class IndividualPresetDataManager {
                 if(count == max || ids.get(0) == null){
                     player.sendMessage(Main.PREFIX+"§aSuccessfully loaded all eggs with the preset "+preset);
                     cancel();
+                    isRunning = false;
                 }
                 loadPresetIntoEggCommands(preset,collection,ids.get(0));
                 ids.remove(0);
                 count++;
-                player.sendMessage(Main.PREFIX+"§7Loading presets... ("+count+"/"+max+")");
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§bLoading presets... ("+count+"/"+max+")"));
+                isRunning = true;
             }
-        }.runTaskTimer(plugin, 0, 10);
+        }.runTaskTimer(plugin, 0, 3);
     }
 
     //TODO PERFORMANCE ERROR FIXING

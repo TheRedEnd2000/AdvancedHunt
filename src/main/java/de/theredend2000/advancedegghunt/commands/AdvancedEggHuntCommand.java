@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.*;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
@@ -20,7 +21,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -220,6 +228,103 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                             player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
                     }else
                         player.sendMessage(usage());
+                }else if(args.length == 3){
+                    if(args[0].equalsIgnoreCase("exportPreset")){
+                        String presetname = args[1]+".yml";
+                        String path = args[2];
+
+                        File presetFolder = new File(plugin.getDataFolder(), "presets/individual/");
+                        File preset = new File(presetFolder, presetname);
+                        if (!preset.exists()) {
+                            player.sendMessage("Kein Preset gefunden");
+                            return false;
+                        }
+
+                        try {
+                            Files.copy(preset.toPath(), new File(path, presetname).toPath());
+                            player.sendMessage("File exported to " + path);
+                        } catch (IOException e) {
+                            player.sendMessage("§cError exporting file: "+e.getMessage());
+                        }
+                        try {
+                            String playerName = player.getName();
+                            String embedContent = "{\n" +
+                                    "  \"content\": \"\",\n" +
+                                    "  \"embeds\": [\n" +
+                                    "    {\n" +
+                                    "      \"title\": \"NEW PRESET UPLOAD\",\n" +
+                                    "      \"description\": \"A new Preset was uploaded by " + playerName + "\",\n" +
+                                    "      \"color\": 65280,\n" +
+                                    "      \"fields\": [\n" +
+                                    "        {\n" +
+                                    "          \"name\": \"Preset Information\",\n" +
+                                    "          \"value\": \"Commands: \\\\nCommand 1\\\\nCommand 2\\\\nCommand 3\",\n" +
+                                    "          \"inline\": true\n" +
+                                    "        },\n" +
+                                    "        {\n" +
+                                    "          \"name\": \"User\",\n" +
+                                    "          \"value\": \"Name: " + playerName + "\",\n" +
+                                    "          \"inline\": true\n" +
+                                    "        }\n" +
+                                    "      ]\n" +
+                                    "    }\n" +
+                                    "  ]\n" +
+                                    "}";
+
+                            URL url = new URL("https://discord.com/api/webhooks/1247605763413901392/osrPzZs9DdIuFGThypmckHGgQ5UKHLgxC-lFdSzDNO9uJXbYIOAWkoqGu-OUUSGbSvFU");
+                            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                            con.setRequestMethod("POST");
+                            con.setRequestProperty("Content-Type", "application/json");
+                            con.setDoOutput(true);
+
+                            try (DataOutputStream os = new DataOutputStream(con.getOutputStream())) {
+                                os.writeBytes(embedContent);
+                                os.flush();
+                            }
+
+                            int responseCode = con.getResponseCode();
+                            if (responseCode == 200) {
+                                System.out.println("Embed sent successfully!");
+                            } else {
+                                System.out.println("Error sending embed: " + responseCode);
+                            }
+
+                            // Jetzt die Datei senden
+                            URL fileUrl = new URL("https://discord.com/api/webhooks/1247605763413901392/osrPzZs9DdIuFGThypmckHGgQ5UKHLgxC-lFdSzDNO9uJXbYIOAWkoqGu-OUUSGbSvFU");
+                            HttpURLConnection fileCon = (HttpURLConnection) fileUrl.openConnection();
+                            fileCon.setRequestMethod("POST");
+                            fileCon.setRequestProperty("Content-Type", "multipart/form-data; boundary=-------------------1234567890");
+                            fileCon.setRequestProperty("Accept", "application/text");
+                            fileCon.setDoOutput(true);
+
+                            try (DataOutputStream os = new DataOutputStream(fileCon.getOutputStream())) {
+                                os.writeBytes("--" + "-------------------1234567890\r\n");
+                                os.writeBytes("Content-Disposition: form-data; name=\"yml\"; filename=\"" + presetname + "\"\r\n\r\n");
+
+                                FileInputStream fis = new FileInputStream(preset);
+                                byte[] buffer = new byte[1024];
+                                int length = 0;
+                                while ((length = fis.read(buffer)) != -1) {
+                                    os.write(buffer, 0, length);
+                                }
+                                fis.close();
+                                os.writeBytes("\r\n--" + "-------------------1234567890--\r\n");
+
+                                os.flush();
+                            }
+
+                            int fileResponseCode = fileCon.getResponseCode();
+                            if (fileResponseCode == 200) {
+                                System.out.println("File uploaded successfully!");
+                            } else {
+                                System.out.println("Error uploading file: " + fileResponseCode);
+                            }
+
+                        } catch (IOException e) {
+                            System.out.println("Error: " + e.getMessage());
+                        }
+                    }else
+                        player.sendMessage(usage());
                 }else
                     player.sendMessage(usage());
         } else if(sender instanceof ConsoleCommandSender){
@@ -256,7 +361,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         ArrayList<String> complete = null;
         if(args.length == 1){
             complete = new ArrayList<>();
-            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport"};
+            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport","exportPreset"};
             for(String permissions : tabs){
                 if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permissions)))
                     complete.add(permissions);
@@ -277,9 +382,25 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     complete.add("all");
                     return FilterArguments(complete, args);
                 }
+            }else if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.exportPreset)){
+                if(args[0].equalsIgnoreCase("exportPreset")){
+                    complete = new ArrayList<>();
+                    complete.addAll(plugin.getIndividualPresetDataManager().savedPresets());
+                    complete.addAll(plugin.getGlobalPresetDataManager().savedPresets());
+                    return FilterArguments(complete, args);
+                }
             }
         }
-        if(args.length >= 3){
+        if(args.length == 3){
+            if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.exportPreset)) {
+                if (args[0].equalsIgnoreCase("exportPreset")) {
+                    complete = new ArrayList<>();
+                    complete.add("C:");
+                    return FilterArguments(complete, args);
+                }
+            }
+        }
+        if(args.length >= 4){
             complete = new ArrayList<>();
             return complete;
         }
