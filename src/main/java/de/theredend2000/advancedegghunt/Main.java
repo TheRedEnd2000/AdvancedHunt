@@ -128,6 +128,7 @@ public final class Main extends JavaPlugin {
         permissionManager = new PermissionManager();
         rarityManager = new RarityManager();
         embedCreator = new EmbedCreator();
+        new Checker();
     }
 
     private void initListeners(){

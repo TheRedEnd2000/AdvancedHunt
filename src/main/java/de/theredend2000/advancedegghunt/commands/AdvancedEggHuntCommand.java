@@ -13,7 +13,6 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBTList;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -268,7 +267,6 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                                 System.out.println("Error sending embed: " + responseCode);
                             }
 
-                            // Jetzt die Datei senden
                             URL fileUrl = new URL("https://discord.com/api/webhooks/1247605763413901392/osrPzZs9DdIuFGThypmckHGgQ5UKHLgxC-lFdSzDNO9uJXbYIOAWkoqGu-OUUSGbSvFU");
                             HttpURLConnection fileCon = (HttpURLConnection) fileUrl.openConnection();
                             fileCon.setRequestMethod("POST");
