@@ -32,15 +32,15 @@ public class XHelper {
         return material.get();
     }
 
-    public static Particle ParseParticle(String particlelString, Particle def) {
+    public static Particle ParseParticle(String particlelString, XParticle def) {
         if (particlelString == null || particlelString.isEmpty())
-            return def;
+            return def.get();
 
-        Particle particle = XParticle.of()
+        Optional<XParticle> particle = XParticle.of(particlelString);
 
-        if (particle == null)
-            return def;
+        if (particle.isEmpty())
+            return def.get();
 
-        return particle;
+        return particle.get().get();
     }
 }

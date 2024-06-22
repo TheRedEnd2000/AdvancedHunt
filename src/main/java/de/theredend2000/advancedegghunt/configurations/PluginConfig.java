@@ -247,7 +247,7 @@ public class PluginConfig extends Configuration {
 
     @Nullable
     public Particle getEggFoundParticle() {
-        return Particle.valueOf(String.valueOf(XParticle.valueOf(getConfig().getString("Particle.type.EggFound", "CRIT"))));
+        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggFound"), XParticle.valueOf("CRIT"));
     }
 	public void setEggFoundParticle(Particle EggFoundParticle) {
 		getConfig().set("Particle.type.EggFound", EggFoundParticle.toString());
@@ -255,7 +255,7 @@ public class PluginConfig extends Configuration {
 
     @Nullable
     public Particle getEggNotFoundParticle() {
-        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggNotFound", "VILLAGER_HAPPY"), XParticle.getParticle("VILLAGER_HAPPY"));
+        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggNotFound", "VILLAGER_HAPPY"), XParticle.valueOf("VILLAGER_HAPPY"));
     }
 	public void setEggNotFoundParticle(Particle EggNotFoundParticle) {
 		getConfig().set("Particle.type.EggNotFound", EggNotFoundParticle.toString());
