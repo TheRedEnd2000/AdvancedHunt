@@ -38,6 +38,7 @@ public class PlayerInteractEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onInteractEvent(PlayerInteractEvent event) {
+        Main.getInstance().getEggHidingManager().hideEggForPlayer(event.getPlayer(), event.getClickedBlock().getLocation());
         EggManager eggManager = Main.getInstance().getEggManager();
         SoundManager soundManager = Main.getInstance().getSoundManager();
         ExtraManager extraManager = Main.getInstance().getExtraManager();

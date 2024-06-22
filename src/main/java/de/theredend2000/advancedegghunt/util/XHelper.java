@@ -36,7 +36,7 @@ public class XHelper {
         if (particlelString == null || particlelString.isEmpty())
             return def;
 
-        Particle particle = XParticle.getParticle(particlelString);
+        Particle particle = XParticle.of()
 
         if (particle == null)
             return def;

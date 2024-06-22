@@ -247,7 +247,7 @@ public class PluginConfig extends Configuration {
 
     @Nullable
     public Particle getEggFoundParticle() {
-        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggFound", "CRIT"), XParticle.getParticle("CRIT"));
+        return Particle.valueOf(String.valueOf(XParticle.valueOf(getConfig().getString("Particle.type.EggFound", "CRIT"))));
     }
 	public void setEggFoundParticle(Particle EggFoundParticle) {
 		getConfig().set("Particle.type.EggFound", EggFoundParticle.toString());

@@ -1,5 +1,7 @@
 package de.theredend2000.advancedegghunt;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.bstats.Metrics;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
@@ -7,6 +9,7 @@ import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.managers.*;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggHidingManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.RarityManager;
@@ -22,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -54,6 +58,8 @@ public final class Main extends JavaPlugin {
     private MessageManager messageManager;
     private RarityManager rarityManager;
     private EmbedCreator embedCreator;
+    private ProtocolManager protocolManager;
+    private EggHidingManager eggHidingManager;
     public static String PREFIX = "";
     public static boolean setupDefaultCollection;
     @Override
@@ -128,6 +134,8 @@ public final class Main extends JavaPlugin {
         permissionManager = new PermissionManager();
         rarityManager = new RarityManager();
         embedCreator = new EmbedCreator();
+        protocolManager = ProtocolLibrary.getProtocolManager();
+        eggHidingManager = new EggHidingManager();
         new Checker();
     }
 
@@ -287,5 +295,13 @@ public final class Main extends JavaPlugin {
 
     public EmbedCreator getEmbedCreator() {
         return embedCreator;
+    }
+
+    public ProtocolManager getProtocolManager() {
+        return protocolManager;
+    }
+
+    public EggHidingManager getEggHidingManager() {
+        return eggHidingManager;
     }
 }
