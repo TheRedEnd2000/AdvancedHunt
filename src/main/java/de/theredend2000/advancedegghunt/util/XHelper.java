@@ -14,10 +14,7 @@ public class XHelper {
 
         Optional<XSound> sound = XSound.matchXSound(soundString);
 
-        if (sound.isEmpty())
-            return def;
-
-        return sound.get();
+        return sound.orElse(def);
     }
 
     public static XMaterial ParseMaterial(String materialString, XMaterial def) {
@@ -26,10 +23,7 @@ public class XHelper {
 
         Optional<XMaterial> material = XMaterial.matchXMaterial(materialString);
 
-        if (material.isEmpty())
-            return def;
-
-        return material.get();
+        return material.orElse(def);
     }
 
     public static Particle ParseParticle(String particlelString, XParticle def) {
@@ -38,9 +32,6 @@ public class XHelper {
 
         Optional<XParticle> particle = XParticle.of(particlelString);
 
-        if (particle.isEmpty())
-            return def.get();
-
-        return particle.get().get();
+        return particle.orElse(def).get();
     }
 }
