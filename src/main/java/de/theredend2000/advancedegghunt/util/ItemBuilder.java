@@ -10,10 +10,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import static de.theredend2000.advancedegghunt.util.Constants.CustomIdKey;
 
 public class ItemBuilder {
     private ItemMeta itemMeta;
@@ -31,11 +34,6 @@ public class ItemBuilder {
 
     public ItemBuilder setDisplayname(String s){
         itemMeta.setDisplayName(s);
-        return this;
-    }
-
-    public ItemBuilder setLocalizedName(String s){
-        itemMeta.setLocalizedName(s);
         return this;
     }
 
@@ -84,6 +82,14 @@ public class ItemBuilder {
     public ItemStack build(){
         itemStack.setItemMeta(itemMeta);
         return itemStack;
+    }
+
+    public ItemBuilder setCustomId(String id){
+        if (itemMeta != null) {
+            itemMeta.getPersistentDataContainer().set(CustomIdKey, PersistentDataType.STRING, id);
+        }
+
+        return this;
     }
 
     public ItemBuilder setSkullOwner(String texture) {

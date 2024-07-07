@@ -5,6 +5,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
@@ -96,9 +97,9 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                         .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index))))
                         .setDisplayname("§b§lEggs Type #" + keys.get(index))
                         .setLore("§eClick to get.")
-                        .setLocalizedName(keys.get(index)).build());
+                        .setCustomId(keys.get(index)).build());
             else
-                getInventory().setItem(slotIndex, new ItemBuilder(mat).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setLocalizedName(keys.get(index)).build());
+                getInventory().setItem(slotIndex, new ItemBuilder(mat).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setCustomId(keys.get(index)).build());
         }
     }
 
@@ -166,8 +167,8 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
         if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
             for(String id : keys){
-                if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
-                        !event.getCurrentItem().getItemMeta().getLocalizedName().equals(id)) {
+                if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
+                        !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(id)) {
                     continue;
                 }
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

@@ -6,14 +6,11 @@ import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadableNBTList;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -78,7 +75,7 @@ public class EggListMenu extends PaginatedInventoryMenu {
             String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
             int timesFound = Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection);
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setLocalizedName(keys.get(index)).build());
+            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setCustomId(keys.get(index)).build());
         }
     }
 
@@ -103,8 +100,8 @@ public class EggListMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
             for(String id : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
-                if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
-                        !event.getCurrentItem().getItemMeta().getLocalizedName().equals(id)) {
+                if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
+                        !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(id)) {
                     continue;
                 }
                 if(event.getAction() == InventoryAction.PICKUP_ALL){

@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.Col
 import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
@@ -72,7 +73,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                     .withGlow(applied)
                     .setDisplayname("§6Collection: §6§l" + keys.get(index) + (applied ? " §a(selected)" : ""))
                     .setLore("", "§9Collection Information:", "§7   - Placed eggs: §6" + maxEggs, "", "§aNote:", "§7This collection applies to all actions that are carried out.", "§7It can be changed at any time in this menu.", "", "§eLEFT-CLICK to select.", permission ? "§eRIGHT-CLICK to edit." : "§7§mRIGHT-CLICK to edit.")
-                    .setLocalizedName(keys.get(index)).build());
+                    .setCustomId(keys.get(index)).build());
         }
     }
 
@@ -94,8 +95,8 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String collection : keys){
-            if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
-                    !event.getCurrentItem().getItemMeta().getLocalizedName().equals(collection)) {
+            if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
+                    !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(collection)) {
                 continue;
             }
             switch (event.getAction()) {

@@ -65,7 +65,7 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
             if(index >= keys.size()) break;
             if (keys.get(index) != null){
                 String defaultPreset = plugin.getPluginConfig().getDefaultIndividualLoadingPreset();
-                getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§l" + keys.get(index)).setDefaultLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset))).setLocalizedName(keys.get(index)).build());
+                getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§l" + keys.get(index)).setDefaultLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset))).setCustomId(keys.get(index)).build());
             }
         }
     }

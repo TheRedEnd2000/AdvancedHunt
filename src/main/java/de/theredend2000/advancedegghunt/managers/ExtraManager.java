@@ -1,9 +1,9 @@
 package de.theredend2000.advancedegghunt.managers;
 
+import com.cryptomorin.xseries.XEntityType;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 
@@ -13,7 +13,7 @@ import java.util.Random;
 public class ExtraManager{
 
     public void spawnFireworkRocket(Location location) {
-        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
+        Firework firework = (Firework) location.getWorld().spawnEntity(location, XEntityType.FIREWORK_ROCKET.get());
         firework.setSilent(true);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
         Random random = new Random();

@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
@@ -72,7 +73,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                             .setOwner(keys.get(index))
                             .setDisplayname("§6§l" + keys.get(index) + " §7(" + uuid.get(index) + ")")
                             .setLore("§7" + keys.get(index) + " has found the §2egg #" + eggId + "§7.", "", "§9Information of " + keys.get(index) + ":", "§7Eggs found: §6" + eggsFound + "/" + maxEggs, "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time)
-                            .setLocalizedName(keys.get(index)).build());
+                            .setCustomId(keys.get(index)).build());
                 }
             }
         }else
@@ -83,7 +84,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
     @Override
     public void handleMenu(InventoryClickEvent event) {
         Player p = (Player) event.getWhoClicked();
-        String id = getInventory().getItem(0).getItemMeta().getLocalizedName();
+        String id = ItemHelper.getItemId(getInventory().getItem(0).getItemMeta());
         ArrayList<String> keys = new ArrayList<>();
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
@@ -112,7 +113,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis() + (3 * 1000));
-                this.open(getInventory().getItem(0).getItemMeta().getLocalizedName());
+                this.open(ItemHelper.getItemId(getInventory().getItem(0).getItemMeta()));
                 p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case PLAYER_HEAD:

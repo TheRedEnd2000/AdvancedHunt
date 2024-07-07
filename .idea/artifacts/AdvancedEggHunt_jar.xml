@@ -3,9 +3,16 @@
     <output-path>$USER_HOME$/Documents/Server/plugins</output-path>
     <root id="archive" name="AdvancedEggHunt.jar">
       <element id="module-output" name="AdvancedEggHunt" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/cryptomorin/XSeries/9.9.0/XSeries-9.9.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/wesjd/anvilgui/1.9.2-SNAPSHOT/anvilgui-1.9.2-SNAPSHOT.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/tr7zw/item-nbt-api/2.12.3/item-nbt-api-2.12.3.jar" path-in-jar="/" />
+      <element id="directory" name="de">
+        <element id="directory" name="theredend2000">
+          <element id="directory" name="dependency">
+            <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/wesjd/anvilgui/1.9.6-SNAPSHOT/anvilgui-1.9.6-20240626.073752-2.jar" path-in-jar="/" />
+            <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/tr7zw/item-nbt-api/2.13.1/item-nbt-api-2.13.1.jar" path-in-jar="/" />
+            <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/cryptomorin/XSeries/11.2.0/XSeries-11.2.0.jar" path-in-jar="/" />
+            <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/comphenix/protocol/ProtocolLib/5.3.0-SNAPSHOT/ProtocolLib-5.3.0-20240608.171401-1.jar" path-in-jar="/" />
+          </element>
+        </element>
+      </element>
     </root>
   </artifact>
 </component>

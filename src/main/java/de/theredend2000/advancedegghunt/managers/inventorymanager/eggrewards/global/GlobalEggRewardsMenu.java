@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualEggRewardsMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
@@ -108,7 +109,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                             itemStack = getItem(materialName);
                         }
                     }
-                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.", "§eDROP to execute command.").setLocalizedName(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.", "§eDROP to execute command.").setCustomId(keys.get(index)).build());
                 }
             }
         }else
@@ -187,8 +188,8 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("GlobalRewards.")){
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
             for(String commandID : keys){
-                if (!event.getCurrentItem().getItemMeta().hasLocalizedName() ||
-                        !event.getCurrentItem().getItemMeta().getLocalizedName().equals(commandID)) {
+                if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
+                        !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(commandID)) {
                     continue;
                 }
                 switch (event.getAction()) {
