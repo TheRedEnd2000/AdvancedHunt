@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.util;
 import com.cryptomorin.xseries.XMaterial;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -95,18 +96,31 @@ public class ItemBuilder {
     public ItemBuilder setSkullOwner(String texture) {
         itemStack = build();
 
-        NBT.modify(itemStack, nbt -> {
-            final ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
+        var version = Bukkit.getBukkitVersion().split("-",2);   //TODO:TEMP Fix
 
-            // The owner UUID. Note that skulls with the same UUID but different textures will misbehave and only one texture will load.
-            // They will share the texture. To avoid this limitation, it is recommended to use a random UUID.
-            skullOwnerCompound.setUUID("Id", UUID.randomUUID());
+        if (VersionComparator.isGreaterThanOrEqual(version[0], "1.20.5")) {
+            // Workaround for Minecraft 1.20.5+
+            NBT.modifyComponents(itemStack, nbt -> {
+                ReadWriteNBT profileNbt = nbt.getOrCreateCompound("minecraft:profile");
+                profileNbt.setUUID("id", UUID.randomUUID());
+                ReadWriteNBT propertiesNbt = profileNbt.getCompoundList("properties").addCompound();
+                propertiesNbt.setString("name", "textures");
+                propertiesNbt.setString("value", texture);
+            });
+        } else {
+            NBT.modify(itemStack, nbt -> {
+                final ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
 
-            skullOwnerCompound.getOrCreateCompound("Properties")
-                    .getCompoundList("textures")
-                    .addCompound()
-                    .setString("Value", texture);
-        });
+                // The owner UUID. Note that skulls with the same UUID but different textures will misbehave and only one texture will load.
+                // They will share the texture. To avoid this limitation, it is recommended to use a random UUID.
+                skullOwnerCompound.setUUID("Id", UUID.randomUUID());
+
+                skullOwnerCompound.getOrCreateCompound("Properties")
+                        .getCompoundList("textures")
+                        .addCompound()
+                        .setString("Value", texture);
+            });
+        }
 
         itemMeta = itemStack.getItemMeta();
         return this;
