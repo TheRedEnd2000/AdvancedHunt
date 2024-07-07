@@ -89,7 +89,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        String selectedCollection = Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getLocalizedName();
+        String selectedCollection = ItemHelper.getItemId(Objects.requireNonNull(event.getCurrentItem().getItemMeta()));
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
 
