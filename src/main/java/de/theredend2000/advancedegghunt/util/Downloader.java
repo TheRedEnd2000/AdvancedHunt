@@ -16,34 +16,49 @@ public class Downloader {
     public Downloader(){
         this.plugin = Main.getInstance();
 
+        String downloadFile = new File(plugin.getDataFolder().getParent()).getAbsolutePath();
+        renameOldPlugins(downloadFile);
+
         try {
-            String downloadFile = new File(plugin.getDataFolder().getParent()).getAbsolutePath();
             if(plugin.getPluginConfig().getAutoDownloadNBTAPI())
                 downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3", downloadFile);
             if(plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && Updater.isOutdated)
-                downloadPluginFromSpigot(109085, downloadFile); //returns 403
+                downloadPluginFromSpigot(109085, downloadFile, false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void downloadPluginFromSpigot(int pluginId, String saveDir) throws IOException {
+    private void renameOldPlugins(String directory) {
+        File dir = new File(directory);
+        File[] files = dir.listFiles((dir1, name) -> (name.startsWith("AdvancedEggHunt") || name.startsWith("NBTAPI")) && name.endsWith(".jar"));
+        if (files != null) {
+            for (File file : files) {
+                if (!file.getName().equals("AdvancedEggHunt2.jar") && !file.getName().equals(getFilenameFromModrinthAPI("nfGCP9fk"))) {
+                    File newFile = new File(file.getParent(), file.getName() + ".old");
+                    int counter = 1;
+                    while (newFile.exists()) {
+                        newFile = new File(file.getParent(), file.getName() + ".old" + counter);
+                        counter++;
+                    }
+                    if (file.renameTo(newFile)) {
+                        plugin.getLogger().log(Level.INFO, "Renamed old plugin version: " + file.getName() + " to " + newFile.getName());
+                    } else {
+                        plugin.getLogger().log(Level.WARNING, "Failed to rename old plugin version: " + file.getName());
+                    }
+                }
+            }
+        }
+    }
+
+    public void downloadPluginFromSpigot(int pluginId, String saveDir, boolean moveOldPlugin) throws IOException {
         String fileURL = "https://api.spiget.org/v2/resources/" + pluginId + "/download";
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         int responseCode = httpConn.getResponseCode();
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            String fileName = "AdvancedEggHunt";
-            /*if (fileName == null) {
-                fileName = "plugin.jar";
-            } else {
-                int index = fileName.indexOf("filename=");
-                if (index > 0) {
-                    fileName = fileName.substring(index + 9, fileName.length());
-                }
-            }*/
-
+            String fileName = "AdvancedEggHunt2.jar";
             String saveFilePath = saveDir + File.separator + fileName;
 
             InputStream inputStream = httpConn.getInputStream();
@@ -59,7 +74,7 @@ public class Downloader {
             inputStream.close();
 
             plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + fileName);
-            loadPlugin(saveFilePath);
+//            loadPlugin(saveFilePath);
         } else {
             plugin.getLogger().log(Level.WARNING, "No plugin to download from SpigotMC. Server replied HTTP code: " + responseCode);
         }
@@ -67,7 +82,7 @@ public class Downloader {
     }
 
     public void downloadPluginFromModrinth(String hash, String saveDir) throws IOException {
-        String fileURL = "https://api.modrinth.com/v2/version_file/"+hash+"/download";
+        String fileURL = "https://api.modrinth.com/v2/version_file/" + hash + "/download";
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         int responseCode = httpConn.getResponseCode();
@@ -80,6 +95,7 @@ public class Downloader {
 
             String saveFilePath = saveDir + File.separator + fileName;
             File outputFile = new File(saveFilePath);
+
             if(outputFile.exists()) return;
 
             InputStream inputStream = httpConn.getInputStream();
