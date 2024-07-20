@@ -197,8 +197,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("PlacedEggs." + id + ".Rewards.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false));
             for(String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)){
-                if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
-                        !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(commandID)) {
+                if (!ItemHelper.hasItemId(event.getCurrentItem()) ||
+                        !ItemHelper.getItemId(event.getCurrentItem()).equals(commandID)) {
                     continue;
                 }
                 switch (event.getAction()) {

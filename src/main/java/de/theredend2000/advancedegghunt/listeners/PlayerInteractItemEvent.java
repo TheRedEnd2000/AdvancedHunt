@@ -22,7 +22,7 @@ public class PlayerInteractItemEvent implements Listener {
     public void onDrop(PlayerDropItemEvent event){
         Player player = event.getPlayer();
         if (event.getItemDrop().getItemStack().getItemMeta() == null ||
-                !ItemHelper.hasItemId(event.getItemDrop().getItemStack().getItemMeta())) {
+                !ItemHelper.hasItemId(event.getItemDrop().getItemStack())) {
             return;
         }
 
@@ -45,8 +45,8 @@ public class PlayerInteractItemEvent implements Listener {
         if (event.getItem() == null ||
                 !event.getItem().getType().equals(Material.NETHER_STAR) ||
                 event.getItem().getItemMeta() == null ||
-                !ItemHelper.hasItemId(event.getItem().getItemMeta()) ||
-                !ItemHelper.getItemId(event.getItem().getItemMeta()).equals("egghunt.eggs") ||
+                !ItemHelper.hasItemId(event.getItem()) ||
+                !ItemHelper.getItemId(event.getItem()).equals("egghunt.eggs") ||
                 !event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
             return;
         }

@@ -100,8 +100,8 @@ public class EggListMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
             for(String id : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)){
-                if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
-                        !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(id)) {
+                if (!ItemHelper.hasItemId(event.getCurrentItem()) ||
+                        !ItemHelper.getItemId(event.getCurrentItem()).equals(id)) {
                     continue;
                 }
                 if(event.getAction() == InventoryAction.PICKUP_ALL){

@@ -84,7 +84,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
     @Override
     public void handleMenu(InventoryClickEvent event) {
         Player p = (Player) event.getWhoClicked();
-        String id = ItemHelper.getItemId(getInventory().getItem(0).getItemMeta());
+        String id = ItemHelper.getItemId(getInventory().getItem(0));
         ArrayList<String> keys = new ArrayList<>();
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
@@ -113,7 +113,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(p.getName(), System.currentTimeMillis() + (3 * 1000));
-                this.open(ItemHelper.getItemId(getInventory().getItem(0).getItemMeta()));
+                this.open(ItemHelper.getItemId(getInventory().getItem(0)));
                 p.playSound(p.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case PLAYER_HEAD:

@@ -167,8 +167,8 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
         if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
             for(String id : keys){
-                if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
-                        !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(id)) {
+                if (!ItemHelper.hasItemId(event.getCurrentItem()) ||
+                        !ItemHelper.getItemId(event.getCurrentItem()).equals(id)) {
                     continue;
                 }
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

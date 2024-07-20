@@ -1,69 +1,26 @@
 package de.theredend2000.advancedegghunt.util;
 
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadableItemNBT;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
+
+import java.util.function.Function;
 
 import static de.theredend2000.advancedegghunt.util.Constants.CustomIdKey;
 
 public class ItemHelper {
-    public static ItemStack setCustomId(ItemStack item, String id){
-        var itemMeta = item.getItemMeta();
-
-        if (itemMeta != null) {
-            itemMeta.getPersistentDataContainer().set(CustomIdKey, PersistentDataType.STRING, id);
-        }
-
-        item.setItemMeta(itemMeta);
+    public static ItemStack setCustomId(ItemStack item, String id) {
+        NBT.modify(item, nbt -> {
+            nbt.setString(CustomIdKey, id);
+        });
         return item;
     }
 
-    public static ItemMeta setCustomId(ItemMeta meta, String id){
-        if (meta != null) {
-            meta.getPersistentDataContainer().set(CustomIdKey, PersistentDataType.STRING, id);
-        }
-        return meta;
-    }
-
     public static boolean hasItemId(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            if (container.has(CustomIdKey, PersistentDataType.STRING)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean hasItemId(ItemMeta meta) {
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (container.has(CustomIdKey, PersistentDataType.STRING)) {
-            return true;
-        }
-
-        return false;
+        return NBT.get(item, (Function<ReadableItemNBT, Boolean>) nbt -> nbt.hasTag(CustomIdKey));
     }
 
     public static String getItemId(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            if (container.has(CustomIdKey, PersistentDataType.STRING)) {
-                return container.get(CustomIdKey, PersistentDataType.STRING);
-            }
-        }
-        return null; // or a default value
-    }
-
-
-    public static String getItemId(ItemMeta meta) {
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (container.has(CustomIdKey, PersistentDataType.STRING)) {
-            return container.get(CustomIdKey, PersistentDataType.STRING);
-        }
-        return null; // or a default value
+        return NBT.get(item, (Function<ReadableItemNBT, String>) nbt -> nbt.getString(CustomIdKey));
     }
 }

@@ -49,14 +49,14 @@ public class SettingsMenu extends InventoryMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta())) {
+        if (!ItemHelper.hasItemId(event.getCurrentItem())) {
             return;
         }
 
         Player player = (Player) event.getWhoClicked();
         SoundManager soundManager = Main.getInstance().getSoundManager();
 
-        switch (ItemHelper.getItemId(event.getCurrentItem().getItemMeta())) {
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "settings.close":
                 player.closeInventory();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

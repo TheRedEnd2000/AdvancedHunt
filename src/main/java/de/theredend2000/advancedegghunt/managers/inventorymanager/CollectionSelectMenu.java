@@ -89,14 +89,14 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        String selectedCollection = ItemHelper.getItemId(Objects.requireNonNull(event.getCurrentItem().getItemMeta()));
+        String selectedCollection = ItemHelper.getItemId(Objects.requireNonNull(event.getCurrentItem()));
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String collection : keys){
-            if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
-                    !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(collection)) {
+            if (!ItemHelper.hasItemId(event.getCurrentItem()) ||
+                    !ItemHelper.getItemId(event.getCurrentItem()).equals(collection)) {
                 continue;
             }
             switch (event.getAction()) {

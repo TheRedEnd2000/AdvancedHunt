@@ -188,8 +188,8 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("GlobalRewards.")){
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
             for(String commandID : keys){
-                if (!ItemHelper.hasItemId(event.getCurrentItem().getItemMeta()) ||
-                        !ItemHelper.getItemId(event.getCurrentItem().getItemMeta()).equals(commandID)) {
+                if (!ItemHelper.hasItemId(event.getCurrentItem()) ||
+                        !ItemHelper.getItemId(event.getCurrentItem()).equals(commandID)) {
                     continue;
                 }
                 switch (event.getAction()) {
