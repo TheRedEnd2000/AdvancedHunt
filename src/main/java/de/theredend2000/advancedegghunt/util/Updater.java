@@ -16,6 +16,7 @@ import java.net.URL;
 public class Updater implements Listener {
 
     private Main plugin;
+    public static boolean isOutdated;
     private int key = 109085;
 
     public Updater(Main plugin){
@@ -31,6 +32,7 @@ public class Updater implements Listener {
             connection.disconnect();
             String oldVersion = plugin.getDescription().getVersion();
             if(VersionComparator.isLessThan(oldVersion, newVersion)) {
+                isOutdated = true;
                 player.sendMessage(Main.PREFIX + "§aThere is a newer version available. Please update your plugin§a. §aVersion: §2§l" + oldVersion + "§6 --> §2§l" + newVersion);
                 return true;
             }
@@ -49,6 +51,7 @@ public class Updater implements Listener {
             connection.disconnect();
             String oldVersion = plugin.getDescription().getVersion();
             if(VersionComparator.isLessThan(oldVersion, newVersion)) {
+                isOutdated = true;
                 Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§cYou do not have the most updated version of §eAdvancedEggHunt§c.");
                 Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§cPlease chance the version: §4" + oldVersion + "§6 --> §2§l" + newVersion);
                 return true;
