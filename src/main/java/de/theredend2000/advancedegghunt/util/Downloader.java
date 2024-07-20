@@ -28,7 +28,7 @@ public class Downloader {
     }
 
     public void downloadPluginFromSpigot(int pluginId, String saveDir) throws IOException {
-        String fileURL = "https://api.spiget.org/v2/resources/" + pluginId;
+        String fileURL = "https://api.spiget.org/v2/resources/" + pluginId + "/download";
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         int responseCode = httpConn.getResponseCode();
