@@ -76,7 +76,7 @@ public class EggManager {
     }
 
     public ItemStack giveFinishedEggToPlayer(int id){
-        return new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").setSkullOwner(getRandomEggTexture(id)).build();
+        return new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").setSkullOwner(getRandomEggTexture(id)).build();
     }
 
     public void finishEggPlacing(Player player){

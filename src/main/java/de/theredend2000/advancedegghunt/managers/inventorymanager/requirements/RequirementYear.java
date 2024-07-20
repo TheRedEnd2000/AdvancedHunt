@@ -35,9 +35,9 @@ public class RequirementYear extends InventoryMenu {
     }
 
     private void addMenuBorderButtons(String collection) {
-        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
-        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
+        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
     }
 
     private void menuContent(String collection) {
@@ -46,7 +46,7 @@ public class RequirementYear extends InventoryMenu {
         getInventory().setContents(inventoryContent);
         for(int year = currentYear; year < (currentYear + 28);year++){
             boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.BEACON : XMaterial.RED_STAINED_GLASS).setDisplayname("§6Year " + year).setLore("§7Makes that the eggs are only", "§7available in the year " + year, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + year + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.BEACON : XMaterial.RED_STAINED_GLASS).setDisplayName("§6Year " + year).setLore("§7Makes that the eggs are only", "§7available in the year " + year, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + year + " to the requirements.").withGlow(enabled).build());
         }
     }
 

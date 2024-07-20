@@ -38,16 +38,16 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons() {
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
-        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayname("§eBack").build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§cClose").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayName("§eBack").build();
     }
 
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Left")
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Right")
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
@@ -55,9 +55,9 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
         if(presetDataManager.savedPresets().size() >= 1){
             keys.addAll(presetDataManager.savedPresets());
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Presets").setLore("§7Create new one to select them.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Presets").setLore("§7Create new one to select them.").build());
         if (keys == null || keys.isEmpty()) {
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Presets").setLore("§7Create new one to select them.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Presets").setLore("§7Create new one to select them.").build());
             return;
         }
         for(int i = 0; i < maxItemsPerPage; i++) {
@@ -65,7 +65,7 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
             if(index >= keys.size()) break;
             if (keys.get(index) != null){
                 String defaultPreset = plugin.getPluginConfig().getDefaultGlobalLoadingPreset();
-                getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayname("§b§l" + keys.get(index)).setDefaultLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset))).setCustomId(keys.get(index)).build());
+                getInventory().addItem(new ItemBuilder(XMaterial.PAPER).setDisplayName("§b§l" + keys.get(index)).setLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset))).setCustomId(keys.get(index)).build());
             }
         }
     }

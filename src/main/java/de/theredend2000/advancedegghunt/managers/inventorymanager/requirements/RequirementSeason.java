@@ -37,9 +37,9 @@ public class RequirementSeason extends InventoryMenu {
     }
 
     private void addMenuBorderButtons(String collection) {
-        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
-        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
+        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
     }
 
     private void menuContent(String collection) {
@@ -47,7 +47,7 @@ public class RequirementSeason extends InventoryMenu {
         getInventory().setContents(inventoryContent);
         for(String season : new ArrayList<>(DateTimeUtil.getSeasonList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS).setDisplayname("§6" + season).setLore(getSeasonInformation(Seasons.valueOf(season)), "§7Makes that the eggs are only", "§7available in the season " + season, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + season + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS).setDisplayName("§6" + season).setLore(getSeasonInformation(Seasons.valueOf(season)), "§7Makes that the eggs are only", "§7available in the season " + season, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + season + " to the requirements.").withGlow(enabled).build());
         }
     }
 

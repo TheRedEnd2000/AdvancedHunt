@@ -45,7 +45,7 @@ public class HintMenu extends InventoryMenu {
 
         playerMenuUtility.getOwner().openInventory(getInventory());
 
-        for (int i = 0; i < getInventory().getSize(); i++){getInventory().setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());}
+        for (int i = 0; i < getInventory().getSize(); i++){getInventory().setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayName("§c").build());}
 
         new BukkitRunnable() {
             @Override
@@ -81,9 +81,9 @@ public class HintMenu extends InventoryMenu {
             return;
         }
 
-        getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayname("§c").build());
+        getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayName("§c").build());
         currentSlot = getRandomSlot();
-        getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE).setDisplayname("§aConfirm").setLore("§6" + (currentCount + 1) + "§7/§6" + Main.getInstance().getPluginConfig().getHintCount()).build());
+        getInventory().setItem(currentSlot, new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE).setDisplayName("§aConfirm").setLore("§6" + (currentCount + 1) + "§7/§6" + Main.getInstance().getPluginConfig().getHintCount()).build());
         clickedCorrectSlot = false;
     }
 

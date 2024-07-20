@@ -35,16 +35,16 @@ public class CollectionCreator extends InventoryMenu {
     }
 
     private void addMenuBorderButtons() {
-        inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
+        inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
     }
 
     private void menuContent() {
         FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(super.playerMenuUtility.getOwner().getUniqueId());
-        getInventory().setItem(20, new ItemBuilder(XMaterial.PAPER).setDisplayname("§3Name").setLore("§7Currently: " + (name != null ? name : "§cnone"), "", "§eClick to change.").build());
-        getInventory().setItem(22, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayname("§3Status").setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.").build());
-        getInventory().setItem(24, new ItemBuilder(XMaterial.COMPARATOR).setDisplayname("§3Requirements").setLore("§cYou can change the requirements", "§cafter creating the new collection.", "", "§7All Requirements will be active", "§7on creating a new collection.").build());
-        getInventory().setItem(44, new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§2Create").setLore("", "§eClick to create.").build());
-        getInventory().setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayname("§eBack").build());
+        getInventory().setItem(20, new ItemBuilder(XMaterial.PAPER).setDisplayName("§3Name").setLore("§7Currently: " + (name != null ? name : "§cnone"), "", "§eClick to change.").build());
+        getInventory().setItem(22, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayName("§3Status").setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.").build());
+        getInventory().setItem(24, new ItemBuilder(XMaterial.COMPARATOR).setDisplayName("§3Requirements").setLore("§cYou can change the requirements", "§cafter creating the new collection.", "", "§7All Requirements will be active", "§7on creating a new collection.").build());
+        getInventory().setItem(44, new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName("§2Create").setLore("", "§eClick to create.").build());
+        getInventory().setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).setDisplayName("§eBack").build());
     }
 
     @Override

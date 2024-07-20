@@ -39,24 +39,24 @@ public class ResetMenu extends InventoryMenu {
     private void addMenuBorderButtons(String collection) {
         inventoryContent[4] =  new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(plugin.getEggManager().getRandomEggTexture(new Random().nextInt(7)))
-                .setDisplayname("§6" + collection).build();
+                .setDisplayName("§6" + collection).build();
 
-        inventoryContent[37] = new ItemBuilder(XMaterial.RED_TERRACOTTA).setDisplayname("§cReset all").setLore("§eClick to reset all.").build();
+        inventoryContent[37] = new ItemBuilder(XMaterial.RED_TERRACOTTA).setDisplayName("§cReset all").setLore("§eClick to reset all.").build();
 
-        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
     }
 
     private void menuContent(String collection) {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         String overall = plugin.getRequirementsManager().getConvertedTime(collection);
 
-        getInventory().setItem(10, new ItemBuilder(XMaterial.REDSTONE).setDisplayname("§6Reset - Year").setLore("§7Current: §b" + placedEggs.getInt("Reset.Year") + "Y", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
-        getInventory().setItem(11, new ItemBuilder(XMaterial.REDSTONE).setDisplayname("§6Reset - Month").setLore("§7Current: §b" + placedEggs.getInt("Reset.Month") + "M", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
-        getInventory().setItem(12, new ItemBuilder(XMaterial.REDSTONE).setDisplayname("§6Reset - Day").setLore("§7Current: §b" + placedEggs.getInt("Reset.Day") + "d", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
-        getInventory().setItem(13, new ItemBuilder(XMaterial.REDSTONE).setDisplayname("§6Reset - Hour").setLore("§7Current: §b" + placedEggs.getInt("Reset.Hour") + "h", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
-        getInventory().setItem(14, new ItemBuilder(XMaterial.REDSTONE).setDisplayname("§6Reset - Minute").setLore("§7Current: §b" + placedEggs.getInt("Reset.Minute") + "m", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
-        getInventory().setItem(15, new ItemBuilder(XMaterial.REDSTONE).setDisplayname("§6Reset - Second").setLore("§7Current: §b" + placedEggs.getInt("Reset.Second") + "s", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
+        getInventory().setItem(10, new ItemBuilder(XMaterial.REDSTONE).setDisplayName("§6Reset - Year").setLore("§7Current: §b" + placedEggs.getInt("Reset.Year") + "Y", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
+        getInventory().setItem(11, new ItemBuilder(XMaterial.REDSTONE).setDisplayName("§6Reset - Month").setLore("§7Current: §b" + placedEggs.getInt("Reset.Month") + "M", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
+        getInventory().setItem(12, new ItemBuilder(XMaterial.REDSTONE).setDisplayName("§6Reset - Day").setLore("§7Current: §b" + placedEggs.getInt("Reset.Day") + "d", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
+        getInventory().setItem(13, new ItemBuilder(XMaterial.REDSTONE).setDisplayName("§6Reset - Hour").setLore("§7Current: §b" + placedEggs.getInt("Reset.Hour") + "h", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
+        getInventory().setItem(14, new ItemBuilder(XMaterial.REDSTONE).setDisplayName("§6Reset - Minute").setLore("§7Current: §b" + placedEggs.getInt("Reset.Minute") + "m", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
+        getInventory().setItem(15, new ItemBuilder(XMaterial.REDSTONE).setDisplayName("§6Reset - Second").setLore("§7Current: §b" + placedEggs.getInt("Reset.Second") + "s", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.").build());
     }
 
     @Override

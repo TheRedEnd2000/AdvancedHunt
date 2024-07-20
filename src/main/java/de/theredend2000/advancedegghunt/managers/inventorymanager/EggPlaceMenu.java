@@ -44,11 +44,11 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons() {
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
-        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§aRefresh").build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
+        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName("§aRefresh").build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getTexture("MTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0="))
-                .setDisplayname("§9Information")
+                .setDisplayName("§9Information")
                 .setLore("§7If you do not know how you can add your",
                         "§7own egg textures. Click here",
                         "§7to get to the discord channel",
@@ -63,23 +63,23 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                         "§eClick to get the discord link.").build();
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[46] = new ItemBuilder(XMaterial.PAPER)
-                .setDisplayname("§bSelected Collection")
+                .setDisplayName("§bSelected Collection")
                 .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.").build();
     }
 
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Left")
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Right")
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         ArrayList<String> keys = new ArrayList<>();
         if(Main.getInstance().getPluginConfig().hasPlaceEggs()){
             keys.addAll(Main.getInstance().getPluginConfig().getPlaceEggIds());
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Eggs").setLore("§7You can add commands by using", "§e/egghunt placeEggs§7.").build());
         if (keys == null || keys.isEmpty()) {
             return;
         }
@@ -95,11 +95,11 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
             if(mat.equals(XMaterial.PLAYER_HEAD))
                 getInventory().setItem(slotIndex, new ItemBuilder(mat)
                         .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index))))
-                        .setDisplayname("§b§lEggs Type #" + keys.get(index))
+                        .setDisplayName("§b§lEggs Type #" + keys.get(index))
                         .setLore("§eClick to get.")
                         .setCustomId(keys.get(index)).build());
             else
-                getInventory().setItem(slotIndex, new ItemBuilder(mat).setDisplayname("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setCustomId(keys.get(index)).build());
+                getInventory().setItem(slotIndex, new ItemBuilder(mat).setDisplayName("§b§lEggs Type #" + keys.get(index)).setLore("§eClick to get.").setCustomId(keys.get(index)).build());
         }
     }
 
@@ -175,10 +175,10 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                 if (event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
                     player.getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                             .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)))
-                            .setDisplayname("§6Easter Egg")
+                            .setDisplayName("§6Easter Egg")
                             .setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 else
-                    player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setDisplayname("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
+                    player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType())).setDisplayName("§6Easter Egg").setLore("§7Place this egg around the map", "§7that everyone can search and find it.").build());
                 return;
             }
         }

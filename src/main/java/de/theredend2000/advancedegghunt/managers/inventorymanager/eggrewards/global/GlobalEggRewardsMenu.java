@@ -53,14 +53,14 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
     }
 
     private void addMenuBorderButtons() {
-        inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§5Save preset").setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other collections again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.").build();
-        inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayname("§5Load presets").setLore("§eClick to load or change presets.").build();
-        inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayname("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§cClose").build();
-        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayname("§bSwitch to Individual").setOwner(playerMenuUtility.getOwner().getName()).setLore("","§6Switch to Individual:","§7Switching to individual lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lone §7egg.","","§eClick to switch").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName("§5Save preset").setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other collections again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.").build();
+        inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD).setDisplayName("§5Load presets").setLore("§eClick to load or change presets.").build();
+        inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayName("§5Create new reward").setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward").build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§cClose").build();
+        inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§bSwitch to Individual").setOwner(playerMenuUtility.getOwner().getName()).setLore("","§6Switch to Individual:","§7Switching to individual lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lone §7egg.","","§eClick to switch").build();
         inventoryContent[7] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getTexture("MTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0="))
-                .setDisplayname("§9Information")
+                .setDisplayName("§9Information")
                 .setLore("§7The global egg rewards count",
                         "§7as §7§lall egg reward§7.",
                         "§7This means if the player found §7§lall eggs§7,",
@@ -77,10 +77,10 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         getInventory().setContents(inventoryContent);
 
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Left")
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Right")
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
@@ -88,7 +88,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("GlobalRewards.")){
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < maxItemsPerPage; i++) {
                 index = maxItemsPerPage * page + i;
@@ -109,11 +109,11 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                             itemStack = getItem(materialName);
                         }
                     }
-                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayname("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.", "§eDROP to execute command.").setCustomId(keys.get(index)).build());
+                    getInventory().addItem(new ItemBuilder(itemStack).setDisplayName("§b§lReward §7#" + keys.get(index)).setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.", "§eDROP to execute command.").setCustomId(keys.get(index)).build());
                 }
             }
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Rewards").setLore("§7Create new a new reward", "§7or load a preset.").build());
     }
 
     public ItemStack getItem(String itemString) {

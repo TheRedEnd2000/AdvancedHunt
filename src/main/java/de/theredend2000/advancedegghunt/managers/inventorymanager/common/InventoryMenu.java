@@ -29,7 +29,7 @@ public abstract class InventoryMenu implements IInventoryMenu {
         this.inventoryContent = new ItemStack[this.slots];
         this.inventoryName = inventoryName;
 
-        this.FILLER_GLASS = new ItemBuilder(fillerMaterial).setDisplayname(" ").build();
+        this.FILLER_GLASS = new ItemBuilder(fillerMaterial).setDisplayName(" ").build();
     }
 
     protected void addMenuBorder()

@@ -36,18 +36,18 @@ public class EggListMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons() {
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayname("§4Close").build();
-        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayname("§aRefresh").build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
+        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName("§aRefresh").build();
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
-        inventoryContent[45] = new ItemBuilder(XMaterial.PAPER).setDisplayname("§bSelected Collection").setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PAPER).setDisplayName("§bSelected Collection").setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.").build();
     }
 
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Left")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Left")
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayname("§2Right")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Right")
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
@@ -56,7 +56,7 @@ public class EggListMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayname("§4§lNo Eggs Placed").setLore("§7You can add eggs by using", "§e/egghunt placeEggs§7.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Eggs Placed").setLore("§7You can add eggs by using", "§e/egghunt placeEggs§7.").build());
 
         if (keys == null || keys.isEmpty()) {
             return;
@@ -75,7 +75,7 @@ public class EggListMenu extends PaginatedInventoryMenu {
             String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
             int timesFound = Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection);
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayname("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setCustomId(keys.get(index)).build());
+            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.").setCustomId(keys.get(index)).build());
         }
     }
 

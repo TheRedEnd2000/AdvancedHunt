@@ -5,6 +5,7 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -20,52 +21,60 @@ public class ItemBuilder {
     private ItemMeta itemMeta;
     private ItemStack itemStack;
 
-    public ItemBuilder(XMaterial mat){
-        itemStack = mat.parseItem();
-        itemMeta = itemStack.getItemMeta();
+    public ItemBuilder(XMaterial mat) {
+        this(mat.parseItem());
     }
 
-    public ItemBuilder(ItemStack itemStack){
+    public ItemBuilder(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.itemMeta = itemStack.getItemMeta();
     }
 
-    public ItemBuilder setDisplayname(String s){
-        itemMeta.setDisplayName(s);
+    public ItemBuilder(Material material) {
+        this(new ItemStack(material));
+    }
+
+    public ItemBuilder setDisplayName(String name) {
+        itemMeta.setDisplayName(name);
         return this;
     }
 
-    public ItemBuilder setOwner(String name){
-        SkullMeta skullMeta = (SkullMeta) this.itemMeta;
-        skullMeta.setOwner(name);
+    public ItemBuilder setOwner(String name) {
+        if (itemMeta instanceof SkullMeta) {
+            ((SkullMeta) itemMeta).setOwner(name);
+        }
         return this;
     }
 
-    public ItemBuilder withGlow(boolean s){
-        if(s) {
+    public ItemBuilder withGlow(boolean glow) {
+        if (glow) {
             itemMeta.addEnchant(Enchantment.LURE, 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         return this;
     }
 
-    public ItemBuilder setLore(String... s){
-        itemMeta.setLore(Arrays.asList(s));
+    public ItemBuilder setLore(String... lore) {
+        return setLore(Arrays.asList(lore));
+    }
+
+    public ItemBuilder setLore(List<String> lore) {
+        itemMeta.setLore(lore);
         return this;
     }
 
-    public ItemBuilder setDefaultLore(List<String> s){
-        itemMeta.setLore(s);
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
+        itemMeta.setUnbreakable(unbreakable);
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean s){
-        itemMeta.setUnbreakable(s);
+    public ItemBuilder addItemFlags(ItemFlag... flags) {
+        itemMeta.addItemFlags(flags);
         return this;
     }
 
-    public ItemBuilder addItemFlags(ItemFlag... s){
-        itemMeta.addItemFlags(s);
+    public ItemBuilder removeItemFlags(ItemFlag... flags) {
+        itemMeta.removeItemFlags(flags);
         return this;
     }
 
@@ -77,24 +86,23 @@ public class ItemBuilder {
                 '}';
     }
 
-    public ItemStack build(){
+    public ItemStack build() {
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
 
-    public ItemBuilder setCustomId(String id){
-        itemMeta = ItemHelper.setCustomId(itemMeta, id);
-
+    public ItemBuilder setCustomId(String id) {
+        itemStack = ItemHelper.setCustomId(build(), id);
+        itemMeta = itemStack.getItemMeta();
         return this;
     }
 
     public ItemBuilder setSkullOwner(String texture) {
         itemStack = build();
 
-        var version = Bukkit.getBukkitVersion().split("-",2);   //TODO:TEMP Fix
+        String version = Bukkit.getBukkitVersion().split("-", 2)[0];
 
-        if (VersionComparator.isGreaterThanOrEqual(version[0], "1.20.5")) {
-            // Workaround for Minecraft 1.20.5+
+        if (VersionComparator.isGreaterThanOrEqual(version, "1.20.5")) {
             NBT.modifyComponents(itemStack, nbt -> {
                 ReadWriteNBT profileNbt = nbt.getOrCreateCompound("minecraft:profile");
                 profileNbt.setUUID("id", UUID.randomUUID());
@@ -104,12 +112,8 @@ public class ItemBuilder {
             });
         } else {
             NBT.modify(itemStack, nbt -> {
-                final ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
-
-                // The owner UUID. Note that skulls with the same UUID but different textures will misbehave and only one texture will load.
-                // They will share the texture. To avoid this limitation, it is recommended to use a random UUID.
+                ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
                 skullOwnerCompound.setUUID("Id", UUID.randomUUID());
-
                 skullOwnerCompound.getOrCreateCompound("Properties")
                         .getCompoundList("textures")
                         .addCompound()
@@ -122,17 +126,24 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setColor(Color color) {
-        try {
-            LeatherArmorMeta armorMeta = (LeatherArmorMeta) this.itemMeta;
-            armorMeta.setColor(color);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if (itemMeta instanceof LeatherArmorMeta) {
+            ((LeatherArmorMeta) itemMeta).setColor(color);
         }
         return this;
     }
 
-    public ItemBuilder addEnchant(Enchantment ench, int level) {
-        itemMeta.addEnchant(ench, level, true);
+    public ItemBuilder addEnchant(Enchantment enchantment, int level) {
+        itemMeta.addEnchant(enchantment, level, true);
+        return this;
+    }
+
+    public ItemBuilder removeEnchant(Enchantment enchantment) {
+        itemMeta.removeEnchant(enchantment);
+        return this;
+    }
+
+    public ItemBuilder setAmount(int amount) {
+        itemStack.setAmount(amount);
         return this;
     }
 }

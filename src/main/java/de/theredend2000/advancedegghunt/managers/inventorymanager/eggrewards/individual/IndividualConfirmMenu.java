@@ -35,9 +35,9 @@ public class IndividualConfirmMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuButtons() {
-        inventoryContent[11] = new ItemBuilder(XMaterial.GREEN_CONCRETE).setDisplayname("§aConfirm")
+        inventoryContent[11] = new ItemBuilder(XMaterial.GREEN_CONCRETE).setDisplayName("§aConfirm")
                 .setLore("","§7By clicking this button you will load","§7this preset into all placed eggs.","","§eClick to confirm.").build();
-        inventoryContent[15] = new ItemBuilder(XMaterial.RED_CONCRETE).setDisplayname("§cCancel").build();
+        inventoryContent[15] = new ItemBuilder(XMaterial.RED_CONCRETE).setDisplayName("§cCancel").build();
     }
 
     public int getMaxPages(){
