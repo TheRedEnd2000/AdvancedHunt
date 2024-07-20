@@ -19,6 +19,13 @@ public class ItemHelper {
         return item;
     }
 
+    public static ItemMeta setCustomId(ItemMeta meta, String id){
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(CustomIdKey, PersistentDataType.STRING, id);
+        }
+        return meta;
+    }
+
     public static boolean hasItemId(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {

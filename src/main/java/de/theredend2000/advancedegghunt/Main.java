@@ -15,9 +15,9 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
-import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
+import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
@@ -25,7 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
