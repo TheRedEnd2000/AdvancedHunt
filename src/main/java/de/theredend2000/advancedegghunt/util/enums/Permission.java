@@ -11,7 +11,8 @@ public enum Permission {
     IgnoreCooldown,
     ChangeCollections,
     CreateCollection,
-    OpenRewards;
+    OpenRewards,
+    FindEggs;
     @Override
     public String toString() {
         return "AdvancedEggHunt." + this.name();

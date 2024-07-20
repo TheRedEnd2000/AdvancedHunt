@@ -41,6 +41,7 @@ public class Updater implements Listener {
         }
         return false;
     }
+
     public boolean isOutdated() {
         try {
             HttpURLConnection connection = (HttpURLConnection)new URL("https://api.spigotmc.org/legacy/update.php?resource=" + key).openConnection();

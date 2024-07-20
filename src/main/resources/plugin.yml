@@ -57,6 +57,8 @@ permissions:
     description: ""
   AdvancedEggHunt.OpenRewards:
     description: ""
+  AdvancedEggHunt.FindEggs:
+    description: ""
 
   AdvancedEggHunt.group.admin:
     description: "Contains all essential admin permissions"
@@ -88,3 +90,4 @@ permissions:
       AdvancedEggHunt.command.progress: true
       AdvancedEggHunt.command.leaderboard: true
       AdvancedEggHunt.command.hint: true
+      AdvancedEggHunt.FindEggs: true

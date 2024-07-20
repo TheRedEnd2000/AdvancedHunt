@@ -64,6 +64,11 @@ public class PlayerInteractEventListener implements Listener {
                 return;
             }
 
+            if(!Main.getInstance().getPermissionManager().checkPermission(player, Permission.FindEggs)){
+                player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR));
+                return;
+            }
+
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
             if(!placedEggs.getBoolean("Enabled")){
                 player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
