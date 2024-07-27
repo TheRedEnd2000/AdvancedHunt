@@ -8,7 +8,10 @@ import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.listeners.*;
 import de.theredend2000.advancedegghunt.managers.*;
-import de.theredend2000.advancedegghunt.managers.eggmanager.*;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggDataManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggHidingManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
+import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
@@ -62,19 +65,20 @@ public final class Main extends JavaPlugin {
     private ProtocolManager protocolManager;
 
     // Collections
-    private Map<String, Long> refreshCooldown;
-    private List<Player> placeEggsPlayers;
-    private Map<Player, Integer> playerAddCommand;
-    private List<ArmorStand> showedArmorstands;
-    private Map<Player, LeaderboardSortTypes> sortTypeLeaderboard;
-    private static final Map<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+    private HashMap<String, Long> refreshCooldown;
+    private ArrayList<Player> placeEggsPlayers;
+    private HashMap<Player, Integer> playerAddCommand;
+    private ArrayList<ArmorStand> showedArmorstands;
+    private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+
     @Override
     public void onEnable() {
         plugin = this;
         initializePlugin();
         setupManagers();
         registerCommands();
-        registerListeners();
+        initListeners();
         setupPlaceholderAPI();
         initializeData();
         setupDefaultCollectionIfNeeded();
@@ -107,9 +111,6 @@ public final class Main extends JavaPlugin {
         getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
     }
 
-    private void registerListeners() {
-        initListeners();
-    }
 
     private void setupPlaceholderAPI() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
