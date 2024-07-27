@@ -367,7 +367,7 @@ public class PluginConfig extends Configuration {
     }
     //endregion
 
-    //Rarity
+    //region Rarity
 
     public List<String> getRarityList(){
         return new ArrayList<>(config.getConfigurationSection("Rarity.").getKeys(false));
