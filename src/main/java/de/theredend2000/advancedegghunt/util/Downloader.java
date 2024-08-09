@@ -23,10 +23,24 @@ public class Downloader {
             if(plugin.getPluginConfig().getAutoDownloadNBTAPI())
                 downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3", downloadFile);
             if(plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && Updater.isOutdated)
-                downloadPluginFromSpigot(109085, downloadFile, false);
+                downloadPluginFromSpigot(109085, downloadFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isPaperOrPurpur() {
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean isAbove1_19() {
+        String version = Bukkit.getBukkitVersion();
+        return VersionComparator.compare(version, "1.19") >= 0;
     }
 
     private void renameOldPlugins(String directory) {
@@ -53,7 +67,7 @@ public class Downloader {
         }
     }
 
-    public void downloadPluginFromSpigot(int pluginId, String saveDir, boolean moveOldPlugin) throws IOException {
+    public void downloadPluginFromSpigot(int pluginId, String saveDir) throws IOException {
         String fileURL = "https://api.spiget.org/v2/resources/" + pluginId + "/download";
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
@@ -61,7 +75,14 @@ public class Downloader {
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             String fileName = "AdvancedEggHunt2.jar";
-            String saveFilePath = saveDir + File.separator + fileName;
+            String saveFilePath;
+
+            if (isPaperOrPurpur() && isAbove1_19()) {
+                saveFilePath = new File(Bukkit.getUpdateFolderFile(), fileName).getAbsolutePath();
+            } else {
+                saveFilePath = saveDir + File.separator + fileName;
+                ensureFirstInLoadOrder(saveFilePath);
+            }
 
             InputStream inputStream = httpConn.getInputStream();
             OutputStream outputStream = new FileOutputStream(saveFilePath);
@@ -76,11 +97,27 @@ public class Downloader {
             inputStream.close();
 
             plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + fileName);
-//            loadPlugin(saveFilePath);
         } else {
             plugin.getLogger().log(Level.WARNING, "No plugin to download from SpigotMC. Server replied HTTP code: " + responseCode);
         }
         httpConn.disconnect();
+    }
+
+    private void ensureFirstInLoadOrder(String filePath) {
+        File pluginFile = new File(filePath);
+        File pluginsDir = pluginFile.getParentFile();
+        File[] jarFiles = pluginsDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jar"));
+
+        if (jarFiles != null) {
+            long currentTime = System.currentTimeMillis();
+            pluginFile.setLastModified(currentTime);
+
+            for (File file : jarFiles) {
+                if (!file.equals(pluginFile)) {
+                    file.setLastModified(currentTime - 1000);
+                }
+            }
+        }
     }
 
     public void downloadPluginFromModrinth(String hash, String saveDir) throws IOException {
