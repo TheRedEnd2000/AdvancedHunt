@@ -2,7 +2,6 @@ package de.theredend2000.advancedegghunt.util;
 
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -34,20 +33,6 @@ public class Downloader {
         }
     }
 
-    private boolean isPaperOrPurpur() {
-        try {
-            Class.forName("com.destroystokyo.paper.PaperConfig");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
-    private boolean isAbove1_19() {
-        String version = Bukkit.getBukkitVersion();
-        return VersionComparator.compare(version, "1.19") >= 0;
-    }
-
     private void renameOldPlugins(String directory) {
         File dir = new File(directory);
         File[] files = dir.listFiles((dir1, name) -> (name.startsWith("AdvancedEggHunt") || name.startsWith("NBTAPI")) && name.endsWith(".jar"));
@@ -74,17 +59,84 @@ public class Downloader {
 
     public void downloadPluginFromSpigot(int pluginId, String saveDir) throws IOException {
         String fileURL = "https://api.spiget.org/v2/resources/" + pluginId + "/download";
-        String fileName = "AdvancedEggHunt2.jar";
-        String saveFilePath;
+        URL url = new URL(fileURL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
 
-        if (isPaperOrPurpur() && isAbove1_19()) {
-            saveFilePath = new File(Bukkit.getUpdateFolderFile(), fileName).getAbsolutePath();
-        } else {
-            saveFilePath = saveDir + File.separator + fileName;
-            ensureFirstInLoadOrder(saveFilePath);
+        String fileName = getFileNameFromContentDisposition(connection);
+        if (fileName == null || fileName.isEmpty()) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to determine filename for Spigot plugin download");
+            return;
         }
 
-        downloadFile(fileURL, saveFilePath);
+        String saveFilePath = getSaveFilePath(saveDir, fileName);
+        downloadFile(connection, saveFilePath);
+    }
+
+    public void downloadPluginFromModrinth(String hash, String saveDir) throws IOException {
+        String fileURL = "https://api.modrinth.com/v2/version_file/" + hash + "/download";
+        String fileName = getFilenameFromModrinthAPI("nfGCP9fk");
+        if (fileName == null || fileName.isEmpty()) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to determine filename for Modrinth plugin download");
+            return;
+        }
+
+        String saveFilePath = getSaveFilePath(saveDir, fileName);
+        File outputFile = new File(saveFilePath);
+
+        if (outputFile.exists()) return;
+
+        URL url = new URL(fileURL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        downloadFile(connection, saveFilePath);
+    }
+
+    private String getSaveFilePath(String saveDir, String fileName) {
+        File currentFile = plugin.getFile();
+
+        if (isPaperOrPurpur() && isAbove1_19() || currentFile.getName().equals(fileName)) {
+            return new File(Bukkit.getUpdateFolderFile(), fileName).getAbsolutePath();
+        } else {
+            String filePath = saveDir + File.separator + fileName;
+            ensureFirstInLoadOrder(filePath);
+            return filePath;
+        }
+    }
+
+    private void downloadFile(HttpURLConnection connection, String saveFilePath) throws IOException {
+        try (InputStream in = connection.getInputStream();
+             OutputStream out = new FileOutputStream(saveFilePath)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
+        plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + new File(saveFilePath).getName());
+    }
+
+    private String getFileNameFromContentDisposition(HttpURLConnection connection) {
+        String contentDisposition = connection.getHeaderField("Content-Disposition");
+        if (contentDisposition != null && contentDisposition.contains("filename=")) {
+            return contentDisposition.substring(contentDisposition.indexOf("filename=") + 9).replace("\"", "");
+        }
+        return null;
+    }
+
+    private boolean isPaperOrPurpur() {
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean isAbove1_19() {
+        String version = Bukkit.getBukkitVersion();
+        return VersionComparator.compare(version, "1.19") >= 0;
     }
 
     private void ensureFirstInLoadOrder(String filePath) {
@@ -104,36 +156,7 @@ public class Downloader {
         }
     }
 
-    public void downloadPluginFromModrinth(String hash, String saveDir) throws IOException {
-        String fileURL = "https://api.modrinth.com/v2/version_file/" + hash + "/download";
-        String fileName = getFilenameFromModrinthAPI("nfGCP9fk");
-        if (fileName == null) {
-            fileName = "plugin.jar";
-        }
-
-        String saveFilePath = saveDir + File.separator + fileName;
-        File outputFile = new File(saveFilePath);
-
-        if (outputFile.exists()) return;
-
-        downloadFile(fileURL, saveFilePath);
-        loadPlugin(saveFilePath);
-    }
-
-    private void downloadFile(String fileURL, String saveFilePath) throws IOException {
-        URL url = new URL(fileURL);
-        try (InputStream in = url.openStream();
-             OutputStream out = new FileOutputStream(saveFilePath)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-        }
-        plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + new File(saveFilePath).getName());
-    }
-
-    public static String getFilenameFromModrinthAPI(String versionId) {
+    private static String getFilenameFromModrinthAPI(String versionId) {
         String apiUrl = "https://api.modrinth.com/v2/project/" + versionId + "/version";
         try {
             URL url = new URL(apiUrl);
@@ -154,23 +177,9 @@ public class Downloader {
         return null;
     }
 
-    public static String parseFilenameFromJSON(String jsonResponse) {
+    private static String parseFilenameFromJSON(String jsonResponse) {
         int startIndex = jsonResponse.indexOf("\"filename\":") + 12;
         int endIndex = jsonResponse.indexOf("\",", startIndex);
         return jsonResponse.substring(startIndex, endIndex);
-    }
-
-    private void loadPlugin(String filePath) {
-        try {
-            Plugin newPlugin = Bukkit.getPluginManager().loadPlugin(new File(filePath));
-            if (newPlugin != null) {
-                Bukkit.getPluginManager().enablePlugin(newPlugin);
-                plugin.getLogger().log(Level.INFO, "Plugin loaded and enabled successfully: " + newPlugin.getName());
-            } else {
-                plugin.getLogger().log(Level.WARNING, "Failed to load the plugin.");
-            }
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Error loading plugin", e);
-        }
     }
 }
