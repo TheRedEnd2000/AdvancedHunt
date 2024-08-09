@@ -32,21 +32,23 @@ public class Downloader {
     private void renameOldPlugins(String directory) {
         File dir = new File(directory);
         File[] files = dir.listFiles((dir1, name) -> (name.startsWith("AdvancedEggHunt") || name.startsWith("NBTAPI")) && name.endsWith(".jar"));
-        if (files != null) {
-            for (File file : files) {
-                if (!file.getName().equals("AdvancedEggHunt2.jar") && !file.getName().equals(getFilenameFromModrinthAPI("nfGCP9fk"))) {
-                    File newFile = new File(file.getParent(), file.getName() + ".old");
-                    int counter = 1;
-                    while (newFile.exists()) {
-                        newFile = new File(file.getParent(), file.getName() + ".old" + counter);
-                        counter++;
-                    }
-                    if (file.renameTo(newFile)) {
-                        plugin.getLogger().log(Level.INFO, "Renamed old plugin version: " + file.getName() + " to " + newFile.getName());
-                    } else {
-                        plugin.getLogger().log(Level.WARNING, "Failed to rename old plugin version: " + file.getName());
-                    }
-                }
+        if (files == null) return;
+        for (File file : files) {
+            if (file.getName().equals("AdvancedEggHunt2.jar") ||
+                    file.getName().equals(getFilenameFromModrinthAPI("nfGCP9fk"))) {
+                continue;
+            }
+
+            File newFile = new File(file.getParent(), file.getName() + ".old");
+            int counter = 1;
+            while (newFile.exists()) {
+                newFile = new File(file.getParent(), file.getName() + ".old" + counter);
+                counter++;
+            }
+            if (file.renameTo(newFile)) {
+                plugin.getLogger().log(Level.INFO, "Renamed old plugin version: " + file.getName() + " to " + newFile.getName());
+            } else {
+                plugin.getLogger().log(Level.WARNING, "Failed to rename old plugin version: " + file.getName());
             }
         }
     }
@@ -119,7 +121,7 @@ public class Downloader {
     }
 
     public static String getFilenameFromModrinthAPI(String versionId) {
-        String apiUrl = "https://api.modrinth.com/v2/project/" + versionId+"/version";
+        String apiUrl = "https://api.modrinth.com/v2/project/" + versionId + "/version";
 
         try {
             URL url = new URL(apiUrl);
