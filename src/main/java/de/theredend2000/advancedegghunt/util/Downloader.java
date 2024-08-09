@@ -11,21 +11,26 @@ import java.util.logging.Level;
 
 public class Downloader {
 
-    private Main plugin;
+    private final Main plugin;
 
-    public Downloader(){
+    public Downloader() {
         this.plugin = Main.getInstance();
+        initializeDownloads();
+    }
 
-        String downloadFile = new File(plugin.getDataFolder().getParent()).getAbsolutePath();
-        renameOldPlugins(downloadFile);
+    private void initializeDownloads() {
+        String downloadDir = new File(plugin.getDataFolder().getParent()).getAbsolutePath();
+        renameOldPlugins(downloadDir);
 
         try {
-            if(plugin.getPluginConfig().getAutoDownloadNBTAPI())
-                downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3", downloadFile);
-            if(plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && Updater.isOutdated)
-                downloadPluginFromSpigot(109085, downloadFile);
+            if (plugin.getPluginConfig().getAutoDownloadNBTAPI()) {
+                downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3", downloadDir);
+            }
+            if (plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && Updater.isOutdated) {
+                downloadPluginFromSpigot(109085, downloadDir);
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            plugin.getLogger().log(Level.SEVERE, "Failed to download plugins", e);
         }
     }
 
@@ -69,38 +74,17 @@ public class Downloader {
 
     public void downloadPluginFromSpigot(int pluginId, String saveDir) throws IOException {
         String fileURL = "https://api.spiget.org/v2/resources/" + pluginId + "/download";
-        URL url = new URL(fileURL);
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        int responseCode = httpConn.getResponseCode();
+        String fileName = "AdvancedEggHunt2.jar";
+        String saveFilePath;
 
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            String fileName = "AdvancedEggHunt2.jar";
-            String saveFilePath;
-
-            if (isPaperOrPurpur() && isAbove1_19()) {
-                saveFilePath = new File(Bukkit.getUpdateFolderFile(), fileName).getAbsolutePath();
-            } else {
-                saveFilePath = saveDir + File.separator + fileName;
-                ensureFirstInLoadOrder(saveFilePath);
-            }
-
-            InputStream inputStream = httpConn.getInputStream();
-            OutputStream outputStream = new FileOutputStream(saveFilePath);
-
-            int bytesRead;
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-            inputStream.close();
-
-            plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + fileName);
+        if (isPaperOrPurpur() && isAbove1_19()) {
+            saveFilePath = new File(Bukkit.getUpdateFolderFile(), fileName).getAbsolutePath();
         } else {
-            plugin.getLogger().log(Level.WARNING, "No plugin to download from SpigotMC. Server replied HTTP code: " + responseCode);
+            saveFilePath = saveDir + File.separator + fileName;
+            ensureFirstInLoadOrder(saveFilePath);
         }
-        httpConn.disconnect();
+
+        downloadFile(fileURL, saveFilePath);
     }
 
     private void ensureFirstInLoadOrder(String filePath) {
@@ -122,68 +106,53 @@ public class Downloader {
 
     public void downloadPluginFromModrinth(String hash, String saveDir) throws IOException {
         String fileURL = "https://api.modrinth.com/v2/version_file/" + hash + "/download";
-        URL url = new URL(fileURL);
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        int responseCode = httpConn.getResponseCode();
-
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            String fileName = getFilenameFromModrinthAPI("nfGCP9fk");
-            if (fileName == null) {
-                fileName = "plugin.jar";
-            }
-
-            String saveFilePath = saveDir + File.separator + fileName;
-            File outputFile = new File(saveFilePath);
-
-            if(outputFile.exists()) return;
-
-            InputStream inputStream = httpConn.getInputStream();
-            OutputStream outputStream = new FileOutputStream(saveFilePath);
-
-            int bytesRead;
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-            inputStream.close();
-
-            plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + fileName);
-            loadPlugin(saveFilePath);
-        } else {
-            plugin.getLogger().log(Level.WARNING, "No plugin to download from Modrinth. Server replied HTTP code: " + responseCode);
+        String fileName = getFilenameFromModrinthAPI("nfGCP9fk");
+        if (fileName == null) {
+            fileName = "plugin.jar";
         }
-        httpConn.disconnect();
+
+        String saveFilePath = saveDir + File.separator + fileName;
+        File outputFile = new File(saveFilePath);
+
+        if (outputFile.exists()) return;
+
+        downloadFile(fileURL, saveFilePath);
+        loadPlugin(saveFilePath);
+    }
+
+    private void downloadFile(String fileURL, String saveFilePath) throws IOException {
+        URL url = new URL(fileURL);
+        try (InputStream in = url.openStream();
+             OutputStream out = new FileOutputStream(saveFilePath)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
+        plugin.getLogger().log(Level.INFO, "Plugin downloaded: " + new File(saveFilePath).getName());
     }
 
     public static String getFilenameFromModrinthAPI(String versionId) {
         String apiUrl = "https://api.modrinth.com/v2/project/" + versionId + "/version";
-
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                return parseFilenameFromJSON(response.toString());
             }
-            in.close();
-
-            String jsonResponse = response.toString();
-            return parseFilenameFromJSON(jsonResponse);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
-
 
     public static String parseFilenameFromJSON(String jsonResponse) {
         int startIndex = jsonResponse.indexOf("\"filename\":") + 12;
@@ -201,7 +170,7 @@ public class Downloader {
                 plugin.getLogger().log(Level.WARNING, "Failed to load the plugin.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            plugin.getLogger().log(Level.SEVERE, "Error loading plugin", e);
         }
     }
 }
