@@ -1,5 +1,6 @@
 package de.theredend2000.advancedegghunt;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.bstats.Metrics;
@@ -241,7 +242,7 @@ public final class Main extends JavaPlugin {
         permissionManager = new PermissionManager();
         rarityManager = new RarityManager();
         embedCreator = new EmbedCreator();
-//        protocolManager = ProtocolLibrary.getProtocolManager();
+        protocolManager = ProtocolLibrary.getProtocolManager();
         eggHidingManager = new EggHidingManager();
         new Checker();
     }
