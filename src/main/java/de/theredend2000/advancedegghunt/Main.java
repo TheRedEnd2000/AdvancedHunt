@@ -262,13 +262,13 @@ public final class Main extends JavaPlugin {
     private void setupAutoUpdating() {
         PluginDownloader downloader = new PluginDownloader(plugin);
 
-        if (((Main)plugin).getPluginConfig().getAutoDownloadAdvancedEggHunt())
+        if (plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt())
             downloader.downloadPlugin("109085", "AdvancedEggHunt", "spigot");
-        if (((Main)plugin).getPluginConfig().getAutoDownloadPlaceholderAPI())
+        if (plugin.getPluginConfig().getAutoDownloadPlaceholderAPI())
             downloader.downloadPlugin("6245", "PlaceholderAPI", "spigot");
-        if (((Main)plugin).getPluginConfig().getAutoDownloadProtocolLib())
+        if (plugin.getPluginConfig().getAutoDownloadProtocolLib())
             downloader.downloadPlugin("1997", "ProtocolLib", "spigot");
-        if (((Main)plugin).getPluginConfig().getAutoDownloadNBTAPI())
+        if (plugin.getPluginConfig().getAutoDownloadNBTAPI())
             downloader.downloadPlugin("nfGCP9fk", "NBTAPI", "modrinth");
     }
 
