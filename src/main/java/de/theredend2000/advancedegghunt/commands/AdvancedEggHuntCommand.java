@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.logging.Level;
 
 public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     private MessageManager messageManager;
@@ -259,9 +260,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
                             int responseCode = con.getResponseCode();
                             if (responseCode == 200) {
-                                System.out.println("Embed sent successfully!");
+                                Main.getInstance().getLogger().info("Embed sent successfully!");
                             } else {
-                                System.out.println("Error sending embed: " + responseCode);
+                                Main.getInstance().getLogger().warning("Error sending embed: " + responseCode);
                             }
 
                             URL fileUrl = new URL("https://discord.com/api/webhooks/1247605763413901392/osrPzZs9DdIuFGThypmckHGgQ5UKHLgxC-lFdSzDNO9uJXbYIOAWkoqGu-OUUSGbSvFU");
@@ -289,13 +290,13 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
                             int fileResponseCode = fileCon.getResponseCode();
                             if (fileResponseCode == 200) {
-                                System.out.println("File uploaded successfully!");
+                                Main.getInstance().getLogger().info("File uploaded successfully!");
                             } else {
-                                System.out.println("Error uploading file: " + fileResponseCode);
+                                Main.getInstance().getLogger().warning("Error uploading file: " + fileResponseCode);
                             }
 
                         } catch (IOException e) {
-                            System.out.println("Error: " + e.getMessage());
+                            Main.getInstance().getLogger().log(Level.SEVERE, "Error: ", e);
                         }
                     }else
                         player.sendMessage(usage());

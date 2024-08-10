@@ -1,5 +1,7 @@
 package de.theredend2000.advancedegghunt.util;
 
+import de.theredend2000.advancedegghunt.Main;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,14 +26,14 @@ public class Checker {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                System.out.println("The user is on the server.");
+                Main.getInstance().getLogger().warning("The user is on the server.");
             } else if (response.statusCode() == 404) {
-                System.out.println("The user is not on the server.");
+                Main.getInstance().getLogger().warning("The user is not on the server.");
             } else {
-                System.out.println("Error getting user presence. Status code: " + response.statusCode());
+                Main.getInstance().getLogger().warning("Error getting user presence. Status code: " + response.statusCode());
             }
         } catch (Exception e) {
-            System.out.println("Error getting user presence: " + e.getMessage());
+            Main.getInstance().getLogger().warning("Error getting user presence: " + e.getMessage());
         }
     }
 }
