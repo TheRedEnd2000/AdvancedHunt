@@ -202,6 +202,10 @@ public class PluginDownloader {
             LocalDateTime releaseDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(releaseDate), ZoneId.systemDefault());
             long daysSinceRelease = ChronoUnit.DAYS.between(releaseDateTime, LocalDateTime.now());
 
+            if (Instant.ofEpochMilli(releaseDate).isAfter(Instant.now()) || Instant.ofEpochMilli(releaseDate).isBefore(Instant.ofEpochSecond(1409616000))) {
+                logger.warning("Unexpected date for " + pluginName + ", Allowing download but please contact developer.");
+                return true;
+            }
             if (daysSinceRelease <= 3) {
                 logger.info("Newer version available for " + pluginName + ", but it's less than 3 days old. Skipping update.");
                 return false;

@@ -58,7 +58,7 @@ public abstract class Configuration {
             effectiveLatestVersion = getDefaultConfigVersion();
         }
 
-        if (currentVersion < effectiveLatestVersion) {
+        if (currentVersion < effectiveLatestVersion || currentVersion > effectiveLatestVersion) {
             upgradeConfig(currentVersion, effectiveLatestVersion);
         }
     }
