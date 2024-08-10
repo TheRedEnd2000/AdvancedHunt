@@ -375,11 +375,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        if(args.length >= 4){
-            complete = new ArrayList<>();
-            return complete;
-        }
-        return null;
+        complete = new ArrayList<>();
+        return complete;
     }
 
     private List<String> FilterArguments(List<String> arguments, String[] args) {

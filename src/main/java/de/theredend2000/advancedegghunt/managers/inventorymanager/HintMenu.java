@@ -142,6 +142,7 @@ public class HintMenu extends InventoryMenu {
             currentCount++;
             playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
             if (currentCount == Main.getInstance().getPluginConfig().getHintCount()) {
+                active = false;
                 Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
                 playerMenuUtility.getOwner().closeInventory();
                 playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playAllEggsFound(), soundManager.getSoundVolume(), 1);
