@@ -1,6 +1,5 @@
 package de.theredend2000.advancedegghunt;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.bstats.Metrics;
@@ -26,11 +25,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 public final class Main extends JavaPlugin {
 
@@ -76,6 +77,11 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         initializePlugin();
+        setupAutoUpdating();
+
+        if (!checkDependencies())
+            return;
+
         setupManagers();
         registerCommands();
         initListeners();
@@ -83,6 +89,62 @@ public final class Main extends JavaPlugin {
         initializeData();
         setupDefaultCollectionIfNeeded();
         finalizeSetup();
+    }
+
+    /**
+     * Checks if all required plugin dependencies are present and enabled.
+     *
+     * @return true if all dependencies are present and enabled, false otherwise
+     */
+    private boolean checkDependencies() {
+        List<String> missingDependencies = new ArrayList<>();
+
+        // List of required plugin names
+        String[] requiredPlugins = {"NBTAPI"};
+
+        for (String pluginName : requiredPlugins) {
+            Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+            if (plugin == null || !plugin.isEnabled()) {
+                missingDependencies.add(pluginName);
+            }
+        }
+
+        if (!missingDependencies.isEmpty()) {
+            getLogger().log(Level.SEVERE, "Missing required dependencies: " + String.join(", ", missingDependencies));
+            plugin.setEnabled(false);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks for soft dependencies and logs their status.
+     */
+    private void checkSoftDependencies() {
+        List<String> missingDependencies = new ArrayList<>();
+        List<String> presentDependencies = new ArrayList<>();
+
+        // List of soft dependency plugin names
+        String[] softDependencies = {"PlaceholderAPI", "ProtocolLib"};
+
+        for (String pluginName : softDependencies) {
+            Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+            if (plugin == null || !plugin.isEnabled()) {
+                missingDependencies.add(pluginName);
+            } else {
+                presentDependencies.add(pluginName);
+            }
+        }
+
+        if (!missingDependencies.isEmpty()) {
+            getLogger().log(Level.WARNING, "Some soft dependencies are missing: " + String.join(", ", missingDependencies));
+            getLogger().log(Level.WARNING, "The plugin will continue to run, but some features may be unavailable.");
+        }
+
+        if (!presentDependencies.isEmpty()) {
+            getLogger().log(Level.INFO, "Detected soft dependencies: " + String.join(", ", presentDependencies));
+        }
     }
 
     private void initializePlugin() {
@@ -179,12 +241,12 @@ public final class Main extends JavaPlugin {
         permissionManager = new PermissionManager();
         rarityManager = new RarityManager();
         embedCreator = new EmbedCreator();
-        protocolManager = ProtocolLibrary.getProtocolManager();
+//        protocolManager = ProtocolLibrary.getProtocolManager();
         eggHidingManager = new EggHidingManager();
         new Checker();
     }
 
-    private void initListeners(){
+    private void initListeners() {
         new InventoryClickEventListener();
         new InventoryCloseEventListener();
         new BlockPlaceEventListener();
@@ -192,10 +254,22 @@ public final class Main extends JavaPlugin {
         new PlayerInteractEventListener();
         new PlayerInteractItemEvent();
         new Updater(this);
-        new Downloader();
         new PlayerChatEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
+    }
+
+    private void setupAutoUpdating() {
+        PluginDownloader downloader = new PluginDownloader(plugin);
+
+        if (((Main)plugin).getPluginConfig().getAutoDownloadAdvancedEggHunt())
+            downloader.downloadPlugin("109085", "AdvancedEggHunt", "spigot");
+        if (((Main)plugin).getPluginConfig().getAutoDownloadPlaceholderAPI())
+            downloader.downloadPlugin("6245", "PlaceholderAPI", "spigot");
+        if (((Main)plugin).getPluginConfig().getAutoDownloadProtocolLib())
+            downloader.downloadPlugin("1997", "ProtocolLib", "spigot");
+        if (((Main)plugin).getPluginConfig().getAutoDownloadNBTAPI())
+            downloader.downloadPlugin("nfGCP9fk", "NBTAPI", "modrinth");
     }
 
     private void giveAllItemsBack(){
