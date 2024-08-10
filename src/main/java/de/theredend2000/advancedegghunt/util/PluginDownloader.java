@@ -270,11 +270,13 @@ public class PluginDownloader {
         downloadFile(downloadUrl, filePath);
         logger.info("Downloaded " + filename + " to " + targetDir);
 
-        handleFileOrder(pluginName, filename, filePath);
+
 
         if (currentFile == null) {
-            loadPlugin(pluginName);
+            loadPlugin(pluginName, filename);
+            return;
         }
+        handleFileOrder(pluginName, filename, filePath);
     }
 
     /**
@@ -337,7 +339,7 @@ public class PluginDownloader {
      * @param pluginName The name of the plugin to load
      * @return true if the plugin was successfully loaded, false otherwise
      */
-    public boolean loadPlugin(String pluginName) {
+    public boolean loadPlugin(String pluginName, String filename) {
         PluginManager pluginManager = Bukkit.getPluginManager();
 
         // Check if the plugin is already loaded
@@ -351,7 +353,7 @@ public class PluginDownloader {
         File pluginsDir = new File("plugins");
 
         // Find the plugin file
-        File pluginFile = new File(pluginsDir, pluginName + ".jar");
+        File pluginFile = new File(pluginsDir, filename);
         if (!pluginFile.exists()) {
             logger.severe("Cannot find plugin file: " + pluginFile.getAbsolutePath());
             return false;
