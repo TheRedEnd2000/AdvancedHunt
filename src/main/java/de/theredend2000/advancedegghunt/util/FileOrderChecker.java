@@ -18,8 +18,17 @@ public class FileOrderChecker {
             return true; // If directory is empty, new file would be first
         }
 
-        // Compare with the first file
-        return newFilename.compareToIgnoreCase(files[0].getName()) < 0;
+        // Check if the file is not in the directory
+        boolean fileNotInDirectory = true;
+        for (File file : files) {
+            if (file.getName().equalsIgnoreCase(newFilename)) {
+                fileNotInDirectory = false;
+                break;
+            }
+        }
+
+        // Compare with the first file or if the file is not in the directory
+        return fileNotInDirectory || newFilename.compareToIgnoreCase(files[0].getName()) < 0;
     }
 
     /**

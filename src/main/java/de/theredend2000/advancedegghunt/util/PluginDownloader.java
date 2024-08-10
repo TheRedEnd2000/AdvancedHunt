@@ -106,7 +106,7 @@ public class PluginDownloader {
             String latestVersion = pluginInfo.get("name").getAsString();
             long releaseDate = pluginInfo.get("releaseDate").getAsLong();
 
-            if (shouldUpdate(pluginName, latestVersion, releaseDate)) {
+            if (shouldUpdate(pluginName, latestVersion, Instant.ofEpochSecond(releaseDate).toEpochMilli())) {
                 String downloadUrl = SPIGOT_API_URL + pluginId + "/download";
                 downloadAndPlacePlugin(downloadUrl, pluginName, latestVersion);
             }
