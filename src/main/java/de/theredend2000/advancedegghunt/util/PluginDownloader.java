@@ -59,6 +59,13 @@ public class PluginDownloader {
         }
     }
 
+    /**
+     * Downloads a plugin from the specified source.
+     *
+     * @param pluginId The ID of the plugin to download
+     * @param pluginName The name of the plugin
+     * @param source The source to download from ('spigot' or 'modrinth')
+     */
     public void downloadPlugin(String pluginId, String pluginName, String source) {
         try {
             if ("spigot".equalsIgnoreCase(source)) {
@@ -73,6 +80,14 @@ public class PluginDownloader {
         }
     }
 
+    /**
+     * Downloads a plugin from Spigot.
+     *
+     * @param pluginId The ID of the plugin on Spigot
+     * @param pluginName The name of the plugin
+     * @throws IOException If an I/O error occurs
+     * @throws InterruptedException If the operation is interrupted
+     */
     private void downloadSpigotPlugin(String pluginId, String pluginName) throws IOException, InterruptedException {
         String apiUrl = "https://api.spiget.org/v2/resources/" + pluginId + "/versions/latest";
         HttpRequest request = HttpRequest.newBuilder()
@@ -96,6 +111,14 @@ public class PluginDownloader {
         }
     }
 
+    /**
+     * Downloads a plugin from Modrinth.
+     *
+     * @param pluginId The ID of the plugin on Modrinth
+     * @param pluginName The name of the plugin
+     * @throws IOException If an I/O error occurs
+     * @throws InterruptedException If the operation is interrupted
+     */
     private void downloadModrinthPlugin(String pluginId, String pluginName) throws IOException, InterruptedException {
         String apiUrl = "https://api.modrinth.com/v2/project/" + pluginId + "/version";
         HttpRequest request = HttpRequest.newBuilder()
@@ -124,6 +147,14 @@ public class PluginDownloader {
         }
     }
 
+    /**
+     * Determines if a plugin should be updated.
+     *
+     * @param pluginName The name of the plugin
+     * @param latestVersion The latest version available
+     * @param releaseDate The release date of the latest version
+     * @return true if the plugin should be updated, false otherwise
+     */
     private boolean shouldUpdate(String pluginName, String latestVersion, long releaseDate) {
         Path currentPluginPath = findCurrentPlugin(pluginName);
         if (currentPluginPath == null) {
@@ -150,6 +181,11 @@ public class PluginDownloader {
         return false;
     }
 
+    /**
+     * Checks if the server is running Paper or Purpur.
+     *
+     * @return true if the server is running Paper or Purpur, false otherwise
+     */
     private boolean isPaperOrPurpur() {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
@@ -159,11 +195,24 @@ public class PluginDownloader {
         }
     }
 
+    /**
+     * Checks if the server version is above 1.19.
+     *
+     * @return true if the server version is above 1.19, false otherwise
+     */
     private boolean isAbove1_19() {
         String version = Bukkit.getBukkitVersion();
         return VersionComparator.compare(version, "1.19") >= 0;
     }
 
+    /**
+     * Downloads and places a plugin in the appropriate directory.
+     *
+     * @param downloadUrl The URL to download the plugin from
+     * @param pluginName The name of the plugin
+     * @param version The version of the plugin
+     * @throws IOException If an I/O error occurs
+     */
     private void downloadAndPlacePlugin(String downloadUrl, String pluginName, String version) throws IOException {
         URL url = new URL(downloadUrl);
         String filename = pluginName + "-" + version + ".jar";
@@ -250,6 +299,12 @@ public class PluginDownloader {
         return false;
     }
 
+    /**
+     * Finds the current plugin file.
+     *
+     * @param pluginName The name of the plugin
+     * @return The path to the current plugin file, or null if not found
+     */
     private Path findCurrentPlugin(String pluginName) {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
         if (plugin != null) {
@@ -264,6 +319,12 @@ public class PluginDownloader {
         return null;
     }
 
+    /**
+     * Gets the version of a plugin.
+     *
+     * @param pluginName The name of the plugin
+     * @return The version of the plugin, or null if the plugin is not found
+     */
     private String getPluginVersion(String pluginName) {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
         if (plugin != null) {
@@ -272,6 +333,12 @@ public class PluginDownloader {
         return null;
     }
 
+    /**
+     * Moves the old version of a plugin to the OLD_PLUGINS directory.
+     *
+     * @param pluginName The name of the plugin
+     * @throws IOException If an I/O error occurs
+     */
     private void moveOldVersion(String pluginName) throws IOException {
         Path currentPluginPath = findCurrentPlugin(pluginName);
         if (currentPluginPath != null) {
