@@ -34,6 +34,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PluginDownloader {
+    private static final String SPIGOT_API_URL = "https://api.spiget.org/v2/resources/";
+    private static final String MODRINTH_API_URL = "https://api.modrinth.com/v2/project/";
+
     private final Path pluginsDir;
     private final Path updateDir;
     private final Path oldPluginsDir;
@@ -49,13 +52,17 @@ public class PluginDownloader {
         this.httpClient = HttpClient.newHttpClient();
         this.gson = new Gson();
         this.pathConfig = new PluginDataConfig(plugin);
-        logger = plugin.getLogger();
+        this.logger = plugin.getLogger();
         
+        initializeDirectories();
+    }
+
+    private void initializeDirectories() {
         try {
             Files.createDirectories(this.updateDir);
             Files.createDirectories(this.oldPluginsDir);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Unexpected error occurred.", e);
+            logger.log(Level.SEVERE, "Failed to create directories", e);
         }
     }
 
@@ -68,15 +75,18 @@ public class PluginDownloader {
      */
     public void downloadPlugin(String pluginId, String pluginName, String source) {
         try {
-            if ("spigot".equalsIgnoreCase(source)) {
-                downloadSpigotPlugin(pluginId, pluginName);
-            } else if ("modrinth".equalsIgnoreCase(source)) {
-                downloadModrinthPlugin(pluginId, pluginName);
-            } else {
-                logger.log(Level.WARNING, "Invalid source. Use 'spigot' or 'modrinth'.");
+            switch (source.toLowerCase()) {
+                case "spigot":
+                    downloadSpigotPlugin(pluginId, pluginName);
+                    break;
+                case "modrinth":
+                    downloadModrinthPlugin(pluginId, pluginName);
+                    break;
+                default:
+                    logger.log(Level.WARNING, "Invalid source. Use 'spigot' or 'modrinth'.");
             }
         } catch (IOException | InterruptedException e) {
-            logger.log(Level.SEVERE, "Unexpected error occurred.",e);
+            logger.log(Level.SEVERE, "Failed to download plugin", e);
         }
     }
 
@@ -89,21 +99,15 @@ public class PluginDownloader {
      * @throws InterruptedException If the operation is interrupted
      */
     private void downloadSpigotPlugin(String pluginId, String pluginName) throws IOException, InterruptedException {
-        String apiUrl = "https://api.spiget.org/v2/resources/" + pluginId + "/versions/latest";
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl))
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        String apiUrl = SPIGOT_API_URL + pluginId + "/versions/latest";
+        JsonObject pluginInfo = fetchJsonFromUrl(apiUrl);
 
-        if (response.statusCode() == 200) {
-            String jsonString = response.body();
-            JsonObject pluginInfo = gson.fromJson(jsonString, JsonObject.class);
-
+        if (pluginInfo != null) {
             String latestVersion = pluginInfo.get("name").getAsString();
             long releaseDate = pluginInfo.get("releaseDate").getAsLong();
 
             if (shouldUpdate(pluginName, latestVersion, releaseDate)) {
-                String downloadUrl = "https://api.spiget.org/v2/resources/" + pluginId + "/download";
+                String downloadUrl = SPIGOT_API_URL + pluginId + "/download";
                 downloadAndPlacePlugin(downloadUrl, pluginName, latestVersion);
             }
         } else {
@@ -120,31 +124,57 @@ public class PluginDownloader {
      * @throws InterruptedException If the operation is interrupted
      */
     private void downloadModrinthPlugin(String pluginId, String pluginName) throws IOException, InterruptedException {
-        String apiUrl = "https://api.modrinth.com/v2/project/" + pluginId + "/version";
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl))
-                .build();
+        String apiUrl = MODRINTH_API_URL + pluginId + "/version";
+        JsonArray versions = fetchJsonArrayFromUrl(apiUrl);
+
+        if (versions != null && versions.size() > 0) {
+            JsonObject latestVersion = versions.get(0).getAsJsonObject();
+            String versionNumber = latestVersion.get("version_number").getAsString();
+            String releaseDate = latestVersion.get("date_published").getAsString();
+
+            if (shouldUpdate(pluginName, versionNumber, Instant.parse(releaseDate).toEpochMilli())) {
+                String downloadUrl = latestVersion.getAsJsonArray("files").get(0).getAsJsonObject().get("url").getAsString();
+                downloadAndPlacePlugin(downloadUrl, pluginName, versionNumber);
+            }
+        } else {
+            logger.warning("No versions found for " + pluginName);
+        }
+    }
+
+    /**
+     * Fetches JSON data from a given URL and returns it as a JsonObject.
+     *
+     * @param url The URL to fetch JSON data from
+     * @return A JsonObject containing the fetched data, or null if the request failed
+     * @throws IOException If an I/O error occurs
+     * @throws InterruptedException If the operation is interrupted
+     */
+    private JsonObject fetchJsonFromUrl(String url) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 200) {
-            String jsonString = response.body();
-            JsonArray versions = gson.fromJson(jsonString, JsonArray.class);
-
-            if (versions.size() > 0) {
-                JsonObject latestVersion = versions.get(0).getAsJsonObject();
-                String versionNumber = latestVersion.get("version_number").getAsString();
-                String releaseDate = latestVersion.get("date_published").getAsString();
-
-                if (shouldUpdate(pluginName, versionNumber, Instant.parse(releaseDate).toEpochMilli())) {
-                    String downloadUrl = latestVersion.getAsJsonArray("files").get(0).getAsJsonObject().get("url").getAsString();
-                    downloadAndPlacePlugin(downloadUrl, pluginName, versionNumber);
-                }
-            } else {
-                logger.warning("No versions found for " + pluginName);
-            }
-        } else {
-            logger.warning("Failed to fetch plugin info for " + pluginName);
+            return gson.fromJson(response.body(), JsonObject.class);
         }
+        return null;
+    }
+
+    /**
+     * Fetches JSON data from a given URL and returns it as a JsonArray.
+     *
+     * @param url The URL to fetch JSON data from
+     * @return A JsonArray containing the fetched data, or null if the request failed
+     * @throws IOException If an I/O error occurs
+     * @throws InterruptedException If the operation is interrupted
+     */
+    private JsonArray fetchJsonArrayFromUrl(String url) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+            return gson.fromJson(response.body(), JsonArray.class);
+        }
+        return null;
     }
 
     /**
@@ -167,20 +197,29 @@ public class PluginDownloader {
             logger.info("Unable to get current version for " + pluginName + ". Will download.");
             return true;
         }
+
         if (VersionComparator.isGreaterThan(latestVersion, currentVersion)) {
             LocalDateTime releaseDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(releaseDate), ZoneId.systemDefault());
-            if (ChronoUnit.DAYS.between(releaseDateTime, LocalDateTime.now()) <= 3) {
-                logger.info("Newer version available for " + pluginName + ", but it's newer than 3 days. Skipping update.");
+            long daysSinceRelease = ChronoUnit.DAYS.between(releaseDateTime, LocalDateTime.now());
+
+            if (daysSinceRelease <= 3) {
+                logger.info("Newer version available for " + pluginName + ", but it's less than 3 days old. Skipping update.");
+                return false;
             } else {
                 logger.info("Newer version available for " + pluginName + ". Will update.");
                 return true;
             }
         } else {
             logger.info("Plugin " + pluginName + " is up to date.");
+            return false;
         }
-        return false;
     }
 
+    /**
+     * Checks if the server is running Paper or Purpur.
+     *
+     * @return true if the server is running Paper or Purpur, false otherwise
+     */
     /**
      * Checks if the server is running Paper or Purpur.
      *
@@ -200,6 +239,11 @@ public class PluginDownloader {
      *
      * @return true if the server version is above 1.19, false otherwise
      */
+    /**
+     * Checks if the server version is above 1.19.
+     *
+     * @return true if the server version is above 1.19, false otherwise
+     */
     private boolean isAbove1_19() {
         String version = Bukkit.getBukkitVersion();
         return VersionComparator.compare(version, "1.19") >= 0;
@@ -214,41 +258,76 @@ public class PluginDownloader {
      * @throws IOException If an I/O error occurs
      */
     private void downloadAndPlacePlugin(String downloadUrl, String pluginName, String version) throws IOException {
-        URL url = new URL(downloadUrl);
         String filename = pluginName + "-" + version + ".jar";
-        Path targetDir;
         Path currentFile = findCurrentPlugin(pluginName);
+        Path targetDir = determineTargetDirectory(pluginName, filename, currentFile);
 
-        if (isPaperOrPurpur() && isAbove1_19() && currentFile != null) {
-            targetDir = updateDir;
-        } else {
-            if (currentFile != null && !FileOrderChecker.isFileNameFirst(filename, currentFile.getFileName().toString())) {
-                logger.warning("Can not continue with automatic download of " + pluginName);
-                return;
-            }
-
-            targetDir = pluginsDir;
-            moveOldVersion(pluginName);
+        if (targetDir == null) {
+            return;
         }
 
         Path filePath = targetDir.resolve(filename);
+        downloadFile(downloadUrl, filePath);
+        logger.info("Downloaded " + filename + " to " + targetDir);
+
+        handleFileOrder(pluginName, filename, filePath);
+
+        if (currentFile == null) {
+            loadPlugin(pluginName);
+        }
+    }
+
+    /**
+     * Determines the target directory for downloading a plugin.
+     *
+     * @param pluginName The name of the plugin
+     * @param filename The filename of the new plugin version
+     * @param currentFile The path to the current plugin file, if it exists
+     * @return The path to the target directory, or null if download should not proceed
+     * @throws IOException If an I/O error occurs
+     */
+    private Path determineTargetDirectory(String pluginName, String filename, Path currentFile) throws IOException {
+        if (isPaperOrPurpur() && isAbove1_19() && currentFile != null) {
+            return updateDir;
+        }
+
+        if (currentFile != null && !FileOrderChecker.isFileNameFirst(filename, currentFile.getFileName().toString())) {
+            logger.warning("Cannot continue with automatic download of " + pluginName);
+            return null;
+        }
+
+        moveOldVersion(pluginName);
+        return pluginsDir;
+    }
+
+    /**
+     * Downloads a file from a given URL and saves it to the specified path.
+     *
+     * @param downloadUrl The URL to download the file from
+     * @param filePath The path where the downloaded file should be saved
+     * @throws IOException If an I/O error occurs during the download or file writing
+     */
+    private void downloadFile(String downloadUrl, Path filePath) throws IOException {
+        URL url = new URL(downloadUrl);
         try (ReadableByteChannel rbc = Channels.newChannel(url.openStream());
              FileOutputStream fos = new FileOutputStream(filePath.toFile())) {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
-        logger.info("Downloaded " + filename + " to " + targetDir);
+    }
 
+    /**
+     * Handles the file order of the downloaded plugin and updates the plugin path configuration.
+     *
+     * @param pluginName The name of the plugin
+     * @param filename The filename of the downloaded plugin
+     * @param filePath The path where the plugin was downloaded
+     */
+    private void handleFileOrder(String pluginName, String filename, Path filePath) {
         if (!FileOrderChecker.isNewFileFirst(pluginsDir.toFile(), filename)) {
             logger.warning("Downloaded plugin " + pluginName + " will not get loaded first. Scheduling removal.");
-
             pathConfig.savePluginPath(filename, filePath.toString());
-        }
-        else {
+        } else {
             pathConfig.savePluginPath(pluginName, filePath.toString());
-        }
-
-        if (currentFile == null) {
-            loadPlugin(pluginName);
         }
     }
 
