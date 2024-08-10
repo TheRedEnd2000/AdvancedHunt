@@ -22,8 +22,7 @@ public abstract class Configuration {
     private boolean template;
 
     public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
-
-
+    
     public Configuration(JavaPlugin plugin, String configName) {
         this(plugin, configName, true, -1d);
     }
@@ -97,6 +96,7 @@ public abstract class Configuration {
 
         saveConfig();
     }
+
     private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
         Set<String> allKeys = oldConfig.getKeys(true);
 

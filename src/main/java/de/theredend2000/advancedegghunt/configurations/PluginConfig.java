@@ -365,6 +365,14 @@ public class PluginConfig extends Configuration {
     public boolean getAutoDownloadNBTAPI() {
         return getConfig().getBoolean("Download.NBT-API");
     }
+
+    public boolean getAutoDownloadProtocolLib() {
+        return getConfig().getBoolean("Download.ProtocolLib");
+    }
+
+    public boolean getAutoDownloadPlaceholderAPI() {
+        return getConfig().getBoolean("Download.PlaceholderAPI");
+    }
     //endregion
 
     //region Rarity

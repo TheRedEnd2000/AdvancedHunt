@@ -9,10 +9,11 @@ import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
-import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadableNBTList;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.nbtapi.iface.ReadableNBT;
+import de.tr7zw.nbtapi.iface.ReadableNBTList;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -27,8 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
-
-import static org.bukkit.Bukkit.getServer;
 
 public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     private MessageManager messageManager;
@@ -408,7 +407,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§2§lInformation");
         player.sendMessage("§7Name: §6" + Main.getInstance().getDescription().getName());
         player.sendMessage("§7Plugin Version: §6" + Main.getInstance().getDescription().getVersion());
-        player.sendMessage("§7Server Version: §6" + getServer().getClass().getPackage().getName().split("\\.")[3]);
+        player.sendMessage("§7Server Version: §6" + Bukkit.getBukkitVersion().split("-")[0]);
         player.sendMessage("§7Author: §6XMC-PLUGINS");
         player.sendMessage("");
         player.sendMessage("§2§lCommands");

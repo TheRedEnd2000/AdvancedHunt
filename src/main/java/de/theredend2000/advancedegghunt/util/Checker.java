@@ -24,14 +24,14 @@ public class Checker {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                System.out.println("Der Benutzer ist auf dem Server.");
+                System.out.println("The user is on the server.");
             } else if (response.statusCode() == 404) {
-                System.out.println("Der Benutzer ist nicht auf dem Server.");
+                System.out.println("The user is not on the server.");
             } else {
-                System.out.println("Fehler beim Abrufen der Benutzeranwesenheit. Statuscode: " + response.statusCode());
+                System.out.println("Error getting user presence. Status code: " + response.statusCode());
             }
         } catch (Exception e) {
-            System.out.println("Fehler beim Abrufen der Benutzeranwesenheit: " + e.getMessage());
+            System.out.println("Error getting user presence: " + e.getMessage());
         }
     }
 }

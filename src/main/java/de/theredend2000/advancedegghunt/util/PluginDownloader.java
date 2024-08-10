@@ -3,12 +3,18 @@ package de.theredend2000.advancedegghunt.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import de.theredend2000.advancedegghunt.configurations.PluginDataConfig;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.InvalidDescriptionException;
+import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -24,6 +30,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PluginDownloader {
     private final Path pluginsDir;
@@ -31,29 +39,37 @@ public class PluginDownloader {
     private final Path oldPluginsDir;
     private final HttpClient httpClient;
     private final Gson gson;
+    private final PluginDataConfig pathConfig;
+    private final Logger logger;
 
-    public PluginDownloader() {
-        this.pluginsDir = Paths.get(Bukkit.getUpdateFolderFile().getPath() + File.separator + "..");
+    public PluginDownloader(JavaPlugin plugin) {
+        this.pluginsDir = Paths.get(Bukkit.getUpdateFolderFile().getParentFile().getPath());
         this.updateDir = Paths.get(Bukkit.getUpdateFolderFile().getPath());
         this.oldPluginsDir = this.pluginsDir.resolve("OLD_PLUGINS");
         this.httpClient = HttpClient.newHttpClient();
         this.gson = new Gson();
-
+        this.pathConfig = new PluginDataConfig(plugin);
+        logger = plugin.getLogger();
+        
         try {
             Files.createDirectories(this.updateDir);
             Files.createDirectories(this.oldPluginsDir);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Unexpected error occurred.", e);
         }
     }
 
-    public void downloadPlugin(String pluginId, String pluginName, String source) throws IOException, InterruptedException {
-        if ("spigot".equalsIgnoreCase(source)) {
-            downloadSpigotPlugin(pluginId, pluginName);
-        } else if ("modrinth".equalsIgnoreCase(source)) {
-            downloadModrinthPlugin(pluginId, pluginName);
-        } else {
-            throw new IllegalArgumentException("Invalid source. Use 'spigot' or 'modrinth'.");
+    public void downloadPlugin(String pluginId, String pluginName, String source) {
+        try {
+            if ("spigot".equalsIgnoreCase(source)) {
+                downloadSpigotPlugin(pluginId, pluginName);
+            } else if ("modrinth".equalsIgnoreCase(source)) {
+                downloadModrinthPlugin(pluginId, pluginName);
+            } else {
+                logger.log(Level.WARNING, "Invalid source. Use 'spigot' or 'modrinth'.");
+            }
+        } catch (IOException | InterruptedException e) {
+            logger.log(Level.SEVERE, "Unexpected error occurred.",e);
         }
     }
 
@@ -76,7 +92,7 @@ public class PluginDownloader {
                 downloadAndPlacePlugin(downloadUrl, pluginName, latestVersion);
             }
         } else {
-            System.out.println("Failed to fetch plugin info for " + pluginName);
+            logger.warning("Failed to fetch plugin info for " + pluginName);
         }
     }
 
@@ -101,35 +117,35 @@ public class PluginDownloader {
                     downloadAndPlacePlugin(downloadUrl, pluginName, versionNumber);
                 }
             } else {
-                System.out.println("No versions found for " + pluginName);
+                logger.warning("No versions found for " + pluginName);
             }
         } else {
-            System.out.println("Failed to fetch plugin info for " + pluginName);
+            logger.warning("Failed to fetch plugin info for " + pluginName);
         }
     }
 
     private boolean shouldUpdate(String pluginName, String latestVersion, long releaseDate) {
         Path currentPluginPath = findCurrentPlugin(pluginName);
         if (currentPluginPath == null) {
-            System.out.println("Plugin " + pluginName + " not found. Will download.");
+            logger.info("Plugin " + pluginName + " not found. Will download.");
             return true;
         }
 
         String currentVersion = getPluginVersion(pluginName);
         if (currentVersion == null) {
-            System.out.println("Unable to get current version for " + pluginName + ". Will download.");
+            logger.info("Unable to get current version for " + pluginName + ". Will download.");
             return true;
         }
-        if (compareVersions(latestVersion, currentVersion) > 0) {
+        if (VersionComparator.isGreaterThan(latestVersion, currentVersion)) {
             LocalDateTime releaseDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(releaseDate), ZoneId.systemDefault());
             if (ChronoUnit.DAYS.between(releaseDateTime, LocalDateTime.now()) <= 3) {
-                System.out.println("Newer version available for " + pluginName + ", but it's newer than 3 days. Skipping update.");
+                logger.info("Newer version available for " + pluginName + ", but it's newer than 3 days. Skipping update.");
             } else {
-                System.out.println("Newer version available for " + pluginName + ". Will update.");
+                logger.info("Newer version available for " + pluginName + ". Will update.");
                 return true;
             }
         } else {
-            System.out.println("Plugin " + pluginName + " is up to date.");
+            logger.info("Plugin " + pluginName + " is up to date.");
         }
         return false;
     }
@@ -152,33 +168,100 @@ public class PluginDownloader {
         URL url = new URL(downloadUrl);
         String filename = pluginName + "-" + version + ".jar";
         Path targetDir;
+        Path currentFile = findCurrentPlugin(pluginName);
 
-//        if (isPaperOrPurpur() && isAbove1_19()) {
-//            targetDir = updateDir;
-//        } else {
+        if (isPaperOrPurpur() && isAbove1_19() && currentFile != null) {
+            targetDir = updateDir;
+        } else {
+            if (currentFile != null && !FileOrderChecker.isFileNameFirst(filename, currentFile.getFileName().toString())) {
+                logger.warning("Can not continue with automatic download of " + pluginName);
+                return;
+            }
+
             targetDir = pluginsDir;
             moveOldVersion(pluginName);
-//        }
+        }
 
         Path filePath = targetDir.resolve(filename);
         try (ReadableByteChannel rbc = Channels.newChannel(url.openStream());
              FileOutputStream fos = new FileOutputStream(filePath.toFile())) {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
-        System.out.println("Downloaded " + filename + " to " + targetDir);
+        logger.info("Downloaded " + filename + " to " + targetDir);
+
+        if (!FileOrderChecker.isNewFileFirst(pluginsDir.toFile(), filename)) {
+            logger.warning("Downloaded plugin " + pluginName + " will not get loaded first. Scheduling removal.");
+
+            pathConfig.savePluginPath(filename, filePath.toString());
+        }
+        else {
+            pathConfig.savePluginPath(pluginName, filePath.toString());
+        }
+
+        if (currentFile == null) {
+            loadPlugin(pluginName);
+        }
+    }
+
+    /**
+     * Loads or reloads a plugin.
+     *
+     * @param pluginName The name of the plugin to load
+     * @return true if the plugin was successfully loaded, false otherwise
+     */
+    public boolean loadPlugin(String pluginName) {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        // Check if the plugin is already loaded
+        Plugin targetPlugin = pluginManager.getPlugin(pluginName);
+        if (targetPlugin != null) {
+            pluginManager.disablePlugin(targetPlugin);
+            logger.info("Disabling plugin: " + pluginName);
+        }
+
+        // Get the plugins folder
+        File pluginsDir = new File("plugins");
+
+        // Find the plugin file
+        File pluginFile = new File(pluginsDir, pluginName + ".jar");
+        if (!pluginFile.exists()) {
+            logger.severe("Cannot find plugin file: " + pluginFile.getAbsolutePath());
+            return false;
+        }
+
+        try {
+            // Load and enable the plugin
+            Plugin plugin = pluginManager.loadPlugin(pluginFile);
+            if (plugin == null) {
+                logger.severe("Failed to load plugin: " + pluginName);
+                return false;
+            }
+            pluginManager.enablePlugin(plugin);
+            logger.info("Successfully loaded and enabled plugin: " + pluginName);
+            return true;
+        } catch (InvalidPluginException e) {
+            logger.log(Level.SEVERE, "Invalid plugin: " + pluginName, e);
+        } catch (InvalidDescriptionException e) {
+            logger.log(Level.SEVERE, "Invalid plugin description for: " + pluginName, e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error while loading plugin: " + pluginName, e);
+        }
+
+        return false;
     }
 
     private Path findCurrentPlugin(String pluginName) {
-        try {
-            return Files.list(pluginsDir)
-                    .filter(path -> path.getFileName().toString().toLowerCase().startsWith(pluginName.toLowerCase())
-                            && path.getFileName().toString().endsWith(".jar"))
-                    .findFirst()
-                    .orElse(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+        if (plugin != null) {
+            try {
+                Method getFileMethod = JavaPlugin.class.getDeclaredMethod("getFile");
+                getFileMethod.setAccessible(true);
+                return ((File) getFileMethod.invoke(plugin)).toPath();
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Unexpected error occurred.", e);
+            }
         }
+        return null;
     }
 
     private String getPluginVersion(String pluginName) {
@@ -192,23 +275,14 @@ public class PluginDownloader {
     private void moveOldVersion(String pluginName) throws IOException {
         Path currentPluginPath = findCurrentPlugin(pluginName);
         if (currentPluginPath != null) {
-            Path oldPluginPath = oldPluginsDir.resolve(currentPluginPath.getFileName());
-            Files.move(currentPluginPath, oldPluginPath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Moved old version of " + pluginName + " to " + oldPluginsDir);
-        }
-    }
-
-    private int compareVersions(String v1, String v2) {
-        String[] parts1 = v1.split("\\.");
-        String[] parts2 = v2.split("\\.");
-        int length = Math.max(parts1.length, parts2.length);
-        for (int i = 0; i < length; i++) {
-            int p1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
-            int p2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
-            if (p1 != p2) {
-                return p1 - p2;
+            String storedPath = pathConfig.getStoredPluginPath(pluginName);
+            if (storedPath != null && !storedPath.equals(currentPluginPath.toString())) {
+                Path oldPluginPath = oldPluginsDir.resolve(currentPluginPath.getFileName());
+                Files.move(currentPluginPath, oldPluginPath, StandardCopyOption.REPLACE_EXISTING);
+                logger.info("Moved old version of " + pluginName + " to " + oldPluginsDir);
+            } else {
+                logger.warning("Current version of " + pluginName + " is the same as the stored version. Skipping move.");
             }
         }
-        return 0;
     }
 }

@@ -2,19 +2,26 @@ package de.theredend2000.advancedegghunt.util;
 
 public class VersionComparator {
     public static int compare(String version1, String version2) {
-        String[] parts1 = version1.split("\\.");
-        String[] parts2 = version2.split("\\.");
+        // Split versions into parts
+        String[] parts1 = version1.split("[-.]");
+        String[] parts2 = version2.split("[-.]");
 
         int length = Math.max(parts1.length, parts2.length);
 
         for (int i = 0; i < length; i++) {
-            int v1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
-            int v2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
+            String v1 = i < parts1.length ? parts1[i] : "0";
+            String v2 = i < parts2.length ? parts2[i] : "0";
 
-            if (v1 < v2) {
-                return -1;
-            } else if (v1 > v2) {
-                return 1;
+            // Try to parse as integers
+            try {
+                int i1 = Integer.parseInt(v1);
+                int i2 = Integer.parseInt(v2);
+                if (i1 < i2) return -1;
+                if (i1 > i2) return 1;
+            } catch (NumberFormatException e) {
+                // If parsing fails, compare as strings
+                int result = v1.compareTo(v2);
+                if (result != 0) return result;
             }
         }
 

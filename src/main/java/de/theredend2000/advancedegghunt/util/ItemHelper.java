@@ -1,7 +1,7 @@
 package de.theredend2000.advancedegghunt.util;
 
-import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.iface.ReadableItemNBT;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Function;
