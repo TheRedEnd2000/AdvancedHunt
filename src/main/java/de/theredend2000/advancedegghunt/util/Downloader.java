@@ -2,19 +2,28 @@ package de.theredend2000.advancedegghunt.util;
 
 import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Level;
 
 public class Downloader {
 
-    private final Main plugin;
+    private final Plugin plugin;
+    private final String pluginName;
+    private final String currentVersion;
 
-    public Downloader() {
-        this.plugin = Main.getInstance();
-        initializeDownloads();
+    public Downloader(Plugin plugin) {
+        this.plugin = plugin;
+        this.pluginName = plugin.getName();
+        this.currentVersion = plugin.getDescription().getVersion();
+//        initializeDownloads();
     }
 
     private void initializeDownloads() {
@@ -22,10 +31,16 @@ public class Downloader {
         renameOldPlugins(downloadDir);
 
         try {
-            if (plugin.getPluginConfig().getAutoDownloadNBTAPI()) {
+            if (((Main)plugin).getPluginConfig().getAutoDownloadNBTAPI() && shouldDownload("NBTAPI", downloadDir)) {
                 downloadPluginFromModrinth("eade5ea05429a49826a5c33a306a8592b47551d3", downloadDir);
             }
-            if (plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt() && Updater.isOutdated) {
+            if (((Main)plugin).getPluginConfig().getAutoDownloadProtocolLib() && shouldDownload("ProtocolLib", downloadDir)) {
+                downloadPluginFromSpigot(1997, downloadDir);
+            }
+            if (((Main)plugin).getPluginConfig().getAutoDownloadPlaceholderAPI() && shouldDownload("PlaceholderAPI", downloadDir)) {
+                downloadPluginFromSpigot(6245, downloadDir);
+            }
+            if (((Main)plugin).getPluginConfig().getAutoDownloadAdvancedEggHunt() && Updater.isOutdated && shouldDownload(pluginName, downloadDir)) {
                 downloadPluginFromSpigot(109085, downloadDir);
             }
         } catch (IOException e) {
@@ -33,13 +48,31 @@ public class Downloader {
         }
     }
 
+    private boolean shouldDownload(String pluginName, String downloadDir) throws IOException {
+        File pluginFile = findPluginFile(pluginName, downloadDir);
+        if (pluginFile == null || !pluginFile.exists()) {
+            return true;
+        }
+
+        BasicFileAttributes attr = Files.readAttributes(pluginFile.toPath(), BasicFileAttributes.class);
+        Instant lastModified = attr.lastModifiedTime().toInstant();
+        Instant threeOldDays = Instant.now().minus(3, ChronoUnit.DAYS);
+
+        return lastModified.isBefore(threeOldDays);
+    }
+
+    private File findPluginFile(String pluginName, String downloadDir) {
+        File dir = new File(downloadDir);
+        File[] files = dir.listFiles((dir1, name) -> name.startsWith(pluginName) && name.endsWith(".jar"));
+        return (files != null && files.length > 0) ? files[0] : null;
+    }
+
     private void renameOldPlugins(String directory) {
         File dir = new File(directory);
-        File[] files = dir.listFiles((dir1, name) -> (name.startsWith("AdvancedEggHunt") || name.startsWith("NBTAPI")) && name.endsWith(".jar"));
+        File[] files = dir.listFiles((dir1, name) -> name.startsWith(pluginName) && name.endsWith(".jar"));
         if (files == null) return;
         for (File file : files) {
-            if (file.getName().equals("AdvancedEggHunt2.jar") ||
-                    file.getName().equals(getFilenameFromModrinthAPI("nfGCP9fk"))) {
+            if (file.getName().equals(pluginName + "-" + currentVersion + ".jar")) {
                 continue;
             }
 
@@ -94,9 +127,9 @@ public class Downloader {
     }
 
     private String getSaveFilePath(String saveDir, String fileName) {
-        File currentFile = plugin.getFile();
+        String currentFile = "";
 
-        if (isPaperOrPurpur() && isAbove1_19() || currentFile.getName().equals(fileName)) {
+        if (isPaperOrPurpur() && isAbove1_19() || currentFile.equals(fileName)) {
             return new File(Bukkit.getUpdateFolderFile(), fileName).getAbsolutePath();
         } else {
             String filePath = saveDir + File.separator + fileName;
