@@ -9,20 +9,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 
 public abstract class Configuration {
-    protected JavaPlugin plugin;
-    protected YamlConfiguration config = null;
-    protected File configFile = null;
-    protected String configName;
-    private double latestVersion;
-    private boolean template;
+    protected final JavaPlugin plugin;
+    protected YamlConfiguration config;
+    protected File configFile;
+    protected final String configName;
+    private final double latestVersion;
+    private final boolean template;
 
     public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
-    
+    public abstract void registerUpgrader();
+
     public Configuration(JavaPlugin plugin, String configName) {
         this(plugin, configName, true, -1d);
     }
@@ -41,50 +41,51 @@ public abstract class Configuration {
         this.template = template;
         this.latestVersion = latestVersion;
 
-        if (template)
-            this.saveDefaultConfig();
+        if (template) {
+            saveDefaultConfig();
+        }
         reloadConfig();
 
         registerUpgrader();
         loadConfig();
     }
 
-    public abstract void registerUpgrader();
-
     protected void loadConfig() {
-        Double currentVersion = config.getDouble("config-version", 0.0);
-        if (latestVersion == -1d) {
-            InputStream defaultStream = this.plugin.getResource(configName);
-            if (defaultStream != null) {
-                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-                latestVersion = defaultConfig.getDouble("config-version", -1d);
-            }
+        double currentVersion = config.getDouble("config-version", 0.0);
+        double effectiveLatestVersion = latestVersion;
+
+        if (effectiveLatestVersion == -1d) {
+            effectiveLatestVersion = getDefaultConfigVersion();
         }
 
-        if (currentVersion < latestVersion) {
-            upgradeConfig(currentVersion);
+        if (currentVersion < effectiveLatestVersion) {
+            upgradeConfig(currentVersion, effectiveLatestVersion);
         }
     }
 
-    private void upgradeConfig(double currentVersion) {
+    private double getDefaultConfigVersion() {
+        try (InputStream defaultStream = plugin.getResource(configName)) {
+            if (defaultStream != null) {
+                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+                return defaultConfig.getDouble("config-version", -1d);
+            }
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to read default config version", e);
+        }
+        return -1d;
+    }
+
+    private void upgradeConfig(double currentVersion, double targetVersion) {
         YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFile);
-//        File backupFile = new File(plugin.getDataFolder(), configName + ".bak");
-//
-//        try {
-//            oldConfig.save(backupFile);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } //TODO: See about reimplementing later
 
         configFile.delete();
-        if (template)
-            this.saveDefaultConfig();
+        if (template) {
+            saveDefaultConfig();
+        }
         reloadConfig();
 
-        // Run the standard upgrade first to copy all keys from the old config
         standardUpgrade(oldConfig, config);
 
-        // Loop through each version above the current version and run the upgrade method
         for (Map.Entry<Double, ConfigUpgrader> entry : getUpgrader().tailMap(currentVersion + 0.1, true).entrySet()) {
             ConfigUpgrader upgrader = entry.getValue();
             if (upgrader != null) {
@@ -92,61 +93,55 @@ public abstract class Configuration {
             }
         }
 
-        config.set("config-version", latestVersion);
-
+        config.set("config-version", targetVersion);
         saveConfig();
     }
 
     private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
         Set<String> allKeys = oldConfig.getKeys(true);
-
         List<String> keyList = new ArrayList<>(allKeys);
 
         keyList.sort((key1, key2) -> Integer.compare(key2.split("\\.").length, key1.split("\\.").length));
 
-        List<String> filteredKeys = new ArrayList<>();
-
         for (String key : keyList) {
-            // Check if the key holds a value and not just subkeys
-            if (oldConfig.isSet(key) && !(oldConfig.isConfigurationSection(key))) {
-                filteredKeys.add(key);
-            }
-        }
-
-        // Copy all keys from the old config to the new config
-        for (String key : filteredKeys) {
-            if (newConfig.contains(key))
+            if (oldConfig.isSet(key) && !oldConfig.isConfigurationSection(key) && newConfig.contains(key)) {
                 newConfig.set(key, oldConfig.get(key));
+            }
         }
     }
 
     public void reloadConfig() {
-        if (this.configFile == null)
-            this.configFile = new File(this.plugin.getDataFolder(), this.configName);
+        if (configFile == null) {
+            configFile = new File(plugin.getDataFolder(), configName);
+        }
 
-        this.config = YamlConfiguration.loadConfiguration(configFile);
+        config = YamlConfiguration.loadConfiguration(configFile);
 
-        InputStream defaultStream = this.plugin.getResource(configName);
-        if (defaultStream != null) {
-            YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-            this.config.setDefaults(defaultConfig);
+        try (InputStream defaultStream = plugin.getResource(configName)) {
+            if (defaultStream != null) {
+                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+                config.setDefaults(defaultConfig);
+            }
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to load default config", e);
         }
     }
 
     protected void saveDefaultConfig() {
-        if (this.configFile == null)
-            this.configFile = new File(this.plugin.getDataFolder(), configName);
+        if (configFile == null) {
+            configFile = new File(plugin.getDataFolder(), configName);
+        }
 
         if (!configFile.exists()) {
-            plugin.saveResource(this.configName, false);
+            plugin.saveResource(configName, false);
         }
     }
 
     protected FileConfiguration getConfig() {
-        if (this.config == null)
+        if (config == null) {
             reloadConfig();
-
-        return this.config;
+        }
+        return config;
     }
 
     protected void set(String path, Object value) {
@@ -155,25 +150,29 @@ public abstract class Configuration {
 
     protected void saveConfig() {
         try {
-            this.getConfig().save(this.configFile);
+            getConfig().save(configFile);
         } catch (IOException ex) {
-            this.plugin.getLogger().log(Level.SEVERE, MessageFormat.format("Could not save config to {0}", this.configFile), ex);
+            plugin.getLogger().log(Level.SEVERE, "Could not save config to " + configFile, ex);
         }
     }
 
     public static void deleteDir(File file) {
-        File[] contents = file.listFiles();
-        if (contents != null) {
-            for (File f : contents) {
-                if (! Files.isSymbolicLink(f.toPath())) {
-                    deleteDir(f);
+        if (file.isDirectory()) {
+            File[] contents = file.listFiles();
+            if (contents != null) {
+                for (File f : contents) {
+                    if (!Files.isSymbolicLink(f.toPath())) {
+                        deleteDir(f);
+                    }
                 }
             }
         }
-        file.delete();
+        if (!file.delete()) {
+            throw new RuntimeException("Failed to delete " + file);
+        }
     }
 
     public interface ConfigUpgrader {
-        void upgrade(YamlConfiguration oldConfig, YamlConfiguration NewConfig);
+        void upgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig);
     }
 }
