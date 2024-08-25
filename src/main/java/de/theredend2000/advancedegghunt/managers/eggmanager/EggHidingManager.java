@@ -21,7 +21,7 @@ public class EggHidingManager {
         plugin = Main.getInstance();
         blocks = new HashMap<>();
 
-        hide();
+        //hide();
     }
 
     public void hideEggForPlayer(Player player, Location location) {
