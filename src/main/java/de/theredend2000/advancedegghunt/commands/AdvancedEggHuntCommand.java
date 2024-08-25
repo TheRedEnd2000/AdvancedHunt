@@ -227,77 +227,27 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                     }else
                         player.sendMessage(usage());
                 }else if(args.length == 3){
-                    if(args[0].equalsIgnoreCase("exportPreset")){
-                        String presetname = args[1]+".yml";
-                        String path = args[2];
-
-                        File presetFolder = new File(plugin.getDataFolder(), "presets/individual/");
-                        File preset = new File(presetFolder, presetname);
-                        if (!preset.exists()) {
-                            player.sendMessage("Kein Preset gefunden");
-                            return false;
+                    if(args[0].equalsIgnoreCase("reset")) {
+                        if (!plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
+                            sender.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.reset.toString()));
+                            return true;
                         }
 
-                        try {
-                            Files.copy(preset.toPath(), new File(path, presetname).toPath());
-                            player.sendMessage("File exported to " + path);
-                        } catch (IOException e) {
-                            player.sendMessage("§cError exporting file: "+e.getMessage());
+                        if(args[1].equalsIgnoreCase("all")) {
+                            eggManager.resetStatsAll();
+                            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
+                            return true;
                         }
-                        try {
-                            String embedContent = plugin.getEmbedCreator().getExportEmbedContent(player,presetname.replaceAll(".yml",""));
 
-                            URL url = new URL("https://discord.com/api/webhooks/1247605763413901392/osrPzZs9DdIuFGThypmckHGgQ5UKHLgxC-lFdSzDNO9uJXbYIOAWkoqGu-OUUSGbSvFU");
-                            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                            con.setRequestMethod("POST");
-                            con.setRequestProperty("Content-Type", "application/json");
-                            con.setDoOutput(true);
-
-                            try (DataOutputStream os = new DataOutputStream(con.getOutputStream())) {
-                                os.writeBytes(embedContent);
-                                os.flush();
+                        String name = args[1];
+                        String collection = args[2];
+                        if(eggManager.containsPlayer(name)) {
+                            if(plugin.getEggDataManager().containsCollection(collection)) {
+                                eggManager.resetStatsPlayer(name, collection);
+                                player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION).replaceAll("%PLAYER%", name).replaceAll("%COLLECTION%",collection));
                             }
-
-                            int responseCode = con.getResponseCode();
-                            if (responseCode == 200) {
-                                Main.getInstance().getLogger().info("Embed sent successfully!");
-                            } else {
-                                Main.getInstance().getLogger().warning("Error sending embed: " + responseCode);
-                            }
-
-                            URL fileUrl = new URL("https://discord.com/api/webhooks/1247605763413901392/osrPzZs9DdIuFGThypmckHGgQ5UKHLgxC-lFdSzDNO9uJXbYIOAWkoqGu-OUUSGbSvFU");
-                            HttpURLConnection fileCon = (HttpURLConnection) fileUrl.openConnection();
-                            fileCon.setRequestMethod("POST");
-                            fileCon.setRequestProperty("Content-Type", "multipart/form-data; boundary=-------------------1234567890");
-                            fileCon.setRequestProperty("Accept", "application/text");
-                            fileCon.setDoOutput(true);
-
-                            try (DataOutputStream os = new DataOutputStream(fileCon.getOutputStream())) {
-                                os.writeBytes("--" + "-------------------1234567890\r\n");
-                                os.writeBytes("Content-Disposition: form-data; name=\"yml\"; filename=\"" + presetname + "\"\r\n\r\n");
-
-                                FileInputStream fis = new FileInputStream(preset);
-                                byte[] buffer = new byte[1024];
-                                int length = 0;
-                                while ((length = fis.read(buffer)) != -1) {
-                                    os.write(buffer, 0, length);
-                                }
-                                fis.close();
-                                os.writeBytes("\r\n--" + "-------------------1234567890--\r\n");
-
-                                os.flush();
-                            }
-
-                            int fileResponseCode = fileCon.getResponseCode();
-                            if (fileResponseCode == 200) {
-                                Main.getInstance().getLogger().info("File uploaded successfully!");
-                            } else {
-                                Main.getInstance().getLogger().warning("Error uploading file: " + fileResponseCode);
-                            }
-
-                        } catch (IOException e) {
-                            Main.getInstance().getLogger().log(Level.SEVERE, "Error: ", e);
-                        }
+                        }else
+                            player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
                     }else
                         player.sendMessage(usage());
                 }else
@@ -336,7 +286,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         ArrayList<String> complete = null;
         if(args.length == 1){
             complete = new ArrayList<>();
-            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport","exportPreset"};
+            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport"};
             for(String permissions : tabs){
                 if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permissions)))
                     complete.add(permissions);
@@ -367,10 +317,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             }
         }
         if(args.length == 3){
-            if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.exportPreset)) {
-                if (args[0].equalsIgnoreCase("exportPreset")) {
-                    complete = new ArrayList<>();
-                    complete.add("C:");
+            if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
+                if (args[0].equalsIgnoreCase("reset") && !args[1].equalsIgnoreCase("all")) {
+                    complete = new ArrayList<>(plugin.getEggDataManager().savedEggCollections());
                     return FilterArguments(complete, args);
                 }
             }

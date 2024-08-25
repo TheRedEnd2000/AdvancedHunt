@@ -255,7 +255,7 @@ public class PluginConfig extends Configuration {
 
     @Nullable
     public Particle getEggNotFoundParticle() {
-        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggNotFound", "HAPPY_VILLAGER"), XParticle.HAPPY_VILLAGER);
+        return XHelper.ParseParticle(getConfig().getString("Particle.type.EggNotFound"), XParticle.HAPPY_VILLAGER);
     }
 	public void setEggNotFoundParticle(Particle EggNotFoundParticle) {
 		getConfig().set("Particle.type.EggNotFound", EggNotFoundParticle.toString());

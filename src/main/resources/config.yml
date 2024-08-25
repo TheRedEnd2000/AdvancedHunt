@@ -85,6 +85,7 @@ Sounds:
 # Rarity's display how rare the item is that you found
 # It will show up when you find an item
 # Smallest number: 0.0000001
+send-rarity-messages: true
 Rarity:
   common:
     display: '&fCOMMON'

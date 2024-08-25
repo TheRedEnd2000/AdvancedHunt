@@ -145,6 +145,11 @@ public class EggDataManager {
         }
     }
 
+    public boolean containsCollection(String collection) {
+        File collectionFile = this.getFile(collection);
+        return collectionFile.exists();
+    }
+
     public List<UUID> savedPlayers() {
         List<UUID> playerUUIDs = new ArrayList();
         File playerDataFolder = new File(this.dataFolder + "/playerdata/");

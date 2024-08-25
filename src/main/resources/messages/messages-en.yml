@@ -50,6 +50,7 @@ command-blacklisted: '&cThis command is blacklisted!'
 
 foundeggs-reset: '&7All &eFoundEggs &7has been &creset&7.'
 foundeggs-player-reset: '&7All &eFoundEggs &7of &a%PLAYER% &7has been &creset&7.'
+foundeggs-player-reset-collection: '&7All &eFoundEggs &7in collection &6%COLLECTION% &7of &a%PLAYER% &7has been &creset&7.'
 
 activate-requirements: '&aActivated all requirements.'
 deactivate-requirements: '&cDeactivated all requirements.'

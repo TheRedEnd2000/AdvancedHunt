@@ -58,6 +58,7 @@ collection-disabled: '&cDiese Sammlung ist aktuell ausgeschalten.'
 collection-selected: '&7Du hast die Sammlung &6%SELECTION% &7ausgewählt.'
 collection-deleted: '&aDie Sammlung &6%COLLECTION% &awurde erfolgreich gelöscht.'
 chanced-chance: '&aDie Wahrscheinlichkeit wurde erfolgreich zu &e%CHANCE%% &ageändert.'
+rarity-message: '%RARITY% DROP! &7Du erhältst &b%ITEM% §7x%COUNT%'
 
 eggimport-hand: '&7Bitte halte den &eSpieler Kopf &7mit der &2Ei textur &7in deiner Hand.'
 eggimport-failed-profile: '&cEs gab einen Fehler im Spielerprofile.'

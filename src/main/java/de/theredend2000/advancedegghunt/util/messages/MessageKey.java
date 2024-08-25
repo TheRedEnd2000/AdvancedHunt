@@ -53,6 +53,7 @@ public enum MessageKey {
 
     FOUNDEGGS_RESET("foundeggs-reset"),
     FOUNDEGGS_PLAYER_RESET("foundeggs-player-reset"),
+    FOUNDEGGS_PLAYER_RESET_COLLECTION("foundeggs-player-reset-collection"),
 
     ACTIVATE_REQUIREMENTS("activate-requirements"),
     DEACTIVATE_REQUIREMENTS("deactivate-requirements"),
