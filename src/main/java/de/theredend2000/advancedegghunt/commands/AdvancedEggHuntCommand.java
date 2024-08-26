@@ -15,339 +15,82 @@ import de.tr7zw.nbtapi.iface.ReadableNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.*;
-import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     private MessageManager messageManager;
     private Main plugin;
+    private EggManager eggManager;
 
-    public AdvancedEggHuntCommand(){
+    public AdvancedEggHuntCommand() {
         messageManager = Main.getInstance().getMessageManager();
         plugin = Main.getInstance();
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        EggManager eggManager = Main.getInstance().getEggManager();
-        if(sender instanceof Player){
-            Player player = (Player) sender;
-                if(args.length == 1){
-                    if(args[0].equalsIgnoreCase("placeEggs")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.placeEggs)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.placeEggs.toString()));
-                            return true;
-                        }
-
-                        if (Main.getInstance().getPlaceEggsPlayers().contains(player)) {
-                            eggManager.finishEggPlacing(player);
-                            Main.getInstance().getPlaceEggsPlayers().remove(player);
-                            player.sendMessage(messageManager.getMessage(MessageKey.LEAVE_PLACEMODE));
-                        } else {
-                            eggManager.startEggPlacing(player);
-                            Main.getInstance().getPlaceEggsPlayers().add(player);
-                            player.sendMessage(messageManager.getMessage(MessageKey.ENTER_PLACEMODE));
-                            player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR).setDisplayName("§6§lEggs Types §7(Right-Click)").setCustomId("egghunt.eggs").build());
-                            player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayName("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.").setCustomId("egghunt.finish").build());
-                        }
-                    } else if(args[0].equalsIgnoreCase("list")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.list)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.list.toString()));
-                            return true;
-                        }
-
-                        new EggListMenu(Main.getPlayerMenuUtility(player)).open();
-                    } else if(args[0].equalsIgnoreCase("show")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.show)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.show.toString()));
-                            return true;
-                        }
-
-                        eggManager.showAllEggs();
-                        player.sendMessage(messageManager.getMessage(MessageKey.EGG_SHOW_WARNING));
-                        player.sendMessage(messageManager.getMessage(MessageKey.EGG_VISIBLE).replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow())));
-                    } else if(args[0].equalsIgnoreCase("reload")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.reload)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.reload.toString()));
-                            return true;
-                        }
-
-                        Main.getInstance().getPluginConfig().reloadConfig();
-                        messageManager.reloadMessages();
-                        eggManager.spawnEggParticle();
-                        Main.getInstance().getPlayerEggDataManager().reload();
-                        Main.getInstance().getEggDataManager().reload();
-                        Main.getInstance().getGlobalPresetDataManager().reload();
-                        Main.getInstance().getIndividualPresetDataManager().reload();
-                        Main.PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', plugin.getPluginConfig().getPrefix()));
-                        player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
-                    } else if(args[0].equalsIgnoreCase("help")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.help)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.help.toString()));
-                            return true;
-                        }
-
-                        sendHelp(player);
-                    } else if(args[0].equalsIgnoreCase("settings")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.settings)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.settings.toString()));
-                            return true;
-                        }
-
-                        new SettingsMenu(Main.getPlayerMenuUtility(player)).open();
-                    } else if(args[0].equalsIgnoreCase("collection")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.collection)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.collection.toString()));
-                            return true;
-                        }
-
-                        new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
-                    } else if(args[0].equalsIgnoreCase("progress")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.progress)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.progress.toString()));
-                            return true;
-                        }
-
-                        new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
-                    } else if(args[0].equalsIgnoreCase("commands")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.commands)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.commands.toString()));
-                            return true;
-                        }
-
-                        player.sendMessage("§cThis system is outdated. You can now change commands by SHIFT + RIGHT-CLICK an egg.");
-                    } else if(args[0].equalsIgnoreCase("leaderboard")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.leaderboard)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.leaderboard.toString()));
-                            return true;
-                        }
-
-                        new LeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
-                    } else if(args[0].equalsIgnoreCase("hint")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.hint)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.hint.toString()));
-                            return true;
-                        }
-
-                        int counter = 0;
-                        int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
-
-                        for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
-                            counter++;
-                            if (!eggManager.checkFoundAll(player, collections) && eggManager.getMaxEggs(collections) >= 1) {
-                                if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !plugin.getPermissionManager().checkPermission(player, Permission.IgnoreCooldown)) {
-                                    long current = System.currentTimeMillis();
-                                    long release = Main.getInstance().getCooldownManager().getCooldown(player);
-                                    long millis = release - current;
-                                    player.sendMessage(Main.getInstance().getCooldownManager().getRemainingTime(millis));
-                                    return true;
-                                }
-                                new HintMenu(Main.getPlayerMenuUtility(player)).open();
-                                return true;
-                            } else {
-                                if (counter == max)
-                                    player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
-                            }
-                        }
-                    } else if (args[0].equalsIgnoreCase("eggImport")) {
-                        if (!plugin.getPermissionManager().checkPermission(player, Permission.Command.eggImport)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.eggImport.toString()));
-                            return true;
-                        }
-
-                        ItemStack item = player.getInventory().getItemInMainHand();
-                        if (!(item.getItemMeta() instanceof  SkullMeta)) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_HAND));
-                            return true;
-                        }
-
-                        String fullTexture = NBT.get(item, nbt -> {
-                            final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
-                            if (skullOwnerCompound == null) return null;
-                            ReadableNBT skullOwnerPropertiesCompound = skullOwnerCompound.getCompound("Properties");
-                            if (skullOwnerPropertiesCompound == null) return null;
-                            ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesTexturesCompound = skullOwnerPropertiesCompound.getCompoundList("textures");
-                            if (skullOwnerPropertiesTexturesCompound == null) return null;
-
-                            return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
-                        });
-
-                        if (fullTexture == null) {
-                            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_FAILED_PROFILE));
-                            return true;
-                        }
-
-                        fullTexture = fullTexture.replaceFirst(".+?mUv", "");
-                        for(String key : Main.getInstance().getPluginConfig().getPlaceEggIds()){
-                            if(Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture)) {
-                                player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
-                                return true;
-                            }
-                        }
-
-                        String base64Texture = fullTexture;
-                        Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
-                        Main.getInstance().getPluginConfig().saveData();
-                        player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_SUCCESS));
-                    }
-                    else
-                        player.sendMessage(usage());
-                } else if(args.length == 2){
-                    if(args[0].equalsIgnoreCase("reset")) {
-                        if (!plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
-                            sender.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.reset.toString()));
-                            return true;
-                        }
-
-                        if(args[1].equalsIgnoreCase("all")) {
-                            eggManager.resetStatsAll();
-                            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
-                            return true;
-                        }
-
-                        String name = args[1];
-                        if(eggManager.containsPlayer(name)) {
-                            for(String collections : Main.getInstance().getEggDataManager().savedEggCollections())
-                                eggManager.resetStatsPlayer(name, collections);
-                            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
-                        }else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
-                    }else
-                        player.sendMessage(usage());
-                }else if(args.length == 3){
-                    if(args[0].equalsIgnoreCase("reset")) {
-                        if (!plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
-                            sender.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.Command.reset.toString()));
-                            return true;
-                        }
-
-                        if(args[1].equalsIgnoreCase("all")) {
-                            eggManager.resetStatsAll();
-                            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
-                            return true;
-                        }
-
-                        String name = args[1];
-                        String collection = args[2];
-                        if(eggManager.containsPlayer(name)) {
-                            if(plugin.getEggDataManager().containsCollection(collection)) {
-                                eggManager.resetStatsPlayer(name, collection);
-                                player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION).replaceAll("%PLAYER%", name).replaceAll("%COLLECTION%",collection));
-                            }
-                        }else
-                            player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
-                    }else
-                        player.sendMessage(usage());
-                }else
-                    player.sendMessage(usage());
-        } else if(sender instanceof ConsoleCommandSender){
-            if(args.length == 2){
-                if(args[0].equalsIgnoreCase("reset")) {
-                    if(args[1].equalsIgnoreCase("all")) {
-                        eggManager.resetStatsAll();
-                        sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
-                        return true;
-                    }
-
-                    String name = args[1];
-                    if(eggManager.containsPlayer(name)) {
-                        for(String collections : Main.getInstance().getEggDataManager().savedEggCollections())
-                            eggManager.resetStatsPlayer(name, collections);
-                        sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
-                    }else
-                        sender.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
-                }else
-                    sender.sendMessage(usage());
-            }else
-                sender.sendMessage(usage());
-        }else
-            sender.sendMessage(messageManager.getMessage(MessageKey.ONLY_PLAYER));
-        return false;
-    }
-
-    private String usage(){
-        return messageManager.getMessage(MessageKey.COMMAND_NOT_FOUND);
+        eggManager = Main.getInstance().getEggManager();
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        ArrayList<String> complete = null;
-        if(args.length == 1){
-            complete = new ArrayList<>();
-            String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport"};
-            for(String permissions : tabs){
-                if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permissions)))
-                    complete.add(permissions);
-            }
-            return FilterArguments(complete, args);
-        }
-        if(args.length == 2){
-            if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
-                if(args[0].equalsIgnoreCase("reset")) {
-                    complete = new ArrayList<>();
-                    for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()) {
-                        if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs.") == null) continue;
-                        for(String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getConfigurationSection("FoundEggs.").getKeys(false)) {
-                            if(!complete.contains(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggId + ".Name")))
-                                complete.add(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + eggId + ".Name"));
+        return handleTabComplete(sender, args);
+    }
+
+    private List<String> handleTabComplete(CommandSender sender, String[] args) {
+        List<String> completions = new ArrayList<>();
+        switch (args.length) {
+            case 1:
+                String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport"};
+                for (String permission : tabs) {
+                    if (plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permission)))
+                        completions.add(permission);
+                }
+                break;
+            case 2:
+                if (args[0].equalsIgnoreCase("reset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
+                    completions.add("all");
+                    for (UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
+                        String playerData = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs.");
+                        if (playerData == null) {
+                            return completions;
+                        }
+                        for (String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getConfigurationSection("FoundEggs.").getKeys(false)) {
+                            String playerName = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs." + eggId + ".Name");
+                            if (playerName != null && !completions.contains(playerName))
+                                completions.add(playerName);
                         }
                     }
-                    complete.add("all");
-                    return FilterArguments(complete, args);
+                } else if (args[0].equalsIgnoreCase("exportPreset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.exportPreset)) {
+                    completions.addAll(plugin.getIndividualPresetDataManager().savedPresets());
+                    completions.addAll(plugin.getGlobalPresetDataManager().savedPresets());
                 }
-            }else if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.exportPreset)){
-                if(args[0].equalsIgnoreCase("exportPreset")){
-                    complete = new ArrayList<>();
-                    complete.addAll(plugin.getIndividualPresetDataManager().savedPresets());
-                    complete.addAll(plugin.getGlobalPresetDataManager().savedPresets());
-                    return FilterArguments(complete, args);
+                break;
+            case 3:
+                if (args[0].equalsIgnoreCase("reset") && !args[1].equalsIgnoreCase("all") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
+                    completions.addAll(plugin.getEggDataManager().savedEggCollections());
                 }
-            }
+                break;
         }
-        if(args.length == 3){
-            if(plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
-                if (args[0].equalsIgnoreCase("reset") && !args[1].equalsIgnoreCase("all")) {
-                    complete = new ArrayList<>(plugin.getEggDataManager().savedEggCollections());
-                    return FilterArguments(complete, args);
-                }
-            }
-        }
-        complete = new ArrayList<>();
-        return complete;
+        return filterArguments(completions, args);
     }
 
-    private List<String> FilterArguments(List<String> arguments, String[] args) {
-        if (arguments == null)
+    private List<String> filterArguments(List<String> arguments, String[] args) {
+        if (arguments == null || arguments.isEmpty())
             return Collections.emptyList();
 
-        if (!arguments.isEmpty()) {
-            int lastArgIndex = args.length-1;
-            List<String> result = new ArrayList<>();
-            for (String arg : arguments) {
-                if (arg.toLowerCase().startsWith(args[lastArgIndex].toLowerCase()))
-                    if (arg.toLowerCase().startsWith(args[lastArgIndex].toLowerCase()))
-                        result.add(arg);
-            }
-
-            return result;
-        }
-
-        return arguments;
+        String lastArg = args[args.length - 1].toLowerCase();
+        return arguments.stream()
+                .filter(arg -> arg.toLowerCase().startsWith(lastArg))
+                .collect(Collectors.toList());
     }
 
-    private void sendHelp(Player player){
+    private void sendHelp(Player player) {
         player.sendMessage("§3-----------------------------------------");
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("");
@@ -373,5 +116,267 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6/advancedegghunt exportPreset §7-> §bExport a preset to the discord for other players.");
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("§3-----------------------------------------");
+    }
+
+    private String usage() {
+        return messageManager.getMessage(MessageKey.COMMAND_NOT_FOUND);
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            handleConsoleCommand(sender, args);
+            return true;
+        }
+
+        Player player = (Player) sender;
+        if (args.length == 0) {
+            player.sendMessage(usage());
+            return true;
+        }
+
+        String subCommand = args[0].toLowerCase();
+        switch (subCommand) {
+            case "placeeggs":
+                handlePlaceEggs(player);
+                break;
+            case "list":
+                handleList(player);
+                break;
+            case "show":
+                handleShow(player);
+                break;
+            case "reload":
+                handleReload(player);
+                break;
+            case "help":
+                handleHelp(player);
+                break;
+            case "settings":
+                handleSettings(player);
+                break;
+            case "collection":
+                handleCollection(player);
+                break;
+            case "progress":
+                handleProgress(player);
+                break;
+            case "commands":
+                handleCommands(player);
+                break;
+            case "leaderboard":
+                handleLeaderboard(player);
+                break;
+            case "hint":
+                handleHint(player);
+                break;
+            case "eggimport":
+                handleEggImport(player);
+                break;
+            case "reset":
+                handleReset(player, args);
+                break;
+            default:
+                player.sendMessage(usage());
+        }
+
+        return true;
+    }
+
+    private void handlePlaceEggs(Player player) {
+        if (!checkPermission(player, Permission.Command.placeEggs)) return;
+
+        if (Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+            eggManager.finishEggPlacing(player);
+            Main.getInstance().getPlaceEggsPlayers().remove(player);
+            player.sendMessage(messageManager.getMessage(MessageKey.LEAVE_PLACEMODE));
+        } else {
+            eggManager.startEggPlacing(player);
+            Main.getInstance().getPlaceEggsPlayers().add(player);
+            player.sendMessage(messageManager.getMessage(MessageKey.ENTER_PLACEMODE));
+            player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR).setDisplayName("§6§lEggs Types §7(Right-Click)").setCustomId("egghunt.eggs").build());
+            player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayName("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.").setCustomId("egghunt.finish").build());
+        }
+    }
+
+    private void handleList(Player player) {
+        if (!checkPermission(player, Permission.Command.list)) return;
+        new EggListMenu(Main.getPlayerMenuUtility(player)).open();
+    }
+
+    private void handleShow(Player player) {
+        if (!checkPermission(player, Permission.Command.show)) return;
+        eggManager.showAllEggs();
+        player.sendMessage(messageManager.getMessage(MessageKey.EGG_SHOW_WARNING));
+        player.sendMessage(messageManager.getMessage(MessageKey.EGG_VISIBLE).replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow())));
+    }
+
+    private void handleReload(Player player) {
+        if (!checkPermission(player, Permission.Command.reload)) return;
+        Main.getInstance().getPluginConfig().reloadConfig();
+        messageManager.reloadMessages();
+        eggManager.spawnEggParticle();
+        Main.getInstance().getPlayerEggDataManager().reload();
+        Main.getInstance().getEggDataManager().reload();
+        Main.getInstance().getGlobalPresetDataManager().reload();
+        Main.getInstance().getIndividualPresetDataManager().reload();
+        Main.PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', plugin.getPluginConfig().getPrefix()));
+        player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
+    }
+
+    private void handleHelp(Player player) {
+        if (!checkPermission(player, Permission.Command.help)) return;
+        sendHelp(player);
+    }
+
+    private void handleSettings(Player player) {
+        if (!checkPermission(player, Permission.Command.settings)) return;
+        new SettingsMenu(Main.getPlayerMenuUtility(player)).open();
+    }
+
+    private void handleCollection(Player player) {
+        if (!checkPermission(player, Permission.Command.collection)) return;
+        new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+    }
+
+    private void handleProgress(Player player) {
+        if (!checkPermission(player, Permission.Command.progress)) return;
+        new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
+    }
+
+    private void handleCommands(Player player) {
+        if (!checkPermission(player, Permission.Command.commands)) return;
+        player.sendMessage("§cThis system is outdated. You can now change commands by SHIFT + RIGHT-CLICK an egg.");
+    }
+
+    private void handleLeaderboard(Player player) {
+        if (!checkPermission(player, Permission.Command.leaderboard)) return;
+        new LeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
+    }
+
+    private void handleHint(Player player) {
+        if (!checkPermission(player, Permission.Command.hint)) return;
+        int counter = 0;
+        int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
+
+        for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
+            counter++;
+            if (!eggManager.checkFoundAll(player, collections) && eggManager.getMaxEggs(collections) >= 1) {
+                if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !plugin.getPermissionManager().checkPermission(player, Permission.IgnoreCooldown)) {
+                    long current = System.currentTimeMillis();
+                    long release = Main.getInstance().getCooldownManager().getCooldown(player);
+                    long millis = release - current;
+                    player.sendMessage(Main.getInstance().getCooldownManager().getRemainingTime(millis));
+                    return;
+                }
+                new HintMenu(Main.getPlayerMenuUtility(player)).open();
+                return;
+            } else {
+                if (counter == max)
+                    player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
+            }
+        }
+    }
+
+    private void handleEggImport(Player player) {
+        if (!checkPermission(player, Permission.Command.eggImport)) return;
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (!(item.getItemMeta() instanceof SkullMeta)) {
+            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_HAND));
+            return;
+        }
+
+        String fullTexture = NBT.get(item, nbt -> {
+            final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
+            if (skullOwnerCompound == null) return null;
+            ReadableNBT skullOwnerPropertiesCompound = skullOwnerCompound.getCompound("Properties");
+            if (skullOwnerPropertiesCompound == null) return null;
+            ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesTexturesCompound = skullOwnerPropertiesCompound.getCompoundList("textures");
+            if (skullOwnerPropertiesTexturesCompound == null) return null;
+
+            return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
+        });
+
+        if (fullTexture == null) {
+            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_FAILED_PROFILE));
+            return;
+        }
+
+        fullTexture = fullTexture.replaceFirst(".+?mUv", "");
+        for (String key : Main.getInstance().getPluginConfig().getPlaceEggIds()) {
+            if (Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture)) {
+                player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
+                return;
+            }
+        }
+
+        String base64Texture = fullTexture;
+        Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
+        Main.getInstance().getPluginConfig().saveData();
+        player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_SUCCESS));
+    }
+
+    private void handleReset(Player player, String[] args) {
+        if (!checkPermission(player, Permission.Command.reset)) return;
+        if (args.length < 2) {
+            player.sendMessage(usage());
+            return;
+        }
+
+        if (args[1].equalsIgnoreCase("all")) {
+            eggManager.resetStatsAll();
+            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
+            return;
+        }
+
+        String name = args[1];
+        if (args.length == 3) {
+            String collection = args[2];
+            if (eggManager.containsPlayer(name)) {
+                if (plugin.getEggDataManager().containsCollection(collection)) {
+                    eggManager.resetStatsPlayer(name, collection);
+                    player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION).replaceAll("%PLAYER%", name).replaceAll("%COLLECTION%", collection));
+                }
+            } else {
+                player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
+            }
+        } else {
+            if (eggManager.containsPlayer(name)) {
+                for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
+                    eggManager.resetStatsPlayer(name, collections);
+                player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
+            } else {
+                player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
+            }
+        }
+    }
+
+    private void handleConsoleCommand(CommandSender sender, String[] args) {
+        if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
+            if (args[1].equalsIgnoreCase("all")) {
+                eggManager.resetStatsAll();
+                sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
+                return;
+            }
+
+            String name = args[1];
+            if (eggManager.containsPlayer(name)) {
+                for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
+                    eggManager.resetStatsPlayer(name, collections);
+                sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
+            } else {
+                sender.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
+            }
+        } else {
+            sender.sendMessage(usage());
+        }
+    }
+
+    private boolean checkPermission(Player player, Permission.Command permission) {
+        if (!plugin.getPermissionManager().checkPermission(player, permission)) {
+            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission.toString()));
+            return false;
+        }
+        return true;
     }
 }
