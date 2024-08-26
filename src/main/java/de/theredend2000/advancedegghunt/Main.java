@@ -15,9 +15,9 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.PlayerEggDataManager
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
-import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
+import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
@@ -25,26 +25,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 public final class Main extends JavaPlugin {
 
+    // Static fields
     private static Main plugin;
-    private DatetimeUtils datetimeUtils;
-    private Map<String, Long> refreshCooldown;
-    private ArrayList<Player> placeEggsPlayers;
-    private HashMap<Player, Integer> playerAddCommand;
-    private ArrayList<ArmorStand> showedArmorstands;
+    public static String PREFIX = "";
+    public static boolean setupDefaultCollection;
+
+    // Configuration
+    private PluginConfig pluginConfig;
     public YamlConfiguration messages;
     public File messagesData;
-    private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
-    private PluginConfig pluginConfig;
+
+    // Managers
     private CooldownManager cooldownManager;
     private EggDataManager eggDataManager;
     private EggManager eggManager;
@@ -57,55 +59,162 @@ public final class Main extends JavaPlugin {
     private GlobalPresetDataManager globalPresetDataManager;
     private MessageManager messageManager;
     private RarityManager rarityManager;
+    private EggHidingManager eggHidingManager;
+
+    // Utility classes
+    private DatetimeUtils datetimeUtils;
     private EmbedCreator embedCreator;
     private ProtocolManager protocolManager;
-    private EggHidingManager eggHidingManager;
-    public static String PREFIX = "";
-    public static boolean setupDefaultCollection;
+
+    // Collections
+    private HashMap<String, Long> refreshCooldown;
+    private ArrayList<Player> placeEggsPlayers;
+    private HashMap<Player, Integer> playerAddCommand;
+    private ArrayList<ArmorStand> showedArmorstands;
+    private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+
     @Override
     public void onEnable() {
         plugin = this;
+        initializePlugin();
+        setupAutoUpdating();
+
+        if (!checkDependencies())
+            return;
+
+        setupManagers();
+        registerCommands();
+        initListeners();
+        setupPlaceholderAPI();
+        initializeData();
+        setupDefaultCollectionIfNeeded();
+        finalizeSetup();
+    }
+
+    /**
+     * Checks if all required plugin dependencies are present and enabled.
+     *
+     * @return true if all dependencies are present and enabled, false otherwise
+     */
+    private boolean checkDependencies() {
+        List<String> missingDependencies = new ArrayList<>();
+
+        // List of required plugin names
+        String[] requiredPlugins = {"NBTAPI"};
+
+        for (String pluginName : requiredPlugins) {
+            Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+            if (plugin == null || !plugin.isEnabled()) {
+                missingDependencies.add(pluginName);
+            }
+        }
+
+        if (!missingDependencies.isEmpty()) {
+            getLogger().log(Level.SEVERE, "Missing required dependencies: " + String.join(", ", missingDependencies));
+            plugin.setEnabled(false);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks for soft dependencies and logs their status.
+     */
+    private void checkSoftDependencies() {
+        List<String> missingDependencies = new ArrayList<>();
+        List<String> presentDependencies = new ArrayList<>();
+
+        // List of soft dependency plugin names
+        String[] softDependencies = {"PlaceholderAPI", "ProtocolLib"};
+
+        for (String pluginName : softDependencies) {
+            Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+            if (plugin == null || !plugin.isEnabled()) {
+                missingDependencies.add(pluginName);
+            } else {
+                presentDependencies.add(pluginName);
+            }
+        }
+
+        if (!missingDependencies.isEmpty()) {
+            getLogger().log(Level.WARNING, "Some soft dependencies are missing: " + String.join(", ", missingDependencies));
+            getLogger().log(Level.WARNING, "The plugin will continue to run, but some features may be unavailable.");
+        }
+
+        if (!presentDependencies.isEmpty()) {
+            getLogger().log(Level.INFO, "Detected soft dependencies: " + String.join(", ", presentDependencies));
+        }
+    }
+
+    private void initializePlugin() {
         setupConfigs();
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
-        Metrics metrics = new Metrics(this, 19495);
-        refreshCooldown = new HashMap<String, Long>();
+        new Metrics(this, 19495);
+        initializeCollections();
+    }
+
+    private void initializeCollections() {
+        refreshCooldown = new HashMap<>();
         placeEggsPlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
         playerAddCommand = new HashMap<>();
         sortTypeLeaderboard = new HashMap<>();
+    }
+
+    private void setupManagers() {
         initManagers();
-        getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
-        initListeners();
         datetimeUtils = new DatetimeUtils();
         cooldownManager = new CooldownManager(this);
+    }
+
+    private void registerCommands() {
+        getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
+    }
+
+
+    private void setupPlaceholderAPI() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getConsoleSender().sendMessage(PREFIX + "§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
             new PlaceholderExtension().register();
             Bukkit.getConsoleSender().sendMessage(PREFIX + "§2§lAll placeholders successfully enabled.");
         }
+    }
+
+    private void initializeData() {
         getEggManager().convertEggData();
         initData();
         sendCurrentLanguage();
-        if(setupDefaultCollection) {
+    }
+
+    private void setupDefaultCollectionIfNeeded() {
+        if (setupDefaultCollection) {
             getRequirementsManager().changeActivity("default", true);
             getRequirementsManager().resetReset("default");
-            getGlobalPresetDataManager().loadPresetIntoCollectionCommands(getPluginConfig().getDefaultGlobalLoadingPreset(),"default");
+            getGlobalPresetDataManager().loadPresetIntoCollectionCommands(getPluginConfig().getDefaultGlobalLoadingPreset(), "default");
         }
+    }
+
+    private void finalizeSetup() {
         playerEggDataManager.checkReset();
         eggManager.spawnEggParticle();
         new Converter().convertAllSystems();
 
-        for (Player player : Bukkit.getOnlinePlayers())
-            Main.getInstance().getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
+        }
     }
 
     @Override
     public void onDisable() {
         giveAllItemsBack();
-        for(ArmorStand a : showedArmorstands){
-            a.remove();
-        }
+        removeAllArmorStands();
+    }
+
+    private void removeAllArmorStands() {
+        showedArmorstands.forEach(ArmorStand::remove);
     }
 
     private void initData(){
@@ -138,7 +247,7 @@ public final class Main extends JavaPlugin {
         new Checker();
     }
 
-    private void initListeners(){
+    private void initListeners() {
         new InventoryClickEventListener();
         new InventoryCloseEventListener();
         new BlockPlaceEventListener();
@@ -149,6 +258,19 @@ public final class Main extends JavaPlugin {
         new PlayerChatEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
+    }
+
+    private void setupAutoUpdating() {
+        PluginDownloader downloader = new PluginDownloader(plugin);
+
+        if (plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt())
+            downloader.downloadPlugin("109085", "AdvancedEggHunt", "spigot");
+        if (plugin.getPluginConfig().getAutoDownloadPlaceholderAPI())
+            downloader.downloadPlugin("6245", "PlaceholderAPI", "spigot");
+        if (plugin.getPluginConfig().getAutoDownloadProtocolLib())
+            downloader.downloadPlugin("1997", "ProtocolLib", "spigot");
+        if (plugin.getPluginConfig().getAutoDownloadNBTAPI())
+            downloader.downloadPlugin("nfGCP9fk", "NBTAPI", "modrinth");
     }
 
     private void giveAllItemsBack(){
@@ -178,43 +300,29 @@ public final class Main extends JavaPlugin {
 
     public static XMaterial getMaterial(String materialString) {
         try {
-            XMaterial material = XMaterial.valueOf(materialString);
-            if (material == null) {
-                return XMaterial.BARRIER;
-            }
-            return material;
+            return Optional.ofNullable(XMaterial.valueOf(materialString))
+                    .orElse(XMaterial.BARRIER);
         } catch (Exception ex) {
             Bukkit.getConsoleSender().sendMessage("§4Material Error: " + ex);
             return XMaterial.STONE;
         }
     }
 
-
     public static Main getInstance() {
         return plugin;
     }
 
-    public PluginConfig getPluginConfig(){
+    public PluginConfig getPluginConfig() {
         return pluginConfig;
     }
 
-    public static String getTexture(String texture){
-        String prefix = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv";
-        texture = prefix + texture;
-        return texture;
+    public static String getTexture(String texture) {
+        return "eyJ0ZXh0dXJlcy" +
+                "I6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv" + texture;
     }
-    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
-        PlayerMenuUtility playerMenuUtility;
-        if (!(playerMenuUtilityMap.containsKey(p))) {
-
-            playerMenuUtility = new PlayerMenuUtility(p);
-            playerMenuUtilityMap.put(p, playerMenuUtility);
-
-            return playerMenuUtility;
-        } else {
-            return playerMenuUtilityMap.get(p);
-        }
+        return playerMenuUtilityMap.computeIfAbsent(p, PlayerMenuUtility::new);
     }
 
     public ArrayList<Player> getPlaceEggsPlayers() {
