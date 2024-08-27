@@ -153,13 +153,11 @@
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
             <version>11.2.0.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.9.6-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>1.10.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.tr7zw</groupId>
