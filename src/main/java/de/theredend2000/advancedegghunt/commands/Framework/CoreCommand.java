@@ -4,17 +4,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Represents a main command that has subcommands within it. Like /stafftools freeze is /[corecommand] [subcommand]
  */
 public final class CoreCommand extends BaseCommand {
-    private final List<BaseCommand> subCommands;
+    private final Map<String, BaseCommand> subCommandMap;
     private final ICommandList commandList;
 
     /**
@@ -22,69 +18,61 @@ public final class CoreCommand extends BaseCommand {
      * @param subCommands Class reference to each SubCommand you create for this core command
      */
     public CoreCommand(@Nullable ICommandList commandList, List<BaseCommand> subCommands) {
-        this.subCommands = new ArrayList<>(subCommands);
+        this.subCommandMap = new HashMap<>();
+        for (BaseCommand cmd : subCommands) {
+            this.subCommandMap.put(cmd.getName().toLowerCase(), cmd);
+        }
         this.commandList = commandList;
     }
 
     public List<BaseCommand> getSubCommands() {
-        return Collections.unmodifiableList(subCommands);
+        return new ArrayList<>(subCommandMap.values());
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         if (args.length > 0) {
-            for (BaseCommand subCommand : subCommands) {
-                if (args[0].equalsIgnoreCase(subCommand.getName())) {
-                    if (!subCommand.testPermission(sender)) {
-                        return true;
-                    }
-
-                    String sentCommandLabel = args[0].toLowerCase(java.util.Locale.ENGLISH);
-                    String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
-                    return subCommand.onCommand(sender, command, sentCommandLabel, newArgs);
+            BaseCommand subCommand = subCommandMap.get(args[0].toLowerCase());
+            if (subCommand != null) {
+                if (!subCommand.testPermission(sender)) {
+                    return true;
                 }
+                return subCommand.onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
             }
         }
         if (commandList != null) {
-            commandList.displayCommandList(sender, commandLabel, subCommands);
+            commandList.displayCommandList(sender, commandLabel, getSubCommands());
         }
-
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
-            return filterArguments(subCommands.stream()
-                    .filter(cmd -> cmd.testPermissionSilent(sender))
-                    .map(BaseCommand::getName)
-                    .collect(Collectors.toList()), args);
+            return filterArguments(subCommandMap.keySet(), args[0], sender);
         } else if (args.length >= 2) {
-            for (BaseCommand subCommand : subCommands) {
-                if (args[0].equalsIgnoreCase(subCommand.getName())) {
-                    if (!subCommand.testPermissionSilent(sender)) {
-                        return Collections.emptyList();
-                    }
-
-                    String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
-                    List<String> subCommandArgs = subCommand.onTabComplete(sender, command, label, newArgs);
-
-                    return filterArguments(subCommandArgs, newArgs);
-                }
+            BaseCommand subCommand = subCommandMap.get(args[0].toLowerCase());
+            if (subCommand != null && subCommand.testPermissionSilent(sender)) {
+                List<String> subCommandArgs = subCommand.onTabComplete(sender, command, label, Arrays.copyOfRange(args, 1, args.length));
+                return filterArguments(subCommandArgs, args[args.length - 1], null);
             }
         }
-
         return Collections.emptyList();
     }
 
-    private List<String> filterArguments(List<String> arguments, String[] args) {
+    private List<String> filterArguments(Collection<String> arguments, String lastArg, CommandSender sender) {
         if (arguments == null || arguments.isEmpty()) {
             return Collections.emptyList();
         }
-
-        String lastArg = args[args.length - 1].toLowerCase();
-        return arguments.stream()
-                .filter(arg -> arg.toLowerCase().startsWith(lastArg))
-                .collect(Collectors.toList());
+        List<String> result = new ArrayList<>();
+        String lowerLastArg = lastArg.toLowerCase();
+        for (String arg : arguments) {
+            if (arg.toLowerCase().startsWith(lowerLastArg)) {
+                if (sender == null || subCommandMap.get(arg).testPermissionSilent(sender)) {
+                    result.add(arg);
+                }
+            }
+        }
+        return result;
     }
 }
