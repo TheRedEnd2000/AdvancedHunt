@@ -33,10 +33,7 @@ public final class CoreCommand extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         if (args.length > 0) {
             BaseCommand subCommand = subCommandMap.get(args[0].toLowerCase());
-            if (subCommand != null) {
-                if (!subCommand.testPermission(sender)) {
-                    return true;
-                }
+            if (subCommand != null && subCommand.testPermission(sender)) {
                 return subCommand.onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
             }
         }
@@ -54,7 +51,7 @@ public final class CoreCommand extends BaseCommand {
             BaseCommand subCommand = subCommandMap.get(args[0].toLowerCase());
             if (subCommand != null && subCommand.testPermissionSilent(sender)) {
                 List<String> subCommandArgs = subCommand.onTabComplete(sender, command, label, Arrays.copyOfRange(args, 1, args.length));
-                return filterArguments(subCommandArgs, args[args.length - 1], null);
+                return subCommandArgs != null ? filterArguments(subCommandArgs, args[args.length - 1], null) : Collections.emptyList();
             }
         }
         return Collections.emptyList();
@@ -68,7 +65,7 @@ public final class CoreCommand extends BaseCommand {
         String lowerLastArg = lastArg.toLowerCase();
         for (String arg : arguments) {
             if (arg.toLowerCase().startsWith(lowerLastArg)) {
-                if (sender == null || subCommandMap.get(arg).testPermissionSilent(sender)) {
+                if (sender == null || subCommandMap.get(arg.toLowerCase()) == null || subCommandMap.get(arg.toLowerCase()).testPermissionSilent(sender)) {
                     result.add(arg);
                 }
             }
