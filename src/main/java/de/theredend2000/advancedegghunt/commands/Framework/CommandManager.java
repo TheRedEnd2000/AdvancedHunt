@@ -5,26 +5,33 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * An Advanced Command-Managing system allowing you to register subcommands under a core command.
  */
 public class CommandManager {
     private final JavaPlugin plugin;
-    private final Map<String, Object> defaults;
+    private ICommandList defaultCommandList;
+    private String defaultSyntax;
+    private String defaultPermissionMessage;
 
     public CommandManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.defaults = new HashMap<>();
-        defaults.put("commandList", new CommandList());
-        defaults.put("syntax", "/<coreCommand> <command>");
-        defaults.put("permissionMessage", "You do not have permission to do that!");
+        this.defaultCommandList = new CommandList();
+        this.defaultSyntax = "/<coreCommand> <command>";
+        this.defaultPermissionMessage = "You do not have permission to do that!";
     }
 
-    public void setDefault(String key, Object value) {
-        defaults.put(key, value);
+    public void setDefaultCommandList(ICommandList commandList) {
+        this.defaultCommandList = commandList;
+    }
+
+    public void setDefaultSyntax(String syntax) {
+        this.defaultSyntax = syntax;
+    }
+
+    public void setDefaultPermissionMessage(String permissionMessage) {
+        this.defaultPermissionMessage = permissionMessage;
     }
 
     /**
@@ -45,7 +52,7 @@ public class CommandManager {
      * @param subCommands Class reference to each SubCommand you create for this core command
      */
     public void setupCoreCommand(String name, ICommandList commandList, BaseCommand... subCommands) {
-        ICommandList finalCommandList = (commandList != null) ? commandList : (ICommandList) defaults.get("commandList");
+        ICommandList finalCommandList = (commandList != null) ? commandList : defaultCommandList;
         ArrayList<BaseCommand> subCommandList = new ArrayList<>(Arrays.asList(subCommands));
 
         CoreCommand coreCommand = new CoreCommand(finalCommandList, subCommandList);
@@ -58,10 +65,10 @@ public class CommandManager {
 
         subCommandList.forEach(subCommand -> {
             if (subCommand.getUsage().isEmpty()) {
-                subCommand.setUsage((String) defaults.get("syntax"));
+                subCommand.setUsage(defaultSyntax);
             }
             if (subCommand.getPermissionMessage().isEmpty()) {
-                subCommand.setPermissionMessage((String) defaults.get("permissionMessage"));
+                subCommand.setPermissionMessage(defaultPermissionMessage);
             }
         });
     }
