@@ -64,10 +64,9 @@ public final class CoreCommand extends BaseCommand {
         List<String> result = new ArrayList<>();
         String lowerLastArg = lastArg.toLowerCase();
         for (String arg : arguments) {
-            if (arg.toLowerCase().startsWith(lowerLastArg)) {
-                if (sender == null || subCommandMap.get(arg.toLowerCase()) == null || subCommandMap.get(arg.toLowerCase()).testPermissionSilent(sender)) {
-                    result.add(arg);
-                }
+            if (arg.toLowerCase().startsWith(lowerLastArg) &&
+                    (sender == null || subCommandMap.get(arg.toLowerCase()) == null || subCommandMap.get(arg.toLowerCase()).testPermissionSilent(sender))) {
+                result.add(arg);
             }
         }
         return result;
