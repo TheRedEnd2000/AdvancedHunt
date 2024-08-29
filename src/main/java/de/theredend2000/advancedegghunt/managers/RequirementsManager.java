@@ -5,6 +5,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedegghunt.util.enums.Requirements;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -333,12 +334,14 @@ public class RequirementsManager {
                 case Player_Heads:
                     if(block.getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()) || block.getType().equals(XMaterial.PLAYER_WALL_HEAD.parseMaterial())){
                         new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
-                        Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at " + x + " " + y + " " + z + " to air.");
+                        plugin.getMessageManager().sendMessage(Bukkit.getConsoleSender(), MessageKey.SUCCESSFULLY_CHANGED_BLOCK,
+                                "%X%", String.valueOf(x), "%Y%", String.valueOf(y), "%Z%", String.valueOf(z));
                     }
                     break;
                 case Everything:
                     new Location(world, x, y, z).getBlock().setType(org.bukkit.Material.AIR);
-                    Bukkit.getConsoleSender().sendMessage("§aSuccessfully changed block at " + x + " " + y + " " + z + " to air.");
+                    plugin.getMessageManager().sendMessage(Bukkit.getConsoleSender(), MessageKey.SUCCESSFULLY_CHANGED_BLOCK,
+                            "%X%", String.valueOf(x), "%Y%", String.valueOf(y), "%Z%", String.valueOf(z));
                     break;
             }
         }

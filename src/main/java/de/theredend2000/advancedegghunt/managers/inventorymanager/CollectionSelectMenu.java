@@ -11,6 +11,7 @@ import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -53,7 +54,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         if(keys.isEmpty()){
             playerMenuUtility.getOwner().closeInventory();
-            playerMenuUtility.getOwner().sendMessage("§cThere was an error please restart your server.");
+            Main.getInstance().getMessageManager().sendMessage(playerMenuUtility.getOwner(), MessageKey.COLLECTION_SELECT_ERROR);
             return;
         }
 
@@ -92,6 +93,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
         String selectedCollection = ItemHelper.getItemId(Objects.requireNonNull(event.getCurrentItem()));
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
+        MessageManager messageManager = Main.getInstance().getMessageManager();
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String collection : keys){
@@ -104,12 +106,15 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                     Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), collection);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     open();
-                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.COLLECTION_SELECTION).replaceAll("%SELECTION%", collection));
+                    messageManager.sendMessage(player, MessageKey.COLLECTION_SELECTION, "%SELECTION%", collection);
                     return;
                 case PICKUP_HALF:
                     if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.ChangeCollections)) {
                         new CollectionEditor(Main.getPlayerMenuUtility(player)).open(selectedCollection);
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    } else {
+                        messageManager.sendMessage(player, MessageKey.COLLECTION_EDIT_NO_PERMISSION);
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                     return;
             }
@@ -124,19 +129,20 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
             case EMERALD_BLOCK:
                 if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
                     if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
-                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        messageManager.sendMessage(player, MessageKey.COLLECTION_REFRESH_COOLDOWN);
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                         return;
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
                 open();
+                messageManager.sendMessage(player, MessageKey.COLLECTION_REFRESH_SUCCESS);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case PLAYER_HEAD:
                 if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
                     if (page == 0) {
-                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                        messageManager.sendMessage(player, MessageKey.FIRST_PAGE);
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     } else {
                         page = page - 1;
@@ -149,12 +155,15 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                         open();
                         player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     } else {
-                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                        messageManager.sendMessage(player, MessageKey.LAST_PAGE);
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Add collection")) {
                     if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.CreateCollection)) {
                         new CollectionCreator(Main.getPlayerMenuUtility(player)).open();
+                        player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                    } else {
+                        messageManager.sendMessage(player, MessageKey.PERMISSION_ERROR, "%PERMISSION%", Permission.CreateCollection.toString());
                         player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
                     }
                 }

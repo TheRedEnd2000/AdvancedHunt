@@ -79,7 +79,7 @@ public class RequirementSelection extends InventoryMenu {
                 new RequirementHours(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
             case "Selection - Date":
-                player.sendMessage("§cThis requirement section is currently unavailable.");
+                messageManager.sendMessage(player, MessageKey.REQUIREMENT_SECTION_UNAVAILABLE);
                 break;
             case "Selection - Weekday":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -100,18 +100,18 @@ public class RequirementSelection extends InventoryMenu {
             case "Activate all":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 plugin.getRequirementsManager().changeActivity(collection, true);
-                player.sendMessage(messageManager.getMessage(MessageKey.ACTIVATE_REQUIREMENTS));
+                messageManager.sendMessage(player, MessageKey.ACTIVATE_REQUIREMENTS);
                 menuContent(collection);
                 break;
             case "Deactivate all":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 plugin.getRequirementsManager().changeActivity(collection, false);
-                player.sendMessage(messageManager.getMessage(MessageKey.DEACTIVATE_REQUIREMENTS));
+                messageManager.sendMessage(player, MessageKey.DEACTIVATE_REQUIREMENTS);
                 menuContent(collection);
                 break;
             case "Requirements Order":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                player.sendMessage("§cThis feature is coming soon.");
+                messageManager.sendMessage(player, MessageKey.REQUIREMENTS_ORDER_COMING_SOON);
                 break;
         }
     }

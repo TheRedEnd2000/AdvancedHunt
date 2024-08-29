@@ -59,7 +59,7 @@ collection-disabled: '&cThis collection is currently disabled.'
 collection-selected: '&7You selected the collection &6%SELECTION%'
 collection-deleted: '&aSuccessfully deleted collection &6%COLLECTION%'
 chanced-chance: '&aSuccessfully set chance to &e%CHANCE%%&a.'
-rarity-message: '%RARITY% DROP! &7You receive &b%ITEM% §7x%COUNT%'
+rarity-message: '%RARITY% DROP! &7You receive &b%ITEM% &7x%COUNT%'
 
 eggimport-hand: '&7Please hold the &eplayer head &7with the &2egg texture &7in your hand.'
 eggimport-failed-profile: '&cFailed to load a player profile.'
@@ -74,3 +74,62 @@ preset-default: '&7You changed the new &adefault loading &7preset to &e%PRESET%&
 preset-not-delete-default: '&cYou cannot delete the preset that is selected as default loading preset.'
 
 setting-commandfeedback: '&aCommand Feedback has been &4discontinued.&a Either manually do "/gamerule sendCommandFeedback false" or remove the "minecraft.admin.command_feedback" permission.'
+
+commands-outdated: '&cThis system is outdated. You can now change commands by SHIFT + RIGHT-CLICK an egg.'
+
+egg-data-converted-success: '&aSuccessfully converted egg data to new format.'
+egg-data-converted-broadcast: '&aEgg data has been converted to a new format. Please check if everything is working correctly.'
+egg-data-converted-failed: '&cFailed to convert egg data. Please check the console for more information.'
+egg-data-convert-start: "&cAdvancedEggHunt found the old configuration system.\n&cIt is now changing to the new one.\n&4THIS CAN TAKE A WHILE!"
+egg-data-convert-broadcast: '&4AdvancedEggHunt IS UPDATING THEIR CONFIGURATION SYSTEM PLEASE DONT MOVE UTIL FINISHED'
+egg-data-convert-op-message: '&cTHE BEST IS WHEN NOBODY IS ON THE SERVER DURING THE CONVERT. &4CONSOLE SHOWS THE PROGRESS'
+egg-data-convert-locations: '&aAdvancedEggHunt converted all egg locations!'
+egg-data-convert-player: '&eConverted player data of %UUID%.'
+egg-data-convert-done: '&aUPDATING DONE!'
+egg-data-convert-success: '&aeggs.yml was converted successfully.'
+egg-data-convert-delete-fail: '&ceggs.yml can''t be deleted.'
+egg-data-convert-delete-error: '&4There was an error while deleting the eggs.yml file: %ERROR%'
+egg-data-convert-complete: "&aAdvancedEggHunt converted all data to the new system.\n&2The plugin is now running flawless again\n&4Please report bugs on the discord: &9https://discord.gg/qapvQMUt34"
+
+placeholderapi-detected: '&aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.'
+placeholderapi-enabled: '&2&lAll placeholders successfully enabled.'
+
+init-data-players-loaded: '&2&lLoaded data of %COUNT% player(s).'
+init-data-collections-loaded: '&2&lLoaded data of %COUNT% collection(s).'
+
+material-error-console: '&4Material Error: %ERROR%'
+
+successfully-changed-block: '§aSuccessfully changed block at %X% %Y% %Z% to air.'
+
+requirement-section-unavailable: '§cThis requirement section is currently unavailable.'
+requirements-order-coming-soon: '§cThis feature is coming soon.'
+collection-select-error: '§cThere was an error please restart your server.'
+collection-refresh-cooldown: '§cPlease wait before refreshing again.'
+collection-refresh-success: '§aCollection list refreshed successfully.'
+collection-edit-no-permission: '§cYou don''t have permission to edit collections.'
+
+help-message: |
+  &3-----------------------------------------
+  &5&l==========HELP==========
+  
+  &2&lInformation
+  &7Name: &6%NAME%
+  &7Plugin Version: &6%VERSION%
+  &7Server Version: &6%SERVER_VERSION%
+  &7Author: &6%AUTHOR%
+
+  &2&lCommands
+  &6/advancedegghunt collection &7-> &bSwitch and edit collections.
+  &6/advancedegghunt help &7-> &bShows this help messages and information.
+  &6/advancedegghunt reload &7-> &bReloads the config.
+  &6/advancedegghunt list &7-> &bLists all placed eggs.
+  &6/advancedegghunt placeEggs &7-> &bEnter Place-Mode to place or break eggs.
+  &6/advancedegghunt settings &7-> &bConfigure many settings of the plugin.
+  &6/advancedegghunt hint &7-> &bOpens the hint menu to find eggs easier.
+  &6/advancedegghunt progress &7-> &bView your progress of the eggs.
+  &6/advancedegghunt show &7-> &bSpawns an glowing armorstand at every egg.
+  &6/advancedegghunt commands &7-> &bChange commands or add more.
+  &6/advancedegghunt reset [player | all] &7-> &bResets the FoundEggs.
+  &6/advancedegghunt eggImport &7-> &bImport a new place egg.
+  &5&l==========HELP==========
+  &3-----------------------------------------

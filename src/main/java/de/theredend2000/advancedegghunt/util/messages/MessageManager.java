@@ -4,6 +4,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.configurations.MessageConfig;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 public class MessageManager {
 
@@ -37,5 +38,19 @@ public class MessageManager {
         else
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', message));
         return message;
+    }
+
+    public void sendMessage(CommandSender player, MessageKey key) {
+        player.sendMessage(this.getMessage(key));
+    }
+
+    public void sendMessage(CommandSender player, MessageKey key, String... replacements) {
+        String[] messages = this.getMessage(key).split("\n");
+        for (String message : messages) {
+            for (int i = 0; i < replacements.length; i += 2) {
+                message = message.replace(replacements[i], replacements[i + 1]);
+            }
+            player.sendMessage(message);
+        }
     }
 }

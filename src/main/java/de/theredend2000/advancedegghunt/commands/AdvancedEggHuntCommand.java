@@ -87,33 +87,6 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 .collect(Collectors.toList());
     }
 
-    private void sendHelp(Player player) {
-        player.sendMessage("§3-----------------------------------------");
-        player.sendMessage("§5§l==========HELP==========");
-        player.sendMessage("");
-        player.sendMessage("§2§lInformation");
-        player.sendMessage("§7Name: §6" + Main.getInstance().getDescription().getName());
-        player.sendMessage("§7Plugin Version: §6" + Main.getInstance().getDescription().getVersion());
-        player.sendMessage("§7Server Version: §6" + Bukkit.getBukkitVersion().split("-")[0]);
-        player.sendMessage("§7Author: §6XMC-PLUGINS");
-        player.sendMessage("");
-        player.sendMessage("§2§lCommands");
-        player.sendMessage("§6/advancedegghunt collection §7-> §bSwitch and edit collections.");
-        player.sendMessage("§6/advancedegghunt help §7-> §bShows this help messages and information.");
-        player.sendMessage("§6/advancedegghunt reload §7-> §bReloads the config.");
-        player.sendMessage("§6/advancedegghunt list §7-> §bLists all placed eggs.");
-        player.sendMessage("§6/advancedegghunt placeEggs §7-> §bEnter Place-Mode to place or break eggs.");
-        player.sendMessage("§6/advancedegghunt settings §7-> §bConfigure many settings of the plugin.");
-        player.sendMessage("§6/advancedegghunt hint §7-> §bOpens the hint menu to find eggs easier.");
-        player.sendMessage("§6/advancedegghunt progress §7-> §bView your progress of the eggs.");
-        player.sendMessage("§6/advancedegghunt show §7-> §bSpawns an glowing armorstand at every egg.");
-        player.sendMessage("§6/advancedegghunt commands §7-> §bChange commands or add more.");
-        player.sendMessage("§6/advancedegghunt reset [player | all] §7-> §bResets the FoundEggs.");
-        player.sendMessage("§6/advancedegghunt eggImport §7-> §bImport a new place egg.");
-        player.sendMessage("§5§l==========HELP==========");
-        player.sendMessage("§3-----------------------------------------");
-    }
-
     private String usage() {
         return messageManager.getMessage(MessageKey.COMMAND_NOT_FOUND);
     }
@@ -185,11 +158,11 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         if (Main.getInstance().getPlaceEggsPlayers().contains(player)) {
             eggManager.finishEggPlacing(player);
             Main.getInstance().getPlaceEggsPlayers().remove(player);
-            player.sendMessage(messageManager.getMessage(MessageKey.LEAVE_PLACEMODE));
+            messageManager.sendMessage(player, MessageKey.LEAVE_PLACEMODE);
         } else {
             eggManager.startEggPlacing(player);
             Main.getInstance().getPlaceEggsPlayers().add(player);
-            player.sendMessage(messageManager.getMessage(MessageKey.ENTER_PLACEMODE));
+            messageManager.sendMessage(player, MessageKey.ENTER_PLACEMODE);
             player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR).setDisplayName("§6§lEggs Types §7(Right-Click)").setCustomId("egghunt.eggs").build());
             player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayName("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.").setCustomId("egghunt.finish").build());
         }
@@ -203,8 +176,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     private void handleShow(Player player) {
         if (!checkPermission(player, Permission.Command.show)) return;
         eggManager.showAllEggs();
-        player.sendMessage(messageManager.getMessage(MessageKey.EGG_SHOW_WARNING));
-        player.sendMessage(messageManager.getMessage(MessageKey.EGG_VISIBLE).replaceAll("%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow())));
+        messageManager.sendMessage(player, MessageKey.EGG_SHOW_WARNING);
+        messageManager.sendMessage(player, MessageKey.EGG_VISIBLE, "%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow()));
     }
 
     private void handleReload(Player player) {
@@ -217,12 +190,17 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         Main.getInstance().getGlobalPresetDataManager().reload();
         Main.getInstance().getIndividualPresetDataManager().reload();
         Main.PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', plugin.getPluginConfig().getPrefix()));
-        player.sendMessage(messageManager.getMessage(MessageKey.RELOAD_CONFIG));
+        messageManager.sendMessage(player, MessageKey.RELOAD_CONFIG);
     }
 
     private void handleHelp(Player player) {
         if (!checkPermission(player, Permission.Command.help)) return;
-        sendHelp(player);
+        messageManager.sendMessage(player, MessageKey.HELP_MESSAGE,
+                "%NAME%", Main.getInstance().getDescription().getName(),
+                "%VERSION%", Main.getInstance().getDescription().getVersion(),
+                "%SERVER_VERSION%", Bukkit.getBukkitVersion().split("-")[0],
+                "%AUTHOR%", "XMC-PLUGINS"
+        );
     }
 
     private void handleSettings(Player player) {
@@ -242,7 +220,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     private void handleCommands(Player player) {
         if (!checkPermission(player, Permission.Command.commands)) return;
-        player.sendMessage("§cThis system is outdated. You can now change commands by SHIFT + RIGHT-CLICK an egg.");
+        messageManager.sendMessage(player, MessageKey.COMMANDS_OUTDATED);
     }
 
     private void handleLeaderboard(Player player) {
@@ -269,7 +247,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 return;
             } else {
                 if (counter == max)
-                    player.sendMessage(messageManager.getMessage(MessageKey.ALL_EGGS_FOUND));
+                    messageManager.sendMessage(player, MessageKey.ALL_EGGS_FOUND);
             }
         }
     }
@@ -278,7 +256,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         if (!checkPermission(player, Permission.Command.eggImport)) return;
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!(item.getItemMeta() instanceof SkullMeta)) {
-            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_HAND));
+            messageManager.sendMessage(player, MessageKey.EGGIMPORT_HAND);
             return;
         }
 
@@ -294,14 +272,14 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         });
 
         if (fullTexture == null) {
-            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_FAILED_PROFILE));
+            messageManager.sendMessage(player, MessageKey.EGGIMPORT_FAILED_PROFILE);
             return;
         }
 
         fullTexture = fullTexture.replaceFirst(".+?mUv", "");
         for (String key : Main.getInstance().getPluginConfig().getPlaceEggIds()) {
             if (Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture)) {
-                player.sendMessage(messageManager.getMessage(MessageKey.BLOCK_LISTED));
+                messageManager.sendMessage(player, MessageKey.BLOCK_LISTED);
                 return;
             }
         }
@@ -309,7 +287,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         String base64Texture = fullTexture;
         Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
         Main.getInstance().getPluginConfig().saveData();
-        player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_SUCCESS));
+        messageManager.sendMessage(player, MessageKey.EGGIMPORT_SUCCESS);
     }
 
     private void handleReset(Player player, String[] args) {
@@ -321,7 +299,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
         if (args[1].equalsIgnoreCase("all")) {
             eggManager.resetStatsAll();
-            player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
+            messageManager.sendMessage(player, MessageKey.FOUNDEGGS_RESET);
             return;
         }
 
@@ -331,18 +309,18 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             if (eggManager.containsPlayer(name)) {
                 if (plugin.getEggDataManager().containsCollection(collection)) {
                     eggManager.resetStatsPlayer(name, collection);
-                    player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION).replaceAll("%PLAYER%", name).replaceAll("%COLLECTION%", collection));
+                    messageManager.sendMessage(player, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", name, "%COLLECTION%", collection);
                 }
             } else {
-                player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
+                messageManager.sendMessage(player, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
             }
         } else {
             if (eggManager.containsPlayer(name)) {
                 for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
                     eggManager.resetStatsPlayer(name, collections);
-                player.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
+                messageManager.sendMessage(player, MessageKey.FOUNDEGGS_PLAYER_RESET, "%PLAYER%", name);
             } else {
-                player.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
+                messageManager.sendMessage(player, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
             }
         }
     }
@@ -351,7 +329,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
             if (args[1].equalsIgnoreCase("all")) {
                 eggManager.resetStatsAll();
-                sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_RESET));
+                 messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_RESET);
                 return;
             }
 
@@ -359,9 +337,9 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             if (eggManager.containsPlayer(name)) {
                 for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
                     eggManager.resetStatsPlayer(name, collections);
-                sender.sendMessage(messageManager.getMessage(MessageKey.FOUNDEGGS_PLAYER_RESET).replaceAll("%PLAYER%", name));
+                 messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET, "%PLAYER%", name);
             } else {
-                sender.sendMessage(messageManager.getMessage(MessageKey.PLAYER_NOT_FOUND).replaceAll("%PLAYER%", name));
+                 messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
             }
         } else {
             sender.sendMessage(usage());
@@ -370,7 +348,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     private boolean checkPermission(Player player, Permission.Command permission) {
         if (!plugin.getPermissionManager().checkPermission(player, permission)) {
-            player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", permission.toString()));
+            messageManager.sendMessage(player, MessageKey.PERMISSION_ERROR, "%PERMISSION%", permission.toString());
             return false;
         }
         return true;

@@ -19,6 +19,7 @@ import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import org.bukkit.Bukkit;
@@ -177,9 +178,9 @@ public final class Main extends JavaPlugin {
 
     private void setupPlaceholderAPI() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            Bukkit.getConsoleSender().sendMessage(PREFIX + "§aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.");
+            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_DETECTED);
             new PlaceholderExtension().register();
-            Bukkit.getConsoleSender().sendMessage(PREFIX + "§2§lAll placeholders successfully enabled.");
+            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_ENABLED);
         }
     }
 
@@ -218,13 +219,12 @@ public final class Main extends JavaPlugin {
     }
 
     private void initData(){
-        List<String > eggCollections = eggDataManager.savedEggCollections();
+        List<String> eggCollections = eggDataManager.savedEggCollections();
         List<UUID> playerCollection = eggDataManager.savedPlayers();
         playerEggDataManager.initPlayers();
-        Bukkit.getConsoleSender().sendMessage("§2§l" +
-                "Loaded data of " + playerCollection.size() + " player(s).");
+        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_PLAYERS_LOADED, "%COUNT%", String.valueOf(playerCollection.size()));
         eggDataManager.initEggs();
-        Bukkit.getConsoleSender().sendMessage("§2§lLoaded data of " + eggCollections.size() + " collection(s).");
+        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_COLLECTIONS_LOADED, "%COUNT%", String.valueOf(eggCollections.size()));
         for(String collection : eggCollections)
             eggManager.updateMaxEggs(collection);
     }
@@ -298,12 +298,12 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    public static XMaterial getMaterial(String materialString) {
+    public XMaterial getMaterial(String materialString) {
         try {
             return Optional.ofNullable(XMaterial.valueOf(materialString))
                     .orElse(XMaterial.BARRIER);
         } catch (Exception ex) {
-            Bukkit.getConsoleSender().sendMessage("§4Material Error: " + ex);
+            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.MATERIAL_ERROR_CONSOLE, "%ERROR%", ex.getMessage());
             return XMaterial.STONE;
         }
     }
