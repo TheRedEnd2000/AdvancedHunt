@@ -108,12 +108,12 @@ public class CollectionEditor extends InventoryMenu {
                 break;
             case "Delete":
                 if (collection.equalsIgnoreCase("default")) {
-                    player.sendMessage("§cBecause of many issues it is not possible to delete the default section.\n§cIf you want to disable it please just change the status.");
+                    messageManager.sendMessage(player, MessageKey.COLLECTION_DEFAULT_UNDELETABLE);
                     return;
                 }
                 Main.getInstance().getRequirementsManager().removeAllEggBlocks(collection, player.getUniqueId());
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DELETED).replaceAll("%COLLECTION%", collection));
+                messageManager.sendMessage(player, MessageKey.COLLECTION_DELETED, "%COLLECTION%", collection);
                 for (UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()) {
                     FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
                     playerConfig.set("FoundEggs." + collection, null);
@@ -144,7 +144,7 @@ public class CollectionEditor extends InventoryMenu {
                 placedEggs.set("HideForPlayer", !hideforplayer);
                 Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                 menuContent(collection);*/
-                player.sendMessage("§cThis feature is coming soon.");
+                messageManager.sendMessage(player, MessageKey.FEATURE_COMING_SOON);
                 break;
             case "One Player":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

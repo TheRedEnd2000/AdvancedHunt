@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.util;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,12 +34,12 @@ public class Updater implements Listener {
             String oldVersion = plugin.getDescription().getVersion();
             if(VersionComparator.isLessThan(oldVersion, newVersion)) {
                 isOutdated = true;
-                player.sendMessage(Main.PREFIX + "§aThere is a newer version available. Please update your plugin§a. §aVersion: §2§l" + oldVersion + "§6 --> §2§l" + newVersion);
+                plugin.getMessageManager().sendMessage(player, MessageKey.UPDATE_AVAILABLE, "%OLD_VERSION%", oldVersion, "%NEW_VERSION%", newVersion);
                 return true;
             }
         }
         catch(Exception e) {
-            player.sendMessage(Main.PREFIX + "§4§lERROR: §cCould not make connection to SpigotMC.org");
+            plugin.getMessageManager().sendMessage(player, MessageKey.UPDATE_ERROR);
             e.printStackTrace();
         }
         return false;
@@ -52,13 +53,12 @@ public class Updater implements Listener {
             String oldVersion = plugin.getDescription().getVersion();
             if(VersionComparator.isLessThan(oldVersion, newVersion)) {
                 isOutdated = true;
-                Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§cYou do not have the most updated version of §eAdvancedEggHunt§c.");
-                Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§cPlease chance the version: §4" + oldVersion + "§6 --> §2§l" + newVersion);
+                plugin.getMessageManager().sendMessage(Bukkit.getConsoleSender(), MessageKey.CONSOLE_UPDATE_AVAILABLE, "%OLD_VERSION%", oldVersion, "%NEW_VERSION%", newVersion);
                 return true;
             }
         }
         catch(Exception e) {
-            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§4§lERROR: §cCould not make connection to SpigotMC.org");
+            plugin.getMessageManager().sendMessage(Bukkit.getConsoleSender(), MessageKey.CONSOLE_UPDATE_ERROR);
             e.printStackTrace();
         }
         return false;

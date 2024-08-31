@@ -281,9 +281,9 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    private void sendCurrentLanguage(){
+    private void sendCurrentLanguage() {
         String lang = pluginConfig.getLanguage();
-        Bukkit.getConsoleSender().sendMessage(PREFIX + "§7Language §6" + lang + " §7detected. File messages-" + lang + ".yml loaded.");
+        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.LANGUAGE_DETECTED, "%LANG%", lang);
     }
 
     private void setupConfigs(){

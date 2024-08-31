@@ -72,6 +72,9 @@ preset-loaded: '&7The &epreset %PRESET% &7was loaded &asuccessfully&7.'
 preset-delete: '&7You have &asuccessfully &cdeleted &7the &epreset %PRESET%&7.'
 preset-default: '&7You changed the new &adefault loading &7preset to &e%PRESET%&7.'
 preset-not-delete-default: '&cYou cannot delete the preset that is selected as default loading preset.'
+preset-loading-no: '&cPreset loading is already in progress.'
+preset-loading-success: '&aSuccessfully loaded preset &6%PRESET%&a into all eggs.'
+preset-loading-progress: '§bLoading presets... (%COUNT%/%MAX%)'
 
 setting-commandfeedback: '&aCommand Feedback has been &4discontinued.&a Either manually do "/gamerule sendCommandFeedback false" or remove the "minecraft.admin.command_feedback" permission.'
 
@@ -93,6 +96,15 @@ egg-data-convert-complete: "&aAdvancedEggHunt converted all data to the new syst
 
 placeholderapi-detected: '&aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.'
 placeholderapi-enabled: '&2&lAll placeholders successfully enabled.'
+language-detected: '&7Language &6%LANG% &7detected. File messages-%LANG%.yml loaded.'
+command-system-updated: '&2UPDATED THE COMMAND SYSTEM'
+command-system-check: '&2PLEASE CHECK YOUR COMMANDS!'
+command-system-chances-updated: '&2YOUR COMMAND SYSTEM WAS UPDATED'
+command-system-chances-contains: '&2IT NOW CONTAINS CHANCES'
+update-available: '&aThere is a newer version available. Please update your plugin§a. §aVersion: §2§l%OLD_VERSION%§6 --> §2§l%NEW_VERSION%'
+update-error: '&4§lERROR: §cCould not make connection to SpigotMC.org'
+console-update-available: '&cYou do not have the most updated version of §eAdvancedEggHunt§c. Please change the version: §4%OLD_VERSION%§6 --> §2§l%NEW_VERSION%'
+console-update-error: '&4§lERROR: §cCould not make connection to SpigotMC.org'
 
 init-data-players-loaded: '&2&lLoaded data of %COUNT% player(s).'
 init-data-collections-loaded: '&2&lLoaded data of %COUNT% collection(s).'
@@ -107,6 +119,14 @@ collection-select-error: '§cThere was an error please restart your server.'
 collection-refresh-cooldown: '§cPlease wait before refreshing again.'
 collection-refresh-success: '§aCollection list refreshed successfully.'
 collection-edit-no-permission: '§cYou don''t have permission to edit collections.'
+collection-name-required: '§cPlease enter a name to continue.'
+collection-name-exists: '§cThe name of the collection is already chosen.'
+collection-default-undeletable: '§cBecause of many issues it is not possible to delete the default section. If you want to disable it please just change the status.'
+feature-coming-soon: '§cThis feature is coming soon.'
+item-added-success: '§aSuccessfully added a new item.'
+invalid-chance: '§cNot valid. Please enter a number between 0.0000001 and 100.'
+placeholders-hover-text: '§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------'
+placeholders-hover-content: '§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin'
 
 help-message: |
   &3-----------------------------------------

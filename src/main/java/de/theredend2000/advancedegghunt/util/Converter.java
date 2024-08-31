@@ -1,6 +1,8 @@
 package de.theredend2000.advancedegghunt.util;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,7 +11,10 @@ public class Converter {
 
     private Main plugin;
 
+    private MessageManager messageManager;
+
     public Converter(){
+        this.messageManager = new MessageManager();
         this.plugin = Main.getInstance();
     }
 
@@ -65,8 +70,8 @@ public class Converter {
             placedEggs.set("Rewards", null);
             plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
 
-            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2UPDATED THE COMMAND SYSTEM");
-            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2PLEASE CHECK YOUR COMMANDS!");
+            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.COMMAND_SYSTEM_UPDATED);
+            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.COMMAND_SYSTEM_CHECK);
         }
     }
 
@@ -134,8 +139,8 @@ public class Converter {
             }
         }
         if(added){
-            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2YOUR COMMAND SYSTEM WAS UPDATED");
-            Bukkit.getConsoleSender().sendMessage(Main.PREFIX + "§2IT NOW CONTAINS CHANCES");
+            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.COMMAND_SYSTEM_CHANCES_UPDATED);
+            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.COMMAND_SYSTEM_CHANCES_CONTAINS);
         }
     }
 }

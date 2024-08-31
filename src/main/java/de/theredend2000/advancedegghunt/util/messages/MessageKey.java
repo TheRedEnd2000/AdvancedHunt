@@ -106,7 +106,27 @@ public enum MessageKey {
     COLLECTION_SELECT_ERROR("collection-select-error"),
     COLLECTION_REFRESH_COOLDOWN("collection-refresh-cooldown"),
     COLLECTION_REFRESH_SUCCESS("collection-refresh-success"),
-    COLLECTION_EDIT_NO_PERMISSION("collection-edit-no-permission");
+    COLLECTION_EDIT_NO_PERMISSION("collection-edit-no-permission"),
+    COLLECTION_NAME_REQUIRED("collection-name-required"),
+    COLLECTION_NAME_EXISTS("collection-name-exists"),
+    COLLECTION_DEFAULT_UNDELETABLE("collection-default-undeletable"),
+    FEATURE_COMING_SOON("feature-coming-soon"),
+    ITEM_ADDED_SUCCESS("item-added-success"),
+    INVALID_CHANCE("invalid-chance"),
+    PLACEHOLDERS_HOVER_TEXT("placeholders-hover-text"),
+    PLACEHOLDERS_HOVER_CONTENT("placeholders-hover-content"),
+    PRESET_LOADING_NO("preset-loading-no"),
+    PRESET_LOADING_SUCCESS("preset-loading-success"),
+    PRESET_LOADING_PROGRESS("preset-loading-progress"),
+    LANGUAGE_DETECTED("language-detected"),
+    COMMAND_SYSTEM_UPDATED("command-system-updated"),
+    COMMAND_SYSTEM_CHECK("command-system-check"),
+    COMMAND_SYSTEM_CHANCES_UPDATED("command-system-chances-updated"),
+    COMMAND_SYSTEM_CHANCES_CONTAINS("command-system-chances-contains"),
+    UPDATE_AVAILABLE("update-available"),
+    UPDATE_ERROR("update-error"),
+    CONSOLE_UPDATE_AVAILABLE("console-update-available"),
+    CONSOLE_UPDATE_ERROR("console-update-error");
 
     private final String path;
 

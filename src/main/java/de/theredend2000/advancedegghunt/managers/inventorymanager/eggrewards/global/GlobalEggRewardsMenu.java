@@ -179,7 +179,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
 
         if(event.getClickedInventory().equals(player.getInventory())){
             convertItemIntoCommand(event.getCurrentItem(), collection);
-            player.sendMessage("§aSuccessfully added a new item.");
+            messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
             menuContent(collection);
             return;
         }
@@ -201,22 +201,21 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     case CLONE_STACK:
                         new AnvilGUI.Builder()
                                 .onClose(stateSnapshot -> {
-                                    if (!stateSnapshot.getText().isEmpty()) {
-                                        if(stateSnapshot.getText().matches("[0-9.]+")){
-                                            if(!(Double.parseDouble(stateSnapshot.getText()) < 0.0000001 || Double.parseDouble(stateSnapshot.getText()) > 100)) {
-                                                placedEggs.set("GlobalRewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
-                                                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
-                                                player.sendMessage(messageManager.getMessage(MessageKey.CHANCED_CHANCE).replaceAll("%CHANCE%", stateSnapshot.getText()));
-                                            }else
-                                                player.sendMessage("§cNot valid");
-                                        }else
-                                            player.sendMessage(messageManager.getMessage(MessageKey.NOT_NUMBER));
-                                        open(id,collection);
+                                    if (stateSnapshot.getText().isEmpty()) {
+                                        return;
                                     }
+                                    if(stateSnapshot.getText().matches("[0-9.]+")){
+                                        if(!(Double.parseDouble(stateSnapshot.getText()) < 0.0000001 || Double.parseDouble(stateSnapshot.getText()) > 100)) {
+                                            placedEggs.set("GlobalRewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
+                                            plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                                            messageManager.sendMessage(player, MessageKey.CHANCED_CHANCE, "%CHANCE%", stateSnapshot.getText());
+                                        }else
+                                            messageManager.sendMessage(player, MessageKey.INVALID_CHANCE);
+                                    }else
+                                        messageManager.sendMessage(player, MessageKey.NOT_NUMBER);
+                                    open(id,collection);
                                 })
-                                .onClick((slot, stateSnapshot) -> {
-                                    return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                                })
+                                .onClick((slot, stateSnapshot) -> Collections.singletonList(AnvilGUI.ResponseAction.close()))
                                 .text(String.valueOf(placedEggs.getDouble("GlobalRewards." + commandID + ".chance")))
                                 .title("Change chance")
                                 .plugin(Main.getInstance())
@@ -224,7 +223,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                         break;
                     case PICKUP_HALF:
-                        player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_DELETE).replaceAll("%ID%", commandID));
+                        messageManager.sendMessage(player, MessageKey.COMMAND_DELETE, "%ID%", commandID);
                         placedEggs.set("GlobalRewards." + commandID, null);
                         plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
                         open(id, collection);
@@ -248,9 +247,9 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
             case GOLD_INGOT:
                 player.closeInventory();
                 Main.getInstance().getPlayerAddCommand().put(player, 120);
-                TextComponent textComponent = new TextComponent("\n\n\n\n\n" + Main.getInstance().getMessageManager().getMessage(MessageKey.NEW_COMMAND) + "\n\n");
-                TextComponent clickme = new TextComponent("§9-----------§3§l[PLACEHOLDERS] §7(Hover)§9-----------");
-                clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Available placeholders:\n§b- %PLAYER% --> Name of the player\n§b- & --> For color codes (&6=gold)\n§b- %EGGS_FOUND% --> How many eggs the player has found\n§b- %EGGS_MAX% --> How many eggs are placed\n§b- %PREFIX% --> The prefix of the plugin")));
+                TextComponent textComponent = new TextComponent("\n\n\n\n\n" + messageManager.getMessage(MessageKey.NEW_COMMAND) + "\n\n");
+                TextComponent clickme = new TextComponent(messageManager.getMessage(MessageKey.PLACEHOLDERS_HOVER_TEXT));
+                clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(messageManager.getMessage(MessageKey.PLACEHOLDERS_HOVER_CONTENT))));
                 textComponent.addExtra(clickme);
                 player.spigot().sendMessage(textComponent);
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
@@ -261,7 +260,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                 break;
             case EMERALD_BLOCK:
                 if (placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false).size() < 1) {
-                    player.sendMessage(messageManager.getMessage(MessageKey.PRESET_FAILED_COMMANDS));
+                    messageManager.sendMessage(player, MessageKey.PRESET_FAILED_COMMANDS);
                     break;
                 }
                 new AnvilGUI.Builder()
@@ -275,9 +274,9 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                                     presetDataManager.addDefaultRewardCommands(preset);
                                     menuContent(collection);
                                     open(id,collection);
-                                    player.sendMessage(messageManager.getMessage(MessageKey.PRESET_SAVED).replaceAll("%PRESET%", preset));
+                                    messageManager.sendMessage(player, MessageKey.PRESET_SAVED, "%PRESET%", preset);
                                 } else {
-                                    player.sendMessage(messageManager.getMessage(MessageKey.PRESET_ALREADY_EXISTS).replaceAll("%PRESET%", preset));
+                                    messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
                                 }
                             }
                         })
@@ -296,7 +295,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
             case PLAYER_HEAD:
                 if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
                     if (page == 0) {
-                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                        messageManager.sendMessage(player, MessageKey.FIRST_PAGE);
                         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     } else {
                         page = page - 1;
@@ -309,7 +308,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                         menuContent(collection);
                         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     } else {
-                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                        messageManager.sendMessage(player, MessageKey.LAST_PAGE);
                         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                     }
                 } else if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Individual")) {

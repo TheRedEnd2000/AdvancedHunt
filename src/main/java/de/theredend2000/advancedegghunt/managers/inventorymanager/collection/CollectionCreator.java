@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionSele
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.InventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
@@ -94,7 +95,7 @@ public class CollectionCreator extends InventoryMenu {
             case "Create":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 if (name == null) {
-                    player.sendMessage("§cPlease enter a name to continue.");
+                    messageManager.sendMessage(player, MessageKey.COLLECTION_NAME_REQUIRED);
                     return;
                 }
                 if (!Main.getInstance().getEggDataManager().containsSectionFile(name)) {
@@ -106,8 +107,9 @@ public class CollectionCreator extends InventoryMenu {
                     Main.getInstance().getRequirementsManager().resetReset(name);
                     Main.getInstance().getGlobalPresetDataManager().loadPresetIntoCollectionCommands(Main.getInstance().getPluginConfig().getDefaultGlobalLoadingPreset(),name);
                     Main.getInstance().getEggManager().spawnEggParticle();
-                } else
-                    player.sendMessage("§cThe name of the collection is already chosen.");
+                } else {
+                    messageManager.sendMessage(player, MessageKey.COLLECTION_NAME_EXISTS);
+                }
                 break;
         }
     }
