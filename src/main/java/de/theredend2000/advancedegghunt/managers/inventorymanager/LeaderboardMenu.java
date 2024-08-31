@@ -7,6 +7,8 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.common.Paginat
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -40,27 +42,33 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons() {
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
-        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName("§aRefresh").build();
+        MenuMessageManager messageManager = Main.getInstance().getMenuMessageManager();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON)).build();
+        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.REFRESH_BUTTON)).build();
 
         String selectedCollection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
-        inventoryContent[45] = new ItemBuilder(XMaterial.PAPER).setDisplayName("§bSelected Collection")
-                .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedCollection, "", "§eClick to change.").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
+                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
+                .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedCollection, "", "§eClick to change.")
+                .build();
     }
 
     public void setMenuItems() {
+        MenuMessageManager messageManager = Main.getInstance().getMenuMessageManager();
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Left")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
+                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Right")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
+                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         addMenuBorderButtons();
 
         LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
-        ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER).setDisplayName("§2Sort");
+        ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.SORT_BUTTON));
         switch (sortTypes){
             case ALL:
                 itemBuilder = itemBuilder.setLore("", "§6 ➤ Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
@@ -78,7 +86,9 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         getInventory().setItem(51, itemBuilder.build());
 
         if (Main.getInstance().getEggDataManager().savedPlayers().isEmpty()) {
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                    .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.NO_PLAYER))
+                    .setLore("§7There are no players in the leaderboard.").build());
             return;
         }
 

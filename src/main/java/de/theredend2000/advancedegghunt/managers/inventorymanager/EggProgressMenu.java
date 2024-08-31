@@ -6,6 +6,8 @@ import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,18 +35,25 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons() {
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
-        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName("§aRefresh").build();
+        MenuMessageManager messageManager = Main.getInstance().getMenuMessageManager();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON)).build();
+        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.REFRESH_BUTTON)).build();
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
-        inventoryContent[45] = new ItemBuilder(XMaterial.PAPER).setDisplayName("§bSelected Collection").setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.").build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
+            .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
+            .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.")
+            .build();
     }
 
     public void setMenuItems() {
+        MenuMessageManager messageManager = Main.getInstance().getMenuMessageManager();
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Left")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
+                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.").setDisplayName("§2Right")
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
+                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
 
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
@@ -54,7 +63,9 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
         if(placedEggs.contains("PlacedEggs.")){
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Eggs Available").setLore("§7There are no eggs no find", "§7please contact an admin.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.NO_EGGS_AVAILABLE))
+                .setLore("§7There are no eggs no find", "§7please contact an admin.").build());
 
         if (keys == null || keys.isEmpty()) {
             return;
@@ -76,12 +87,29 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             int random = new Random().nextInt(7);
             String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
             String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
-            if(showcoordinates && hasFound){
-                getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", "§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "").setCustomId(keys.get(index)).build());
-            }else if(hasFound && !showcoordinates) {
-                getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "").setCustomId(keys.get(index)).build());
-            }else
-                getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random)).setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")").setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet.")).setCustomId(keys.get(index)).build());
+            ItemBuilder eggItem = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
+                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.EGG_ITEM).replace("{0}", keys.get(index)))
+                .setCustomId(keys.get(index));
+            
+            ArrayList<String> lore = new ArrayList<>();
+            lore.add("");
+            if(showcoordinates && hasFound) {
+                lore.add("§9Location:");
+                lore.add("§7X: §e" + x);
+                lore.add("§7Y: §e" + y);
+                lore.add("§7Z: §e" + z);
+                lore.add("");
+            }
+            lore.add(hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet.");
+            if(hasFound) {
+                lore.add("");
+                lore.add("§9Collected:");
+                lore.add("§7Date: §6" + date);
+                lore.add("§7Time: §6" + time);
+            }
+            eggItem.setLore(lore);
+            getInventory().setItem(slotIndex, eggItem.build());
         }
     }
 
