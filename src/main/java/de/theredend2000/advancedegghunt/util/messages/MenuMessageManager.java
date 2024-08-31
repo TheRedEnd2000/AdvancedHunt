@@ -25,11 +25,18 @@ public class MenuMessageManager {
     }
 
     public String getMenuMessage(MenuMessageKey key) {
-        String message = menuMessageConfig.getMenuMessage(key.getPath());
-        if (message == null) {
-            return "Menu Message not found: " + key.name();
+        String menuMessage = menuMessageConfig.getMenuMessage(key.getPath());
+
+        return HexColor.color(ChatColor.translateAlternateColorCodes('&', menuMessage));
+    }
+
+    public String getMenuMessage(MenuMessageKey key, String... replacements) {
+        String menuMessage = this.getMenuMessage(key);
+
+        for (int i = 0; i < replacements.length; i += 2) {
+            menuMessage = menuMessage.replace(replacements[i], replacements[i + 1]);
         }
 
-        return HexColor.color(ChatColor.translateAlternateColorCodes('&', message));
+        return HexColor.color(ChatColor.translateAlternateColorCodes('&', menuMessage));
     }
 }
