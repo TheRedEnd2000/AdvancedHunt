@@ -1,0 +1,40 @@
+config-version: 1.0
+
+# Main Menu
+main_menu_title: "&6Advanced Egg Hunt - Main Menu"
+settings_button: "&aSettings"
+eggs_button: "&eEggs"
+statistics_button: "&bStatistics"
+help_button: "&dHelp"
+
+# Settings Menu
+settings_menu_title: "&6Settings"
+language_button: "&9Language: &f{0}"
+sound_volume_button: "&9Sound Volume: &f{0}"
+egg_visibility_button: "&9Egg Visibility: &f{0}"
+armorstand_glow_button: "&9Armorstand Glow: &f{0}"
+
+# Eggs Menu
+eggs_menu_title: "&6Eggs"
+place_egg_button: "&aPlace New Egg"
+edit_egg_button: "&eEdit Egg"
+remove_egg_button: "&cRemove Egg"
+teleport_to_egg_button: "&bTeleport to Egg"
+
+# Statistics Menu
+statistics_menu_title: "&6Statistics"
+total_eggs_found: "&aTotal Eggs Found: &f{0}"
+eggs_found_today: "&aEggs Found Today: &f{0}"
+top_finders: "&aTop Egg Finders"
+
+# Confirmation Menu
+confirm_menu_title: "&cConfirmation Required"
+confirm_button: "&aConfirm"
+cancel_button: "&cCancel"
+
+# General
+back_button: "&7« Back"
+next_page_button: "&aNext Page »"
+previous_page_button: "&c« Previous Page"
+close_button: "&cClose"
+

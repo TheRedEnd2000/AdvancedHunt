@@ -19,19 +19,17 @@ import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -44,10 +42,10 @@ public final class Main extends JavaPlugin {
 
     // Configuration
     private PluginConfig pluginConfig;
-    public YamlConfiguration messages;
-    public File messagesData;
 
     // Managers
+    private MessageManager messageManager;
+    private MenuMessageManager menuMessageManager;
     private CooldownManager cooldownManager;
     private EggDataManager eggDataManager;
     private EggManager eggManager;
@@ -58,7 +56,6 @@ public final class Main extends JavaPlugin {
     private PermissionManager permissionManager;
     private IndividualPresetDataManager individualPresetDataManager;
     private GlobalPresetDataManager globalPresetDataManager;
-    private MessageManager messageManager;
     private RarityManager rarityManager;
     private EggHidingManager eggHidingManager;
 
@@ -233,6 +230,7 @@ public final class Main extends JavaPlugin {
         individualPresetDataManager = new IndividualPresetDataManager(this);
         globalPresetDataManager = new GlobalPresetDataManager(this);
         messageManager = new MessageManager();
+        menuMessageManager = new MenuMessageManager();
         eggDataManager = new EggDataManager(this);
         eggManager = new EggManager();
         soundManager = new SoundManager();
@@ -288,14 +286,6 @@ public final class Main extends JavaPlugin {
 
     private void setupConfigs(){
         pluginConfig = PluginConfig.getInstance(plugin);
-    }
-
-    public void saveMessages() {
-        try {
-            this.messages.save(this.messagesData);
-        } catch (IOException e) {
-            getLogger().severe(e.getMessage());
-        }
     }
 
     public XMaterial getMaterial(String materialString) {
@@ -382,6 +372,10 @@ public final class Main extends JavaPlugin {
 
     public MessageManager getMessageManager() {
         return messageManager;
+    }
+
+    public MenuMessageManager getMenuMessageManager() {
+        return menuMessageManager;
     }
 
     public PermissionManager getPermissionManager() {
