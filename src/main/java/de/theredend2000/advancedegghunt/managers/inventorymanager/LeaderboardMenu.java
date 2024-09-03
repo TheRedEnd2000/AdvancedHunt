@@ -7,8 +7,6 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.common.Paginat
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
-import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
-import de.theredend2000.advancedegghunt.util.messages.MenuMessageManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -42,33 +40,38 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons() {
-        MenuMessageManager messageManager = Main.getInstance().getMenuMessageManager();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON)).build();
-        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.REFRESH_BUTTON)).build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setDisplayName("§4Close")
+                .build();
+        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
+                .setDisplayName("§aRefresh")
+                .build();
 
         String selectedCollection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
-                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
+                .setDisplayName("§bSelected Collection")
                 .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedCollection, "", "§eClick to change.")
                 .build();
     }
 
     public void setMenuItems() {
-        MenuMessageManager messageManager = Main.getInstance().getMenuMessageManager();
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
-                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
-                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
+                .setDisplayName("§2Left")
+                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
+                .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
-                .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.NEXT_PAGE_BUTTON))
-                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
+                .setDisplayName("§2Right")
+                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
+                .build());
 
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         addMenuBorderButtons();
 
         LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
-        ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER).setDisplayName(messageManager.getMenuMessage(MenuMessageKey.SORT_BUTTON));
+        ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER)
+                .setDisplayName("§2Sort");
         switch (sortTypes){
             case ALL:
                 itemBuilder = itemBuilder.setLore("", "§6 ➤ Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
@@ -87,8 +90,9 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         if (Main.getInstance().getEggDataManager().savedPlayers().isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName(messageManager.getMenuMessage(MenuMessageKey.NO_PLAYER))
-                    .setLore("§7There are no players in the leaderboard.").build());
+                .setDisplayName("§4§lNo Player")
+                .setLore("§7There are no players in the leaderboard.")
+                .build());
             return;
         }
 
@@ -105,7 +109,10 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         numberOfPlayers = leaderList.size();
 
         if (leaderList.isEmpty()) {
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                    .setDisplayName("§4§lNo Player")
+                    .setLore("§7There are no players in the leaderboard.")
+                    .build());
             return;
         }
 
@@ -126,11 +133,15 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                 getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                         .setOwner(playerName)
                         .setDisplayName("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                        .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place").build());
+                        .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")
+                        .build());
 
                 return;
             }
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Player").setLore("§7There are no players in the leaderboard.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                    .setDisplayName("§4§lNo Player")
+                    .setLore("§7There are no players in the leaderboard.")
+                    .build());
             return;
         }
 
@@ -146,14 +157,16 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                 case ALL:
                     getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
                             .setDisplayName("§6§l" + (index + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                            .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place").build());
+                            .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")
+                            .build());
                     break;
                 case TOP3:
                     numberOfPlayers = 3;
                     if (i < 3) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
                                 .setDisplayName("§6§l" + (index + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                                .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!").build());
+                                .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!")
+                                .build());
                     }
                     break;
                 case TOP10:
@@ -161,7 +174,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                     if (i < 10) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
                                 .setDisplayName("§6§l" + (index + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                                .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!").build());
+                                .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!")
+                                .build());
                     }
                     break;
             }
@@ -256,4 +270,3 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         }
     }
 }
-

@@ -163,8 +163,16 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             eggManager.startEggPlacing(player);
             Main.getInstance().getPlaceEggsPlayers().add(player);
             messageManager.sendMessage(player, MessageKey.ENTER_PLACEMODE);
-            player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR).setDisplayName("§6§lEggs Types §7(Right-Click)").setCustomId("egghunt.eggs").build());
-            player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0=")).setDisplayName("§2§lFinish setup §7(Drop)").setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.").setCustomId("egghunt.finish").build());
+            player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR)
+                    .setDisplayName("§6§lEggs Types §7(Right-Click)")
+                    .setCustomId("egghunt.eggs")
+                    .build());
+            player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                    .setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0="))
+                    .setDisplayName("§2§lFinish setup §7(Drop)")
+                    .setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.")
+                    .setCustomId("egghunt.finish")
+                    .build());
         }
     }
 

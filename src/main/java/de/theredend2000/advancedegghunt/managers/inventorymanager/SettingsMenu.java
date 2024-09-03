@@ -30,21 +30,78 @@ public class SettingsMenu extends InventoryMenu {
     }
 
     private void addMenuBorderButtons() {
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").setCustomId("settings.close").build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setDisplayName("§4Close")
+                .setCustomId("settings.close")
+                .build();
     }
 
     private void menuContent() {
-        getInventory().setItem(10, new ItemBuilder(XMaterial.GOLD_INGOT).setDisplayName("§3One egg found reward").setLore("§7If this function is activated", "§7all commands entered in the config are executed.", "", Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setCustomId("settings.foundoneegg").withGlow(Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()).build());
-        getInventory().setItem(11, new ItemBuilder(XMaterial.EMERALD).setDisplayName("§3All eggs found reward").setLore("§7If this function is activated", "§7all commands entered in the config are executed.", "", Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setCustomId("settings.foundalleggs").withGlow(Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward()).build());
-        getInventory().setItem(12, new ItemBuilder(XMaterial.CLOCK).setDisplayName("§3Updater").setLore("§7If this function is activated", "§7all operators will get an information", "§7if a new plugin version is out.", "", Main.getInstance().getPluginConfig().getUpdater() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setCustomId("settings.updater").withGlow(Main.getInstance().getPluginConfig().getUpdater()).build());
-        getInventory().setItem(13, new ItemBuilder(XMaterial.COMMAND_BLOCK).setDisplayName("§3Command feedback").setLore("§7If this function is activated", "§7no more commands are sent", "§7to the operators listed in the console.", "", "§c§l❌ Discontinued", "§eClick to toggle.").setCustomId("settings.commandfeedback").build());
-        getInventory().setItem(14, new ItemBuilder(XMaterial.NOTE_BLOCK).setDisplayName("§3Sound volume").setLore("§7Change the volume of all sound of the plugin", "§7If volume equal 0 no sound will be played.", "", "§7Currently: §6" + Main.getInstance().getPluginConfig().getSoundVolume(), "§eLEFT-CLICK to add one.", "§eRIGHT-CLICK to remove one.").setCustomId("settings.soundvolume").withGlow(true).build());
-        getInventory().setItem(15, new ItemBuilder(XMaterial.COMPASS).setDisplayName("§3Show coordinates when found").setLore("§7If this function is activated", "§7players can see the coordinates", "§7in the progress menu.", "", "§2Info: §7The coordinates are only visible if", "§7the player has found the egg.", "", Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setCustomId("settings.showcoordinates").withGlow(Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory()).build());
-        getInventory().setItem(16, new ItemBuilder(XMaterial.ARMOR_STAND).setDisplayName("§3Armorstand glow").setLore("§7Set how long the armorstands are", "§7visible for all players.", "", "§7Currently: §6" + Main.getInstance().getPluginConfig().getArmorstandGlow(), "§eLEFT-CLICK to add one.", "§eRIGHT-CLICK to remove one.").setCustomId("settings.armorstandglow").withGlow(true).build());
-        getInventory().setItem(19, new ItemBuilder(XMaterial.OAK_SIGN).setDisplayName("§3Nearby title radius").setLore("§7Change the radius of the egg nearby message for all players", "§7If radius equal 0 no title will be displayed.", "", "§7Currently: §6" + Main.getInstance().getPluginConfig().getShowEggsNearbyMessageRadius(), "§eLEFT-CLICK to add one.", "§eRIGHT-CLICK to remove one.").setCustomId("settings.eggnearbyradius").withGlow(true).build());
-        getInventory().setItem(20, new ItemBuilder(XMaterial.NAME_TAG).setDisplayName("§3Show plugin prefix").setLore("§7If enabled the plugin prefix", "§7will show on each message.", "§cThis will effect every message in the messages.yml file.", "", Main.getInstance().getPluginConfig().getPluginPrefixEnabled() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setCustomId("settings.pluginprefix").withGlow(Main.getInstance().getPluginConfig().getPluginPrefixEnabled()).build());
-        getInventory().setItem(21, new ItemBuilder(XMaterial.FIREWORK_ROCKET).setDisplayName("§3Firework").setLore("§7If this function is activated", "§7a firework will spawn if an egg is found.", "", Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setCustomId("settings.firework").withGlow(Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound()).build());
-        getInventory().setItem(22, new ItemBuilder(XMaterial.CLOCK).setDisplayName("§3Hint cooldown on fail").setLore("§7Set if the cooldown of the hint function", "§7applies if the player fails.", "", Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.").setCustomId("settings.hintcooldown").withGlow(Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail()).build());
+        getInventory().setItem(10, new ItemBuilder(XMaterial.GOLD_INGOT)
+                .setDisplayName("§3One egg found reward")
+                .setLore("§7If this function is activated", "§7all commands entered in the config are executed.", "", Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.")
+                .setCustomId("settings.foundoneegg")
+                .withGlow(Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards())
+                .build());
+        getInventory().setItem(11, new ItemBuilder(XMaterial.EMERALD)
+                .setDisplayName("§3All eggs found reward")
+                .setLore("§7If this function is activated", "§7all commands entered in the config are executed.", "", Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.")
+                .setCustomId("settings.foundalleggs")
+                .withGlow(Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward())
+                .build());
+        getInventory().setItem(12, new ItemBuilder(XMaterial.CLOCK)
+                .setDisplayName("§3Updater")
+                .setLore("§7If this function is activated", "§7all operators will get an information", "§7if a new plugin version is out.", "", Main.getInstance().getPluginConfig().getUpdater() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.")
+                .setCustomId("settings.updater")
+                .withGlow(Main.getInstance().getPluginConfig().getUpdater())
+                .build());
+        getInventory().setItem(13, new ItemBuilder(XMaterial.COMMAND_BLOCK)
+                .setDisplayName("§3Command feedback")
+                .setLore("§7If this function is activated", "§7no more commands are sent", "§7to the operators listed in the console.", "", "§c§l❌ Discontinued", "§eClick to toggle.")
+                .setCustomId("settings.commandfeedback")
+                .build());
+        getInventory().setItem(14, new ItemBuilder(XMaterial.NOTE_BLOCK)
+                .setDisplayName("§3Sound volume")
+                .setLore("§7Change the volume of all sound of the plugin", "§7If volume equal 0 no sound will be played.", "", "§7Currently: §6" + Main.getInstance().getPluginConfig().getSoundVolume(), "§eLEFT-CLICK to add one.", "§eRIGHT-CLICK to remove one.")
+                .setCustomId("settings.soundvolume")
+                .withGlow(true)
+                .build());
+        getInventory().setItem(15, new ItemBuilder(XMaterial.COMPASS)
+                .setDisplayName("§3Show coordinates when found")
+                .setLore("§7If this function is activated", "§7players can see the coordinates", "§7in the progress menu.", "", "§2Info: §7The coordinates are only visible if", "§7the player has found the egg.", "", Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.")
+                .setCustomId("settings.showcoordinates")
+                .withGlow(Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory())
+                .build());
+        getInventory().setItem(16, new ItemBuilder(XMaterial.ARMOR_STAND)
+                .setDisplayName("§3Armorstand glow")
+                .setLore("§7Set how long the armorstands are", "§7visible for all players.", "", "§7Currently: §6" + Main.getInstance().getPluginConfig().getArmorstandGlow(), "§eLEFT-CLICK to add one.", "§eRIGHT-CLICK to remove one.")
+                .setCustomId("settings.armorstandglow")
+                .withGlow(true)
+                .build());
+        getInventory().setItem(19, new ItemBuilder(XMaterial.OAK_SIGN)
+                .setDisplayName("§3Nearby title radius")
+                .setLore("§7Change the radius of the egg nearby message for all players", "§7If radius equal 0 no title will be displayed.", "", "§7Currently: §6" + Main.getInstance().getPluginConfig().getShowEggsNearbyMessageRadius(), "§eLEFT-CLICK to add one.", "§eRIGHT-CLICK to remove one.")
+                .setCustomId("settings.eggnearbyradius")
+                .withGlow(true)
+                .build());
+        getInventory().setItem(20, new ItemBuilder(XMaterial.NAME_TAG)
+                .setDisplayName("§3Show plugin prefix")
+                .setLore("§7If enabled the plugin prefix", "§7will show on each message.", "§cThis will effect every message in the messages.yml file.", "", Main.getInstance().getPluginConfig().getPluginPrefixEnabled() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.")
+                .setCustomId("settings.pluginprefix")
+                .withGlow(Main.getInstance().getPluginConfig().getPluginPrefixEnabled())
+                .build());
+        getInventory().setItem(21, new ItemBuilder(XMaterial.FIREWORK_ROCKET)
+                .setDisplayName("§3Firework")
+                .setLore("§7If this function is activated", "§7a firework will spawn if an egg is found.", "", Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.")
+                .setCustomId("settings.firework")
+                .withGlow(Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound())
+                .build());
+        getInventory().setItem(22, new ItemBuilder(XMaterial.CLOCK)
+                .setDisplayName("§3Hint cooldown on fail")
+                .setLore("§7Set if the cooldown of the hint function", "§7applies if the player fails.", "", Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail() ? "§a§l✔ Enabled" : "§c§l❌ Disabled", "§eClick to toggle.")
+                .setCustomId("settings.hintcooldown")
+                .withGlow(Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail())
+                .build());
     }
 
     @Override

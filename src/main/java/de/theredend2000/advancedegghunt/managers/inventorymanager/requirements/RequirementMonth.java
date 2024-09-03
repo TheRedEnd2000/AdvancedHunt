@@ -36,9 +36,17 @@ public class RequirementMonth extends InventoryMenu {
     }
 
     private void addMenuBorderButtons(String collection) {
-        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§6" + collection).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
-        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
+        inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setDisplayName("§6" + collection)
+                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
+                .build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setDisplayName("§4Close")
+                .build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setDisplayName("§eBack")
+                .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
+                .build();
     }
 
     private void menuContent(String collection) {
@@ -46,7 +54,11 @@ public class RequirementMonth extends InventoryMenu {
         getInventory().setContents(inventoryContent);
         for(String month : new ArrayList<>(DateTimeUtil.getMonthList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
-            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.GRASS_BLOCK : XMaterial.RED_STAINED_GLASS).setDisplayName("§6" + month).setLore("§7Makes that the eggs are only", "§7available in the month " + month, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + month + " to the requirements.").withGlow(enabled).build());
+            getInventory().addItem(new ItemBuilder(enabled ? XMaterial.GRASS_BLOCK : XMaterial.RED_STAINED_GLASS)
+                    .setDisplayName("§6" + month)
+                    .setLore("§7Makes that the eggs are only", "§7available in the month " + month, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + month + " to the requirements.")
+                    .withGlow(enabled)
+                    .build());
         }
     }
 

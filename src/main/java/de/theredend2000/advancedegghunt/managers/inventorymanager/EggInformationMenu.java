@@ -34,20 +34,34 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
     }
 
     public void addMenuBorderButtons(){
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
-        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK).setDisplayName("§aRefresh").build();
-        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getTexture("NWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0=")).setDisplayName("§eBack").build();
+        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setDisplayName("§4Close")
+                .build();
+        inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
+                .setDisplayName("§aRefresh")
+                .build();
+        inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("NWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0="))
+                .setDisplayName("§eBack")
+                .build();
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
-        inventoryContent[46] = new ItemBuilder(XMaterial.PAPER).setDisplayName("§bSelected Collection").setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.").build();
+        inventoryContent[46] = new ItemBuilder(XMaterial.PAPER)
+                .setDisplayName("§bSelected Collection")
+                .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.")
+                .build();
     }
 
     public void setMenuItems(String eggId) {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages(eggId) + "§7)", "", "§eClick to scroll.").setDisplayName("§2Left")
-                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")).build());
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages(eggId) + "§7)", "", "§eClick to scroll.")
+                .setDisplayName("§2Left")
+                .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
+                .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages(eggId) + "§7)", "", "§eClick to scroll.").setDisplayName("§2Right")
-                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")).build());
+                .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages(eggId) + "§7)", "", "§eClick to scroll.")
+                .setDisplayName("§2Right")
+                .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
+                .build());
 
         ArrayList<String> keys = new ArrayList<>();
         ArrayList<String> uuid = new ArrayList<>();
@@ -73,11 +87,15 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                             .setOwner(keys.get(index))
                             .setDisplayName("§6§l" + keys.get(index) + " §7(" + uuid.get(index) + ")")
                             .setLore("§7" + keys.get(index) + " has found the §2egg #" + eggId + "§7.", "", "§9Information of " + keys.get(index) + ":", "§7Eggs found: §6" + eggsFound + "/" + maxEggs, "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time)
-                            .setCustomId(keys.get(index)).build());
+                            .setCustomId(keys.get(index))
+                            .build());
                 }
             }
         }else
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4§lNo Founds").setLore("§7No player has found this egg yet.").build());
+            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                    .setDisplayName("§4§lNo Founds")
+                    .setLore("§7No player has found this egg yet.")
+                    .build());
     }
 
 

@@ -37,8 +37,13 @@ public class CollectionEditor extends InventoryMenu {
     }
 
     private void addMenuBorderButtons() {
-        inventoryContent[36] = new ItemBuilder(XMaterial.PLAYER_HEAD).setDisplayName("§eBack").setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0=")).build();
-        inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER).setDisplayName("§4Close").build();
+        inventoryContent[36] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setDisplayName("§eBack")
+                .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
+                .build();
+        inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER)
+                .setDisplayName("§4Close")
+                .build();
     }
 
     private void menuContent(String collection) {
@@ -48,16 +53,41 @@ public class CollectionEditor extends InventoryMenu {
         boolean hideforplayer = placedEggs.getBoolean("HideForPlayer");
         DeletionTypes deletionType = Main.getInstance().getPlayerEggDataManager().getDeletionType(super.playerMenuUtility.getOwner().getUniqueId());
 
-        getInventory().setItem(4, new ItemBuilder(XMaterial.PLAYER_HEAD).setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7))).setDisplayName("§6" + collection).build());
-        //inventory.setItem(20, new ItemBuilder(XMaterial.PAPER).setDisplayname("§3Rename").setLore("§7Currently: " + name, "", "§eClick to change.").build());
-        getInventory().setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayName("§3Status").setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.").build());
-        getInventory().setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS).setDisplayName("§4Delete").setLore("§8Check if your deletion type is correct. (WOODEN_AXE)", "", "§4§lYOU CAN NOT UNDO THIS", "", "§eClick to delete.").build());
-        getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR).setDisplayName("§3Requirements").setLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection)).build());
-        getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER).setDisplayName("§3Reset §e§l(BETA)").setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(collection), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.").build());
-        getInventory().setItem(42, new ItemBuilder(hideforplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayName("§3Hide for player").setLore("", "§7If a player finds an egg it will not longer","§7be shown to them.","§cThis is only Client-Side", "", "§eClick to toggle.").build());
-        getInventory().setItem(43, new ItemBuilder(oneplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE).setDisplayName("§3One Player").setLore("", "§7Only one player can find the egg.","§7It is after finding not longer accessible.","","§cAfter disabling the feature all eggs that are","§cmaked as found will be reset.", "", "§eClick to toggle.").build());
+        getInventory().setItem(4, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
+                .setDisplayName("§6" + collection)
+                .build());
+//        getInventory().setItem(20, new ItemBuilder(XMaterial.PAPER)
+//                .setDisplayname("§3Rename")
+//                .setLore("§7Currently: " + name, "", "§eClick to change.")
+//                .build());
+        getInventory().setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setDisplayName("§3Status")
+                .setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.")
+                .build());
+        getInventory().setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                .setDisplayName("§4Delete")
+                .setLore("§8Check if your deletion type is correct. (WOODEN_AXE)", "", "§4§lYOU CAN NOT UNDO THIS", "", "§eClick to delete.")
+                .build());
+        getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR)
+                .setDisplayName("§3Requirements")
+                .setLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection))
+                .build());
+        getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER)
+                .setDisplayName("§3Reset §e§l(BETA)")
+                .setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(collection), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.")
+                .build());
+        getInventory().setItem(42, new ItemBuilder(hideforplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setDisplayName("§3Hide for player")
+                .setLore("", "§7If a player finds an egg it will not longer","§7be shown to them.","§cThis is only Client-Side", "", "§eClick to toggle.")
+                .build());
+        getInventory().setItem(43, new ItemBuilder(oneplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setDisplayName("§3One Player")
+                .setLore("", "§7Only one player can find the egg.","§7It is after finding not longer accessible.","","§cAfter disabling the feature all eggs that are","§cmaked as found will be reset.", "", "§eClick to toggle.")
+                .build());
 
-        getInventory().setItem(44,  new ItemBuilder(XMaterial.WOODEN_AXE).setDisplayName("§3Deletion Types")
+        getInventory().setItem(44,  new ItemBuilder(XMaterial.WOODEN_AXE)
+                .setDisplayName("§3Deletion Types")
                 .setLore("§8Every player can configure that himself.",
                         "§7Change what happens after the deletion",
                         "§7of an collection.",
@@ -66,7 +96,8 @@ public class CollectionEditor extends InventoryMenu {
                         (deletionType == DeletionTypes.Player_Heads ? "§b➤ " : "§7") + "Player Heads", "§8All blocks that are player heads will be removed.",
                         (deletionType == DeletionTypes.Everything ? "§b➤ " : "§7") + "Everything", "§8All blocks and will be set to air. (includes player heads)",
                         "",
-                        "§eClick to change.").build());
+                        "§eClick to change.")
+                .build());
     }
 
     @Override
