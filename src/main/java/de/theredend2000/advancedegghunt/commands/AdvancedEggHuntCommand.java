@@ -370,7 +370,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6/advancedegghunt commands §7-> §bChange commands or add more.");
         player.sendMessage("§6/advancedegghunt reset [player | all] §7-> §bResets the FoundEggs.");
         player.sendMessage("§6/advancedegghunt eggImport §7-> §bImport a new place egg.");
-        player.sendMessage("§6/advancedegghunt exportPreset §7-> §bExport a preset to the discord for other players.");
+        //player.sendMessage("§6/advancedegghunt exportPreset §7-> §bExport a preset to the discord for other players.");
         player.sendMessage("§5§l==========HELP==========");
         player.sendMessage("§3-----------------------------------------");
     }
