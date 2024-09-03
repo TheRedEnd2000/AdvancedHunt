@@ -1,8 +1,10 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.common;
 
 import com.cryptomorin.xseries.XMaterial;
+import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public abstract class InventoryMenu implements IInventoryMenu {
+    protected MenuMessageManager menuMessageManager;
     protected PlayerMenuUtility playerMenuUtility;
     private Inventory inventory;
     protected final ItemStack FILLER_GLASS;
@@ -24,6 +27,7 @@ public abstract class InventoryMenu implements IInventoryMenu {
     }
 
     public InventoryMenu(PlayerMenuUtility playerMenuUtility, String inventoryName, short slots, XMaterial fillerMaterial) {
+        menuMessageManager = Main.getInstance().getMenuMessageManager();
         this.playerMenuUtility = playerMenuUtility;
         this.slots = slots % 9 == 0? slots : (short) (slots - (slots % 9));
         this.inventoryContent = new ItemStack[this.slots];

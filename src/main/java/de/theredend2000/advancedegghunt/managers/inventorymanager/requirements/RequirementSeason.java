@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.Seasons;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -42,10 +43,10 @@ public class RequirementSeason extends InventoryMenu {
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
                 .build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
-                .setDisplayName("§4Close")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setDisplayName("§eBack")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.BACK_BUTTON))
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
                 .build();
     }

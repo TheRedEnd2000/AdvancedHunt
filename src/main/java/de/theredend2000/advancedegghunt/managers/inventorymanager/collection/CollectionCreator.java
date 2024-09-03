@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionSele
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.InventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -37,7 +38,7 @@ public class CollectionCreator extends InventoryMenu {
 
     private void addMenuBorderButtons() {
         inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER)
-                .setDisplayName("§4Close")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON))
                 .build();
     }
 
@@ -61,7 +62,7 @@ public class CollectionCreator extends InventoryMenu {
                 .build());
         getInventory().setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
-                .setDisplayName("§eBack")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.BACK_BUTTON))
                 .build());
     }
 

@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.common.Invento
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ public class SettingsMenu extends InventoryMenu {
 
     private void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
-                .setDisplayName("§4Close")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON))
                 .setCustomId("settings.close")
                 .build();
     }

@@ -8,6 +8,7 @@ import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -37,14 +38,14 @@ public class EggListMenu extends PaginatedInventoryMenu {
 
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
-                .setDisplayName("§4Close")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
-                .setDisplayName("§aRefresh")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.REFRESH_BUTTON))
                 .build();
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
-                .setDisplayName("§bSelected Collection")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
                 .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.")
                 .build();
     }
@@ -52,12 +53,12 @@ public class EggListMenu extends PaginatedInventoryMenu {
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
-                .setDisplayName("§2Left")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
-                .setDisplayName("§2Right")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
 

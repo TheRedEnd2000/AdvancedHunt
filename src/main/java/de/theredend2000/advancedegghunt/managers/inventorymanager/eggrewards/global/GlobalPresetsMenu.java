@@ -5,6 +5,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
@@ -43,19 +44,19 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
-                .setDisplayName("§eBack")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.BACK_BUTTON))
                 .build();
     }
 
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
-                .setDisplayName("§2Left")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setLore("§6Page: §7(§b" + (page + 1) + "§7/§b" + getMaxPages() + "§7)", "", "§eClick to scroll.")
-                .setDisplayName("§2Right")
+                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
 
