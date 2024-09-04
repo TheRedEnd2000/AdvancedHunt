@@ -39,11 +39,13 @@ public class CollectionEditor extends InventoryMenu {
 
     private void addMenuBorderButtons() {
         inventoryContent[36] = new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.BACK_BUTTON))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
                 .build();
         inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER)
-                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
     }
 
@@ -115,11 +117,14 @@ public class CollectionEditor extends InventoryMenu {
         boolean enabled = placedEggs.getBoolean("Enabled");
         boolean oneplayer = placedEggs.getBoolean("OnePlayer");
         boolean hideforplayer = placedEggs.getBoolean("HideForPlayer");
+        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))) {
+            player.closeInventory();
+            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))) {
+            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+            new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+        }
         switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())) {
-            case "Close":
-                player.closeInventory();
-                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                break;
             case "Status":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 placedEggs.set("Enabled", !enabled);
@@ -133,10 +138,6 @@ public class CollectionEditor extends InventoryMenu {
             case "Reset (BETA)":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new ResetMenu(Main.getPlayerMenuUtility(player)).open(collection);
-                break;
-            case "Back":
-                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
                 break;
             case "Delete":
                 if (collection.equalsIgnoreCase("default")) {

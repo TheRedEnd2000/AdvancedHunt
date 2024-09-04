@@ -38,7 +38,8 @@ public class CollectionCreator extends InventoryMenu {
 
     private void addMenuBorderButtons() {
         inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER)
-                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.CLOSE_BUTTON))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
     }
 
@@ -62,7 +63,8 @@ public class CollectionCreator extends InventoryMenu {
                 .build());
         getInventory().setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
-                .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.BACK_BUTTON))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
                 .build());
     }
 
@@ -76,11 +78,14 @@ public class CollectionCreator extends InventoryMenu {
         SoundManager soundManager = Main.getInstance().getSoundManager();
 
         FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(player.getUniqueId());
+        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))) {
+            player.closeInventory();
+            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))) {
+            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+            new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+        }
         switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())) {
-            case "Close":
-                player.closeInventory();
-                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                break;
             case "Name":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new AnvilGUI.Builder()
@@ -105,10 +110,6 @@ public class CollectionCreator extends InventoryMenu {
                 enabled = !enabled;
                 Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
                 menuContent();
-                break;
-            case "Back":
-                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
                 break;
             case "Create":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

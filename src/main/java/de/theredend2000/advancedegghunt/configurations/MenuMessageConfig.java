@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.configurations;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.TreeMap;
 
 public class MenuMessageConfig extends Configuration {
@@ -11,7 +12,7 @@ public class MenuMessageConfig extends Configuration {
     private static volatile MenuMessageConfig instance;
 
     public MenuMessageConfig(JavaPlugin plugin, String configName) {
-        super(plugin, MessageFormat.format("menuMessages/messages-{0}.yml", configName));
+        super(plugin, MessageFormat.format("menus/menu-{0}.yml", configName));
     }
 
     @Override
@@ -26,5 +27,9 @@ public class MenuMessageConfig extends Configuration {
 
     public String getMenuMessage(String menuMessages) {
         return getConfig().getString(menuMessages);
+    }
+
+    public List<String> getMenuMessageList(String path) {
+        return config.getStringList(path);
     }
 }

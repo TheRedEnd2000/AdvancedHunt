@@ -1,6 +1,9 @@
 package de.theredend2000.advancedegghunt.util.messages;
 
+import java.util.List;
+
 public enum MenuMessageKey {
+
     // General buttons
     BACK_BUTTON("back_button"),
     NEXT_PAGE_BUTTON("next_page_button"),
@@ -12,8 +15,7 @@ public enum MenuMessageKey {
     // Collection related
     SELECTED_COLLECTION_BUTTON("selected_collection_button"),
     ADD_COLLECTION_BUTTON("add_collection_button"),
-    COLLECTION_ITEM("collection_item"),
-    LORE_SELECTED_COLLECTION("lore_selected_collection");
+    COLLECTION_ITEM("collection_item");
 
     // Egg related
 

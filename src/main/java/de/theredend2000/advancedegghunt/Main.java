@@ -19,7 +19,7 @@ import de.theredend2000.advancedegghunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedegghunt.util.*;
 import de.theredend2000.advancedegghunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
-import de.theredend2000.advancedegghunt.util.messages.MenuMessageManager;
+import de.theredend2000.advancedegghunt.util.messages.MenuManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
@@ -45,7 +45,7 @@ public final class Main extends JavaPlugin {
 
     // Managers
     private MessageManager messageManager;
-    private MenuMessageManager menuMessageManager;
+    private MenuManager menuMessageManager;
     private CooldownManager cooldownManager;
     private EggDataManager eggDataManager;
     private EggManager eggManager;
@@ -230,7 +230,7 @@ public final class Main extends JavaPlugin {
         individualPresetDataManager = new IndividualPresetDataManager(this);
         globalPresetDataManager = new GlobalPresetDataManager(this);
         messageManager = new MessageManager();
-        menuMessageManager = new MenuMessageManager();
+        menuMessageManager = new MenuManager();
         eggDataManager = new EggDataManager(this);
         eggManager = new EggManager();
         soundManager = new SoundManager();
@@ -374,7 +374,7 @@ public final class Main extends JavaPlugin {
         return messageManager;
     }
 
-    public MenuMessageManager getMenuMessageManager() {
+    public MenuManager getMenuMessageManager() {
         return menuMessageManager;
     }
 

@@ -1,0 +1,66 @@
+config-version: 1.0
+
+# General buttons
+back_button:
+  displayname: "&7« Back"
+  lore:
+    - "§7Click to go back."
+next_page_button:
+  displayname: "&aNext Page »"
+  lore:
+    - "§6Page: §7(§b%CURRENT_PAGE%§7/§b%MAX_PAGES%§7)"
+    - ""
+    - "§eClick to scroll."
+previous_page_button:
+  displayname: "&c« Previous Page"
+  lore:
+    - "§6Page: §7(§b%CURRENT_PAGE%§7/§b%MAX_PAGES%§7)"
+    - ""
+    - "§eClick to scroll."
+close_button:
+  displayname: "&cClose"
+sort_button:
+  displayname: "&2Sort"
+refresh_button:
+  displayname: "&aRefresh"
+
+# Collection related
+selected_collection_button:
+  displayname: "&bSelected Collection"
+  lore:
+    - "&7Shows your currently selected collection."
+    - ""
+    - "&7Current: &6%COLLECTION%"
+    - "&eClick to change."
+add_collection_button:
+  displayname: "&5Add collection"
+collection_item:
+  displayname: "&6Collection: &6&l%COLLECTION% %SELECTED%"
+  lore:
+    - ""
+    - "§9Collection Information:"
+    - "§7   - Placed eggs: §6%MAX_EGGS%"
+    - ""
+    - "§aNote:"
+    - "§7This collection applies to all actions that are carried out."
+    - "§7It can be changed at any time in this menu."
+    - ""
+    - "§eLEFT-CLICK to select."
+    - "§7%PERMISSION%RIGHT-CLICK to edit."
+
+# Egg related
+
+# Player related
+
+# Leaderboard related
+
+# Reward related
+
+# Preset related
+
+# Requirement related
+
+# Settings related
+
+# Miscellaneous
+

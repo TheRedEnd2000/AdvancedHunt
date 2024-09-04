@@ -4,7 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.util.messages.MenuMessageManager;
+import de.theredend2000.advancedegghunt.util.messages.MenuManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public abstract class InventoryMenu implements IInventoryMenu {
-    protected MenuMessageManager menuMessageManager;
+    protected MenuManager menuMessageManager;
     protected PlayerMenuUtility playerMenuUtility;
     private Inventory inventory;
     protected final ItemStack FILLER_GLASS;
