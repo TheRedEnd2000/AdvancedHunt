@@ -12,7 +12,8 @@ public enum MenuMessageKey {
     // Collection related
     SELECTED_COLLECTION_BUTTON("selected_collection_button"),
     ADD_COLLECTION_BUTTON("add_collection_button"),
-    COLLECTION_ITEM("collection_item");
+    COLLECTION_ITEM("collection_item"),
+    LORE_SELECTED_COLLECTION("lore_selected_collection");
 
     // Egg related
 

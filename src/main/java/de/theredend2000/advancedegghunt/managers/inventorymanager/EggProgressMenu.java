@@ -43,7 +43,7 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
                 .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
-                .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.")
+                .setLore(menuMessageManager.getMenuMessage(MenuMessageKey.LORE_SELECTED_COLLECTION, "%COLLECTION%", selectedSection))
                 .build();
     }
 

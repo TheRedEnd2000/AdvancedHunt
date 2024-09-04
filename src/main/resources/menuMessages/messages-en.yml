@@ -12,6 +12,11 @@ refresh_button: "&aRefresh"
 selected_collection_button: "&bSelected Collection"
 add_collection_button: "&5Add collection"
 collection_item: "&6Collection: &6&l%COLLECTION% %SELECTED%"
+lore_selected_collection: |
+  &7Shows your currently selected collection.
+  
+  &7Current: &6%COLLECTION%
+  &eClick to change.
 
 # Egg related
 
@@ -29,5 +34,3 @@ collection_item: "&6Collection: &6&l%COLLECTION% %SELECTED%"
 
 # Miscellaneous
 
-# Lore messages
-lore:

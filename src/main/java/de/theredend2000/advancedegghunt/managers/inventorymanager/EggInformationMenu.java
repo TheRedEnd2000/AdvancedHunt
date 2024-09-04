@@ -45,10 +45,10 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                 .setSkullOwner(Main.getTexture("NWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0="))
                 .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.COLLECTION_ITEM))
                 .build();
-        String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
+        String selectedCollection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[46] = new ItemBuilder(XMaterial.PAPER)
                 .setDisplayName(menuMessageManager.getMenuMessage(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
-                .setLore("§7Shows your currently selected collection.", "", "§7Current: §6" + selectedSection, "", "§eClick to change.")
+                .setLore(menuMessageManager.getMenuMessage(MenuMessageKey.LORE_SELECTED_COLLECTION, "%COLLECTION%", selectedCollection))
                 .build();
     }
 
