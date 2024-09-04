@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.collection.CollectionEditor;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.InventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.Requirements;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
@@ -18,12 +19,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.Random;
 
-public class RequirementSelection extends InventoryMenu {
+public class RequirementMenu extends InventoryMenu {
     private MessageManager messageManager;
     protected int maxItems;
     private Main plugin;
 
-    public RequirementSelection(PlayerMenuUtility playerMenuUtility) {
+    public RequirementMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Requirements - Selection", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
         this.plugin = Main.getInstance();
         messageManager = this.plugin.getMessageManager();
@@ -45,11 +46,13 @@ public class RequirementSelection extends InventoryMenu {
                 .build();
 
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("requirement_menu.back")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
                 .build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setCustomId("requirement_menu.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
@@ -59,39 +62,48 @@ public class RequirementSelection extends InventoryMenu {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
 
         getInventory().setItem(10, new ItemBuilder(XMaterial.CLOCK)
+                .setCustomId("requirement_menu.hour")
                 .setDisplayName("§6Selection - Hours")
                 .setLore("§7Active: §b" + Main.getInstance().getRequirementsManager().getActives(Requirements.Hours, collection), "", "§eClick to open.")
                 .build());
         getInventory().setItem(11, new ItemBuilder(XMaterial.CLOCK)
+                .setCustomId("requirement_menu.date")
                 .setDisplayName("§6Selection - Date")
                 .setLore("§7Active: §b" + Main.getInstance().getRequirementsManager().getActives(Requirements.Date, collection), "", "§eClick to open.")
                 .build());
         getInventory().setItem(12, new ItemBuilder(XMaterial.CLOCK)
+                .setCustomId("requirement_menu.weekday")
                 .setDisplayName("§6Selection - Weekday")
                 .setLore("§7Active: §b" + Main.getInstance().getRequirementsManager().getActives(Requirements.Weekday, collection), "", "§eClick to open.")
                 .build());
         getInventory().setItem(13, new ItemBuilder(XMaterial.CLOCK)
+                .setCustomId("requirement_menu.month")
                 .setDisplayName("§6Selection - Month")
                 .setLore("§7Active: §b" + Main.getInstance().getRequirementsManager().getActives(Requirements.Month, collection), "", "§eClick to open.")
                 .build());
         getInventory().setItem(14, new ItemBuilder(XMaterial.CLOCK)
+                .setCustomId("requirement_menu.year")
                 .setDisplayName("§6Selection - Year")
                 .setLore("§7Active: §b" + Main.getInstance().getRequirementsManager().getActives(Requirements.Year, collection), "", "§eClick to open.")
                 .build());
         getInventory().setItem(15, new ItemBuilder(XMaterial.CLOCK)
+                .setCustomId("requirement_menu.season")
                 .setDisplayName("§6Selection - Season")
                 .setLore("§7Active: §b" + Main.getInstance().getRequirementsManager().getActives(Requirements.Season, collection), "", "§eClick to open.")
                 .build());
         getInventory().setItem(37, new ItemBuilder(XMaterial.LIME_TERRACOTTA)
+                .setCustomId("requirement_menu.all_on")
                 .setDisplayName("§aActivate all")
                 .setLore("§eClick to activate all.")
                 .build());
         getInventory().setItem(38, new ItemBuilder(XMaterial.RED_TERRACOTTA)
+                .setCustomId("requirement_menu.all_off")
                 .setDisplayName("§cDeactivate all")
                 .setLore("§eClick to deactivate all.")
                 .build());
         String currentOrder = placedEggs.getString("RequirementsOrder");
         getInventory().setItem(43, new ItemBuilder(XMaterial.REDSTONE_TORCH)
+                .setCustomId("requirement_menu.order")
                 .setDisplayName("§bRequirements Order")
                 .setLore("", "§7Current order: §6" + currentOrder, "", "§a§lINFO:", "§6OR", "§7Makes that only one think musst be right", "§7in the selection.", "§8Example: Weekday Monday and Hour 7 is enable.", "§8Now it must be Monday §8§lOR §8it must be 7.", "§6AND", "§7Makes that in all selections must be", "§7at least one right.", "§8Example: Weekday Monday and Friday is enabled", "§8and hour 7 and 10.", "§8Now it must be Monday or Friday §8§land", "§8it must be 7 or 10.", "", "§eClick to change.")
                 .build());
@@ -103,51 +115,51 @@ public class RequirementSelection extends InventoryMenu {
         SoundManager soundManager = plugin.getSoundManager();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
-        switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())) {
-            case "Close":
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "requirement_menu.close":
                 player.closeInventory();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
-            case "Back":
+            case "requirement_menu.back":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new CollectionEditor(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Selection - Hours":
+            case "requirement_menu.hour":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new RequirementHours(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Selection - Date":
+            case "requirement_menu.date":
                 messageManager.sendMessage(player, MessageKey.REQUIREMENT_SECTION_UNAVAILABLE);
                 break;
-            case "Selection - Weekday":
+            case "requirement_menu.weekday":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new RequirementWeekday(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Selection - Month":
+            case "requirement_menu.month":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new RequirementMonth(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Selection - Year":
+            case "requirement_menu.year":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new RequirementYear(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Selection - Season":
+            case "requirement_menu.season":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new RequirementSeason(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Activate all":
+            case "requirement_menu.all_on":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 plugin.getRequirementsManager().changeActivity(collection, true);
                 messageManager.sendMessage(player, MessageKey.ACTIVATE_REQUIREMENTS);
                 menuContent(collection);
                 break;
-            case "Deactivate all":
+            case "requirement_menu.all_off":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 plugin.getRequirementsManager().changeActivity(collection, false);
                 messageManager.sendMessage(player, MessageKey.DEACTIVATE_REQUIREMENTS);
                 menuContent(collection);
                 break;
-            case "Requirements Order":
+            case "requirement_menu.order":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 messageManager.sendMessage(player, MessageKey.REQUIREMENTS_ORDER_COMING_SOON);
                 break;

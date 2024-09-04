@@ -55,21 +55,26 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
 
     private void addMenuBorderButtons() {
         inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
+                .setCustomId("rewards_global_rewards.preset_save")
                 .setDisplayName("§5Save preset")
                 .setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other collections again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.")
                 .build();
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD)
+                .setCustomId("rewards_global_rewards.preset_load")
                 .setDisplayName("§5Load presets")
                 .setLore("§eClick to load or change presets.")
                 .build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT)
+                .setCustomId("rewards_global_rewards.new_reward")
                 .setDisplayName("§5Create new reward")
                 .setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward")
                 .build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setCustomId("rewards_global_rewards.close")
                 .setDisplayName("§cClose")
                 .build();
         inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("rewards_global_rewards.switch_individual")
                 .setDisplayName("§bSwitch to Individual").setOwner(playerMenuUtility.getOwner().getName())
                 .setLore("","§6Switch to Individual:","§7Switching to individual lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lone §7egg.","","§eClick to switch")
                 .build();
@@ -268,32 +273,32 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
             }
         }
 
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))) {
-            if (page == 0) {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                page = page - 1;
-                this.open(id,collection);
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "rewards_global_rewards.close":
+                player.closeInventory();
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))) {
-            if (!((index + 1) >= keys.size())) {
-                page = page + 1;
-                this.open(id,collection);
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        }
-
-        XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());
-        switch (material) {
-            case GOLD_INGOT:
+                break;
+            case "rewards_global_rewards.previous_page":
+                if (page == 0) {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    page = page - 1;
+                    this.open(id,collection);
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                }
+                break;
+            case "rewards_global_rewards.next_page":
+                if (!((index + 1) >= keys.size())) {
+                    page = page + 1;
+                    this.open(id,collection);
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                }
+                break;
+            case "rewards_global_rewards.new_reward":
                 player.closeInventory();
                 Main.getInstance().getPlayerAddCommand().put(player, 120);
                 TextComponent textComponent = new TextComponent("\n\n\n\n\n" + messageManager.getMessage(MessageKey.NEW_COMMAND) + "\n\n");
@@ -307,7 +312,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                 Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
-            case EMERALD_BLOCK:
+            case "rewards_global_rewards.preset_save":
                 if (placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false).size() < 1) {
                     messageManager.sendMessage(player, MessageKey.PRESET_FAILED_COMMANDS);
                     break;
@@ -338,11 +343,11 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                         .open(player);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
-            case EMERALD:
+            case "rewards_global_rewards.preset_load":
                 new GlobalPresetsMenu(super.playerMenuUtility).open(id, collection);
                 break;
-            case PLAYER_HEAD:
-               if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Individual")) {
+            case "rewards_global_rewards.switch_individual":
+                if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Individual")) {
                     new IndividualEggRewardsMenu(super.playerMenuUtility).open(id,collection);
                 }
                 break;

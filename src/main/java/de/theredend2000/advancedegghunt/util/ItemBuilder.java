@@ -1,6 +1,9 @@
 package de.theredend2000.advancedegghunt.util;
 
 import com.cryptomorin.xseries.XMaterial;
+import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.messages.MenuManager;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Bukkit;
@@ -32,6 +35,20 @@ public class ItemBuilder {
 
     public ItemBuilder(Material material) {
         this(new ItemStack(material));
+    }
+
+    public ItemBuilder setFromMenuMessageKey(MenuMessageKey key) {
+        MenuManager menuManager = Main.getInstance().getMenuManager();
+        String displayName = menuManager.getMenuItemName(key);
+        List<String> lore = menuManager.getMenuItemLore(key);
+
+        if (!displayName.isEmpty()) {
+            setDisplayName(displayName);
+        }
+        if (!lore.isEmpty()) {
+            setLore(lore);
+        }
+        return this;
     }
 
     public ItemBuilder setDisplayName(String name) {

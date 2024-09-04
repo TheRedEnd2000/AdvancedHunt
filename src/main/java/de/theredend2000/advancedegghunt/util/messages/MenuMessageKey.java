@@ -1,7 +1,5 @@
 package de.theredend2000.advancedegghunt.util.messages;
 
-import java.util.List;
-
 public enum MenuMessageKey {
 
     // General buttons

@@ -5,6 +5,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.InventoryMenu;
 import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
@@ -42,10 +43,12 @@ public class RequirementWeekday extends InventoryMenu {
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
                 .build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setCustomId("requirement_weekday.back")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("requirement_weekday.back")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
@@ -81,9 +84,13 @@ public class RequirementWeekday extends InventoryMenu {
             }
         }
 
-        if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Close"))
-            player.closeInventory();
-        if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Back"))
-            new RequirementSelection(Main.getPlayerMenuUtility(player)).open(collection);
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "requirement_weekday.close":
+                player.closeInventory();
+                break;
+            case "requirement_weekday.back":
+                new RequirementMenu(Main.getPlayerMenuUtility(player)).open(collection);
+                break;
+        }
     }
 }

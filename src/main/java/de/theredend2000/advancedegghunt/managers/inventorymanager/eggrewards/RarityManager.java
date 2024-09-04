@@ -2,9 +2,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards;
 
 import de.theredend2000.advancedegghunt.Main;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class RarityManager {
@@ -50,7 +48,7 @@ public class RarityManager {
     }
 
     private double getDouble(String rarityName, String valueName) {
-        return plugin.getConfig().getDouble("Rarity."+rarityName+"."+valueName);
+        return plugin.getConfig().getDouble("Rarity." + rarityName + "." + valueName);
     }
 
     public String getRarityDisplay(String rarity){

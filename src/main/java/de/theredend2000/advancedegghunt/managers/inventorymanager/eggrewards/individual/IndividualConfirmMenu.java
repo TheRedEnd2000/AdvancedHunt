@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.entity.Player;
@@ -36,10 +37,12 @@ public class IndividualConfirmMenu extends PaginatedInventoryMenu {
 
     public void addMenuButtons() {
         inventoryContent[11] = new ItemBuilder(XMaterial.GREEN_CONCRETE)
+                .setCustomId("rewards_individual_confirm.confirm")
                 .setDisplayName("§aConfirm")
                 .setLore("","§7By clicking this button you will load","§7this preset into all placed eggs.","","§eClick to confirm.")
                 .build();
         inventoryContent[15] = new ItemBuilder(XMaterial.RED_CONCRETE)
+                .setCustomId("rewards_individual_confirm.cancel")
                 .setDisplayName("§cCancel")
                 .build();
     }
@@ -54,18 +57,16 @@ public class IndividualConfirmMenu extends PaginatedInventoryMenu {
     @Override
     public void handleMenu(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
         if(event.getCurrentItem() == null) return;
 
-        XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());
-        switch (material) {
-            case RED_CONCRETE:
-                new IndividualPresetsMenu(super.playerMenuUtility).open(id, collection);
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-                break;
-            case GREEN_CONCRETE:
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "rewards_individual_confirm.confirm":
                 plugin.getIndividualPresetDataManager().loadPresetIntoAllEggs(preset,collection,player);
                 player.closeInventory();
+                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
+            case "rewards_individual_confirm.cancel":
+                new IndividualPresetsMenu(super.playerMenuUtility).open(id, collection);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
         }

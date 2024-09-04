@@ -17,8 +17,6 @@ import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -46,14 +44,17 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
 
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setCustomId("egg_place.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
+                .setCustomId("egg_place.refresh")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REFRESH_BUTTON))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("egg_place.information")
                 .setSkullOwner(Main.getTexture("MTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0="))
                 .setDisplayName("§9Information")
                 .setLore("§7If you do not know how you can add your",
@@ -71,6 +72,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                 .build();
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[46] = new ItemBuilder(XMaterial.PAPER)
+                .setCustomId("egg_place.collection_selected")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SELECTED_COLLECTION_BUTTON, "%COLLECTION%", selectedSection))
                 .build();
@@ -208,54 +210,55 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
             }
         }
 
-        if(event.getCurrentItem().getType().equals(Material.PAPER) && event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.SELECTED_COLLECTION_BUTTON))){
-            new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
-            return;
-        }
-
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))) {
-            if (page == 0) {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                page = page - 1;
-                this.open();
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "egg_place.close":
+                player.closeInventory();
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))) {
-            if (!((index + 1) >= keys.size())) {
-                page = page + 1;
-                this.open();
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))) {
-            if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
-                if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
-                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
-                    player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
-                    return;
+                break;
+            case "egg_place.refresh":
+                if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
+                    if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
+                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                        return;
+                    }
                 }
-            }
-            Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
-            open();
-            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
+                open();
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case "egg_place.collection_selected":
+                new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+                return;
+            case "egg_place.previous_page":
+                if (page == 0) {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    page = page - 1;
+                    this.open();
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                }
+                break;
+            case "egg_place.next_page":
+                if (!((index + 1) >= keys.size())) {
+                    page = page + 1;
+                    this.open();
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                }
+                break;
+            case "egg_place.information":
+                TextComponent textComponent = new TextComponent("§7Join the discord to get all information how to add custom egg textures. \n");
+                TextComponent clickMe = new TextComponent("§6§l[CLICK HERE]");
+                clickMe.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§7Click to join.")));
+                clickMe.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/hNj9erE5EA"));
+                textComponent.addExtra(clickMe);
+                player.spigot().sendMessage(textComponent);
+                break;
         }
-
-        if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Information")) {
-            TextComponent c = new TextComponent("§7Join the discord to get all information how to add custom egg textures. \n");
-            TextComponent clickme = new TextComponent("§6§l[CLICK HERE]");
-            clickme.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§7Click to join.")));
-            clickme.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/hNj9erE5EA"));
-            c.addExtra(clickme);
-            player.spigot().sendMessage(c);
-        }
-
     }
 }
 

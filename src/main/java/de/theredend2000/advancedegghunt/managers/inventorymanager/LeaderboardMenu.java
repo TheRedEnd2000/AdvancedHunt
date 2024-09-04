@@ -5,12 +5,11 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -42,16 +41,19 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setCustomId("leaderboard.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
+                .setCustomId("leaderboard.refresh")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REFRESH_BUTTON))
                 .build();
 
         String selectedCollection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
+                .setCustomId("leaderboard.collection_selected")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SELECTED_COLLECTION_BUTTON, "%COLLECTION%", selectedCollection))
                 .build();
@@ -59,11 +61,13 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("leaderboard.previous_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("leaderboard.next_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
@@ -74,6 +78,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
         ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER)
+                .setCustomId("leaderboard.sort")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SORT_BUTTON));
         switch (sortTypes){
             case ALL:
@@ -206,48 +211,47 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
 
-        if(event.getCurrentItem().getType().equals(Material.PAPER) && ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Selected Collection")){
-            new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
-            return;
-        }
-
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))) {
-            if (page == 0) {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                page = page - 1;
-                this.open();
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))) {
-            if (!((index + 1) >= numberOfPlayers)) {
-                page = page + 1;
-                this.open();
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))) {
-            if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
-                if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
-                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
-                    player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
-                    return;
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "leaderboard.collection_selected":
+                new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+                return;
+            case "leaderboard.next_page":
+                if (!((index + 1) >= numberOfPlayers)) {
+                    page = page + 1;
+                    this.open();
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
-            }
-            Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
-            open();
-            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-        }
-
-        XMaterial material = XMaterial.matchXMaterial(event.getCurrentItem());
-        switch (material) {
-            case HOPPER:
+                break;
+            case "leaderboard.previous_page":
+                if (page == 0) {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    page = page - 1;
+                    this.open();
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                }
+                break;
+            case "leaderboard.close":
+                player.closeInventory();
+                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
+            case "leaderboard.refresh":
+                if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
+                    if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
+                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                        return;
+                    }
+                }
+                Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
+                open();
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case "leaderboard.sort":
                 LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
                 Main.getInstance().getSortTypeLeaderboard().remove(playerMenuUtility.getOwner());
                 switch (sortTypes) {

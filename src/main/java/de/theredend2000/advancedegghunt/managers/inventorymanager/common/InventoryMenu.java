@@ -27,7 +27,7 @@ public abstract class InventoryMenu implements IInventoryMenu {
     }
 
     public InventoryMenu(PlayerMenuUtility playerMenuUtility, String inventoryName, short slots, XMaterial fillerMaterial) {
-        menuMessageManager = Main.getInstance().getMenuMessageManager();
+        menuMessageManager = Main.getInstance().getMenuManager();
         this.playerMenuUtility = playerMenuUtility;
         this.slots = slots % 9 == 0? slots : (short) (slots - (slots % 9));
         this.inventoryContent = new ItemStack[this.slots];

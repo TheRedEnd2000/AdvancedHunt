@@ -374,7 +374,7 @@ public final class Main extends JavaPlugin {
         return messageManager;
     }
 
-    public MenuManager getMenuMessageManager() {
+    public MenuManager getMenuManager() {
         return menuMessageManager;
     }
 

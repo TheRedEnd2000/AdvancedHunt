@@ -6,8 +6,9 @@ import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.CollectionSelectMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.ResetMenu;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.InventoryMenu;
-import de.theredend2000.advancedegghunt.managers.inventorymanager.requirements.RequirementSelection;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.requirements.RequirementMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
@@ -39,11 +40,13 @@ public class CollectionEditor extends InventoryMenu {
 
     private void addMenuBorderButtons() {
         inventoryContent[36] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("collection_editor.back")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
                 .build();
         inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER)
+                .setCustomId("collection_editor.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
@@ -57,6 +60,7 @@ public class CollectionEditor extends InventoryMenu {
         DeletionTypes deletionType = Main.getInstance().getPlayerEggDataManager().getDeletionType(super.playerMenuUtility.getOwner().getUniqueId());
 
         getInventory().setItem(4, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("collection_editor.collection_selected")
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
                 .setDisplayName("§6" + collection)
                 .build());
@@ -65,31 +69,38 @@ public class CollectionEditor extends InventoryMenu {
 //                .setLore("§7Currently: " + name, "", "§eClick to change.")
 //                .build());
         getInventory().setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setCustomId("collection_editor.status")
                 .setDisplayName("§3Status")
                 .setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.")
                 .build());
         getInventory().setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                .setCustomId("collection_editor.delete")
                 .setDisplayName("§4Delete")
                 .setLore("§8Check if your deletion type is correct. (WOODEN_AXE)", "", "§4§lYOU CAN NOT UNDO THIS", "", "§eClick to delete.")
                 .build());
         getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR)
+                .setCustomId("collection_editor.requirements")
                 .setDisplayName("§3Requirements")
                 .setLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection))
                 .build());
         getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER)
+                .setCustomId("collection_editor.reset")
                 .setDisplayName("§3Reset §e§l(BETA)")
                 .setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(collection), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.")
                 .build());
         getInventory().setItem(42, new ItemBuilder(hideforplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setCustomId("collection_editor.hide")
                 .setDisplayName("§3Hide for player")
                 .setLore("", "§7If a player finds an egg it will not longer","§7be shown to them.","§cThis is only Client-Side", "", "§eClick to toggle.")
                 .build());
         getInventory().setItem(43, new ItemBuilder(oneplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setCustomId("collection_editor.only_one")
                 .setDisplayName("§3One Player")
                 .setLore("", "§7Only one player can find the egg.","§7It is after finding not longer accessible.","","§cAfter disabling the feature all eggs that are","§cmaked as found will be reset.", "", "§eClick to toggle.")
                 .build());
 
         getInventory().setItem(44,  new ItemBuilder(XMaterial.WOODEN_AXE)
+                .setCustomId("collection_editor.delete_type")
                 .setDisplayName("§3Deletion Types")
                 .setLore("§8Every player can configure that himself.",
                         "§7Change what happens after the deletion",
@@ -116,30 +127,32 @@ public class CollectionEditor extends InventoryMenu {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         boolean enabled = placedEggs.getBoolean("Enabled");
         boolean oneplayer = placedEggs.getBoolean("OnePlayer");
-        boolean hideforplayer = placedEggs.getBoolean("HideForPlayer");
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))) {
-            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-            new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
-        }
-        switch (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())) {
-            case "Status":
+        boolean hideForPlayer = placedEggs.getBoolean("HideForPlayer");
+
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "collection_editor.close":
+                player.closeInventory();
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case "collection_editor.back":
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+                break;
+            case "collection_editor.status":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 placedEggs.set("Enabled", !enabled);
                 Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                 menuContent(collection);
                 break;
-            case "Requirements":
+            case "collection_editor.requirements":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                new RequirementSelection(Main.getPlayerMenuUtility(player)).open(collection);
+                new RequirementMenu(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Reset (BETA)":
+            case "collection_editor.reset":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new ResetMenu(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
-            case "Delete":
+            case "collection_editor.delete":
                 if (collection.equalsIgnoreCase("default")) {
                     messageManager.sendMessage(player, MessageKey.COLLECTION_DEFAULT_UNDELETABLE);
                     return;
@@ -156,7 +169,7 @@ public class CollectionEditor extends InventoryMenu {
                 Main.getInstance().getEggDataManager().deleteCollection(collection);
                 player.closeInventory();
                 break;
-            case "Deletion Types":
+            case "collection_editor.delete_type":
                 DeletionTypes deletionTypes = Main.getInstance().getPlayerEggDataManager().getDeletionType(player.getUniqueId());
                 switch (deletionTypes) {
                     case Noting:
@@ -172,14 +185,14 @@ public class CollectionEditor extends InventoryMenu {
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 menuContent(collection);
                 break;
-            case "Hide for player":
+            case "collection_editor.hide":
                 /*player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                placedEggs.set("HideForPlayer", !hideforplayer);
+                placedEggs.set("HideForPlayer", !hideForPlayer);
                 Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
                 menuContent(collection);*/
                 messageManager.sendMessage(player, MessageKey.FEATURE_COMING_SOON);
                 break;
-            case "One Player":
+            case "collection_editor.only_one":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 placedEggs.set("OnePlayer", !oneplayer);
                 Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);

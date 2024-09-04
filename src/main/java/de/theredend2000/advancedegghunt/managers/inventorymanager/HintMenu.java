@@ -45,9 +45,11 @@ public class HintMenu extends InventoryMenu {
 
         playerMenuUtility.getOwner().openInventory(getInventory());
 
-        for (int i = 0; i < getInventory().getSize(); i++){getInventory().setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE)
-                .setDisplayName("§c")
-                .build());}
+        for (int i = 0; i < getInventory().getSize(); i++){
+            getInventory().setItem(i, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE)
+                    .setDisplayName("§c")
+                    .build());
+        }
 
         new BukkitRunnable() {
             @Override

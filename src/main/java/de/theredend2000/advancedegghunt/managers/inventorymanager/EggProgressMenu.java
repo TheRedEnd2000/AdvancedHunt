@@ -5,11 +5,10 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -35,15 +34,18 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
 
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+                .setCustomId("egg_progress.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
+                .setCustomId("egg_progress.refresh")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))
                 .setLore(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))
                 .build();
         String selectedSection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
         inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
+                .setCustomId("egg_progress.collection_selected")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SELECTED_COLLECTION_BUTTON, "%COLLECTION%", selectedSection))
                 .build();
@@ -51,11 +53,13 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
 
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("egg_progress.previous_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("egg_progress.next_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
@@ -85,7 +89,7 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             }
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
 
-            boolean showcoordinates = Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory();
+            boolean showCoordinates = Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory();
             String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
             String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
             String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
@@ -93,14 +97,14 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             int random = new Random().nextInt(7);
             String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
             String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
-            if(showcoordinates && hasFound){
+            if(showCoordinates && hasFound){
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
                 .setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")")
                 .setLore("", "§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "")
                 .setCustomId(keys.get(index))
                 .build());
-            }else if(hasFound && !showcoordinates) {
+            }else if(hasFound && !showCoordinates) {
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD)
                         .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
                         .setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")")
@@ -140,44 +144,46 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }
 
-        if (event.getCurrentItem().getType().equals(Material.PAPER) &&
-                event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.SELECTED_COLLECTION_BUTTON))){
-            new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
-            return;
-        }
-
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))) {
-            if (page == 0) {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                page = page - 1;
-                this.open();
+        switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "egg_progress.close":
+                player.closeInventory();
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))) {
-            if (!((index + 1) >= keys.size())) {
-                page = page + 1;
-                this.open();
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            } else {
-                player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
-                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-            }
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
-        } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))) {
-            if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
-                if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
-                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
-                    player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
-                    return;
+                break;
+            case "egg_progress.refresh":
+                if (Main.getInstance().getRefreshCooldown().containsKey(player.getName())) {
+                    if (Main.getInstance().getRefreshCooldown().get(player.getName()) > System.currentTimeMillis()) {
+                        player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.WAIT_REFRESH));
+                        player.playSound(player.getLocation(), soundManager.playInventoryFailedSound(), soundManager.getSoundVolume(), 1);
+                        return;
+                    }
                 }
-            }
-            Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
-            open();
-            player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
+                open();
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                break;
+            case "egg_progress.collection_selected":
+                new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+                return;
+            case "egg_progress.previous_page":
+                if (page == 0) {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.FIRST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    page = page - 1;
+                    this.open();
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                }
+                break;
+            case "egg_progress.next_page":
+                if (!((index + 1) >= keys.size())) {
+                    page = page + 1;
+                    this.open();
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                } else {
+                    player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
+                    player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                }
+                break; 
         }
     }
 }
