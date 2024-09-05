@@ -38,11 +38,20 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
     public void addMenuBorderButtons() {
         if(Main.getInstance().getPermissionManager().checkPermission(playerMenuUtility.getOwner(), Permission.CreateCollection))
             inventoryContent[51] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                    .setCustomId("collection_select.add_collection")
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.ADD_COLLECTION_BUTTON))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.ADD_COLLECTION_BUTTON))
                     .setSkullOwner(Main.getTexture("NWQ4NjA0YjllMTk1MzY3Zjg1YTIzZDAzZDlkZDUwMzYzOGZjZmIwNWIwMDMyNTM1YmM0MzczNDQyMjQ4M2JkZSJ9fX0="))
                     .build();
 
+        if(Main.getInstance().getLastOpenedInventory() != null) {
+            inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                    .setCustomId("collection_select.back")
+                    .setSkullOwner(Main.getTexture("NWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0="))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
+                    .build();
+        }
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
                 .setCustomId("collection_select.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
@@ -141,6 +150,14 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
         }
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
+            case "collection_select.back":
+                if(Main.getInstance().getLastOpenedInventory() == null){
+                    open();
+                    return;
+                }
+                player.openInventory(Main.getInstance().getLastOpenedInventory());
+                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
+                break;
             case "collection_select.close":
                 player.closeInventory();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
@@ -178,7 +195,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
                 break;
-            case "collection_select.collection_add":
+            case "collection_select.add_collection":
                 if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.CreateCollection)) {
                     new CollectionCreator(Main.getPlayerMenuUtility(player)).open();
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

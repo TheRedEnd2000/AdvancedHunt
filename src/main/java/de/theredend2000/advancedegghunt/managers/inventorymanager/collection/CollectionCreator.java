@@ -65,6 +65,7 @@ public class CollectionCreator extends InventoryMenu {
                 .setLore("", "§eClick to create.")
                 .build());
         getInventory().setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("collection_creator.back")
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.BACK_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
