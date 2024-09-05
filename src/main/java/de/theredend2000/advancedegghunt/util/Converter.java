@@ -68,7 +68,7 @@ public class Converter {
             }
 
             placedEggs.set("Rewards", null);
-            plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+            plugin.getEggDataManager().savePlacedEggs(collection);
 
             messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.COMMAND_SYSTEM_UPDATED);
             messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.COMMAND_SYSTEM_CHECK);
@@ -103,7 +103,7 @@ public class Converter {
                 for(String commandID : placedEggs.getConfigurationSection("PlacedEggs."+eggID+".Rewards.").getKeys(false)) {
                     if (!placedEggs.contains("PlacedEggs." + eggID + ".Rewards." + commandID+".chance")){
                         placedEggs.set("PlacedEggs." + eggID + ".Rewards." + commandID+".chance",100);
-                        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        plugin.getEggDataManager().savePlacedEggs(collection);
                         added = true;
                     }
                 }
@@ -111,7 +111,7 @@ public class Converter {
             for(String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)) {
                 if (!placedEggs.contains("GlobalRewards." + commandID+".chance")){
                     placedEggs.set("GlobalRewards." + commandID+".chance",100);
-                    plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                    plugin.getEggDataManager().savePlacedEggs(collection);
                     added = true;
                 }
             }

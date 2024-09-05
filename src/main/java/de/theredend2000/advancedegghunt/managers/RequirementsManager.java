@@ -248,7 +248,7 @@ public class RequirementsManager {
         for(String season : DateTimeUtil.getSeasonList()){
             placedEggs.set("Requirements.Season." + season, active);
         }
-        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+        plugin.getEggDataManager().savePlacedEggs(collection);
     }
 
     public void resetReset(String collection){
@@ -259,7 +259,7 @@ public class RequirementsManager {
         placedEggs.set("Reset.Hour", 0);
         placedEggs.set("Reset.Minute", 0);
         placedEggs.set("Reset.Second", 0);
-        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+        plugin.getEggDataManager().savePlacedEggs(collection);
     }
 
     public int getOverallTime(String collection){

@@ -26,7 +26,7 @@ public class ConfigLocationUtil {
         config.set(root + ".Z", location.getBlockZ());
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
-        Main.getInstance().getEggDataManager().savePlacedEggs(collection, config);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection);
     }
 
     public void saveBlockLocation(UUID uuid) {

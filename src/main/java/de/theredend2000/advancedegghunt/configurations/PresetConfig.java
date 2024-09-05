@@ -21,4 +21,8 @@ public class PresetConfig extends Configuration {
     public void registerUpgrader() {
 
     }
+
+    public void saveData() {
+        saveConfig();
+    }
 }

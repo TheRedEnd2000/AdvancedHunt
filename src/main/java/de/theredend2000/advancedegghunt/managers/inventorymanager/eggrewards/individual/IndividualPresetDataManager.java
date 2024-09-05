@@ -134,7 +134,7 @@ public class IndividualPresetDataManager {
             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".chance", chance);
         }
 
-        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection);
     }
 
     public List<String> getAllCommandsAsLore(String preset, boolean isDefault){

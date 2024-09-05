@@ -240,7 +240,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 switch (event.getAction()) {
                     case PICKUP_ALL:
                         placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".enabled", !placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled"));
-                        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        plugin.getEggDataManager().savePlacedEggs(collection);
                         open(id, collection);
                         break;
                     case CLONE_STACK:
@@ -252,7 +252,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                                     if(stateSnapshot.getText().matches("[0-9.]+")){
                                         if(!(Double.parseDouble(stateSnapshot.getText()) < 0.0000001 || Double.parseDouble(stateSnapshot.getText()) > 100)) {
                                             placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
-                                            plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                                            plugin.getEggDataManager().savePlacedEggs(collection);
                                             messageManager.sendMessage(player, MessageKey.CHANCED_CHANCE, "%CHANCE%", stateSnapshot.getText());
                                         }else
                                             messageManager.sendMessage(player, MessageKey.INVALID_CHANCE);
@@ -270,7 +270,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     case PICKUP_HALF:
                         messageManager.sendMessage(player, MessageKey.COMMAND_DELETE, "%ID%", commandID);
                         placedEggs.set("PlacedEggs." + id + ".Rewards." + commandID, null);
-                        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        plugin.getEggDataManager().savePlacedEggs(collection);
                         open(id, collection);
                         break;
                     case DROP_ONE_SLOT:

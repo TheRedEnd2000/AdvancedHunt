@@ -95,7 +95,7 @@ public class RequirementSeason extends InventoryMenu {
             if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(season)) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
                 placedEggs.set("Requirements.Season." + season, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 return;
             }

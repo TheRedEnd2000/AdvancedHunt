@@ -78,7 +78,7 @@ public class RequirementMonth extends InventoryMenu {
             if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(month)) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
                 placedEggs.set("Requirements.Month." + month, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 return;
             }

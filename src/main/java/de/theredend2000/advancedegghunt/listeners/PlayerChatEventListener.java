@@ -109,7 +109,7 @@ public class PlayerChatEventListener implements Listener {
         placedEggs.set(path + commandID + ".command", command);
         placedEggs.set(path + commandID + ".enabled", true);
         placedEggs.set(path + commandID + ".chance", 100);
-        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection);
     }
 
     private void runTimeForPlayers(){

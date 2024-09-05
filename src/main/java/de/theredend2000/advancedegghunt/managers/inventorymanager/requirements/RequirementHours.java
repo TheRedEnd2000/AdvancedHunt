@@ -76,7 +76,7 @@ public class RequirementHours extends InventoryMenu {
             if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Hour " + i)) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
                 placedEggs.set("Requirements.Hours." + i, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 return;
             }

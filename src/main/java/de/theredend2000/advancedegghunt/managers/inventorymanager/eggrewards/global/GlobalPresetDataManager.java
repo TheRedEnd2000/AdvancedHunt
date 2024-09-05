@@ -89,7 +89,7 @@ public class GlobalPresetDataManager {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         FileConfiguration presets = getPresets(preset);
         placedEggs.set("GlobalRewards", null);
-        Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+        Main.getInstance().getEggDataManager().savePlacedEggs(collection);
         for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
             String command = presets.getString("Commands." + commandID + ".command");
             boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
@@ -97,7 +97,7 @@ public class GlobalPresetDataManager {
             placedEggs.set("GlobalRewards." + commandID + ".command", command);
             placedEggs.set("GlobalRewards." + commandID + ".enabled", enabled);
             placedEggs.set("GlobalRewards." + commandID + ".chance", chance);
-            Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+            Main.getInstance().getEggDataManager().savePlacedEggs(collection);
         }
     }
 

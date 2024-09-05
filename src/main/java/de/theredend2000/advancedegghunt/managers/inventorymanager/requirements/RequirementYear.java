@@ -79,7 +79,7 @@ public class RequirementYear extends InventoryMenu {
             if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Year " + year)) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
                 placedEggs.set("Requirements.Year." + year, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 return;
             }

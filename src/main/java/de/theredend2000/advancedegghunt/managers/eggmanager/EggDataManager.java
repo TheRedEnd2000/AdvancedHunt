@@ -1,174 +1,95 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.configurations.EggConfig;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class EggDataManager {
 
     private final Main plugin;
     private final File dataFolder;
-    private HashMap<String, FileConfiguration> eggCollectionsConfigs;
-    private HashMap<String, File> eggsFile;
+    private final EggConfig eggConfig;
 
     public EggDataManager(Main plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
-        eggCollectionsConfigs = new HashMap<>();
-        eggsFile = new HashMap<>();
+        this.eggConfig = new EggConfig(plugin);
 
         dataFolder.mkdirs();
         new File(dataFolder, "playerdata").mkdirs();
-        new File(dataFolder, "eggs").mkdirs();
-        if(savedEggCollections().size() < 1) {
-            createEggCollectionFile("default", true);
+        if(eggConfig.savedEggCollections().size() < 1) {
+            eggConfig.createEggCollectionFile("default", true);
             Main.setupDefaultCollection = true;
         }
     }
 
     public void reload() {
-        eggCollectionsConfigs = new HashMap<>();
-    }
-
-    public void unloadEggData(String collection) {
-        if (!eggCollectionsConfigs.containsKey(collection)) {
-            return;
-        }
-        eggCollectionsConfigs.remove(collection);
+        eggConfig.reloadConfigs();
     }
 
     public void initEggs() {
-        List<String> savedEggCollections = new ArrayList(this.plugin.getEggDataManager().savedEggCollections());
+        List<String> savedEggCollections = new ArrayList<>(eggConfig.savedEggCollections());
 
         for (String collection : savedEggCollections) {
-            this.getPlacedEggs(collection);
+            eggConfig.getEggConfig(collection);
         }
-    }
-
-    private void loadEggData(String collection) {
-        FileConfiguration config = getPlacedEggs(collection);
-        if(!eggCollectionsConfigs.containsKey(collection))
-            this.eggCollectionsConfigs.put(collection, config);
-    }
-
-    private File getFile(String collection) {
-        if(!eggsFile.containsKey(collection))
-            eggsFile.put(collection, new File(this.dataFolder + "/eggs/", collection + ".yml"));
-        return eggsFile.get(collection);
     }
 
     public FileConfiguration getPlacedEggs(String collection) {
-        File playerFile = this.getFile(collection);
-        if(!eggCollectionsConfigs.containsKey(collection))
-            this.eggCollectionsConfigs.put(collection, YamlConfiguration.loadConfiguration(playerFile));
-        return eggCollectionsConfigs.get(collection);
+        return eggConfig.getEggConfig(collection);
     }
 
-    public void setRewards(String commandID, String command, String collection,String path){
-        FileConfiguration placedEggs = getPlacedEggs(collection);
-        placedEggs.set(path + commandID + ".command", command);
-        placedEggs.set(path + commandID + ".enabled", true);
-        placedEggs.set(path + commandID + ".chance", 100);
-        savePlacedEggs(collection, placedEggs);
-    }
-
-    public void savePlacedEggs(String collection, FileConfiguration config) {
-        try {
-            config.save(this.getFile(collection));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createEggCollectionFile(String collection, boolean enabled) {
-        FileConfiguration config = this.getPlacedEggs(collection);
-        File playerFile = this.getFile(collection);
-        if (!playerFile.exists()) {
-            try {
-                playerFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        this.eggCollectionsConfigs.put(collection, config);
-        this.loadEggData(collection);
-        this.savePlacedEggs(collection, config);
-        config.set("Enabled", enabled);
-        config.set("RequirementsOrder", "OR");
-        this.savePlacedEggs(collection, config);
+    public void setRewards(String commandID, String command, String collection, String path) {
+        eggConfig.setReward(collection, commandID, command, path);
     }
 
     public boolean containsSectionFile(String section) {
-        Iterator savedEggCollectionsIterator = this.savedEggCollections().iterator();
-
-        String collection;
-        do {
-            if (!savedEggCollectionsIterator.hasNext()) {
-                return false;
+        for (String collection : eggConfig.savedEggCollections()) {
+            if (eggConfig.containsSection(collection, section)) {
+                return true;
             }
-
-            collection = (String)savedEggCollectionsIterator.next();
-        } while(!collection.contains(section));
-
-        return true;
+        }
+        return false;
     }
 
     public List<String> savedEggCollections() {
-        List<String> eggCollections = new ArrayList();
-        File eggsSectionsFolder = new File(this.dataFolder + "/eggs/");
-        if (eggsSectionsFolder.exists() && eggsSectionsFolder.isDirectory()) {
-            File[] playerFiles = eggsSectionsFolder.listFiles((dir, name) -> {
-                return name.endsWith(".yml");
-            });
-            if (playerFiles != null) {
-                int playerFilesLength = playerFiles.length;
+        return eggConfig.savedEggCollections();
+    }
 
-                for(int i = 0; i < playerFilesLength; ++i) {
-                    File playerFile = playerFiles[i];
-                    String fileName = playerFile.getName();
-                    String collectionName = fileName.substring(0, fileName.length() - 4);
-                    eggCollections.add(collectionName);
-                }
-            }
-        }
-        return eggCollections;
+    public void createEggCollectionFile(String collection, boolean enabled) {
+        eggConfig.createEggCollectionFile(collection, enabled);
+    }
+
+    public void savePlacedEggs(String collection) {
+        eggConfig.saveData(collection);
     }
 
     public void deleteCollection(String collection) {
-        File collectionFile = this.getFile(collection);
-        if (collectionFile.exists()) {
-            collectionFile.delete();
-        }
+        eggConfig.deleteCollection(collection);
     }
 
     public boolean containsCollection(String collection) {
-        File collectionFile = this.getFile(collection);
-        return collectionFile.exists();
+        return eggConfig.containsCollection(collection);
     }
 
     public List<UUID> savedPlayers() {
-        List<UUID> playerUUIDs = new ArrayList();
-        File playerDataFolder = new File(this.dataFolder + "/playerdata/");
+        List<UUID> playerUUIDs = new ArrayList<>();
+        File playerDataFolder = new File(this.dataFolder, "playerdata");
         if (playerDataFolder.exists() && playerDataFolder.isDirectory()) {
-            File[] playerFiles = playerDataFolder.listFiles((dir, name) -> {
-                return name.endsWith(".yml");
-            });
+            File[] playerFiles = playerDataFolder.listFiles((dir, name) -> name.endsWith(".yml"));
             if (playerFiles != null) {
-                int playerFilesLength = playerFiles.length;
-
-                for(int i = 0; i < playerFilesLength; ++i) {
-                    File playerFile = playerFiles[i];
+                for (File playerFile : playerFiles) {
                     String fileName = playerFile.getName();
                     UUID playerUUID = UUID.fromString(fileName.substring(0, fileName.length() - 4));
                     playerUUIDs.add(playerUUID);
                 }
             }
         }
-
         return playerUUIDs;
     }
 }

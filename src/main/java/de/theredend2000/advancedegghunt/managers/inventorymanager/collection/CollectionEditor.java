@@ -141,7 +141,7 @@ public class CollectionEditor extends InventoryMenu {
             case "collection_editor.status":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 placedEggs.set("Enabled", !enabled);
-                Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+                Main.getInstance().getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 break;
             case "collection_editor.requirements":
@@ -195,7 +195,7 @@ public class CollectionEditor extends InventoryMenu {
             case "collection_editor.only_one":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 placedEggs.set("OnePlayer", !oneplayer);
-                Main.getInstance().getEggDataManager().savePlacedEggs(collection, placedEggs);
+                Main.getInstance().getEggDataManager().savePlacedEggs(collection);
                 if(oneplayer && placedEggs.contains("PlacedEggs."))
                     for(String eggIDs : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false))
                         Main.getInstance().getEggManager().markEggAsFound(collection, eggIDs, false);

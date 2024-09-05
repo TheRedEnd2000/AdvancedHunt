@@ -78,7 +78,7 @@ public class RequirementWeekday extends InventoryMenu {
             if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(weekdays)) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekdays);
                 placedEggs.set("Requirements.Weekday." + weekdays, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 return;
             }

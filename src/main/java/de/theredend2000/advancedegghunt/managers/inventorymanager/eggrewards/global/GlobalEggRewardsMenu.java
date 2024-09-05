@@ -230,7 +230,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                 switch (event.getAction()) {
                     case PICKUP_ALL:
                         placedEggs.set("GlobalRewards." + commandID + ".enabled", !placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled"));
-                        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        plugin.getEggDataManager().savePlacedEggs(collection);
                         open(id, collection);
                         break;
                     case CLONE_STACK:
@@ -242,7 +242,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                                     if(stateSnapshot.getText().matches("[0-9.]+")){
                                         if(!(Double.parseDouble(stateSnapshot.getText()) < 0.0000001 || Double.parseDouble(stateSnapshot.getText()) > 100)) {
                                             placedEggs.set("GlobalRewards." + commandID + ".chance", Double.valueOf(stateSnapshot.getText()));
-                                            plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                                            plugin.getEggDataManager().savePlacedEggs(collection);
                                             messageManager.sendMessage(player, MessageKey.CHANCED_CHANCE, "%CHANCE%", stateSnapshot.getText());
                                         }else
                                             messageManager.sendMessage(player, MessageKey.INVALID_CHANCE);
@@ -260,7 +260,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     case PICKUP_HALF:
                         messageManager.sendMessage(player, MessageKey.COMMAND_DELETE, "%ID%", commandID);
                         placedEggs.set("GlobalRewards." + commandID, null);
-                        plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                        plugin.getEggDataManager().savePlacedEggs(collection);
                         open(id, collection);
                         break;
                     case DROP_ONE_SLOT:

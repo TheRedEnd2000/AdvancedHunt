@@ -134,7 +134,7 @@ public class ResetMenu extends InventoryMenu {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Year", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 break;
             case "reset.reset_month":
@@ -150,7 +150,7 @@ public class ResetMenu extends InventoryMenu {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Month", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 break;
             case "reset.reset_day":
@@ -166,7 +166,7 @@ public class ResetMenu extends InventoryMenu {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Day", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 break;
             case "reset.reset_hour":
@@ -182,7 +182,7 @@ public class ResetMenu extends InventoryMenu {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Hour", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 break;
             case "reset.reset_minute":
@@ -198,7 +198,7 @@ public class ResetMenu extends InventoryMenu {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Minute", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 break;
             case "reset.reset_second":
@@ -214,7 +214,7 @@ public class ResetMenu extends InventoryMenu {
                 } else if (event.getClick() == ClickType.MIDDLE) {
                     placedEggs.set("Reset.Second", 0);
                 }
-                plugin.getEggDataManager().savePlacedEggs(collection, placedEggs);
+                plugin.getEggDataManager().savePlacedEggs(collection);
                 menuContent(collection);
                 break;
             case "reset.reset_all":
