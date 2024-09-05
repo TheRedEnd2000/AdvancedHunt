@@ -94,8 +94,8 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                     String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs." + collection + ".Count");
                     getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                             .setOwner(keys.get(index))
-                            .setDisplayName("§6§l" + keys.get(index) + " §7(" + uuid.get(index) + ")")
-                            .setLore("§7" + keys.get(index) + " has found the §2egg #" + eggId + "§7.", "", "§9Information of " + keys.get(index) + ":", "§7Eggs found: §6" + eggsFound + "/" + maxEggs, "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time)
+                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%",keys.get(index),"%PLAYER_UUID%",uuid.get(index)))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%",keys.get(index),"%EGG_ID%",eggId,"%EGGS_FOUND%",eggsFound,"%EGGS_MAX%", maxEggs,"%DATE%",date,"%TIME%",time))
                             .setCustomId(keys.get(index))
                             .build());
                 }

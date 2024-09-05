@@ -4,23 +4,21 @@ config-version: 1.0
 back_button:
   displayname: "&7« Back"
   lore:
-    - "§7Click to go back."
+    - "&7Click to go back."
 next_page_button:
   displayname: "&aNext Page »"
   lore:
-    - "§6Page: §7(§b%CURRENT_PAGE%§7/§b%MAX_PAGES%§7)"
+    - "&6Page: &7(&b%CURRENT_PAGE%&7/&b%MAX_PAGES%&7)"
     - ""
-    - "§eClick to scroll."
+    - "&eClick to scroll."
 previous_page_button:
   displayname: "&c« Previous Page"
   lore:
-    - "§6Page: §7(§b%CURRENT_PAGE%§7/§b%MAX_PAGES%§7)"
+    - "&6Page: &7(&b%CURRENT_PAGE%&7/&b%MAX_PAGES%&7)"
     - ""
-    - "§eClick to scroll."
+    - "&eClick to scroll."
 close_button:
   displayname: "&cClose"
-sort_button:
-  displayname: "&2Sort"
 refresh_button:
   displayname: "&aRefresh"
 
@@ -38,21 +36,93 @@ collection_item:
   displayname: "&6Collection: &6&l%COLLECTION% %SELECTED%"
   lore:
     - ""
-    - "§9Collection Information:"
-    - "§7   - Placed eggs: §6%MAX_EGGS%"
+    - "&9Collection Information:"
+    - "&7   - Placed eggs: &6%MAX_EGGS%"
     - ""
-    - "§aNote:"
-    - "§7This collection applies to all actions that are carried out."
-    - "§7It can be changed at any time in this menu."
+    - "&aNote:"
+    - "&7This collection applies to all actions that are carried out."
+    - "&7It can be changed at any time in this menu."
     - ""
-    - "§eLEFT-CLICK to select."
-    - "§7%PERMISSION%RIGHT-CLICK to edit."
+    - "&eLEFT-CLICK to select."
+    - "&7%PERMISSION%RIGHT-CLICK to edit."
 
 # Egg related
+eggslist_egg:
+  displayname: "&2&lEgg &7(ID#%EGG_ID%)"
+  lore:
+    - "&9Location:"
+    - "&7X: &e%LOCATION_X%"
+    - "&7Y: &e%LOCATION_Y%"
+    - "&7Z: &e%LOCATION_Z%"
+    - ""
+    - "&9Information:"
+    - "&7Times found: &6%TIMES_FOUND%"
+    - ""
+    - "&9Placed:"
+    - "&7Date: &6%DATE%"
+    - "&7Time: &6%TIME%"
+    - ""
+    - "&eLEFT-CLICK to teleport."
+    - "&eRIGHT-CLICK for information."
+
+eggplace_information:
+  displayname: "&9Information"
+  lore:
+    - ""
+    - "&2How to add custom textures:"
+    - "&7Custom textures for eggs (player heads)"
+    - "&7can be added by clicking the item in your"
+    - "&7inventory. It will get the texture."
+    - ""
+    - "&2Other blocks:"
+    - "&7You can add eggs that are blocks,"
+    - "&7so players have to search for blocks"
+    - "&7instead of player heads."
+    - ""
+    - "&bIf you have any more question how to add"
+    - "&bcustom stuff, you can join the discord"
+    - ""
+    - "&eClick to get the discord link."
+eggplace_egg:
+  displayname: "&b&lEggs Type #%EGG_ID%"
+  lore:
+    - ""
+    - "&eLEFT-CLICK to add to your inventory."
+    - "&eRIGHT-CLICK to remove."
+
 
 # Player related
+information_player:
+  displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
+  lore:
+    - "&7%PLAYER_NAME% has found the &2egg #%EGG_ID%&7."
+    - ""
+    - "&9Information of %PLAYER_NAME%:"
+    - "&7Eggs found: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - ""
+    - "&7Date: &6%DATE%"
+    - "&7Time: &6%TIME%"
 
 # Leaderboard related
+leaderboard_sort:
+  displayname: "&2Sort"
+  lore:
+    - ""
+    - "%SELECTED_ALL%Show the complete leaderboard"
+    - "%SELECTED_10%Show only the top 10"
+    - "%SELECTED_3%Show only the top 3"
+    - "%SELECTED_YOU%Show only you"
+    - ""
+    - "&eClick to switch"
+leaderboard_player:
+  displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
+  lore:
+    - ""
+    - "&7Eggs Found: &3%EGGS_FOUND%"
+    - "&7Eggs Remaining: &3%EGGS_REMAINING%"
+    - "&7Max Eggs: &3%EGGS_MAX%"
+    - ""
+    - "%IS_IN_TOP_TEN%"
 
 # Reward related
 

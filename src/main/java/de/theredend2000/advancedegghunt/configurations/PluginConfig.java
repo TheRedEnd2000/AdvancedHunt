@@ -305,6 +305,9 @@ public class PluginConfig extends Configuration {
     public void setPlaceEggType(int id, String PlaceEggType) {
         getConfig().set(MessageFormat.format("PlaceEggs.{0}.type", id), PlaceEggType);
     }
+    public void removePlaceEggType(int id) {
+        getConfig().set(MessageFormat.format("PlaceEggs.{0}", id), null);
+    }
 
     public void setPlaceEggPlayerHead(String base64Texture) {
         List<String> ids = List.copyOf(getPlaceEggIds());

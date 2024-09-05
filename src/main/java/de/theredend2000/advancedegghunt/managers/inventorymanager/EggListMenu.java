@@ -93,15 +93,15 @@ public class EggListMenu extends PaginatedInventoryMenu {
             String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
             String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
             String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
-            String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
-            String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
+            String date = Main.getInstance().getEggManager().getEggDatePlaced(keys.get(index), collection);
+            String time = Main.getInstance().getEggManager().getEggTimePlaced(keys.get(index), collection);
             int timesFound = Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection);
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
             getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD)
                     .setCustomId("egg_list.id." + keys.get(index))
                     .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
-                    .setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")")
-                    .setLore("§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", "§9Information:", "§7Times found: §6" + timesFound, "", "§9Placed:", "§7Date: §6" + date, "§7Time: §6" + time, "", "§eLEFT-CLICK to teleport.", "§eRIGHT-CLICK for information.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGSLIST_EGG,"%EGG_ID%",keys.get(index)))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGSLIST_EGG,"%LOCATION_X%",x,"%LOCATION_Y%",y,"%LOCATION_Z%",z,"%TIMES_FOUND%", String.valueOf(timesFound),"%DATE%",date,"%TIME%",time))
                     .setCustomId(keys.get(index))
                     .build());
         }

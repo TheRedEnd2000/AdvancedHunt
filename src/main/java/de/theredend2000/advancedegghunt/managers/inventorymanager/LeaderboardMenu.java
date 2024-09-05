@@ -80,19 +80,19 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         LeaderboardSortTypes sortTypes = Main.getInstance().getSortTypeLeaderboard().get(playerMenuUtility.getOwner());
         ItemBuilder itemBuilder = new ItemBuilder(XMaterial.HOPPER)
                 .setCustomId("leaderboard.sort")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SORT_BUTTON));
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_SORT));
         switch (sortTypes){
             case ALL:
-                itemBuilder = itemBuilder.setLore("", "§6 ➤ Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
+                itemBuilder = itemBuilder.setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_SORT,"%SELECTED_ALL%","§6➤ ","%SELECTED_10%","§7","%SELECTED_3%","§7","%SELECTED_YOU%","§7"));
                 break;
             case TOP10:
-                itemBuilder = itemBuilder.setLore("", "§7Show the complete leaderboard", "§6➤ Show only the top 10", "§7Show only the top 3", "§7Show only you", "", "§eClick to switch");
+                itemBuilder = itemBuilder.setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_SORT,"%SELECTED_ALL%","§7","%SELECTED_10%","§6➤ ","%SELECTED_3%","§7","%SELECTED_YOU%","§7"));
                 break;
             case TOP3:
-                itemBuilder = itemBuilder.setLore("", "§7Show the complete leaderboard", "§7Show only the top 10", "§6➤ Show only the top 3", "§7Show only you", "", "§eClick to switch");
+                itemBuilder = itemBuilder.setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_SORT,"%SELECTED_ALL%","§7","%SELECTED_10%","§7","%SELECTED_3%","§6➤ ","%SELECTED_YOU%","§7"));
                 break;
             case YOU:
-                itemBuilder = itemBuilder.setLore("", "§7Show the complete leaderboard", "§7Show only the top 10", "§7Show only the top 3", "§6➤ Show only you", "", "§eClick to switch");
+                itemBuilder = itemBuilder.setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_SORT,"%SELECTED_ALL%","§7","%SELECTED_10%","§7","%SELECTED_3%","§7","%SELECTED_YOU%","§6➤ "));
                 break;
         }
         getInventory().setItem(51, itemBuilder.build());
@@ -141,8 +141,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                 int count = leaderList.get(i).getValue();
                 getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                         .setOwner(playerName)
-                        .setDisplayName("§6§l" + (i + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                        .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
                         .build());
 
                 return;
@@ -165,16 +165,16 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
             switch (sortTypes) {
                 case ALL:
                     getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
-                            .setDisplayName("§6§l" + (index + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                            .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", 9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")
+                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
                             .build());
                     break;
                 case TOP3:
                     numberOfPlayers = 3;
                     if (i < 3) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
-                                .setDisplayName("§6§l" + (index + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                                .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!")
+                                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
                                 .build());
                     }
                     break;
@@ -182,8 +182,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                     numberOfPlayers = 10;
                     if (i < 10) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
-                                .setDisplayName("§6§l" + (index + 1) + "§6th §2§n" + playerName + (playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : ""))
-                                .setLore("", "§7Eggs Found: §3" + count, "§7Eggs Remaining: §3" + (maxEggs - count), "§7Max Eggs: §3" + maxEggs, "", "§eTHIS PLAYER IS IN THE TOP 10!")
+                                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
                                 .build());
                     }
                     break;
