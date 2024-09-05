@@ -14,27 +14,29 @@ public abstract class MultiFileConfiguration {
     protected Map<String, YamlConfiguration> configs;
     protected Map<String, File> configFiles;
     protected final String configFolder;
+    protected final String fileExtension;
     private final double latestVersion;
     private final boolean template;
 
     public abstract Map<String, TreeMap<Double, ConfigUpgrader>> getUpgraders();
     public abstract void registerUpgraders();
 
-    public MultiFileConfiguration(JavaPlugin plugin, String configFolder) {
-        this(plugin, configFolder, true, -1d);
+    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension) {
+        this(plugin, configFolder, fileExtension, true, -1d);
     }
 
-    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, double latestVersion) {
-        this(plugin, configFolder, true, latestVersion);
+    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension, double latestVersion) {
+        this(plugin, configFolder, fileExtension, true, latestVersion);
     }
 
-    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, boolean template) {
-        this(plugin, configFolder, template, -1d);
+    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension, boolean template) {
+        this(plugin, configFolder, fileExtension, template, -1d);
     }
 
-    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, boolean template, double latestVersion) {
+    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension, boolean template, double latestVersion) {
         this.plugin = plugin;
         this.configFolder = configFolder;
+        this.fileExtension = fileExtension.startsWith(".") ? fileExtension : "." + fileExtension;
         this.template = template;
         this.latestVersion = latestVersion;
         this.configs = new HashMap<>();
@@ -122,7 +124,7 @@ public abstract class MultiFileConfiguration {
         }
 
         for (File file : folder.listFiles()) {
-            if (file.isFile() && file.getName().endsWith(".yml")) {
+            if (file.isFile() && file.getName().endsWith(fileExtension)) {
                 String configName = file.getName();
                 reloadConfig(configName);
             }
@@ -154,7 +156,7 @@ public abstract class MultiFileConfiguration {
 
         Set<String> resourceNames = getResourcesInFolder(configFolder);
         for (String resource : resourceNames) {
-            if (resource.endsWith(".yml")) {
+            if (resource.endsWith(fileExtension)) {
                 String configName = new File(resource).getName();
                 saveDefaultConfig(configName);
             }
@@ -169,7 +171,7 @@ public abstract class MultiFileConfiguration {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (line.endsWith(".yml")) {
+                    if (line.endsWith(fileExtension)) {
                         resources.add(folderPath + "/" + line);
                     }
                 }
@@ -192,6 +194,9 @@ public abstract class MultiFileConfiguration {
     }
 
     protected FileConfiguration getConfig(String configName) {
+        if (!configName.endsWith(fileExtension)) {
+            configName += fileExtension;
+        }
         if (!configs.containsKey(configName)) {
             reloadConfig(configName);
         }
@@ -203,6 +208,10 @@ public abstract class MultiFileConfiguration {
     }
 
     protected void saveConfig(String configName) {
+        if (!configName.endsWith(fileExtension)) {
+            configName += fileExtension;
+        }
+        
         try {
             getConfig(configName).save(configFiles.get(configName));
         } catch (IOException ex) {
@@ -217,7 +226,10 @@ public abstract class MultiFileConfiguration {
      * @return true if the config was successfully deleted, false otherwise
      */
     public boolean deleteConfig(String configName) {
-        // Check if the config exists
+        if (!configName.endsWith(fileExtension)) {
+            configName += fileExtension;
+        }
+
         if (!configs.containsKey(configName) || !configFiles.containsKey(configName)) {
             plugin.getLogger().warning("Attempted to delete non-existent config: " + configName);
             return false;

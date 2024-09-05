@@ -36,12 +36,12 @@ public class EggDataManager {
         List<String> savedEggCollections = new ArrayList<>(eggConfig.savedEggCollections());
 
         for (String collection : savedEggCollections) {
-            eggConfig.getEggConfig(collection);
+            eggConfig.getConfig(collection);
         }
     }
 
     public FileConfiguration getPlacedEggs(String collection) {
-        return eggConfig.getEggConfig(collection);
+        return eggConfig.getConfig(collection);
     }
 
     public void setRewards(String commandID, String command, String collection, String path) {
