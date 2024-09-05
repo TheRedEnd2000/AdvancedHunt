@@ -10,14 +10,9 @@ import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
-import de.tr7zw.nbtapi.iface.ReadableNBT;
-import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -137,16 +132,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
 
         if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) {
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
-            String fullTexture = NBT.get(event.getCurrentItem(), nbt -> {
-                final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
-                if (skullOwnerCompound == null) return null;
-                ReadableNBT skullOwnerPropertiesCompound = skullOwnerCompound.getCompound("Properties");
-                if (skullOwnerPropertiesCompound == null) return null;
-                ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesTexturesCompound = skullOwnerPropertiesCompound.getCompoundList("textures");
-                if (skullOwnerPropertiesTexturesCompound == null) return null;
-
-                return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
-            });
+            String fullTexture = ItemHelper.getSkullTexture(event.getCurrentItem());
 
             if (fullTexture != null) fullTexture = fullTexture.replaceFirst(".+?mUv", "");
             for(String key : keys){

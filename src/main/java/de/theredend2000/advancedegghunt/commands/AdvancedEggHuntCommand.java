@@ -6,13 +6,10 @@ import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.*;
 import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadWriteNBT;
-import de.tr7zw.nbtapi.iface.ReadableNBT;
-import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -269,16 +266,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        String fullTexture = NBT.get(item, nbt -> {
-            final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
-            if (skullOwnerCompound == null) return null;
-            ReadableNBT skullOwnerPropertiesCompound = skullOwnerCompound.getCompound("Properties");
-            if (skullOwnerPropertiesCompound == null) return null;
-            ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesTexturesCompound = skullOwnerPropertiesCompound.getCompoundList("textures");
-            if (skullOwnerPropertiesTexturesCompound == null) return null;
-
-            return skullOwnerPropertiesTexturesCompound.get(0).getString("Value");
-        });
+        String fullTexture = ItemHelper.getSkullTexture(item);
 
         if (fullTexture == null) {
             messageManager.sendMessage(player, MessageKey.EGGIMPORT_FAILED_PROFILE);
