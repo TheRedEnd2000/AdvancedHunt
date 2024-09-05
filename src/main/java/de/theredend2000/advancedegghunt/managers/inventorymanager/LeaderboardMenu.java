@@ -27,7 +27,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
     }
 
     public void open() {
-        Main.getInstance().setLastOpenedInventory(getInventory());
+        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
         page = 0;
         getInventory().setContents(inventoryContent);
         setMenuItems();

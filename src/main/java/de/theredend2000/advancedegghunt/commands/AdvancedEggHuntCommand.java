@@ -218,7 +218,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     private void handleCollection(Player player) {
         if (!checkPermission(player, Permission.Command.collection)) return;
-        Main.getInstance().setLastOpenedInventory(null);
+        Main.getInstance().setLastOpenedInventory(null,player);
         new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
     }
 

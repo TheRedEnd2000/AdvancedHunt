@@ -26,7 +26,7 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
     }
 
     public void open() {
-        Main.getInstance().setLastOpenedInventory(getInventory());
+        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems();
 

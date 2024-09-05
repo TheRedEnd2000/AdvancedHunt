@@ -44,7 +44,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                     .setSkullOwner(Main.getTexture("NWQ4NjA0YjllMTk1MzY3Zjg1YTIzZDAzZDlkZDUwMzYzOGZjZmIwNWIwMDMyNTM1YmM0MzczNDQyMjQ4M2JkZSJ9fX0="))
                     .build();
 
-        if(Main.getInstance().getLastOpenedInventory() != null) {
+        if(Main.getInstance().getLastOpenedInventory(playerMenuUtility.getOwner()) != null) {
             inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                     .setCustomId("collection_select.back")
                     .setSkullOwner(Main.getTexture("NWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0="))
@@ -99,7 +99,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
             boolean permission = Main.getInstance().getPermissionManager().checkPermission(playerMenuUtility.getOwner(), Permission.ChangeCollections);
             boolean selected = keys.get(index).equals(selectedSection);
             getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PAPER)
-                    .setCustomId("collection_select.id." + keys.get(index))
+                    .setCustomId(keys.get(index))
                     .withGlow(applied)
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_ITEM,"%COLLECTION%",keys.get(index),"%SELECTED%",selected ? "§a(Selected)" : ""))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_ITEM,"%MAX_EGGS%", String.valueOf(maxEggs),"%PERMISSION%",permission ? "§e" : "§m"))
@@ -127,7 +127,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String collection : keys){
             if (!ItemHelper.hasItemId(event.getCurrentItem()) ||
-                    !ItemHelper.getItemId(event.getCurrentItem()).equals("collection_select.id." + collection)) {
+                    !ItemHelper.getItemId(event.getCurrentItem()).equals(collection)) {
                 continue;
             }
             switch (event.getAction()) {
@@ -151,11 +151,12 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "collection_select.back":
-                if(Main.getInstance().getLastOpenedInventory() == null){
+                if(Main.getInstance().getLastOpenedInventory(player) == null){
                     open();
+                    player.sendMessage("§cThere was an error while trying to get back.");
                     return;
                 }
-                player.openInventory(Main.getInstance().getLastOpenedInventory());
+                player.openInventory(Main.getInstance().getLastOpenedInventory(player));
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "collection_select.close":

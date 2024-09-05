@@ -72,7 +72,7 @@ public final class Main extends JavaPlugin {
     private ArrayList<ArmorStand> showedArmorstands;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
-    private Inventory lastOpenedInventory;
+    private HashMap<Player, Inventory>  lastOpenedInventory = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -408,11 +408,12 @@ public final class Main extends JavaPlugin {
         return eggHidingManager;
     }
 
-    public Inventory getLastOpenedInventory() {
-        return lastOpenedInventory;
+    public Inventory getLastOpenedInventory(Player player) {
+        return lastOpenedInventory.get(player);
     }
 
-    public void setLastOpenedInventory(Inventory lastOpenedInventory) {
-        this.lastOpenedInventory = lastOpenedInventory;
+    public void setLastOpenedInventory(Inventory lastOpenedInventory, Player player) {
+        this.lastOpenedInventory.remove(player);
+        this.lastOpenedInventory.put(player,lastOpenedInventory);
     }
 }

@@ -36,7 +36,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
     }
 
     public void open() {
-        Main.getInstance().setLastOpenedInventory(getInventory());
+        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems();
 
