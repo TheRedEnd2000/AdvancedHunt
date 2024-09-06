@@ -31,10 +31,6 @@ public abstract class Configuration {
         this(plugin, configName, true, latestVersion);
     }
 
-    public Configuration(JavaPlugin plugin, String configName, boolean template) {
-        this(plugin, configName, template, -1d);
-    }
-
     public Configuration(JavaPlugin plugin, String configName, boolean template, double latestVersion) {
         this.plugin = plugin;
         this.configName = configName;

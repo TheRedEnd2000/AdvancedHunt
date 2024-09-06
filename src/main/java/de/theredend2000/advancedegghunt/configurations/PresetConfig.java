@@ -9,7 +9,7 @@ public class PresetConfig extends Configuration {
     private static TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public PresetConfig(JavaPlugin plugin, String configName) {
-        super(plugin, MessageFormat.format("presets/{0}.yml", configName), false);
+        super(plugin, MessageFormat.format("presets/{0}.yml", configName), false, 1);
     }
 
     @Override

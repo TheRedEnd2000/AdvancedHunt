@@ -29,10 +29,6 @@ public abstract class MultiFileConfiguration {
         this(plugin, configFolder, fileExtension, true, latestVersion);
     }
 
-    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension, boolean template) {
-        this(plugin, configFolder, fileExtension, template, -1d);
-    }
-
     public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension, boolean template, double latestVersion) {
         this.plugin = plugin;
         this.configFolder = configFolder;
