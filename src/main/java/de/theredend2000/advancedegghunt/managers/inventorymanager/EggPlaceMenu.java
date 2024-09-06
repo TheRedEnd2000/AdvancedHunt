@@ -134,7 +134,6 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
             String fullTexture = ItemHelper.getSkullTexture(event.getCurrentItem());
 
-            if (fullTexture != null) fullTexture = fullTexture.replaceFirst(".+?mUv", "");
             for(String key : keys){
                 if(event.getCurrentItem().getType().name().equalsIgnoreCase(Main.getInstance().getPluginConfig().getPlaceEggType(key)) &&
                         !(event.getCurrentItem().getType().name().equalsIgnoreCase(XMaterial.PLAYER_HEAD.name()) &&

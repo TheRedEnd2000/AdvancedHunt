@@ -42,6 +42,10 @@ public abstract class MultiFileConfiguration {
         this.configs = new HashMap<>();
         this.configFiles = new HashMap<>();
 
+        if (template == false && latestVersion <= 0) {
+            throw new IllegalArgumentException("skinURL cannot be null or empty");
+        }
+
         if (template) {
             saveDefaultConfigs();
         }
@@ -57,7 +61,7 @@ public abstract class MultiFileConfiguration {
             double currentVersion = config.getDouble("config-version", 0.0);
             double effectiveLatestVersion = latestVersion;
 
-            if (effectiveLatestVersion == -1d) {
+            if (effectiveLatestVersion == -1d && template) {
                 effectiveLatestVersion = getDefaultConfigVersion(configName);
             }
 
@@ -82,13 +86,15 @@ public abstract class MultiFileConfiguration {
     private void upgradeConfig(String configName, double currentVersion, double targetVersion) {
         YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFiles.get(configName));
 
-        configFiles.get(configName).delete();
         if (template) {
-            saveDefaultConfig(configName);
-        }
-        reloadConfig(configName);
+            configFiles.get(configName).delete();
 
-        standardUpgrade(oldConfig, configs.get(configName));
+            saveDefaultConfig(configName);
+
+            reloadConfig(configName);
+
+            standardUpgrade(oldConfig, configs.get(configName));
+        }
 
         TreeMap<Double, ConfigUpgrader> upgraders = getUpgraders().get(configName);
         if (upgraders != null) {
@@ -211,7 +217,7 @@ public abstract class MultiFileConfiguration {
         if (!configName.endsWith(fileExtension)) {
             configName += fileExtension;
         }
-        
+
         try {
             getConfig(configName).save(configFiles.get(configName));
         } catch (IOException ex) {

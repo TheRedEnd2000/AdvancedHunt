@@ -6,8 +6,11 @@ import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -30,7 +33,7 @@ public class ItemHelper {
     }
 
     public static String getSkullTexture(ItemStack item) {
-        String fullTexture;
+        String base64Texture = null;
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
 
         if (VersionComparator.isGreaterThanOrEqual(version, "1.20.5")) {
@@ -40,16 +43,16 @@ public class ItemHelper {
             final ReadableNBT skullOwnerCompound = components.getCompound("minecraft:profile");
 
             if (skullOwnerCompound == null) return null;
-            ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesCompound = skullOwnerCompound.getCompoundList("Properties");
+            ReadableNBTList<ReadWriteNBT> skullOwnerPropertiesCompound = skullOwnerCompound.getCompoundList("properties");
 
             for (ReadWriteNBT property : skullOwnerPropertiesCompound) {
                 if (Objects.equals(property.getString("name"), "textures") && property.getString("value") != null) {
-                    return property.getString("value");
+                    base64Texture = property.getString("value");
+                    break;
                 }
             }
-            return "";
         } else {
-            fullTexture = NBT.get(item, nbt -> {
+            base64Texture = NBT.get(item, nbt -> {
                 final ReadableNBT skullOwnerCompound = nbt.getCompound("SkullOwner");
 
                 if (skullOwnerCompound == null) return null;
@@ -63,6 +66,30 @@ public class ItemHelper {
             });
         }
 
-        return fullTexture;
+        return convertSkinURLToBase64(extractSkinUrl(base64Texture));
+    }
+
+    private static String extractSkinUrl(String base64Texture) {
+        if (base64Texture == null) return null;
+
+        try {
+            String decodedTexture = new String(Base64.getDecoder().decode(base64Texture), StandardCharsets.UTF_8);
+            YamlConfiguration yaml = new YamlConfiguration();
+            yaml.loadFromString(decodedTexture);
+            
+            return yaml.getConfigurationSection("textures")
+                       .getConfigurationSection("SKIN")
+                       .getString("url");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String convertSkinURLToBase64(String skinURL) {
+        if (skinURL == null || skinURL == "") return null;
+
+        String modifiedURL = skinURL.replaceFirst("^http://textures\\.minecraft\\.net/texture/", "") + "\"}}}";
+        return Base64.getEncoder().encodeToString(modifiedURL.getBytes());
     }
 }

@@ -266,22 +266,21 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        String fullTexture = ItemHelper.getSkullTexture(item);
+        String textureUrl = ItemHelper.getSkullTexture(item);
 
-        if (fullTexture == null) {
+        if (textureUrl == null) {
             messageManager.sendMessage(player, MessageKey.EGGIMPORT_FAILED_PROFILE);
             return;
         }
 
-        fullTexture = fullTexture.replaceFirst(".+?mUv", "");
         for (String key : Main.getInstance().getPluginConfig().getPlaceEggIds()) {
-            if (Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), fullTexture)) {
+            if (Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), textureUrl)) {
                 messageManager.sendMessage(player, MessageKey.BLOCK_LISTED);
                 return;
             }
         }
 
-        String base64Texture = fullTexture;
+        String base64Texture = textureUrl;
         Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
         Main.getInstance().getPluginConfig().saveData();
         messageManager.sendMessage(player, MessageKey.EGGIMPORT_SUCCESS);

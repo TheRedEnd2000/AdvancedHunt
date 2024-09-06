@@ -41,6 +41,10 @@ public abstract class Configuration {
         this.template = template;
         this.latestVersion = latestVersion;
 
+        if (template == false && latestVersion <= 0) {
+            throw new IllegalArgumentException("skinURL cannot be null or empty");
+        }
+
         if (template) {
             saveDefaultConfig();
         }
