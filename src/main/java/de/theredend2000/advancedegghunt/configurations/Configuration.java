@@ -38,7 +38,7 @@ public abstract class Configuration {
         this.latestVersion = latestVersion;
 
         if (template == false && latestVersion <= 0) {
-            throw new IllegalArgumentException("skinURL cannot be null or empty");
+            throw new IllegalArgumentException("Latest Version must be greater than 0");
         }
 
         if (template) {
