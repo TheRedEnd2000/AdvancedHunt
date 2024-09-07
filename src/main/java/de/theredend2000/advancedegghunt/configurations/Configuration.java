@@ -18,82 +18,69 @@ public abstract class Configuration {
     protected File configFile;
     protected final String configName;
     private final double latestVersion;
-    private final boolean template;
+    private final boolean hasTemplate;
 
     public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
     public abstract void registerUpgrader();
 
-    public Configuration(JavaPlugin plugin, String configName) {
-        this(plugin, configName, true, -1d);
-    }
-
     public Configuration(JavaPlugin plugin, String configName, double latestVersion) {
-        this(plugin, configName, true, latestVersion);
-    }
-
-    public Configuration(JavaPlugin plugin, String configName, boolean template, double latestVersion) {
         this.plugin = plugin;
         this.configName = configName;
-        this.template = template;
         this.latestVersion = latestVersion;
+        this.hasTemplate = plugin.getResource(configName) != null;
 
-        if (template == false && latestVersion <= 0) {
+        if (latestVersion <= 0) {
             throw new IllegalArgumentException("Latest Version must be greater than 0");
         }
 
-        if (template) {
-            saveDefaultConfig();
-        }
-        reloadConfig();
-
+        this.configFile = new File(plugin.getDataFolder(), configName);
         registerUpgrader();
         loadConfig();
     }
 
     protected void loadConfig() {
-        double currentVersion = config.getDouble("config-version", 0.0);
-        double effectiveLatestVersion = latestVersion;
-
-        if (effectiveLatestVersion == -1d) {
-            effectiveLatestVersion = getDefaultConfigVersion();
-        }
-
-        if (currentVersion < effectiveLatestVersion || currentVersion > effectiveLatestVersion) {
-            upgradeConfig(currentVersion, effectiveLatestVersion);
-        }
-    }
-
-    private double getDefaultConfigVersion() {
-        try (InputStream defaultStream = plugin.getResource(configName)) {
-            if (defaultStream != null) {
-                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-                return defaultConfig.getDouble("config-version", -1d);
+        if (!configFile.exists()) {
+            if (hasTemplate) {
+                plugin.saveResource(configName, false);
+            } else {
+                try {
+                    configFile.getParentFile().mkdirs();
+                    configFile.createNewFile();
+                } catch (IOException e) {
+                    plugin.getLogger().log(Level.SEVERE, "Could not create config file", e);
+                }
             }
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to read default config version", e);
         }
-        return -1d;
+
+        config = YamlConfiguration.loadConfiguration(configFile);
+
+        double currentVersion = config.getDouble("config-version", 0.0);
+        if (currentVersion < latestVersion) {
+            upgradeConfig(currentVersion);
+        }
     }
 
-    private void upgradeConfig(double currentVersion, double targetVersion) {
+    private void upgradeConfig(double currentVersion) {
         YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFile);
 
-        configFile.delete();
-        if (template) {
-            saveDefaultConfig();
+        if (hasTemplate) {
+            configFile.delete();
+            plugin.saveResource(configName, false);
+            config = YamlConfiguration.loadConfiguration(configFile);
+        } else {
+            config = new YamlConfiguration();
         }
-        reloadConfig();
 
         standardUpgrade(oldConfig, config);
 
-        for (Map.Entry<Double, ConfigUpgrader> entry : getUpgrader().tailMap(currentVersion + 0.1, true).entrySet()) {
+        for (Map.Entry<Double, ConfigUpgrader> entry : getUpgrader().tailMap(currentVersion, false).entrySet()) {
             ConfigUpgrader upgrader = entry.getValue();
             if (upgrader != null) {
                 upgrader.upgrade(oldConfig, config);
             }
         }
 
-        config.set("config-version", targetVersion);
+        config.set("config-version", latestVersion);
         saveConfig();
     }
 
@@ -104,51 +91,40 @@ public abstract class Configuration {
         keyList.sort((key1, key2) -> Integer.compare(key2.split("\\.").length, key1.split("\\.").length));
 
         for (String key : keyList) {
-            if (oldConfig.isSet(key) && !oldConfig.isConfigurationSection(key) && newConfig.contains(key)) {
+            if (oldConfig.isSet(key) && !oldConfig.isConfigurationSection(key) &&
+                    (hasTemplate ? newConfig.contains(key) : true)) {
                 newConfig.set(key, oldConfig.get(key));
             }
         }
     }
 
     public void reloadConfig() {
-        if (configFile == null) {
-            configFile = new File(plugin.getDataFolder(), configName);
-        }
-
         config = YamlConfiguration.loadConfiguration(configFile);
 
-        try (InputStream defaultStream = plugin.getResource(configName)) {
-            if (defaultStream != null) {
-                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-                config.setDefaults(defaultConfig);
+        if (hasTemplate) {
+            try (InputStream defaultStream = plugin.getResource(configName)) {
+                if (defaultStream != null) {
+                    YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+                    config.setDefaults(defaultConfig);
+                }
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to load default config", e);
             }
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to load default config", e);
         }
     }
 
-    protected void saveDefaultConfig() {
-        if (configFile == null) {
-            configFile = new File(plugin.getDataFolder(), configName);
-        }
-
-        if (!configFile.exists()) {
-            plugin.saveResource(configName, false);
-        }
-    }
-
-    protected FileConfiguration getConfig() {
+    public FileConfiguration getConfig() {
         if (config == null) {
             reloadConfig();
         }
         return config;
     }
 
-    protected void set(String path, Object value) {
+    public void set(String path, Object value) {
         getConfig().set(path, value);
     }
 
-    protected void saveConfig() {
+    public void saveConfig() {
         try {
             getConfig().save(configFile);
         } catch (IOException ex) {
