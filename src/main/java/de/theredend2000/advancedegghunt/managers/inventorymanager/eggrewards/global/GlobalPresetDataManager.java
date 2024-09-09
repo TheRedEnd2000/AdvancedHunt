@@ -1,189 +1,91 @@
 package de.theredend2000.advancedegghunt.managers.inventorymanager.eggrewards.global;
 
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.configurations.GlobalPresetConfig;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GlobalPresetDataManager {
 
     private final Main plugin;
-    private final File dataFolder;
-    private HashMap<String, FileConfiguration> presetConfigs;
-    private HashMap<String, File> presetFile;
+    private final GlobalPresetConfig presetConfig;
 
     public GlobalPresetDataManager(Main plugin) {
         this.plugin = plugin;
-        this.dataFolder = new File(plugin.getDataFolder(), "presets/global");
-        presetConfigs = new HashMap<>();
-        presetFile = new HashMap<>();
+        this.presetConfig = new GlobalPresetConfig(plugin);
 
-        dataFolder.mkdirs();
-        if(savedPresets().size() == 0){
-            createPresetFile("default");
-            addDefaultRewardCommands("default");
+        if (savedPresets().isEmpty()) {
+            presetConfig.addDefaultRewardCommands("default");
         }
     }
 
     public void reload() {
-        presetConfigs = new HashMap<>();
+        presetConfig.reloadConfigs();
     }
 
-    public void unloadPresetData(String preset) {
-        if (!presetConfigs.containsKey(preset)) {
-            return;
-        }
-        presetConfigs.remove(preset);
+    public void loadCommandsIntoPreset(String preset, String collection) {
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+        presetConfig.loadCommandsIntoPreset(preset, collection, placedEggs);
     }
 
-    private void loadPresetData(String preset) {
-        FileConfiguration config = getPresets(preset);
-        if(!presetConfigs.containsKey(preset))
-            this.presetConfigs.put(preset, config);
-    }
+    public void loadPresetIntoCollectionCommands(String preset, String collection) {
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+        Map<String, Object> commandData = presetConfig.loadPresetIntoCollectionCommands(preset);
 
-    private File getFile(String preset) {
-        if(!presetFile.containsKey(preset))
-            presetFile.put(preset, new File(this.dataFolder, preset + ".yml"));
-        return presetFile.get(preset);
-    }
-
-    public FileConfiguration getPresets(String preset) {
-        File playerFile = this.getFile(preset);
-        if(!presetConfigs.containsKey(preset))
-            this.presetConfigs.put(preset, YamlConfiguration.loadConfiguration(playerFile));
-        return presetConfigs.get(preset);
-    }
-
-    public void savePreset(String preset, FileConfiguration config) {
-        try {
-            config.save(this.getFile(preset));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadCommandsIntoPreset(String preset, String collection){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        FileConfiguration presets = getPresets(preset);
-        if(placedEggs.contains("GlobalRewards.")) {
-            for (String commandID : placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false)){
-                String command = placedEggs.getString("GlobalRewards." + commandID + ".command");
-                boolean enabled = placedEggs.getBoolean("GlobalRewards." + commandID + ".enabled");
-                double chance = placedEggs.getDouble("GlobalRewards." + commandID + ".chance");
-                presets.set("Commands." + commandID + ".command", command);
-                presets.set("Commands." + commandID + ".enabled", enabled);
-                presets.set("Commands." + commandID + ".chance", chance);
-                savePreset(preset, presets);
-            }
-        }
-    }
-
-    public void loadPresetIntoCollectionCommands(String preset, String collection){
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-        FileConfiguration presets = getPresets(preset);
         placedEggs.set("GlobalRewards", null);
-        Main.getInstance().getEggDataManager().savePlacedEggs(collection);
-        for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
-            String command = presets.getString("Commands." + commandID + ".command");
-            boolean enabled = presets.getBoolean("Commands." + commandID + ".enabled");
-            double chance = presets.getDouble("Commands." + commandID + ".chance");
-            placedEggs.set("GlobalRewards." + commandID + ".command", command);
-            placedEggs.set("GlobalRewards." + commandID + ".enabled", enabled);
-            placedEggs.set("GlobalRewards." + commandID + ".chance", chance);
-            Main.getInstance().getEggDataManager().savePlacedEggs(collection);
+
+        for (Map.Entry<String, Object> entry : commandData.entrySet()) {
+            String commandID = entry.getKey();
+            Map<String, Object> commandInfo = (Map<String, Object>) entry.getValue();
+            placedEggs.set("GlobalRewards." + commandID + ".command", commandInfo.get("command"));
+            placedEggs.set("GlobalRewards." + commandID + ".enabled", commandInfo.get("enabled"));
+            placedEggs.set("GlobalRewards." + commandID + ".chance", commandInfo.get("chance"));
         }
+
+        plugin.getEggDataManager().savePlacedEggs(collection);
     }
 
-    public List<String> getAllCommandsAsLore(String preset, boolean isDefault){
-        List<String> lore = new ArrayList<>();
-        lore.clear();
-        lore.add(" ");
-        lore.add("§9Commands:");
-        FileConfiguration presets = getPresets(preset);
-        int counter = 0;
-        for (String commandID : presets.getConfigurationSection("Commands.").getKeys(false)){
-            if(counter < 10)
-                lore.add("§7- §b" + presets.getString("Commands." + commandID + ".command"));
-            counter++;
-        }
-        if(counter > 10)
-            lore.add("  §7§o+" + (counter-10) + " more...");
-        if(isDefault){
-            lore.add(" ");
-            lore.add("§2This preset is selected as default preset.");
-            lore.add("§2It will be loaded every time a new egg is created.");
-        }
-        lore.add(" ");
-        lore.add("§eLEFT-CLICK to load.");
-        lore.add("§eMIDDLE-CLICK to set it as default preset.");
-        lore.add("§eRIGHT-CLICK to delete.");
-        return lore;
-    }
-
-    public void createPresetFile(String preset) {
-        FileConfiguration config = this.getPresets(preset);
-        File playerFile = this.getFile(preset);
-        if (!playerFile.exists()) {
-            try {
-                playerFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        this.presetConfigs.put(preset, config);
-        this.loadPresetData(preset);
-        this.savePreset(preset, config);
+    public List<String> getAllCommandsAsLore(String preset, boolean isDefault) {
+        return presetConfig.getAllCommandsAsLore(preset, isDefault);
     }
 
     public boolean containsPreset(String preset) {
-        String[] files = dataFolder.list();
-        if (files == null) return false;
-        return Arrays.asList(files).contains(preset + ".yml");
-    }
-
-    public void addDefaultRewardCommands(String preset) {
-        FileConfiguration config = this.getPresets(preset);
-        config.set("Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&6You found all eggs!\"");
-        config.set("Commands.0.enabled", true);
-        config.set("Commands.0.chance", 100);
-        config.set("Commands.1.command", "minecraft:give %PLAYER% diamond");
-        config.set("Commands.1.enabled", true);
-        config.set("Commands.1.chance", 100);
-        this.savePreset(preset, config);
+        return presetConfig.getConfig(preset) != null;
     }
 
     public List<String> savedPresets() {
-        List<String> presets = new ArrayList();
-        if (this.dataFolder.exists() && this.dataFolder.isDirectory()) {
-            File[] playerFiles = this.dataFolder.listFiles((dir, name) -> {
-                return name.endsWith(".yml");
-            });
-            if (playerFiles != null) {
-                int playerFilesLength = playerFiles.length;
-
-                for(int i = 0; i < playerFilesLength; ++i) {
-                    File playerFile = playerFiles[i];
-                    String fileName = playerFile.getName();
-                    String collectionName = fileName.substring(0, fileName.length() - 4);
-                    presets.add(collectionName);
-                }
-            }
-        }
-        return presets;
+        return presetConfig.savedPresets();
     }
 
     public void deletePreset(String preset) {
-        File presetFile = this.getFile(preset);
-        if (presetFile.exists()) {
-            presetFile.delete();
+        presetConfig.deleteConfig(preset);
+    }
+
+    public void savePreset(String preset, Map<String, Object> commandData) {
+        for (Map.Entry<String, Object> entry : commandData.entrySet()) {
+            String commandID = entry.getKey();
+            Map<String, Object> commandInfo = (Map<String, Object>) entry.getValue();
+            presetConfig.set(preset, "Commands." + commandID + ".command", commandInfo.get("command"));
+            presetConfig.set(preset, "Commands." + commandID + ".enabled", commandInfo.get("enabled"));
+            presetConfig.set(preset, "Commands." + commandID + ".chance", commandInfo.get("chance"));
         }
+        presetConfig.saveConfig(preset);
+    }
+
+    public void createPresetFile(String preset) {
+        if (!containsPreset(preset)) {
+            presetConfig.addDefaultRewardCommands(preset);
+        }
+    }
+
+    public void addDefaultRewardCommands(String preset) {
+        presetConfig.addDefaultRewardCommands(preset);
+    }
+
+    public Map<String, Object> getPresets(String preset) {
+        return presetConfig.loadPresetIntoCollectionCommands(preset);
     }
 }
 
