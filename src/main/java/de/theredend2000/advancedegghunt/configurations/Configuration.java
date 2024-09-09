@@ -18,24 +18,36 @@ public abstract class Configuration {
     protected File configFile;
     protected final String configName;
     private final double latestVersion;
-    private final boolean hasTemplate;
+    protected final boolean hasTemplate;
 
     public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
     public abstract void registerUpgrader();
 
+    public Configuration(JavaPlugin plugin, String configName) {
+        this(plugin, configName, -1);
+    }
+
     public Configuration(JavaPlugin plugin, String configName, double latestVersion) {
         this.plugin = plugin;
         this.configName = configName;
-        this.latestVersion = latestVersion;
         this.hasTemplate = plugin.getResource(configName) != null;
 
-        if (latestVersion <= 0) {
-            throw new IllegalArgumentException("Latest Version must be greater than 0");
+        if (!hasTemplate && latestVersion <= 0) {
+            throw new IllegalArgumentException("Latest Version must be greater than 0 when no template exists");
         }
 
-        this.configFile = new File(plugin.getDataFolder(), configName);
+        this.latestVersion = latestVersion;
+        this.configFile = new File(getDataFolder(), configName);
         registerUpgrader();
         loadConfig();
+    }
+
+    protected File getDataFolder() {
+        try {
+            return (File) plugin.getClass().getMethod("getCustomDataFolder").invoke(plugin);
+        } catch (Exception e) {
+            return plugin.getDataFolder();
+        }
     }
 
     protected void loadConfig() {
@@ -55,12 +67,26 @@ public abstract class Configuration {
         config = YamlConfiguration.loadConfiguration(configFile);
 
         double currentVersion = config.getDouble("config-version", 0.0);
-        if (currentVersion < latestVersion) {
-            upgradeConfig(currentVersion);
+        double targetVersion = hasTemplate ? getTemplateVersion() : latestVersion;
+
+        if (currentVersion < targetVersion) {
+            upgradeConfig(currentVersion, targetVersion);
         }
     }
 
-    private void upgradeConfig(double currentVersion) {
+    private double getTemplateVersion() {
+        try (InputStream defaultStream = plugin.getResource(configName)) {
+            if (defaultStream != null) {
+                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+                return defaultConfig.getDouble("config-version", 1.0);
+            }
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to read template config version", e);
+        }
+        return 1.0; // Default to 1.0 if we can't read the version for some reason
+    }
+
+    protected void upgradeConfig(double currentVersion, double targetVersion) {
         YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFile);
 
         if (hasTemplate) {
@@ -74,13 +100,14 @@ public abstract class Configuration {
         standardUpgrade(oldConfig, config);
 
         for (Map.Entry<Double, ConfigUpgrader> entry : getUpgrader().tailMap(currentVersion, false).entrySet()) {
+            if (entry.getKey() > targetVersion) break;
             ConfigUpgrader upgrader = entry.getValue();
             if (upgrader != null) {
                 upgrader.upgrade(oldConfig, config);
             }
         }
 
-        config.set("config-version", latestVersion);
+        config.set("config-version", targetVersion);
         saveConfig();
     }
 

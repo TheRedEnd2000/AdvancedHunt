@@ -16,33 +16,29 @@ public abstract class MultiFileConfiguration {
     protected final String configFolder;
     protected final String fileExtension;
     private final double latestVersion;
-    private final boolean template;
+    private final boolean hasTemplates;
 
     public abstract Map<String, TreeMap<Double, ConfigUpgrader>> getUpgraders();
     public abstract void registerUpgraders();
 
     public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension) {
-        this(plugin, configFolder, fileExtension, true, -1d);
+        this(plugin, configFolder, fileExtension, -1);
     }
 
     public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension, double latestVersion) {
-        this(plugin, configFolder, fileExtension, true, latestVersion);
-    }
-
-    public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension, boolean template, double latestVersion) {
         this.plugin = plugin;
         this.configFolder = configFolder;
         this.fileExtension = fileExtension.startsWith(".") ? fileExtension : "." + fileExtension;
-        this.template = template;
-        this.latestVersion = latestVersion;
         this.configs = new HashMap<>();
         this.configFiles = new HashMap<>();
+        this.hasTemplates = !getResourcesInFolder(configFolder).isEmpty();
+        this.latestVersion = latestVersion;
 
-        if (template == false && latestVersion <= 0) {
-            throw new IllegalArgumentException("Latest Version must be greater than 0");
+        if (!hasTemplates && latestVersion <= 0) {
+            throw new IllegalArgumentException("Latest Version must be greater than 0 when no templates exist");
         }
 
-        if (template) {
+        if (hasTemplates) {
             saveDefaultConfigs();
         }
         reloadConfigs();
@@ -51,58 +47,64 @@ public abstract class MultiFileConfiguration {
         loadConfigs();
     }
 
+    protected File getDataFolder() {
+        try {
+            return (File) plugin.getClass().getMethod("getCustomDataFolder").invoke(plugin);
+        } catch (Exception e) {
+            return plugin.getDataFolder();
+        }
+    }
+
     protected void loadConfigs() {
         for (String configName : configs.keySet()) {
             YamlConfiguration config = configs.get(configName);
             double currentVersion = config.getDouble("config-version", 0.0);
-            double effectiveLatestVersion = latestVersion;
+            double targetVersion = hasTemplates ? getTemplateVersion(configName) : latestVersion;
 
-            if (effectiveLatestVersion == -1d && template) {
-                effectiveLatestVersion = getDefaultConfigVersion(configName);
-            }
-
-            if (currentVersion < effectiveLatestVersion || currentVersion > effectiveLatestVersion) {
-                upgradeConfig(configName, currentVersion, effectiveLatestVersion);
+            if (currentVersion < targetVersion) {
+                upgradeConfig(configName, currentVersion, targetVersion);
             }
         }
     }
 
-    private double getDefaultConfigVersion(String configName) {
+    private double getTemplateVersion(String configName) {
         try (InputStream defaultStream = plugin.getResource(configFolder + "/" + configName)) {
             if (defaultStream != null) {
                 YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-                return defaultConfig.getDouble("config-version", -1d);
+                return defaultConfig.getDouble("config-version", 1.0);
             }
         } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to read default config version for " + configName, e);
+            plugin.getLogger().log(Level.WARNING, "Failed to read template config version for " + configName, e);
         }
-        return -1d;
+        return 1.0; // Default to 1.0 if we can't read the version for some reason
     }
 
     private void upgradeConfig(String configName, double currentVersion, double targetVersion) {
         YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFiles.get(configName));
 
-        if (template) {
+        if (hasTemplates) {
             configFiles.get(configName).delete();
-
             saveDefaultConfig(configName);
-
             reloadConfig(configName);
-
-            standardUpgrade(oldConfig, configs.get(configName));
+        } else {
+            configs.put(configName, new YamlConfiguration());
         }
+
+        YamlConfiguration newConfig = configs.get(configName);
+        standardUpgrade(oldConfig, newConfig);
 
         TreeMap<Double, ConfigUpgrader> upgraders = getUpgraders().get(configName);
         if (upgraders != null) {
-            for (Map.Entry<Double, ConfigUpgrader> entry : upgraders.tailMap(currentVersion + 0.1, true).entrySet()) {
+            for (Map.Entry<Double, ConfigUpgrader> entry : upgraders.tailMap(currentVersion, false).entrySet()) {
+                    if (entry.getKey() > targetVersion) break;
                 ConfigUpgrader upgrader = entry.getValue();
                 if (upgrader != null) {
-                    upgrader.upgrade(oldConfig, configs.get(configName));
+                    upgrader.upgrade(oldConfig, newConfig);
                 }
             }
         }
 
-        configs.get(configName).set("config-version", targetVersion);
+        newConfig.set("config-version", targetVersion);
         saveConfig(configName);
     }
 
@@ -113,7 +115,8 @@ public abstract class MultiFileConfiguration {
         keyList.sort((key1, key2) -> Integer.compare(key2.split("\\.").length, key1.split("\\.").length));
 
         for (String key : keyList) {
-            if (oldConfig.isSet(key) && !oldConfig.isConfigurationSection(key) && newConfig.contains(key)) {
+            if (oldConfig.isSet(key) && !oldConfig.isConfigurationSection(key) &&
+                    (hasTemplates ? newConfig.contains(key) : true)) {
                 newConfig.set(key, oldConfig.get(key));
             }
         }
@@ -140,13 +143,15 @@ public abstract class MultiFileConfiguration {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         configs.put(configName, config);
 
-        try (InputStream defaultStream = plugin.getResource(configFolder + "/" + configName)) {
-            if (defaultStream != null) {
-                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-                config.setDefaults(defaultConfig);
+        if (hasTemplates) {
+            try (InputStream defaultStream = plugin.getResource(configFolder + "/" + configName)) {
+                if (defaultStream != null) {
+                    YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+                    config.setDefaults(defaultConfig);
+                }
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to load default config for " + configName, e);
             }
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to load default config for " + configName, e);
         }
     }
 
@@ -195,7 +200,7 @@ public abstract class MultiFileConfiguration {
         }
     }
 
-    protected FileConfiguration getConfig(String configName) {
+    public FileConfiguration getConfig(String configName) {
         if (!configName.endsWith(fileExtension)) {
             configName += fileExtension;
         }
@@ -205,11 +210,11 @@ public abstract class MultiFileConfiguration {
         return configs.get(configName);
     }
 
-    protected void set(String configName, String path, Object value) {
+    public void set(String configName, String path, Object value) {
         getConfig(configName).set(path, value);
     }
 
-    protected void saveConfig(String configName) {
+    public void saveConfig(String configName) {
         if (!configName.endsWith(fileExtension)) {
             configName += fileExtension;
         }
@@ -221,12 +226,6 @@ public abstract class MultiFileConfiguration {
         }
     }
 
-    /**
-     * Deletes a specific configuration file and removes it from the managed configurations.
-     *
-     * @param configName The name of the configuration file to delete (including .yml extension)
-     * @return true if the config was successfully deleted, false otherwise
-     */
     public boolean deleteConfig(String configName) {
         if (!configName.endsWith(fileExtension)) {
             configName += fileExtension;
@@ -239,11 +238,9 @@ public abstract class MultiFileConfiguration {
 
         File configFile = configFiles.get(configName);
 
-        // Remove the config from memory
         configs.remove(configName);
         configFiles.remove(configName);
 
-        // Delete the file
         boolean deleted = configFile.delete();
 
         if (deleted) {

@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 public class PluginDataConfig extends Configuration {
     public PluginDataConfig(JavaPlugin plugin) {
-        super(plugin, "plugin_data.yml", false, 1.0);
+        super(plugin, "plugin_data.yml", 1.0);
     }
 
     @Override
