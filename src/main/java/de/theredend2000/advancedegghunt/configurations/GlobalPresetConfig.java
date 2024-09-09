@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class GlobalPresetConfig extends MultiFileConfiguration {
-    private static final Map<String, TreeMap<Double, ConfigUpgrader>> upgraders = new TreeMap<>();
+    private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public GlobalPresetConfig(JavaPlugin plugin) {
         super(plugin, "presets/global", "yml", 1.1);
     }
 
     @Override
-    public Map<String, TreeMap<Double, ConfigUpgrader>> getUpgraders() {
+    public TreeMap<Double, ConfigUpgrader> getUpgrader() {
         return upgraders;
     }
 

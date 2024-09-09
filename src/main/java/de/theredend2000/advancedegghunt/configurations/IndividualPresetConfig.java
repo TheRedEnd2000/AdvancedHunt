@@ -10,19 +10,19 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class IndividualPresetConfig extends MultiFileConfiguration {
-    private static final Map<String, TreeMap<Double, ConfigUpgrader>> upgraders = new TreeMap<>();
+    private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public IndividualPresetConfig(JavaPlugin plugin) {
         super(plugin, "presets/individual", "yml", 1);
     }
 
     @Override
-    public Map<String, TreeMap<Double, ConfigUpgrader>> getUpgraders() {
+    public TreeMap<Double, ConfigUpgrader> getUpgrader() {
         return upgraders;
     }
 
     @Override
-    public void registerUpgraders() {
+    public void registerUpgrader() {
         // Register upgraders if needed
     }
 

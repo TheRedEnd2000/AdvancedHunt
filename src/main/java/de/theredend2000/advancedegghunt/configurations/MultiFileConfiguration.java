@@ -18,8 +18,8 @@ public abstract class MultiFileConfiguration {
     private final double latestVersion;
     private final boolean hasTemplates;
 
-    public abstract Map<String, TreeMap<Double, ConfigUpgrader>> getUpgraders();
-    public abstract void registerUpgraders();
+    public abstract TreeMap<Double, ConfigUpgrader> getUpgrader();
+    public abstract void registerUpgrader();
 
     public MultiFileConfiguration(JavaPlugin plugin, String configFolder, String fileExtension) {
         this(plugin, configFolder, fileExtension, -1);
@@ -43,7 +43,7 @@ public abstract class MultiFileConfiguration {
         }
         reloadConfigs();
 
-        registerUpgraders();
+        registerUpgrader();
         loadConfigs();
     }
 
@@ -93,7 +93,7 @@ public abstract class MultiFileConfiguration {
         YamlConfiguration newConfig = configs.get(configName);
         standardUpgrade(oldConfig, newConfig);
 
-        TreeMap<Double, ConfigUpgrader> upgraders = getUpgraders().get(configName);
+        TreeMap<Double, ConfigUpgrader> upgraders = getUpgrader();
         if (upgraders != null) {
             for (Map.Entry<Double, ConfigUpgrader> entry : upgraders.tailMap(currentVersion, false).entrySet()) {
                     if (entry.getKey() > targetVersion) break;

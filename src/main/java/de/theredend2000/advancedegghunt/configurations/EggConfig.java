@@ -5,23 +5,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class EggConfig extends MultiFileConfiguration {
-    private static final TreeMap<String, TreeMap<Double, ConfigUpgrader>> upgraders = new TreeMap<>();
+    private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public EggConfig(JavaPlugin plugin) {
         super(plugin, "eggs", "yml", 1);
     }
 
     @Override
-    public Map<String, TreeMap<Double, ConfigUpgrader>> getUpgraders() {
+    public TreeMap<Double, ConfigUpgrader> getUpgrader() {
         return upgraders;
     }
 
     @Override
-    public void registerUpgraders() {
+    public void registerUpgrader() {
         // Add upgraders if needed in the future
     }
 
