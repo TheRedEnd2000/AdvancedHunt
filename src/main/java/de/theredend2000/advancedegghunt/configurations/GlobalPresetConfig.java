@@ -13,7 +13,7 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public GlobalPresetConfig(JavaPlugin plugin) {
-        super(plugin, "presets/global", "yml", 1.1);
+        super(plugin, "presets/global", "yml", 1.0);
     }
 
     @Override
@@ -22,17 +22,8 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
     }
 
     @Override
-    public void registerUpgraders() {
-        upgraders.computeIfAbsent("default", k -> new TreeMap<>()).put(1.1, (oldConfig, newConfig) -> {
-            ConfigurationSection commands = newConfig.getConfigurationSection("Commands");
-            if (commands != null) {
-                for (String commandID : commands.getKeys(false)) {
-                    double currentChance = commands.getDouble(commandID + ".chance", 100);
-                    double newChance = Math.min(currentChance + 20, 100);
-                    commands.set(commandID + ".chance", newChance);
-                }
-            }
-        });
+    public void registerUpgrader() {
+        // Register upgraders if needed
     }
 
     /**
