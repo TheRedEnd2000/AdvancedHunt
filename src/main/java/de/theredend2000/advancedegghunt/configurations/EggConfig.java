@@ -1,5 +1,6 @@
 package de.theredend2000.advancedegghunt.configurations;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,9 +12,11 @@ public class EggConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public EggConfig(JavaPlugin plugin) {
-        super(plugin, "eggs", "yml", 1);
+        super(plugin, "eggs", "yml", 2.1);
     }
 
+
+    //region Upgrader
     @Override
     public TreeMap<Double, ConfigUpgrader> getUpgrader() {
         return upgraders;
@@ -21,7 +24,112 @@ public class EggConfig extends MultiFileConfiguration {
 
     @Override
     public void registerUpgrader() {
-        // Add upgraders if needed in the future
+        upgraders.put(1.0, (oldConfig, newConfig) -> {
+            convertToNewCommandSystemV1(oldConfig, newConfig);
+        });
+        upgraders.put(2.0, (oldConfig, newConfig) -> {
+            convertToNewCommandSystemV2(oldConfig, newConfig);
+        });
+        upgraders.put(2.1, (oldConfig, newConfig) -> {
+            addChances(oldConfig, newConfig);
+        });
+    }
+
+    private void convertToNewCommandSystemV1(ConfigurationSection oldConfig, ConfigurationSection newConfig) {
+        if (!oldConfig.contains("Rewards.") || !oldConfig.contains("PlacedEggs.")) {
+            return;
+        }
+        ConfigurationSection rewardsSection = oldConfig.getConfigurationSection("Rewards.");
+        ConfigurationSection placedEggsSection = oldConfig.getConfigurationSection("PlacedEggs.");
+
+        if (rewardsSection == null || placedEggsSection == null) {
+            return;
+        }
+        for (String rewardsID : rewardsSection.getKeys(false)) {
+            if (oldConfig.getInt("Rewards." + rewardsID + ".type") == 0) {
+                for (String eggID : placedEggsSection.getKeys(false)) {
+                    ConfigurationSection eggRewardsSection = newConfig.createSection("PlacedEggs." + eggID + ".Rewards");
+
+                    String command = oldConfig.getString("Rewards." + rewardsID + ".command");
+                    boolean enabled = oldConfig.getBoolean("Rewards." + rewardsID + ".enabled");
+
+                    int nextNumber = getNextRewardIndex(eggRewardsSection);
+
+                    eggRewardsSection.set(nextNumber + ".command", command);
+                    eggRewardsSection.set(nextNumber + ".enabled", enabled);
+                }
+            }
+        }
+
+        newConfig.set("Rewards", null);
+    }
+
+    private void convertToNewCommandSystemV2(ConfigurationSection oldConfig, ConfigurationSection newConfig) {
+        if (!oldConfig.contains("Rewards.") || !oldConfig.contains("PlacedEggs.")) {
+            return;
+        }
+        ConfigurationSection rewardsSection = oldConfig.getConfigurationSection("Rewards.");
+        ConfigurationSection placedEggsSection = oldConfig.getConfigurationSection("PlacedEggs.");
+
+        if (rewardsSection == null || placedEggsSection == null) {
+            return;
+        }
+        for (String rewardsID : rewardsSection.getKeys(false)) {
+            if  (oldConfig.getInt("Rewards." + rewardsID + ".type") == 1) {
+                ConfigurationSection globalRewardsSection = newConfig.createSection("GlobalRewards");
+
+                String command = oldConfig.getString("Rewards." + rewardsID + ".command");
+                boolean enabled = oldConfig.getBoolean("Rewards." + rewardsID + ".enabled");
+
+                int nextNumber = getNextRewardIndex(globalRewardsSection);
+
+                globalRewardsSection.set(nextNumber + ".command", command);
+                globalRewardsSection.set(nextNumber + ".enabled", enabled);
+            }
+        }
+
+        newConfig.set("Rewards", null);
+    }
+
+    private void addChances(ConfigurationSection oldConfig, ConfigurationSection newConfig) {
+        ConfigurationSection placedEggsSection = newConfig.getConfigurationSection("PlacedEggs.");
+        if (placedEggsSection != null) {
+            for (String eggID : placedEggsSection.getKeys(false)) {
+                ConfigurationSection rewardsSection = placedEggsSection.getConfigurationSection(eggID + ".Rewards.");
+                if (rewardsSection != null) {
+                    for (String commandID : rewardsSection.getKeys(false)) {
+                        if (!rewardsSection.contains(commandID + ".chance")) {
+                            rewardsSection.set(commandID + ".chance", 100);
+                        }
+                    }
+                }
+            }
+        }
+
+        ConfigurationSection globalRewardsSection = newConfig.getConfigurationSection("GlobalRewards.");
+        if (globalRewardsSection != null) {
+            for (String commandID : globalRewardsSection.getKeys(false)) {
+                if (!globalRewardsSection.contains(commandID + ".chance")) {
+                    globalRewardsSection.set(commandID + ".chance", 100);
+                }
+            }
+        }
+    }
+    //endregion
+
+    private int getNextRewardIndex(ConfigurationSection rewardsSection) {
+        int maxIndex = -1;
+        if (rewardsSection == null) {
+            return maxIndex + 1;
+        }
+        for (String key : rewardsSection.getKeys(false)) {
+            try {
+                int index = Integer.parseInt(key);
+                maxIndex = Math.max(maxIndex, index);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return maxIndex + 1;
     }
 
     /**

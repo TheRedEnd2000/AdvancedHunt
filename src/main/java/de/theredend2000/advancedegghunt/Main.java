@@ -200,7 +200,6 @@ public final class Main extends JavaPlugin {
     private void finalizeSetup() {
         playerEggDataManager.checkReset();
         eggManager.spawnEggParticle();
-        new Converter().convertAllSystems();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
