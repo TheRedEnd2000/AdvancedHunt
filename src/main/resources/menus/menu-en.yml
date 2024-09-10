@@ -129,6 +129,50 @@ leaderboard_player:
 # Preset related
 
 # Requirement related
+requirements_selection:
+  displayname: "&6Selection - %SELECTION%"
+  lore:
+    - "&7Active: &b%STATUS_ACTIVE%"
+    - ""
+    - "&eClick to open."
+requirements_activate:
+  displayname: "&aActivate all"
+  lore:
+    - "&eClick to activate all."
+requirements_deactivate:
+  displayname: "&cDeactivate all"
+  lore:
+    - "&eClick to deactivate all."
+requirements_order:
+  displayname: "&bRequirements Order"
+  lore:
+    - ""
+    - "&7Current order: &6%CURRENT_ORDER%"
+    - ""
+    - "&a&lINFO:"
+    - "&6OR"
+    - "&7Makes that only one think musst be right"
+    - "&7in the selection."
+    - "&8Example: Weekday Monday and Hour 7 is enable."
+    - "&8Now it must be Monday &8&lOR &8it must be 7."
+    - "&6AND"
+    - "&7Makes that in all selections must be"
+    - "&7at least one right."
+    - "&8Example: Weekday Monday and Friday is enabled"
+    - "&8and hour 7 and 10."
+    - "&8Now it must be Monday or Friday &8&land"
+    - "&8it must be 7 or 10."
+    - ""
+    - "&eClick to change."
+requirements_year:
+  displayname: "&6Year %YEAR%"
+  lore:
+    - "&7Makes that the eggs are only"
+    - "&7available in the year %YEAR%."
+    - ""
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %YEAR% %TO_FROM% the requirements."
 
 # Settings related
 

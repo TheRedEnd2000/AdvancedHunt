@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.enums.Requirements;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
@@ -61,8 +62,8 @@ public class RequirementYear extends InventoryMenu {
         for(int year = currentYear; year < (currentYear + 28);year++){
             boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.BEACON : XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§6Year " + year)
-                    .setLore("§7Makes that the eggs are only", "§7available in the year " + year, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + year + " to the requirements.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_YEAR,"%YEAR%", String.valueOf(year)))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_YEAR,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%YEAR%", String.valueOf(year),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
                     .build());
         }

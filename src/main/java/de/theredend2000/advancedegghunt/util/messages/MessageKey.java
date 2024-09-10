@@ -80,6 +80,13 @@ public enum MessageKey {
 
     COMMANDS_OUTDATED("commands-outdated"),
 
+    REQUIREMENTS_NAME_HOUR("requirements-name-hour"),
+    REQUIREMENTS_NAME_DATE("requirements-name-date"),
+    REQUIREMENTS_NAME_WEEKDAY("requirements-name-weekday"),
+    REQUIREMENTS_NAME_MONTH("requirements-name-month"),
+    REQUIREMENTS_NAME_YEAR("requirements-name-year"),
+    REQUIREMENTS_NAME_SEASON("requirements-name-season"),
+
     HELP_MESSAGE("help-message"),
 
     EGG_DATA_CONVERTED_SUCCESS("egg-data-converted-success"),
