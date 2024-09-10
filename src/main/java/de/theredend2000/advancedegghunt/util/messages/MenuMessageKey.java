@@ -25,13 +25,18 @@ public enum MenuMessageKey {
 
     // Leaderboard related
     LEADERBOARD_SORT("leaderboard_sort"),
-    LEADERBOARD_PLAYER("leaderboard_player");
+    LEADERBOARD_PLAYER("leaderboard_player"),
 
     // Reward related
 
     // Preset related
 
     // Requirement related
+    REQUIREMENTS_SELECTION("requirements_selection"),
+    REQUIREMENTS_ACTIVATE("requirements_activate"),
+    REQUIREMENTS_DEACTIVATE("requirements_deactivate"),
+    REQUIREMENTS_ORDER("requirements_order"),
+    REQUIREMENTS_YEAR("requirements_year");
 
     // Settings related
 

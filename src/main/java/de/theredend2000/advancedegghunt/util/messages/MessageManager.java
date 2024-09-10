@@ -6,6 +6,9 @@ import de.theredend2000.advancedegghunt.util.HexColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MessageManager {
 
     private final Main plugin;
@@ -31,8 +34,8 @@ public class MessageManager {
         if (message == null) {
             return "Message not found: " + key.name();
         }
-
-        if(key.name().equals("EGG_NEARBY")) return HexColor.color(message);
+        for(String blacklisted :  blacklistKeys())
+            if(key.name().equals(blacklisted)) return HexColor.color(message);
         if(prefix_enabled)
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', Main.PREFIX + message));
         else
@@ -52,5 +55,17 @@ public class MessageManager {
             }
             player.sendMessage(message);
         }
+    }
+
+    private List<String> blacklistKeys(){
+        ArrayList<String> blacklisted = new ArrayList<>();
+        blacklisted.add("EGG_NEARBY");
+        blacklisted.add("REQUIREMENTS_NAME_HOUR");
+        blacklisted.add("REQUIREMENTS_NAME_DATE");
+        blacklisted.add("REQUIREMENTS_NAME_WEEKDAY");
+        blacklisted.add("REQUIREMENTS_NAME_MONTH");
+        blacklisted.add("REQUIREMENTS_NAME_YEAR");
+        blacklisted.add("REQUIREMENTS_NAME_SEASON");
+        return blacklisted;
     }
 }

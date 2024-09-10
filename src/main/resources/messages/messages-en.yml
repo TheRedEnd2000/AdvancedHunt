@@ -128,6 +128,13 @@ invalid-chance: '&cNot valid. Please enter a number between 0.0000001 and 100.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
 placeholders-hover-content: '&2Available placeholders:\n&b- %PLAYER% --> Name of the player\n&b- & --> For color codes (&6=gold)\n&b- %EGGS_FOUND% --> How many eggs the player has found\n&b- %EGGS_MAX% --> How many eggs are placed\n&b- %PREFIX% --> The prefix of the plugin'
 
+requirements-name-hour: 'Hour'
+requirements-name-date: 'Date'
+requirements-name-weekday: 'Weekday'
+requirements-name-month: 'Month'
+requirements-name-year: 'Year'
+requirements-name-season: 'Season'
+
 help-message: |
   &3-----------------------------------------
   &5&l==========HELP==========
