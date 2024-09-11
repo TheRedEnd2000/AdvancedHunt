@@ -97,6 +97,7 @@ public class PlayerInteractEventListener implements Listener {
                 Main.getInstance().getPlayerEggDataManager().setResetTimer(player.getUniqueId(), collection, id);
 
             //Main.getInstance().getEggHidingManager().hideEggForPlayer(event.getPlayer(), event.getClickedBlock().getLocation());
+            event.setCancelled(true);
             eggManager.saveFoundEggs(player, event.getClickedBlock(), id, collection);
             Location loc = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
 
