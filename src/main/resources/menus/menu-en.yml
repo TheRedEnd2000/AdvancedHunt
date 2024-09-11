@@ -90,6 +90,34 @@ eggplace_egg:
     - "&eLEFT-CLICK to add to your inventory."
     - "&eRIGHT-CLICK to remove."
 
+eggprogress_location_found:
+  displayname: "&2&lEgg &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&9Location:"
+    - "&7X: &e%LOCATION_X%"
+    - "&7Y: &e%LOCATION_Y%"
+    - "&7Z: &e%LOCATION_Z%"
+    - ""
+    - "&2&lYou found this egg."
+    - ""
+    - "&9Collected:"
+    - "&7Date: &6%DATE%"
+    - "&7Time: &6%TIME%"
+eggprogress_found:
+  displayname: "&2&lEgg &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&2&lYou found this egg."
+    - ""
+    - "&9Collected:"
+    - "&7Date: &6%DATE%"
+    - "&7Time: &6%TIME%"
+eggprogress_not_found:
+  displayname: "&2&lEgg &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&4&lYou haven't found this egg yet."
 
 # Player related
 information_player:

@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.common.Paginat
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.enums.Seasons;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -101,22 +102,22 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             if(showCoordinates && hasFound){
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
-                .setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")")
-                .setLore("", "§9Location:", "§7X: §e" + x, "§7Y: §e" + y, "§7Z: §e" + z, "", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_LOCATION_FOUND,"%ID%",keys.get(index)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_LOCATION_FOUND,"%LOCATION_X%",x,"%LOCATION_Y%",y,"%LOCATION_Z%",z,"%DATE%",date,"%TIME%",time))
                 .setCustomId(keys.get(index))
                 .build());
             }else if(hasFound && !showCoordinates) {
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD)
                         .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
-                        .setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")")
-                        .setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."), "", "§9Collected:", "§7Date: §6" + date, "§7Time: §6" + time, "")
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_FOUND,"%ID%",keys.get(index)))
+                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_FOUND,"%DATE%",date,"%TIME%",time))
                         .setCustomId(keys.get(index))
                         .build());
             }else
                 getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD)
                         .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
-                        .setDisplayName("§2§lEgg §7(ID#" + keys.get(index) + ")")
-                        .setLore("", (hasFound ? "§2§lYou have found this egg." : "§4§lYou haven't found this egg yet."))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_NOT_FOUND,"%ID%",keys.get(index)))
+                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_NOT_FOUND))
                         .setCustomId(keys.get(index))
                         .build());
         }

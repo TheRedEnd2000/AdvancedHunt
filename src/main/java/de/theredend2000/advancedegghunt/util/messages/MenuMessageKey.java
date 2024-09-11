@@ -18,6 +18,9 @@ public enum MenuMessageKey {
     EGGSLIST_EGG("eggslist_egg"),
     EGGPLACE_INFORMATION("eggplace_information"),
     EGGPLACE_EGG("eggplace_egg"),
+    EGGPROGRESS_LOCATION_FOUND("eggprogress_location_found"),
+    EGGPROGRESS_FOUND("eggprogress_found"),
+    EGGPROGRESS_NOT_FOUND("eggprogress_not_found"),
 
     // Player related
 
