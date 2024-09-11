@@ -19,6 +19,10 @@ public class PlayerEggDataManager {
     private HashMap<UUID, FileConfiguration> playerConfigs;
     private HashMap<UUID, File> playerFiles;
 
+    /**
+     * Constructor for PlayerEggDataManager.
+     * Initializes the plugin instance, data folder, and hash maps for player configurations and files.
+     */
     public PlayerEggDataManager() {
         plugin = Main.getInstance();
         dataFolder = plugin.getDataFolder();
@@ -26,10 +30,17 @@ public class PlayerEggDataManager {
         playerFiles = new HashMap<>();
     }
 
+    /**
+     * Reloads the player configurations by creating a new HashMap.
+     */
     public void reload() {
         playerConfigs = new HashMap<>();
     }
 
+    /**
+     * Unloads the player data for a specific UUID.
+     * @param uuid The UUID of the player whose data should be unloaded.
+     */
     public void unloadPlayerData(UUID uuid) {
         if (!playerConfigs.containsKey(uuid)) {
             return;
@@ -37,18 +48,31 @@ public class PlayerEggDataManager {
         playerConfigs.remove(uuid);
     }
 
+    /**
+     * Initializes player data for all saved players.
+     */
     public void initPlayers() {
         List<UUID> savedPlayers = new ArrayList<>(plugin.getEggDataManager().savedPlayers());
         for(UUID uuid : savedPlayers)
             getPlayerData(uuid);
     }
 
+    /**
+     * Gets the File object for a player's data file.
+     * @param uuid The UUID of the player.
+     * @return The File object for the player's data.
+     */
     private File getFile(UUID uuid) {
         if(!playerFiles.containsKey(uuid))
             playerFiles.put(uuid, new File(this.dataFolder + "/playerdata/", uuid + ".yml"));
         return playerFiles.get(uuid);
     }
 
+    /**
+     * Gets the FileConfiguration for a player's data.
+     * @param uuid The UUID of the player.
+     * @return The FileConfiguration containing the player's data.
+     */
     public FileConfiguration getPlayerData(UUID uuid) {
         File playerFile = this.getFile(uuid);
         if(!playerConfigs.containsKey(uuid)) {
@@ -57,6 +81,11 @@ public class PlayerEggDataManager {
         return playerConfigs.get(uuid);
     }
 
+    /**
+     * Saves the player's data to file.
+     * @param uuid The UUID of the player.
+     * @param config The FileConfiguration containing the player's data.
+     */
     public void savePlayerData(UUID uuid, FileConfiguration config) {
         try {
             config.save(this.getFile(uuid));
@@ -65,12 +94,21 @@ public class PlayerEggDataManager {
         }
     }
 
+    /**
+     * Saves the player's selected collection.
+     * @param uuid The UUID of the player.
+     * @param collection The name of the selected collection.
+     */
     public void savePlayerCollection(UUID uuid, String collection) {
         FileConfiguration config = this.getPlayerData(uuid);
         config.set("SelectedSection", collection);
         this.savePlayerData(uuid, config);
     }
 
+    /**
+     * Creates a new player file if it doesn't exist.
+     * @param uuid The UUID of the player.
+     */
     public void createPlayerFile(UUID uuid) {
         FileConfiguration config = this.getPlayerData(uuid);
         File playerFile = this.getFile(uuid);
@@ -88,17 +126,33 @@ public class PlayerEggDataManager {
         this.savePlayerCollection(uuid, "default");
     }
 
+    /**
+     * Sets the deletion type for a player.
+     * @param deletionType The DeletionType to set.
+     * @param uuid The UUID of the player.
+     */
     public void setDeletionType(DeletionTypes deletionType, UUID uuid) {
         FileConfiguration config = this.getPlayerData(uuid);
         config.set("DeletionType", deletionType.name());
         this.savePlayerData(uuid, config);
     }
 
+    /**
+     * Gets the deletion type for a player.
+     * @param uuid The UUID of the player.
+     * @return The DeletionType for the player.
+     */
     public DeletionTypes getDeletionType(UUID uuid) {
         FileConfiguration config = this.getPlayerData(uuid);
         return DeletionTypes.valueOf(config.getString("DeletionType"));
     }
 
+    /**
+     * Sets the reset timer for a specific egg.
+     * @param uuid The UUID of the player.
+     * @param collection The collection name.
+     * @param id The ID of the egg.
+     */
     public void setResetTimer(UUID uuid, String collection, String id) {
         FileConfiguration cfg = getPlayerData(uuid);
         int currentSeconds = Main.getInstance().getRequirementsManager().getOverallTime(collection);
@@ -114,17 +168,34 @@ public class PlayerEggDataManager {
         }
     }
 
+    /**
+     * Gets the reset timer for a specific egg.
+     * @param uuid The UUID of the player.
+     * @param collection The collection name.
+     * @param id The ID of the egg.
+     * @return The reset timer value.
+     */
     public long getResetTimer(UUID uuid, String collection, String id) {
         FileConfiguration cfg = getPlayerData(uuid);
         return !cfg.contains("FoundEggs." + collection + "." + id + ".ResetCooldown") ? System.currentTimeMillis() + 1000000L : cfg.getLong("FoundEggs." + collection + "." + id + ".ResetCooldown");
     }
 
+    /**
+     * Checks if an egg can be reset.
+     * @param uuid The UUID of the player.
+     * @param collection The collection name.
+     * @param id The ID of the egg.
+     * @return True if the egg can be reset, false otherwise.
+     */
     public boolean canReset(UUID uuid, String collection, String id) {
         long current = System.currentTimeMillis();
         long millis = this.getResetTimer(uuid, collection, id);
         return current > millis;
     }
 
+    /**
+     * Periodically checks and resets eggs for all players if the reset time has passed.
+     */
     public void checkReset(){
         new BukkitRunnable() {
             @Override
