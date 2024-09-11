@@ -164,6 +164,17 @@ requirements_order:
     - "&8it must be 7 or 10."
     - ""
     - "&eClick to change."
+
+requirements_season:
+  displayname: "&6%SEASON%"
+  lore:
+    - "&8%SEASON_INFORMATION%"
+    - "&7Makes that the eggs are only"
+    - "&7available in the season %SEASON%"
+    - ""
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %SEASON% %TO_FROM% the requirements."
 requirements_year:
   displayname: "&6Year %YEAR%"
   lore:
@@ -173,6 +184,43 @@ requirements_year:
     - "&7Currently: %STATUS%"
     - ""
     - "&eClick to %ADD_REMOVE% %YEAR% %TO_FROM% the requirements."
+requirements_month:
+  displayname: "&6%MONTH%"
+  lore:
+    - "&7Makes that the eggs are only"
+    - "&7available in the month %MONTH%."
+    - ""
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %MONTH% %TO_FROM% the requirements."
+requirements_weekday:
+  displayname: "&6%WEEKDAY%"
+  lore:
+    - "&7Makes that the eggs are only"
+    - "&7available in the weekday %WEEKDAY%."
+    - ""
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %WEEKDAY% %TO_FROM% the requirements."
+requirements_date:
+  displayname: "&6%DATE%"
+  lore:
+    - "&7Makes that the eggs are only"
+    - "&7available on %DATE%."
+    - ""
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %DATE% %TO_FROM% the requirements."
+requirements_hour:
+  displayname: "&6Hour %HOUR%"
+  lore:
+    - "&8Hours: (%HOUR_FORMAT%)" # The hour format can be changed in the messages-<lang>.yml file
+    - "&7Makes that the eggs are only"
+    - "&7available in the hour %HOUR%."
+    - ""
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %HOUR% %TO_FROM% the requirements."
 
 # Settings related
 

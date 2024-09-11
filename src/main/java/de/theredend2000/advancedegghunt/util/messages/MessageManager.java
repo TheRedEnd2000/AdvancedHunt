@@ -66,6 +66,19 @@ public class MessageManager {
         blacklisted.add("REQUIREMENTS_NAME_MONTH");
         blacklisted.add("REQUIREMENTS_NAME_YEAR");
         blacklisted.add("REQUIREMENTS_NAME_SEASON");
+        blacklisted.add("MONTH_JANUARY");
+        blacklisted.add("MONTH_FEBRUARY");
+        blacklisted.add("MONTH_MARCH");
+        blacklisted.add("MONTH_APRIL");
+        blacklisted.add("MONTH_MAY");
+        blacklisted.add("MONTH_JUNE");
+        blacklisted.add("MONTH_JULI");
+        blacklisted.add("MONTH_AUGUST");
+        blacklisted.add("MONTH_SEPTEMBER");
+        blacklisted.add("MONTH_OCTOBER");
+        blacklisted.add("MONTH_NOVEMBER");
+        blacklisted.add("MONTH_DECEMBER");
+        blacklisted.add("HOUR_FORMAT");
         return blacklisted;
     }
 }

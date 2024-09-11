@@ -6,8 +6,11 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.common.Invento
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.enums.Seasons;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -58,11 +61,31 @@ public class RequirementHours extends InventoryMenu {
         for(int i = 0; i < 24; i++){
             int index = ((9 + 1) + ((i / 7) * 9) + (i % 7));
             boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
+            String hour = String.valueOf(i);
             getInventory().setItem(index, new ItemBuilder(enabled ? XMaterial.CLOCK : XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§6Hour " + i)
-                    .setLore("§8Hours: (" + i + ":00-" + (i + 1) + ":00)", "§7Makes that the eggs are only", "§7available in the hour that starts with " + i, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" hour " + i + " to the requirements.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_HOUR,"%HOUR%",hour))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_HOUR,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%HOUR_FORMAT%", getHourFormat(messageManager.getMessage(MessageKey.HOUR_FORMAT),i),"%HOUR%", hour,"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
                     .build());
+        }
+    }
+
+    public String getHourFormat(String hourFormat, int hour) {
+        switch (hourFormat) {
+            case "12": {
+                String period = (hour <= 12) ? "AM" : "PM";
+                int adjustedHour = (hour % 12 == 0) ? 12 : hour % 12;
+                int nextHour = (hour + 1) % 24;
+                String nextPeriod = (nextHour <= 12) ? "AM" : "PM";
+                int adjustedNextHour = (nextHour % 12 == 0) ? 12 : nextHour % 12;
+                return adjustedHour + period + " - " + adjustedNextHour + nextPeriod;
+            }
+            case "24": {
+                int nextHour = (hour + 1) % 24;
+                return hour + " - " + nextHour;
+            }
+            default:
+                return "§4UNKNOWN";
         }
     }
 

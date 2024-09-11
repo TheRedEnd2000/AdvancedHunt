@@ -36,7 +36,12 @@ public enum MenuMessageKey {
     REQUIREMENTS_ACTIVATE("requirements_activate"),
     REQUIREMENTS_DEACTIVATE("requirements_deactivate"),
     REQUIREMENTS_ORDER("requirements_order"),
-    REQUIREMENTS_YEAR("requirements_year");
+    REQUIREMENTS_SEASON("requirements_season"),
+    REQUIREMENTS_YEAR("requirements_year"),
+    REQUIREMENTS_MONTH("requirements_month"),
+    REQUIREMENTS_WEEKDAY("requirements_weekday"),
+    REQUIREMENTS_DATE("requirements_date"),
+    REQUIREMENTS_HOUR("requirements_hour");
 
     // Settings related
 

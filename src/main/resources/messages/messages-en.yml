@@ -135,6 +135,26 @@ requirements-name-month: 'Month'
 requirements-name-year: 'Year'
 requirements-name-season: 'Season'
 
+requirements-season-winter: 'Winter'
+requirements-season-fall: 'Fall'
+requirements-season-spring: 'Spring'
+requirements-season-summer: 'Summer'
+
+month-january: "January"
+month-february: "February"
+month-march: "March"
+month-april: "April"
+month-may: "May"
+month-june: "June"
+month-juli: "Juli"
+month-august: "August"
+month-september: "September"
+month-october: "October"
+month-november: "November"
+month-december: "December"
+
+hour-format: "12"
+
 help-message: |
   &3-----------------------------------------
   &5&l==========HELP==========
