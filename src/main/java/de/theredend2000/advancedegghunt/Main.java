@@ -243,7 +243,6 @@ public final class Main extends JavaPlugin {
         embedCreator = new EmbedCreator();
         protocolManager = ProtocolLibrary.getProtocolManager();
         eggHidingManager = new EggHidingManager();
-        new Checker();
     }
 
     private void initListeners() {

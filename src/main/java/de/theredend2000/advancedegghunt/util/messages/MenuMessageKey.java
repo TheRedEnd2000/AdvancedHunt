@@ -18,6 +18,9 @@ public enum MenuMessageKey {
     EGGSLIST_EGG("eggslist_egg"),
     EGGPLACE_INFORMATION("eggplace_information"),
     EGGPLACE_EGG("eggplace_egg"),
+    EGGPROGRESS_LOCATION_FOUND("eggprogress_location_found"),
+    EGGPROGRESS_FOUND("eggprogress_found"),
+    EGGPROGRESS_NOT_FOUND("eggprogress_not_found"),
 
     // Player related
 
@@ -36,7 +39,12 @@ public enum MenuMessageKey {
     REQUIREMENTS_ACTIVATE("requirements_activate"),
     REQUIREMENTS_DEACTIVATE("requirements_deactivate"),
     REQUIREMENTS_ORDER("requirements_order"),
-    REQUIREMENTS_YEAR("requirements_year");
+    REQUIREMENTS_SEASON("requirements_season"),
+    REQUIREMENTS_YEAR("requirements_year"),
+    REQUIREMENTS_MONTH("requirements_month"),
+    REQUIREMENTS_WEEKDAY("requirements_weekday"),
+    REQUIREMENTS_DATE("requirements_date"),
+    REQUIREMENTS_HOUR("requirements_hour");
 
     // Settings related
 

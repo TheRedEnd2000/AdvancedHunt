@@ -9,6 +9,7 @@ import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.Seasons;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -62,8 +63,8 @@ public class RequirementSeason extends InventoryMenu {
         for(String season : new ArrayList<>(DateTimeUtil.getSeasonList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§6" + season)
-                    .setLore(getSeasonInformation(Seasons.valueOf(season)), "§7Makes that the eggs are only", "§7available in the season " + season, "", "§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to "+(enabled ? "remove" : "add")+" " + season + " to the requirements.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SEASON,"%SEASON%",season))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SEASON,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%SEASON_INFORMATION%", getSeasonInformation(Seasons.valueOf(season)),"%SEASON%", season,"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
                     .build());
         }
@@ -72,13 +73,13 @@ public class RequirementSeason extends InventoryMenu {
     private String getSeasonInformation(Seasons seasons){
         switch (seasons){
             case Winter:
-                return "§8December | January | February";
+                return messageManager.getMessage(MessageKey.MONTH_DECEMBER)+" | "+messageManager.getMessage(MessageKey.MONTH_JANUARY)+" | "+messageManager.getMessage(MessageKey.MONTH_FEBRUARY);
             case Summer:
-                return "§8June | July | August";
+                return messageManager.getMessage(MessageKey.MONTH_JUNE)+" | "+messageManager.getMessage(MessageKey.MONTH_JULI)+" | "+messageManager.getMessage(MessageKey.MONTH_AUGUST);
             case Spring:
-                return "§8March | April | May";
+                return messageManager.getMessage(MessageKey.MONTH_MARCH)+" | "+messageManager.getMessage(MessageKey.MONTH_APRIL)+" | "+messageManager.getMessage(MessageKey.MONTH_MAY);
             case Fall:
-                return "§8September | October | November";
+                return messageManager.getMessage(MessageKey.MONTH_SEPTEMBER)+" | "+messageManager.getMessage(MessageKey.MONTH_OCTOBER)+" | "+messageManager.getMessage(MessageKey.MONTH_NOVEMBER);
             case Unknown:
                 return "§4UNKNOWN";
         }
