@@ -1,5 +1,6 @@
 package de.theredend2000.advancedegghunt.configurations;
 
+import de.theredend2000.advancedegghunt.Main;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -228,6 +229,7 @@ public class EggConfig extends MultiFileConfiguration {
      */
     public void deleteCollection(String collection) {
         deleteConfig(collection);
+        Main.getInstance().getEggManager().spawnEggParticle();
     }
 
     /**
@@ -241,9 +243,13 @@ public class EggConfig extends MultiFileConfiguration {
 
     /**
      * Gets a list of all saved egg collections.
-     * @return A list of egg collection names.
+     * @return A list of egg collection names without file extensions.
      */
     public List<String> savedEggCollections() {
-        return new ArrayList<>(configFiles.keySet());
+        List<String> collections = new ArrayList<>();
+        for (String fileName : configFiles.keySet()) {
+            collections.add(fileName.substring(0, fileName.length() - fileExtension.length()));
+        }
+        return collections;
     }
 }

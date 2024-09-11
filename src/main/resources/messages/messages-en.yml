@@ -67,7 +67,7 @@ eggimport-success: '&aSuccessfully &7imported a new head to the &eplace eggs&7.'
 
 preset-already-exists: '&cThis preset does already exist.'
 preset-saved: '&aSuccessfully &7saved the &epreset %PRESET%&7.'
-preset-failed-commands: '&cThere are to less commands to save.'
+preset-failed-commands: '&cThere needs to be more than 1 commands to save.'
 preset-loaded: '&7The &epreset %PRESET% &7was loaded &asuccessfully&7.'
 preset-delete: '&7You have &asuccessfully &cdeleted &7the &epreset %PRESET%&7.'
 preset-default: '&7You changed the new &adefault loading &7preset to &e%PRESET%&7.'
