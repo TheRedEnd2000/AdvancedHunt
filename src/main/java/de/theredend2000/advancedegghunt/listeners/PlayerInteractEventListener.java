@@ -58,9 +58,13 @@ public class PlayerInteractEventListener implements Listener {
             if (!eggManager.getEggCollection(event.getClickedBlock()).equals(collection)) {
                 continue;
             }
+            /*
+                Open the menu for individual egg rewards
+             */
             String id = eggManager.getEggID(event.getClickedBlock(), collection);
             if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.OpenRewards) && player.isSneaking()){
                 new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
+                event.setCancelled(true);
                 return;
             }
 
