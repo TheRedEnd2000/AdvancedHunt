@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.common.Paginat
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,12 +39,13 @@ public class IndividualConfirmMenu extends PaginatedInventoryMenu {
     public void addMenuButtons() {
         inventoryContent[11] = new ItemBuilder(XMaterial.GREEN_CONCRETE)
                 .setCustomId("rewards_individual_confirm.confirm")
-                .setDisplayName("§aConfirm")
-                .setLore("","§7By clicking this button you will load","§7this preset into all placed eggs.","","§eClick to confirm.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_CONFIRM_MENU_CONFIRM))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_CONFIRM_MENU_CONFIRM))
                 .build();
         inventoryContent[15] = new ItemBuilder(XMaterial.RED_CONCRETE)
                 .setCustomId("rewards_individual_confirm.cancel")
-                .setDisplayName("§cCancel")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_CONFIRM_MENU_CANCEL))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_CONFIRM_MENU_CANCEL))
                 .build();
     }
 

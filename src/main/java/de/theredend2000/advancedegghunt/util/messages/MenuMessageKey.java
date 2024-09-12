@@ -31,6 +31,15 @@ public enum MenuMessageKey {
     LEADERBOARD_PLAYER("leaderboard_player"),
 
     // Reward related
+    REWARDS_CONFIRM_MENU_CONFIRM("rewards_confirm_menu_confirm"),
+    REWARDS_CONFIRM_MENU_CANCEL("rewards_confirm_menu_cancel"),
+    REWARDS_INDIVIDUAL_SAVE_PRESET("rewards_individual_save_preset"),
+    REWARDS_INDIVIDUAL_LOAD_PRESET("rewards_individual_load_preset"),
+    REWARDS_INDIVIDUAL_NEW_REWARD("rewards_individual_new_reward"),
+    REWARDS_INDIVIDUAL_SWITCH_GLOBAL("rewards_individual_switch_global"),
+    REWARDS_INDIVIDUAL_INFORMATION("rewards_individual_information"),
+    REWARDS_INDIVIDUAL_REWARD("rewards_individual_reward"),
+
 
     // Preset related
 

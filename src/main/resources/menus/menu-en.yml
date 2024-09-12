@@ -153,6 +153,83 @@ leaderboard_player:
     - "%IS_IN_TOP_TEN%"
 
 # Reward related
+rewards_confirm_menu_confirm:
+  displayname: "&aConfirm"
+  lore:
+    - ""
+    - "&7By clicking this button you will load"
+    - "&7this preset into all placed eggs."
+    - ""
+    - "&eClick to confirm"
+rewards_confirm_menu_cancel:
+  displayname: "&cCancel"
+
+rewards_individual_save_preset:
+  displayname: "&5Save preset"
+  lore:
+    - ""
+    - "&7Saves the current listed commands"
+    - "&7in a preset that you can load"
+    - "&7for other eggs again."
+    - ""
+    - "&2Note: &7You need at least 1 command to save a preset!"
+    - ""
+    - "&eClick to save a new preset."
+rewards_individual_load_preset:
+  displayname: "&5Load presets"
+  lore:
+    - "&eClick to load or change presets."
+rewards_individual_new_reward:
+  displayname: "&5Create new reward"
+  lore:
+    - ""
+    - "&bYou can also add custom items:"
+    - "&7For that get your custom item in your"
+    - "&7inventory and click it when this"
+    - "&7menu is open. The item will"
+    - "&7get converted into a command"
+    - "&7and can then be used as the other commands."
+    - ""
+    - "&eClick to create a new reward."
+rewards_individual_switch_global:
+  displayname: "&bSwitch to Global"
+  lore:
+    - ""
+    - "&6Switch to Global:"
+    - "&7Switching to global lets you manage"
+    - "&7all commands and presets for"
+    - "&7the function if a player has found"
+    - "&7&lall &7eggs."
+    - ""
+    - "&eClick to switch."
+rewards_individual_information:
+  displayname: "&9Information"
+  lore:
+    - "&7The individual egg rewards count"
+    - "&7as &7&lone egg reward&7."
+    - "&7This means if the player finds &7&lone egg&7,"
+    - "&7all commands that are in this inventory"
+    - "&7will get executed."
+    - ""
+    - "&c&n&oThese commands will only count for this egg."
+    - ""
+    - "&7You can save all listed commands as preset"
+    - "&7to load it in other eggs or set it as default."
+rewards_individual_reward:
+  displayname: "&b&lReward &7#%REWARD_ID%"
+  lore:
+    - ""
+    - "&9Information:"
+    - "&7Command: &6%COMMAND%"
+    - "&7Command Enabled: %STATUS%"
+    - "&7Chance: &6%CHANCE_PERCENT% &7(%CHANCE_DECIMAL%)"
+    - "&7Rarity: %RARITY%"
+    - ""
+    - "&eLEFT-CLICK to toggle enabled."
+    - "&eMIDDLE-CLICK to change chance."
+    - "&eRIGHT-CLICK to delete."
+    - "&eDROP to execute command."
+
 
 # Preset related
 
@@ -253,4 +330,5 @@ requirements_hour:
 # Settings related
 
 # Miscellaneous
+
 
