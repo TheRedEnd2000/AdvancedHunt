@@ -47,8 +47,8 @@ public class ResetMenu extends InventoryMenu {
 
         inventoryContent[37] = new ItemBuilder(XMaterial.RED_TERRACOTTA)
                 .setCustomId("reset.reset_all")
-                .setDisplayName("§cReset all")
-                .setLore("§eClick to reset all.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_RESET_ALL))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_RESET_ALL))
                 .build();
 
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
@@ -70,33 +70,33 @@ public class ResetMenu extends InventoryMenu {
 
         getInventory().setItem(10, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_year")
-                .setDisplayName("§6Reset - Year")
-                .setLore("§7Current: §b" + placedEggs.getInt("Reset.Year") + "Y", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_YEAR))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_YEAR,"%YEAR%", String.valueOf(placedEggs.getInt("Reset.Year")),"%OVERALL%",overall))
                 .build());
         getInventory().setItem(11, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_month")
-                .setDisplayName("§6Reset - Month")
-                .setLore("§7Current: §b" + placedEggs.getInt("Reset.Month") + "M", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_MONTH))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_MONTH,"%MONTH%", String.valueOf(placedEggs.getInt("Reset.Month")),"%OVERALL%",overall))
                 .build());
         getInventory().setItem(12, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_day")
-                .setDisplayName("§6Reset - Day")
-                .setLore("§7Current: §b" + placedEggs.getInt("Reset.Day") + "d", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_DAY))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_DAY,"%DAY%", String.valueOf(placedEggs.getInt("Reset.Day")),"%OVERALL%",overall))
                 .build());
         getInventory().setItem(13, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_hour")
-                .setDisplayName("§6Reset - Hour")
-                .setLore("§7Current: §b" + placedEggs.getInt("Reset.Hour") + "h", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_HOUR))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_HOUR,"%HOUR%", String.valueOf(placedEggs.getInt("Reset.Hour")),"%OVERALL%",overall))
                 .build());
         getInventory().setItem(14, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_minute")
-                .setDisplayName("§6Reset - Minute")
-                .setLore("§7Current: §b" + placedEggs.getInt("Reset.Minute") + "m", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_MINUTE))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_MINUTE,"%MINUTE%", String.valueOf(placedEggs.getInt("Reset.Minute")),"%OVERALL%",overall))
                 .build());
         getInventory().setItem(15, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_second")
-                .setDisplayName("§6Reset - Second")
-                .setLore("§7Current: §b" + placedEggs.getInt("Reset.Second") + "s", "§7Overall: §6" + overall, "", "§eLEFT-CLICK add one.", "§eMIDDLE-CLICK reset it.", "§eRIGHT-CLICK remove one.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_SECOND))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_SECOND,"%SECOND%", String.valueOf(placedEggs.getInt("Reset.Second")),"%OVERALL%",overall))
                 .build());
     }
 

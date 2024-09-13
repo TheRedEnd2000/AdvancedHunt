@@ -83,7 +83,7 @@ public class MessageManager {
         blacklisted.add("MONTH_APRIL");
         blacklisted.add("MONTH_MAY");
         blacklisted.add("MONTH_JUNE");
-        blacklisted.add("MONTH_JULI");
+        blacklisted.add("MONTH_JULY");
         blacklisted.add("MONTH_AUGUST");
         blacklisted.add("MONTH_SEPTEMBER");
         blacklisted.add("MONTH_OCTOBER");

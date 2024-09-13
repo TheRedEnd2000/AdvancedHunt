@@ -66,6 +66,7 @@ public class RequirementHours extends InventoryMenu {
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_HOUR,"%HOUR%",hour))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_HOUR,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%HOUR_FORMAT%", getHourFormat(messageManager.getMessage(MessageKey.HOUR_FORMAT),i),"%HOUR%", hour,"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
+                    .setCustomId(String.valueOf(i))
                     .build());
         }
     }
@@ -96,7 +97,7 @@ public class RequirementHours extends InventoryMenu {
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         for (int i = 0; i < 24; i++) {
-            if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Hour " + i)) {
+            if (String.valueOf(i).equals(ItemHelper.getItemId(event.getCurrentItem()))) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
                 placedEggs.set("Requirements.Hours." + i, !enabled);
                 plugin.getEggDataManager().savePlacedEggs(collection);

@@ -76,8 +76,8 @@ public class EggListMenu extends PaginatedInventoryMenu {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Eggs Placed")
-                    .setLore("§7You can add eggs by using", "§e/egghunt placeEggs§7.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
 
         if (keys == null || keys.isEmpty()) {

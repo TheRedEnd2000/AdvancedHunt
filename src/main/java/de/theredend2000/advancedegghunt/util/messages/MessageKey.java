@@ -100,7 +100,7 @@ public enum MessageKey {
     MONTH_APRIL("month-april"),
     MONTH_MAY("month-may"),
     MONTH_JUNE("month-june"),
-    MONTH_JULI("month-juli"),
+    MONTH_JULY("month-july"),
     MONTH_AUGUST("month-august"),
     MONTH_SEPTEMBER("month-september"),
     MONTH_OCTOBER("month-october"),

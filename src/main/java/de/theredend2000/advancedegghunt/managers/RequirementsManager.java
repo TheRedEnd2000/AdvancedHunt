@@ -433,8 +433,8 @@ public class RequirementsManager {
                 return messageManager.getMessage(MessageKey.MONTH_MAY);
             case "June":
                 return messageManager.getMessage(MessageKey.MONTH_JUNE);
-            case "Juli":
-                return messageManager.getMessage(MessageKey.MONTH_JULI);
+            case "July":
+                return messageManager.getMessage(MessageKey.MONTH_JULY);
             case "August":
                 return messageManager.getMessage(MessageKey.MONTH_AUGUST);
             case "September":

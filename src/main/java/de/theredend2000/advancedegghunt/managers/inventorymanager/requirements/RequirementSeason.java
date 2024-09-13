@@ -67,6 +67,7 @@ public class RequirementSeason extends InventoryMenu {
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SEASON,"%SEASON%",plugin.getRequirementsManager().getRequirementsTranslation(season)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SEASON,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%SEASON_INFORMATION%", getSeasonInformation(Seasons.valueOf(season)),"%SEASON%", plugin.getRequirementsManager().getRequirementsTranslation(season),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
+                    .setCustomId(season)
                     .build());
         }
     }
@@ -76,7 +77,7 @@ public class RequirementSeason extends InventoryMenu {
             case Winter:
                 return messageManager.getMessage(MessageKey.MONTH_DECEMBER)+" | "+messageManager.getMessage(MessageKey.MONTH_JANUARY)+" | "+messageManager.getMessage(MessageKey.MONTH_FEBRUARY);
             case Summer:
-                return messageManager.getMessage(MessageKey.MONTH_JUNE)+" | "+messageManager.getMessage(MessageKey.MONTH_JULI)+" | "+messageManager.getMessage(MessageKey.MONTH_AUGUST);
+                return messageManager.getMessage(MessageKey.MONTH_JUNE)+" | "+messageManager.getMessage(MessageKey.MONTH_JULY)+" | "+messageManager.getMessage(MessageKey.MONTH_AUGUST);
             case Spring:
                 return messageManager.getMessage(MessageKey.MONTH_MARCH)+" | "+messageManager.getMessage(MessageKey.MONTH_APRIL)+" | "+messageManager.getMessage(MessageKey.MONTH_MAY);
             case Fall:
@@ -94,7 +95,7 @@ public class RequirementSeason extends InventoryMenu {
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         for (String season : new ArrayList<>(DateTimeUtil.getSeasonList())) {
-            if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(season)) {
+            if (season.equals(ItemHelper.getItemId(event.getCurrentItem()))) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
                 placedEggs.set("Requirements.Season." + season, !enabled);
                 plugin.getEggDataManager().savePlacedEggs(collection);

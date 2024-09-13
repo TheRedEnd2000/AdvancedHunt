@@ -64,6 +64,7 @@ public class RequirementMonth extends InventoryMenu {
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_MONTH,"%MONTH%", plugin.getRequirementsManager().getRequirementsTranslation(month)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_MONTH,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%MONTH%", plugin.getRequirementsManager().getRequirementsTranslation(month),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
+                    .setCustomId(month)
                     .build());
         }
     }
@@ -75,7 +76,7 @@ public class RequirementMonth extends InventoryMenu {
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         for (String month : new ArrayList<>(DateTimeUtil.getMonthList())) {
-            if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals(month)) {
+            if (month.equals(ItemHelper.getItemId(event.getCurrentItem()))) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
                 placedEggs.set("Requirements.Month." + month, !enabled);
                 plugin.getEggDataManager().savePlacedEggs(collection);

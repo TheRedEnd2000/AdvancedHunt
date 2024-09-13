@@ -416,7 +416,7 @@ requirements_order:
     - ""
     - "&a&lINFO:"
     - "&6OR"
-    - "&7Makes that only one think musst be right"
+    - "&7Makes that only one thing musst be right"
     - "&7in the selection."
     - "&8Example: Weekday Monday and Hour 7 is enable."
     - "&8Now it must be Monday &8&lOR &8it must be 7."
@@ -487,13 +487,74 @@ requirements_hour:
     - ""
     - "&eClick to %ADD_REMOVE% %HOUR% %TO_FROM% the requirements."
 
+# Reset related
+reset_year:
+  displayname: "&6Reset - Year"
+  lore:
+    - "&7Current: &b%YEAR%Y"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_month:
+  displayname: "&6Reset - Month"
+  lore:
+    - "&7Current: &b%MONTH%M"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_day:
+  displayname: "&6Reset - Day"
+  lore:
+    - "&7Current: &b%DAY%d"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_hour:
+  displayname: "&6Reset - Hour"
+  lore:
+    - "&7Current: &b%HOUR%h"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_minute:
+  displayname: "&6Reset - Minute"
+  lore:
+    - "&7Current: &b%MINUTE%m"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_second:
+  displayname: "&6Reset - Second"
+  lore:
+    - "&7Current: &b%SECOND%s"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_reset_all:
+  displayname: "&cReset all"
+  lore:
+    - "&eClick to reset all."
+
 # Settings related
 settings_one_egg_reward:
   displayname: "&3One egg found reward"
   lore:
     - ""
     - "&7If this function is activated"
-    - "&7all commands entered in the config are executed."
+    - "&7all commands entered in one egg found"
+    - "&7will be executed."
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
@@ -502,7 +563,8 @@ settings_all_eggs_reward:
   lore:
     - ""
     - "&7If this function is activated"
-    - "&7all commands entered in the config are executed."
+    - "&7all commands entered in all eggs found"
+    - "&7will be executed."
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
@@ -599,5 +661,13 @@ settings_hint_cooldown:
     - "&eClick to toggle."
 
 # Miscellaneous
+list_error:
+  displayname: "&4No entry's"
+  lore:
+    - "&cThere are no entry's in this list."
+    - ""
+    - "&cIf you think this is an issue"
+    - "&cof the plugin, please report"
+    - "&cit on the discord."
 
 

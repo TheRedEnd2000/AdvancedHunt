@@ -76,6 +76,16 @@ public enum MenuMessageKey {
     REQUIREMENTS_DATE("requirements_date"),
     REQUIREMENTS_HOUR("requirements_hour"),
 
+    // Reset related
+    RESET_YEAR("reset_year"),
+    RESET_MONTH("reset_month"),
+    RESET_DAY("reset_day"),
+    RESET_HOUR("reset_hour"),
+    RESET_MINUTE("reset_minute"),
+    RESET_SECOND("reset_second"),
+    RESET_RESET_ALL("reset_reset_all"),
+
+
     // Settings related
     SETTINGS_ONE_EGG_REWARD("settings_one_egg_reward"),
     SETTINGS_ALL_EGG_REWARD("settings_all_eggs_reward"),
@@ -87,9 +97,10 @@ public enum MenuMessageKey {
     SETTINGS_EGG_NEARBY_RADIUS("settings_egg_nearby_radius"),
     SETTINGS_PLUGIN_PREFIX("settings_plugin_prefix"),
     SETTINGS_FIREWORK("settings_firework"),
-    SETTINGS_HINT_COOLDOWN("settings_hint_cooldown");
+    SETTINGS_HINT_COOLDOWN("settings_hint_cooldown"),
 
     // Miscellaneous
+    LIST_ERROR("list_error");
 
     private final String path;
 
