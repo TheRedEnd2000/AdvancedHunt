@@ -61,8 +61,8 @@ public class RequirementWeekday extends InventoryMenu {
         for(String weekdays : new ArrayList<>(DateTimeUtil.getWeekList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekdays);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.LIME_BED : XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_WEEKDAY,"%WEEKDAY%", weekdays))
-                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_WEEKDAY,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%WEEKDAY%", weekdays,"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_WEEKDAY,"%WEEKDAY%", plugin.getRequirementsManager().getRequirementsTranslation(weekdays)))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_WEEKDAY,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%WEEKDAY%", plugin.getRequirementsManager().getRequirementsTranslation(weekdays),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
                     .build());
         }

@@ -1,6 +1,6 @@
 config-version: 2.6
 
-no-permission-error: '&cYou don`t have the &6%PERMISSION% permission&c to use this command.'
+no-permission-error: "&cYou don't have the &6%PERMISSION% permission&c to use this command."
 command-not-found: '&cNo command found! &7Please type &e/egghunt help &7to see all command.'
 only-player: '&cOnly player can use this command.'
 reload-config: '&7The config was &ereloaded &asuccessfully&7.'
@@ -83,7 +83,7 @@ commands-outdated: '&cThis system is outdated. You can now change commands by SH
 egg-data-converted-success: '&aSuccessfully converted egg data to new format.'
 egg-data-converted-broadcast: '&aEgg data has been converted to a new format. Please check if everything is working correctly.'
 egg-data-converted-failed: '&cFailed to convert egg data. Please check the console for more information.'
-egg-data-convert-start: "&cAdvancedEggHunt found the old configuration system.\n&cIt is now changing to the new one.\n&4THIS CAN TAKE A WHILE!"
+egg-data-convert-start: '&cAdvancedEggHunt found the old configuration system.\n&cIt is now changing to the new one.\n&4THIS CAN TAKE A WHILE!'
 egg-data-convert-broadcast: '&4AdvancedEggHunt IS UPDATING THEIR CONFIGURATION SYSTEM PLEASE DONT MOVE UTIL FINISHED'
 egg-data-convert-op-message: '&cTHE BEST IS WHEN NOBODY IS ON THE SERVER DURING THE CONVERT. &4CONSOLE SHOWS THE PROGRESS'
 egg-data-convert-locations: '&aAdvancedEggHunt converted all egg locations!'
@@ -92,7 +92,7 @@ egg-data-convert-done: '&aUPDATING DONE!'
 egg-data-convert-success: '&aeggs.yml was converted successfully.'
 egg-data-convert-delete-fail: '&ceggs.yml can''t be deleted.'
 egg-data-convert-delete-error: '&4There was an error while deleting the eggs.yml file: %ERROR%'
-egg-data-convert-complete: "&aAdvancedEggHunt converted all data to the new system.\n&2The plugin is now running flawless again\n&4Please report bugs on the discord: &9https://discord.gg/qapvQMUt34"
+egg-data-convert-complete: '&aAdvancedEggHunt converted all data to the new system.\n&2The plugin is now running flawless again\n&4Please report bugs on the discord: &9https://discord.gg/qapvQMUt34'
 
 placeholderapi-detected: '&aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.'
 placeholderapi-enabled: '&2&lAll placeholders successfully enabled.'
@@ -118,7 +118,7 @@ requirements-order-coming-soon: '&cThis feature is coming soon.'
 collection-select-error: '&cThere was an error please restart your server.'
 collection-refresh-cooldown: '&cPlease wait before refreshing again.'
 collection-refresh-success: '&aCollection list refreshed successfully.'
-collection-edit-no-permission: '&cYou don''t have permission to edit collections.'
+collection-edit-no-permission: "&cYou don't have permission to edit collections."
 collection-name-required: '&cPlease enter a name to continue.'
 collection-name-exists: '&cThe name of the collection is already chosen.'
 collection-default-undeletable: '&cBecause of many issues it is not possible to delete the default section. If you want to disable it please just change the status.'
@@ -134,26 +134,37 @@ requirements-name-weekday: 'Weekday'
 requirements-name-month: 'Month'
 requirements-name-year: 'Year'
 requirements-name-season: 'Season'
+requirements-more: 'more'
+requirements-click_to_change: '&eClick to change.'
 
 requirements-season-winter: 'Winter'
 requirements-season-fall: 'Fall'
 requirements-season-spring: 'Spring'
 requirements-season-summer: 'Summer'
 
-month-january: "January"
-month-february: "February"
-month-march: "March"
-month-april: "April"
-month-may: "May"
-month-june: "June"
-month-juli: "Juli"
-month-august: "August"
-month-september: "September"
-month-october: "October"
-month-november: "November"
-month-december: "December"
+month-january: 'January'
+month-february: 'February'
+month-march: 'March'
+month-april: 'April'
+month-may: 'May'
+month-june: 'June'
+month-juli: 'Juli'
+month-august: 'August'
+month-september: 'September'
+month-october: 'October'
+month-november: 'November'
+month-december: 'December'
 
-hour-format: "12"
+day-monday: 'Monday'
+day-tuesday: 'Tuesday'
+day-wednesday: 'Wednesday'
+day-thursday: 'Thursday'
+day-friday: 'Friday'
+day-saturday: 'Saturday'
+day-sunday: 'Sunday'
+
+hour-format: '12' # can be 12 or 24
+
 
 help-message: |
   &3-----------------------------------------
@@ -176,7 +187,7 @@ help-message: |
   &6/advancedegghunt progress &7-> &bView your progress of the eggs.
   &6/advancedegghunt show &7-> &bSpawns an glowing armorstand at every egg.
   &6/advancedegghunt commands &7-> &bChange commands or add more.
-  &6/advancedegghunt reset [player | all] &7-> &bResets the FoundEggs.
+  &6/advancedegghunt reset [player | all] [Collection] &7-> &bResets the FoundEggs.
   &6/advancedegghunt eggImport &7-> &bImport a new place egg.
   &5&l==========HELP==========
   &3-----------------------------------------

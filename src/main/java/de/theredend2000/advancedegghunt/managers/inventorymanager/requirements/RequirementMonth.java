@@ -61,8 +61,8 @@ public class RequirementMonth extends InventoryMenu {
         for(String month : new ArrayList<>(DateTimeUtil.getMonthList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.GRASS_BLOCK : XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_MONTH,"%MONTH%", month))
-                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_MONTH,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%MONTH%", month,"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_MONTH,"%MONTH%", plugin.getRequirementsManager().getRequirementsTranslation(month)))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_MONTH,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%MONTH%", plugin.getRequirementsManager().getRequirementsTranslation(month),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
                     .build());
         }

@@ -50,6 +50,7 @@ command-blacklisted: '&cDieser Command ist auf der Black-List!'
 
 foundeggs-reset: '&7Alle &egefundenen Eier &7wurden &czurückgesetzt&7.'
 foundeggs-player-reset: '&7Alle &egefunden Eier &7von &a%PLAYER% &7wurden &czurückgesetzt&7.'
+foundeggs-player-reset-collection: 'MISSING'
 
 activate-requirements: '&aAlle Anforderungen wurden aktiviert.'
 deactivate-requirements: '&cAlle Anforderungen wurden deaktiviert.'
@@ -71,5 +72,121 @@ preset-loaded: '&7Die &eVoreinstellung %PRESET% &7wurde &aerfolgreich &7geladen.
 preset-delete: '&7Du hast &aerfolgreich &7die &eVoreinstellung %PRESET% &cgelöscht&7.'
 preset-default: '&7Du hast die &aStandard ladende &7Voreinstellung zu &e%PRESET% &7geändert.'
 preset-not-delete-default: '&cDu kannst die Standard ladende Voreinstellung nicht löschen.'
+preset-loading-no: 'MISSING'
+preset-loading-success: 'MISSING'
+preset-loading-progress: 'MISSING'
 
 setting-commandfeedback: '&aCommand Feedback wurde &4eingestellt. &aEntweder man benutzt nun dem Command "/gamerule sendCommandFeedback false" oder entfernt die Berechtigung "minecraft.admin.command_feedback".'
+
+commands-outdated: 'MISSING'
+
+egg-data-converted-success: 'MISSING'
+egg-data-converted-broadcast: 'MISSING'
+egg-data-converted-failed: 'MISSING'
+egg-data-convert-start: 'MISSING'
+egg-data-convert-broadcast: 'MISSING'
+egg-data-convert-op-message: 'MISSING'
+egg-data-convert-locations: 'MISSING'
+egg-data-convert-player: 'MISSING'
+egg-data-convert-done: 'MISSING'
+egg-data-convert-success: 'MISSING'
+egg-data-convert-delete-fail: 'MISSING'
+egg-data-convert-delete-error: 'MISSING'
+egg-data-convert-complete: 'MISSING'
+
+placeholderapi-detected: 'MISSING'
+placeholderapi-enabled: 'MISSING'
+language-detected: 'MISSING'
+command-system-updated: 'MISSING'
+command-system-check: 'MISSING'
+command-system-chances-updated: 'MISSING'
+command-system-chances-contains: 'MISSING'
+update-available: 'MISSING'
+update-error: 'MISSING'
+console-update-available: 'MISSING'
+console-update-error: 'MISSING'
+
+init-data-players-loaded: '&2&lDie Daten von %COUNT% Spieler(n) wurde geladen.'
+init-data-collections-loaded: '&2&lDie Daten von %COUNT% Sammlung(en) wurde geladen.'
+
+material-error-console: '&4Material fehler: %ERROR%'
+
+successfully-changed-block: '&aDer block bei %X% %Y% %Z% wurde zu Luft geändert.'
+
+requirement-section-unavailable: '&cDiese Anforderung Sektion ist aktuell nicht verfügbar.'
+requirements-order-coming-soon: '&cDieses Feature kommt bald.'
+collection-select-error: '&cEs ist ein Fehler aufgetreten. Bitte starte den Server neu.'
+collection-refresh-cooldown: '&cBitte warte kurz, bevor du aktualisieren willst.'
+collection-refresh-success: '&aDie Liste wurde erfolgreich aktualisiert.'
+collection-edit-no-permission: '&cDu hast keine Berechtigung um die Sammlung zu bearbeiten.'
+collection-name-required: '&cBitte gebe einen Namen an um fortzufahren.'
+collection-name-exists: '&cDiesen Namen gibt es bereits.'
+collection-default-undeletable: '&cWegen aktuellen Fehlern ist es nicht mögliche die default Sammlung zu löschen. Bitte deaktiviere sie über den status.'
+feature-coming-soon: '&cDieses Feature kommt bald.'
+item-added-success: '&aEs wurde das Item erfolgreich hinzugefügt.'
+invalid-chance: '&cUngültig! Bitte gebe eine Zahl zwischen 0.0000001 und 100 an.'
+placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
+placeholders-hover-content: '&2Verfügbare Placeholders:\n&b- %PLAYER% --> Name des Spielers\n&b- & --> Für Farb-Codes (&6=gold)\n&b- %EGGS_FOUND% --> Wie viele Eier der Spieler gefunden hat\n&b- %EGGS_MAX% --> Wie viele Eier platziert sind\n&b- %PREFIX% --> Der Prefix des Plugins'
+
+requirements-name-hour: 'Stunde'
+requirements-name-date: 'Datum'
+requirements-name-weekday: 'Wochentag'
+requirements-name-month: 'Monat'
+requirements-name-year: 'Jahr'
+requirements-name-season: 'Jahreszeiten'
+requirements-more: 'mehr'
+requirements-click_to_change: '&eClicke um to ändern.'
+
+requirements-season-winter: 'Winter'
+requirements-season-fall: 'Herbst'
+requirements-season-spring: 'Frühling'
+requirements-season-summer: 'Sommer'
+
+month-january: 'Januar'
+month-february: 'Februar'
+month-march: 'März'
+month-april: 'April'
+month-may: 'Mai'
+month-june: 'Juni'
+month-juli: 'Juli'
+month-august: 'August'
+month-september: 'September'
+month-october: 'Oktober'
+month-november: 'November'
+month-december: 'Dezember'
+
+day-monday: 'Montag'
+day-tuesday: 'Dienstag'
+day-wednesday: 'Mittwoch'
+day-thursday: 'Donnerstag'
+day-friday: 'Freitag'
+day-saturday: 'Samstag'
+day-sunday: 'Sonntag'
+
+hour-format: '24'
+
+help-message: |
+  &3-----------------------------------------
+  &5&l==========HELP==========
+  
+  &2&lInformation
+  &7Name: &6%NAME%
+  &7Plugin Version: &6%VERSION%
+  &7Server Version: &6%SERVER_VERSION%
+  &7Hersteller: &6%AUTHOR%
+
+  &2&lCommands
+  &6/advancedegghunt collection &7-> &bÄndere und bearbeite die Sammlungen.
+  &6/advancedegghunt help &7-> &bZeigt dir diese angaben.
+  &6/advancedegghunt reload &7-> &bLäd die config neu.
+  &6/advancedegghunt list &7-> &bZeigt dir eine Liste aller Eier.
+  &6/advancedegghunt placeEggs &7-> &bBegib dich in Place-Mode um Eier zu ändern.
+  &6/advancedegghunt settings &7-> &bBearbeite Einstellungen des Plugins.
+  &6/advancedegghunt hint &7-> &bÖffnet das Hinweis menu das dir hilt Eier zu finden.
+  &6/advancedegghunt progress &7-> &bZeigt dir deinen Fortschritt mit der Eiersuche.
+  &6/advancedegghunt show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen Eiern.
+  &6/advancedegghunt commands &7-> &bÄndere commands.
+  &6/advancedegghunt reset [player | all] [Collection] &7-> &bSetzt die Eier der Spieler zurück.
+  &6/advancedegghunt eggImport &7-> &bLässt dich neue Eier zum platzieren laden.
+  &5&l==========HELP==========
+  &3-----------------------------------------
