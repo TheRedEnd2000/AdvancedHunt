@@ -90,11 +90,11 @@ egg-data-convert-locations: '&aAdvancedEggHunt converted all egg locations!'
 egg-data-convert-player: '&eConverted player data of %UUID%.'
 egg-data-convert-done: '&aUPDATING DONE!'
 egg-data-convert-success: '&aeggs.yml was converted successfully.'
-egg-data-convert-delete-fail: '&ceggs.yml can''t be deleted.'
+egg-data-convert-delete-fail: "&ceggs.yml can't be deleted."
 egg-data-convert-delete-error: '&4There was an error while deleting the eggs.yml file: %ERROR%'
 egg-data-convert-complete: '&aAdvancedEggHunt converted all data to the new system.\n&2The plugin is now running flawless again\n&4Please report bugs on the discord: &9https://discord.gg/qapvQMUt34'
 
-placeholderapi-detected: '&aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders.'
+placeholderapi-detected: '&aAdvanced Egg Hunt detected PlaceholderAPI, enabling placeholders...'
 placeholderapi-enabled: '&2&lAll placeholders successfully enabled.'
 language-detected: '&7Language &6%LANG% &7detected. File messages-%LANG%.yml loaded.'
 command-system-updated: '&2UPDATED THE COMMAND SYSTEM'
