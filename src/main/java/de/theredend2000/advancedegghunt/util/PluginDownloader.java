@@ -75,6 +75,9 @@ public class PluginDownloader {
      */
     public void downloadPlugin(String pluginId, String pluginName, String source) {
         try {
+            // Move old version before downloading
+            moveOldVersion(pluginName);
+
             switch (source.toLowerCase()) {
                 case "spigot":
                     downloadSpigotPlugin(pluginId, pluginName);
@@ -300,7 +303,6 @@ public class PluginDownloader {
             return null;
         }
 
-        moveOldVersion(pluginName);
         return pluginsDir;
     }
 
