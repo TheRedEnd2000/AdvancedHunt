@@ -252,6 +252,16 @@ public abstract class MultiFileConfiguration {
         return deleted;
     }
 
+    public void unloadConfig(String configName) {
+        if (!configName.endsWith(fileExtension)) {
+            configName += fileExtension;
+        }
+
+        configs.remove(configName);
+        configFiles.remove(configName);
+        plugin.getLogger().info("Unloaded config from memory: " + configName);
+    }
+
     public static void deleteDir(File file) {
         if (file.isDirectory()) {
             File[] contents = file.listFiles();

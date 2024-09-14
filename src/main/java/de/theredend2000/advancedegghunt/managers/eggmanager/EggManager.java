@@ -421,18 +421,20 @@ public class EggManager {
     public void resetStatsPlayer(String name, String collection) {
         for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
-            if (playerConfig.getString("FoundEggs." + collection + ".Name", "").equals(name)) {
-                ConfigurationSection eggSection = playerConfig.getConfigurationSection("FoundEggs." + collection);
-                if (eggSection != null) {
-                    for (String eggId : eggSection.getKeys(false)) {
-                        if (!eggId.equals("Name") && !eggId.equals("Count")) {
-                            updatePlacedEggsStats(collection, eggId);
-                        }
-                    }
-                }
-                resetPlayerStats(uuid, collection, null);
-                break;
+            if (!playerConfig.getString("FoundEggs." + collection + ".Name", "").equals(name)) {
+                continue;
             }
+            ConfigurationSection eggSection = playerConfig.getConfigurationSection("FoundEggs." + collection);
+            if (eggSection == null) {
+                continue;
+            }
+            for (String eggId : eggSection.getKeys(false)) {
+                if (!eggId.equals("Name") && !eggId.equals("Count")) {
+                    updatePlacedEggsStats(collection, eggId);
+                }
+            }
+            resetPlayerStats(uuid, collection, null);
+            break;
         }
     }
 
