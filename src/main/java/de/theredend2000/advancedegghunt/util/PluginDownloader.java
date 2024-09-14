@@ -109,6 +109,7 @@ public class PluginDownloader {
             if (shouldUpdate(pluginName, latestVersion, Instant.ofEpochSecond(releaseDate).toEpochMilli())) {
                 String downloadUrl = SPIGOT_API_URL + pluginId + "/download";
                 downloadAndPlacePlugin(downloadUrl, pluginName, latestVersion);
+                logger.info(pluginName);
             }
         } else {
             logger.warning("Failed to fetch plugin info for " + pluginName);
@@ -329,11 +330,12 @@ public class PluginDownloader {
      * @param filePath The path where the plugin was downloaded
      */
     private void handleFileOrder(String pluginName, String filename, Path filePath) {
+        logger.info(pluginName + " "+filename);
         if (!FileOrderChecker.isNewFileFirst(pluginsDir.toFile(), filename)) {
             logger.warning("Downloaded plugin " + pluginName + " will not get loaded first. Scheduling removal.");
             pathConfig.savePluginPath(filename, filePath.toString());
         } else {
-            pathConfig.savePluginPath(pluginName, filePath.toString());
+            pathConfig.savePluginPath(filename, filePath.toString());
         }
     }
 
@@ -425,6 +427,7 @@ public class PluginDownloader {
      * @throws IOException If an I/O error occurs
      */
     private void moveOldVersion(String pluginName) throws IOException {
+        Bukkit.broadcastMessage(pluginName);
         Path currentPluginPath = findCurrentPlugin(pluginName);
         if (currentPluginPath != null) {
             String storedPath = pathConfig.getStoredPluginPath(pluginName);
