@@ -271,7 +271,6 @@ public final class Main extends JavaPlugin {
             downloader.downloadPlugin("nfGCP9fk", "NBTAPI", "modrinth");
     }
 
-
     private void giveAllItemsBack(){
         for(Player player : Bukkit.getServer().getOnlinePlayers()){
             if(placeEggsPlayers.contains(player)){
