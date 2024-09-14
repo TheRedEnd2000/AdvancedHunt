@@ -30,6 +30,7 @@ public class IndividualConfirmMenu extends PaginatedInventoryMenu {
     public void open(String preset, String id, String collection) {
         this.collection = collection;
         this.preset = preset;
+        this.id = id;
 
         getInventory().setContents(inventoryContent);
 

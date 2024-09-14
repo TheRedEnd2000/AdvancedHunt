@@ -102,8 +102,8 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
             }
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Founds")
-                    .setLore("§7No player has found this egg yet.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
     }
 

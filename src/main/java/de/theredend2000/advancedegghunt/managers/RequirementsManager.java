@@ -6,6 +6,7 @@ import de.theredend2000.advancedegghunt.util.DateTimeUtil;
 import de.theredend2000.advancedegghunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedegghunt.util.enums.Requirements;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -20,9 +21,11 @@ import java.util.stream.Collectors;
 public class RequirementsManager {
 
     private Main plugin;
+    private MessageManager messageManager;
 
     public RequirementsManager(){
         this.plugin = Main.getInstance();
+        messageManager = plugin.getMessageManager();
     }
 
     public List<String> getListRequirementsLore(String collection){
@@ -36,7 +39,7 @@ public class RequirementsManager {
             if (!hoursList.isEmpty()) {
                 hoursList.sort(Comparator.comparingInt(Integer::parseInt));
                 int counter = 0;
-                lore.add("§dHours:");
+                lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_HOUR)+":");
                 for (String hours : hoursList) {
                     if (placedEggs.getBoolean(pre + ".Hours." + hours)) {
                         if (counter < 3)
@@ -48,10 +51,10 @@ public class RequirementsManager {
                     lore.add("  §cN/A");
                 }
                 if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                    lore.add("  §7§o+" + (counter-3) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
             }
         }else{
-            lore.add("§dHours:");
+            lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_HOUR)+":");
             lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Date")) {
@@ -60,7 +63,7 @@ public class RequirementsManager {
             if (!dateList.isEmpty()) {
                 dateList.sort(Comparator.comparingInt(Integer::parseInt));
                 int counter = 0;
-                lore.add("§dDates:");
+                lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_DATE)+":");
                 for (String dates : dateList) {
                     if (placedEggs.getBoolean(pre + ".Date." + dates)) {
                         if (counter < 3)
@@ -72,10 +75,10 @@ public class RequirementsManager {
                     lore.add("  §cN/A");
                 }
                 if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                    lore.add("  §7§o+" + (counter-3) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
             }
         } else{
-            lore.add("§dDates:");
+            lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_DATE)+":");
             lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Weekday")) {
@@ -84,7 +87,7 @@ public class RequirementsManager {
             if (!weekdayList.isEmpty()) {
                 weekdayList.sort(Comparator.comparingInt(day -> DateTimeUtil.getWeekList().indexOf(day)));
                 int counter = 0;
-                lore.add("§dWeekdays:");
+                lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_WEEKDAY)+":");
                 for (String weekdays : weekdayList) {
                     if (placedEggs.getBoolean(pre + ".Weekday." + weekdays)) {
                         if (counter < 3)
@@ -96,10 +99,10 @@ public class RequirementsManager {
                     lore.add("  §cN/A");
                 }
                 if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                    lore.add("  §7§o+" + (counter-3) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
             }
         }else{
-            lore.add("§dWeekdays:");
+            lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_WEEKDAY)+":");
             lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Month")) {
@@ -108,7 +111,7 @@ public class RequirementsManager {
             if (!monthList.isEmpty()) {
                 monthList.sort(Comparator.comparingInt(day -> DateTimeUtil.getMonthList().indexOf(day)));
                 int counter = 0;
-                lore.add("§dMonth:");
+                lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_MONTH)+":");
                 for (String month : monthList) {
                     if (placedEggs.getBoolean(pre + ".Month." + month)) {
                         if (counter < 3)
@@ -120,10 +123,10 @@ public class RequirementsManager {
                     lore.add("  §cN/A");
                 }
                 if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                    lore.add("  §7§o+" + (counter-3) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
             }
         }else{
-            lore.add("§dMonths:");
+            lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_MONTH)+":");
             lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Year")) {
@@ -132,7 +135,7 @@ public class RequirementsManager {
             if (!yearList.isEmpty()) {
                 yearList.sort(Comparator.comparingInt(Integer::parseInt));
                 int counter = 0;
-                lore.add("§dYears:");
+                lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_YEAR)+":");
                 for (String year : yearList) {
                     if (placedEggs.getBoolean(pre + ".Year." + year)) {
                         if (counter < 3)
@@ -144,10 +147,10 @@ public class RequirementsManager {
                     lore.add("  §cN/A");
                 }
                 if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                    lore.add("  §7§o+" + (counter-3) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
             }
         }else{
-            lore.add("§dYears:");
+            lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_YEAR)+":");
             lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Season")) {
@@ -156,7 +159,7 @@ public class RequirementsManager {
             if (!seasonList.isEmpty()) {
                 seasonList.sort(Comparator.comparingInt(day -> DateTimeUtil.getSeasonList().indexOf(day)));
                 int counter = 0;
-                lore.add("§dSeasons:");
+                lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_SEASON)+":");
                 for (String season : seasonList) {
                     if (placedEggs.getBoolean(pre + ".Season." + season)) {
                         if (counter < 3)
@@ -168,14 +171,14 @@ public class RequirementsManager {
                     lore.add("  §cN/A");
                 }
                 if(counter > 3)
-                    lore.add("  §7§o+" + (counter-3) + " more...");
+                    lore.add("  §7§o+" + (counter-3) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
             }
         } else{
-            lore.add("§dSeasons:");
+            lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_SEASON)+":");
             lore.add("  §cN/A");
         }
         lore.add("");
-        lore.add("§eClick to change.");
+        lore.add(messageManager.getMessage(MessageKey.REQUIREMENTS_CLICK_TO_CHANGE));
         return lore;
     }
 
@@ -392,5 +395,57 @@ public class RequirementsManager {
                 return seasons + "/4";
         }
         return "§4ERROR";
+    }
+
+    public String getRequirementsTranslation(String translation){
+        switch (translation){
+            case "Winter":
+                return messageManager.getMessage(MessageKey.REQUIREMENTS_SEASON_WINTER);
+            case "Summer":
+                return messageManager.getMessage(MessageKey.REQUIREMENTS_SEASON_SUMMER);
+            case "Fall":
+                return messageManager.getMessage(MessageKey.REQUIREMENTS_SEASON_FALL);
+            case "Spring":
+                return messageManager.getMessage(MessageKey.REQUIREMENTS_SEASON_SPRING);
+            case "Monday":
+                return messageManager.getMessage(MessageKey.DAY_MONDAY);
+            case "Tuesday":
+                return messageManager.getMessage(MessageKey.DAY_TUESDAY);
+            case "Wednesday":
+                return messageManager.getMessage(MessageKey.DAY_WEDNESDAY);
+            case "Thursday":
+                return messageManager.getMessage(MessageKey.DAY_THURSDAY);
+            case "Friday":
+                return messageManager.getMessage(MessageKey.DAY_FRIDAY);
+            case "Saturday":
+                return messageManager.getMessage(MessageKey.DAY_SATURDAY);
+            case "Sunday":
+                return messageManager.getMessage(MessageKey.DAY_SUNDAY);
+            case "January":
+                return messageManager.getMessage(MessageKey.MONTH_JANUARY);
+            case "February":
+                return messageManager.getMessage(MessageKey.MONTH_FEBRUARY);
+            case "March":
+                return messageManager.getMessage(MessageKey.MONTH_MARCH);
+            case "April":
+                return messageManager.getMessage(MessageKey.MONTH_APRIL);
+            case "May":
+                return messageManager.getMessage(MessageKey.MONTH_MAY);
+            case "June":
+                return messageManager.getMessage(MessageKey.MONTH_JUNE);
+            case "July":
+                return messageManager.getMessage(MessageKey.MONTH_JULY);
+            case "August":
+                return messageManager.getMessage(MessageKey.MONTH_AUGUST);
+            case "September":
+                return messageManager.getMessage(MessageKey.MONTH_SEPTEMBER);
+            case "October":
+                return messageManager.getMessage(MessageKey.MONTH_OCTOBER);
+            case "November":
+                return messageManager.getMessage(MessageKey.MONTH_NOVEMBER);
+            case "December":
+                return messageManager.getMessage(MessageKey.MONTH_DECEMBER);
+        }
+        return "§4NO TRANSLATION FOUND";
     }
 }

@@ -65,6 +65,7 @@ public class RequirementYear extends InventoryMenu {
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_YEAR,"%YEAR%", String.valueOf(year)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_YEAR,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%YEAR%", String.valueOf(year),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
+                    .setCustomId(String.valueOf(year))
                     .build());
         }
     }
@@ -77,7 +78,7 @@ public class RequirementYear extends InventoryMenu {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         int currentYear = DateTimeUtil.getCurrentYear();
         for (int year = currentYear; year < (currentYear + 28); year++) {
-            if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("Year " + year)) {
+            if (String.valueOf(year).equals(ItemHelper.getItemId(event.getCurrentItem()))) {
                 boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
                 placedEggs.set("Requirements.Year." + year, !enabled);
                 plugin.getEggDataManager().savePlacedEggs(collection);

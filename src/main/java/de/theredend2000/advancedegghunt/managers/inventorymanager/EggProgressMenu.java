@@ -75,8 +75,8 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false));
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Eggs Available")
-                    .setLore("§7There are no eggs no find", "§7please contact an admin.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
 
         if (keys == null || keys.isEmpty()) {

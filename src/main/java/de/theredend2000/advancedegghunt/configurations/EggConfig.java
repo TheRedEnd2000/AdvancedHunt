@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.configurations;
 
 import de.theredend2000.advancedegghunt.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -238,7 +239,7 @@ public class EggConfig extends MultiFileConfiguration {
      * @return True if the collection exists, false otherwise.
      */
     public boolean containsCollection(String collection) {
-        return configFiles.containsKey(collection);
+        return savedEggCollections().contains(collection);
     }
 
     /**

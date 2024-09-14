@@ -107,8 +107,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
             keys.addAll(placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards").getKeys(false));
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Rewards")
-                    .setLore("§7Create new a new reward", "§7or load a preset.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
 
         if(keys != null && !keys.isEmpty()) {
@@ -140,8 +140,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
             }
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Rewards")
-                    .setLore("§7Create new a new reward", "§7or load a preset.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
     }
 

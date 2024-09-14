@@ -47,22 +47,26 @@ public class CollectionCreator extends InventoryMenu {
     private void menuContent() {
         getInventory().setItem(20, new ItemBuilder(XMaterial.PAPER)
                 .setCustomId("collection_creator.name")
-                .setDisplayName("§3Name")
-                .setLore("§7Currently: " + (name != null ? name : "§cnone"), "", "§eClick to change.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_CREATOR_NAME, "%NAME%", (name != null ? name : "§cnone")))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_CREATOR_NAME, "%NAME%", (name != null ? name : "§cnone")))
                 .build());
+
         getInventory().setItem(22, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
                 .setCustomId("collection_creator.status")
-                .setDisplayName("§3Status")
-                .setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_CREATOR_STATUS))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_CREATOR_STATUS, "%STATUS%", (enabled ? "§aEnabled" : "§cDisabled")))
                 .build());
+
         getInventory().setItem(24, new ItemBuilder(XMaterial.COMPARATOR)
-                .setDisplayName("§3Requirements")
-                .setLore("§cYou can change the requirements", "§cafter creating the new collection.", "", "§7All Requirements will be active", "§7on creating a new collection.")
+                .setCustomId("collection_creator.requirements")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_CREATOR_REQUIREMENTS))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_CREATOR_REQUIREMENTS))
                 .build());
+
         getInventory().setItem(44, new ItemBuilder(XMaterial.EMERALD_BLOCK)
                 .setCustomId("collection_creator.create")
-                .setDisplayName("§2Create")
-                .setLore("", "§eClick to create.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_CREATOR_CREATE))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_CREATOR_CREATE))
                 .build());
         getInventory().setItem(36, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("collection_creator.back")

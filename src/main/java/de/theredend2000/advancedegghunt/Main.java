@@ -86,10 +86,10 @@ public final class Main extends JavaPlugin {
         setupManagers();
         registerCommands();
         initListeners();
-        setupPlaceholderAPI();
         initializeData();
         setupDefaultCollectionIfNeeded();
         finalizeSetup();
+        //setupPlaceholderAPI();
     }
 
     /**
@@ -176,7 +176,7 @@ public final class Main extends JavaPlugin {
 
 
     private void setupPlaceholderAPI() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled()) {
             messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_DETECTED);
             new PlaceholderExtension().register();
             messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_ENABLED);

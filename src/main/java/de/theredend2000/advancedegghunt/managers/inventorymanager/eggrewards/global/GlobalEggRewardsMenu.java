@@ -56,41 +56,34 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
     private void addMenuBorderButtons() {
         inventoryContent[45] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
                 .setCustomId("rewards_global_rewards.preset_save")
-                .setDisplayName("§5Save preset")
-                .setLore("", "§7Saves the current listed commands", "§7in a preset that you can load", "§7for other collections again.", "", "§2Note: §7You need at least 1 command to save a preset!", "", "§eClick to save a new preset.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_GLOBAL_SAVE_PRESET))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_GLOBAL_SAVE_PRESET))
                 .build();
         inventoryContent[46] = new ItemBuilder(XMaterial.EMERALD)
                 .setCustomId("rewards_global_rewards.preset_load")
-                .setDisplayName("§5Load presets")
-                .setLore("§eClick to load or change presets.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_GLOBAL_LOAD_PRESET))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_GLOBAL_LOAD_PRESET))
                 .build();
         inventoryContent[53] = new ItemBuilder(XMaterial.GOLD_INGOT)
                 .setCustomId("rewards_global_rewards.new_reward")
-                .setDisplayName("§5Create new reward")
-                .setLore("", "§bYou can also add custom items:", "§7For that get your custom item in your", "§7inventory and click it when this", "§7menu is open. The item will", "§7get converted into an command", "§7and can then used as the other commands.", "", "§eClick to create a new reward")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_GLOBAL_NEW_REWARD))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_GLOBAL_NEW_REWARD))
                 .build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
                 .setCustomId("rewards_global_rewards.close")
-                .setDisplayName("§cClose")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[8] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("rewards_global_rewards.switch_individual")
-                .setDisplayName("§bSwitch to Individual").setOwner(playerMenuUtility.getOwner().getName())
-                .setLore("","§6Switch to Individual:","§7Switching to individual lets you manage","§7all commands and preset for","§7the funktion if a player has found","§7§lone §7egg.","","§eClick to switch")
+                .setOwner(playerMenuUtility.getOwner().getName())
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_GLOBAL_SWITCH_INDIVIDUAL))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_GLOBAL_SWITCH_INDIVIDUAL))
                 .build();
         inventoryContent[7] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullOwner(Main.getTexture("MTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0="))
-                .setDisplayName("§9Information")
-                .setLore("§7The global egg rewards count",
-                        "§7as §7§lall egg reward§7.",
-                        "§7This means if the player found §7§lall eggs§7,",
-                        "§7all commands that are in this inventory",
-                        "§7will get executed.",
-                        "",
-                        "§c§n§oThese commands will count for the entire collection.",
-                        "",
-                        "§7You can save all listed commands as present",
-                        "§7to load it in other collections or setting it as default.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_GLOBAL_INFORMATION))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_GLOBAL_INFORMATION))
                 .build();
     }
 
@@ -114,8 +107,8 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
             keys.addAll(placedEggs.getConfigurationSection("GlobalRewards.").getKeys(false));
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Rewards")
-                    .setLore("§7Create new a new reward", "§7or load a preset.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
         if(keys != null && !keys.isEmpty()) {
             for(int i = 0; i < maxItemsPerPage; i++) {
@@ -138,16 +131,16 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                         }
                     }
                     getInventory().addItem(new ItemBuilder(itemStack)
-                            .setDisplayName("§b§lReward §7#" + keys.get(index))
-                            .setLore("", "§9Information:", "§7Command: §6" + command, "§7Command Enabled: " + (enabled ? "§atrue" : "§cfalse"),"§7Chance: §6"+new DecimalFormat("0.##############").format(chance) +"% §7("+plugin.getExtraManager().decimalToFraction(chance/100)+")","§7Rarity: "+rarity, "", "§eLEFT-CLICK to toggle enabled.", "§eMIDDLE-CLICK to change chance.", "§eRIGHT-CLICK to delete.", "§eDROP to execute command.")
+                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_GLOBAL_REWARD,"%REWARD_ID%",keys.get(index)))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_GLOBAL_REWARD,"%COMMAND%",command,"%STATUS%",(enabled ? "§atrue" : "§cfalse"),"%CHANCE_PERCENT%",new DecimalFormat("0.##############").format(chance),"%CHANCE_DECIMAL%",plugin.getExtraManager().decimalToFraction(chance/100),"%RARITY%",rarity))
                             .setCustomId(keys.get(index))
                             .build());
                 }
             }
         }else
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Rewards")
-                    .setLore("§7Create new a new reward", "§7or load a preset.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
     }
 

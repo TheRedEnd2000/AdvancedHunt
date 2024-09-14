@@ -1,2 +1,676 @@
 config-version: 1.0
 
+# General buttons
+back_button:
+  displayname: "&7« Zurück"
+  lore:
+    - "&7Klicke um zurück zu gehen."
+next_page_button:
+  displayname: "&aNächste Seite »"
+  lore:
+    - "&6Seite: &7(&b%CURRENT_PAGE%&7/&b%MAX_PAGES%&7)"
+    - ""
+    - "&eKlicke um zu scrollen."
+previous_page_button:
+  displayname: "&c« Vorherige Seite"
+  lore:
+    - "&6Seite: &7(&b%CURRENT_PAGE%&7/&b%MAX_PAGES%&7)"
+    - ""
+    - "&eKlicke um zu scrollen."
+close_button:
+  displayname: "&cSchließen"
+refresh_button:
+  displayname: "&aAktualisieren"
+
+# Collection related
+selected_collection_button:
+  displayname: "&bAusgewählte Sammlung"
+  lore:
+    - "&7Zeigt dir die aktuell ausgewählte Sammlung."
+    - ""
+    - "&7Aktuelle Sammlung: &6%COLLECTION%"
+    - "&eKlicke um sie zu ändern."
+add_collection_button:
+  displayname: "&5Füge eine Sammlung hinzu"
+collection_item:
+  displayname: "&6Sammlung: &6&l%COLLECTION% %SELECTED%"
+  lore:
+    - ""
+    - "&9Sammlung Information:"
+    - "&7   - Platzierte Eier: &6%MAX_EGGS%"
+    - ""
+    - "&aNotiz:"
+    - "&7Diese Sammlung gilt für alle durchgeführten Aktionen."
+    - "&7Sie kann jeder Zeit in diesem Menü geändert werden."
+    - ""
+    - "&eLINKS-KLICK um sie auszuwählen."
+    - "&7%PERMISSION%RECHTS-KLICK um sie zu bearbeiten."
+
+# Collection editor
+collection_editor_status:
+  displayname: "&3Status"
+  lore:
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eKlicke um ihn zu ändern."
+collection_editor_delete:
+  displayname: "&4Löschen"
+  lore:
+    - "&8Überprüfe ob dein Lösch Art ist richtig. (HOLZ AXT)"
+    - ""
+    - "&4&lDU KANNST DIES NICHT RÜCKGÄNGIG MACHEN"
+    - ""
+    - "&eKlicke um sie zu löschen."
+collection_editor_requirements:
+  displayname: "&3Anforderungen"
+  lore:
+    - "%REQUIREMENTS%" # The requirements translations can be changed in the messages files.
+collection_editor_reset:
+  displayname: "&3Zurücksetzen &e&l(BETA)"
+  lore:
+    - ""
+    - "&cSetzt sich zurück nach:"
+    - "&6  %RESET_TIME%"
+    - ""
+    - "&4Wenn die Zeit geändert wird, wird"
+    - "&4der Cooldown der Spieler nicht"
+    - "&4zurückgesetzt sondern bleibt gleich."
+    - ""
+    - "&eKlicke um es zu ändern."
+collection_editor_hide_for_player:
+  displayname: "&8&mFür den Spieler verstecken"
+  lore:
+    - ""
+    - "&7Wenn ein Spieler ein Ei findet"
+    - "&7wird es ihm nicht länger angezeigt."
+    - "&cDas ist nur Client-Seitig"
+    - ""
+    - "&4&lKOMMT BALD"
+collection_editor_one_player:
+  displayname: "&3Ein Spieler"
+  lore:
+    - ""
+    - "&7Nur ein Spieler kann das Ei finden."
+    - "&7Danach wird es für die anderen nicht"
+    - "&7mehr zugänglich sein."
+    - ""
+    - "&cWenn diese Funktion deaktiviert wird,"
+    - "&cwerden alle Eier, die als gefunden"
+    - "&cmarkiert wurden, zurückgesetzt."
+    - ""
+    - "&eKlicke um es zu ändern."
+collection_editor_delete_type:
+  displayname: "&3Lösch Arten"
+  lore:
+    - "&8Jeder Spieler kann das für sich selber einstellen."
+    - "&7Ändere was passiert wenn eine Sammlung"
+    - "&7gelöscht wird."
+    - ""
+    - "%NOTHING_TYPE%Nichts"
+    - "&8Alle Blöcke die Eier waren bleiben. (Eingeschlossen Spieler Köpfe)"
+    - "%PLAYER_HEADS_TYPE%Spieler Köpfe"
+    - "&8Alle Blöcke die Spieler Köpfe sind, werden gelöscht."
+    - "%EVERYTHING_TYPE%Alles"
+    - "&8Alle Blöcke werden gelöscht. (Eingeschlossen Spieler Köpfe)"
+    - ""
+    - "&eKlicke um es zu ändern."
+
+# Collection creator
+collection_creator_name:
+  displayname: "&3Name"
+  lore:
+    - "&7Aktueller Name: %NAME%"
+    - ""
+    - "&eKlicke um ihn zu ändern."
+collection_creator_status:
+  displayname: "&3Status"
+  lore:
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eKlicke um es zu ändern."
+collection_creator_requirements:
+  displayname: "&3Anforderungen"
+  lore:
+    - "&cDu kannst die Anforderungen nach"
+    - "&cdem erstellen einer Sammlung ändern."
+    - ""
+    - "&7Alle Anforderungen werden beim"
+    - "&7erstellen aktiviert."
+collection_creator_create:
+  displayname: "&2Erstellen"
+  lore:
+    - ""
+    - "&eKlicke um es zu erstellen."
+
+# Egg related
+eggslist_egg:
+  displayname: "&2&lEi &7(ID#%EGG_ID%)"
+  lore:
+    - "&9Standort:"
+    - "&7X: &e%LOCATION_X%"
+    - "&7Y: &e%LOCATION_Y%"
+    - "&7Z: &e%LOCATION_Z%"
+    - ""
+    - "&9Informationen:"
+    - "&7Male gefunden: &6%TIMES_FOUND%"
+    - ""
+    - "&9Platziert:"
+    - "&7Datum: &6%DATE%"
+    - "&7Zeit: &6%TIME%"
+    - ""
+    - "&eLINKS-KLICK um dich zu ihm zu teleportieren."
+    - "&eRECHTS-KLICK für mehr Informationen."
+
+eggplace_information:
+  displayname: "&9Informationen"
+  lore:
+    - ""
+    - "&2Wie eigene Ei-Texturen erstellt werden:"
+    - "&7Benutzerdefinierte Texturen für Eier (Spieler Köpfe)"
+    - "&7können hinzugefügt werden, wenn man den Gegenstand"
+    - "&7im Inventar anklickt. Es wird die Texture"
+    - "&7automatisch hinzugefügt."
+    - ""
+    - "&2Andere Blöcke:"
+    - "&7Du kannst Eier hinzufügen die Blöcke sind,"
+    - "&7so das die Spieler nach Blöcken statt"
+    - "&7Spieler Köpfen suchen müssen."
+    - ""
+    - "&bWenn weitere Fragen auftreten wie man eigene"
+    - "&bSachen hinzufügt, kann man dem Discord beitreten."
+    - ""
+    - "&eKlicke um den Discord-Link zu erhalten."
+eggplace_egg:
+  displayname: "&b&lEi Typ #%EGG_ID%"
+  lore:
+    - ""
+    - "&eLINKS-KLICK um es in dein Inventar hinzuzufügen."
+    - "&eRECHTS-KLICK um es zu löschen."
+
+eggprogress_location_found:
+  displayname: "&2&lEi &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&9Standort:"
+    - "&7X: &e%LOCATION_X%"
+    - "&7Y: &e%LOCATION_Y%"
+    - "&7Z: &e%LOCATION_Z%"
+    - ""
+    - "&2&lDu hast dieses Ei gefunden."
+    - ""
+    - "&9Gesammelt:"
+    - "&7Datum: &6%DATE%"
+    - "&7Zeit: &6%TIME%"
+eggprogress_found:
+  displayname: "&2&lEi &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&2&lDu hast dieses Ei gefunden."
+    - ""
+    - "&9Gesammelt:"
+    - "&7Datum: &6%DATE%"
+    - "&7Zeit: &6%TIME%"
+eggprogress_not_found:
+  displayname: "&2&lEi &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&4&lDu hast dieses Ei noch nicht gefunden."
+
+# Player related
+information_player:
+  displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
+  lore:
+    - "&7%PLAYER_NAME% hat das &2Ei #%EGG_ID% &7gefunden."
+    - ""
+    - "&9Informationen zu %PLAYER_NAME%:"
+    - "&7Eier gefunden: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - ""
+    - "&7Datum: &6%DATE%"
+    - "&7Zeit: &6%TIME%"
+
+# Leaderboard related
+leaderboard_sort:
+  displayname: "&2Sortierung"
+  lore:
+    - ""
+    - "%SELECTED_ALL%Zeigt das komplette Leaderboard"
+    - "%SELECTED_10%Zeigt nur die Top 10"
+    - "%SELECTED_3%Zeigt nur die Top 3"
+    - "%SELECTED_YOU%Zeigt nur dich"
+    - ""
+    - "&eKlicke um es zu ändern."
+leaderboard_player:
+  displayname: "&6&l%PLACE%&6ter &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
+  lore:
+    - ""
+    - "&7Eier gefunden: &3%EGGS_FOUND%"
+    - "&7Eier übrig: &3%EGGS_REMAINING%"
+    - "&7Maximale Eier: &3%EGGS_MAX%"
+    - ""
+    - "%IS_IN_TOP_TEN%"
+
+# Reward related
+rewards_confirm_menu_confirm:
+  displayname: "&aBestätigen"
+  lore:
+    - ""
+    - "&7Wenn diese Aktion bestätigt wird,"
+    - "&7wird die Voreinstellung in alle Eier geladen."
+    - ""
+    - "&eKlicke um es zu bestätigen."
+rewards_confirm_menu_cancel:
+  displayname: "&cAbbrechen"
+
+rewards_individual_save_preset:
+  displayname: "&5Voreinstellung speichern"
+  lore:
+    - ""
+    - "&7Speichere die Aktuellen Commands in"
+    - "&7der Voreinstellung um sie für"
+    - "&7andere Eier wieder zu laden."
+    - ""
+    - "&2Notiz: &7Du benötigst mindestens 1 command um"
+    - "         &7eine Voreinstellung zu speichern."
+    - ""
+    - "&eKlicke um eine neue Voreinstellung zu speichern."
+rewards_individual_load_preset:
+  displayname: "&5Voreinstellung laden"
+  lore:
+    - "&eKlicke um Voreinstellungen zu ändern."
+rewards_individual_new_reward:
+  displayname: "&5Erstelle ein Belohnung"
+  lore:
+    - ""
+    - "&bDu kannst auch Custom Items hinzufügen:"
+    - "&7Für das kannst du das Item"
+    - "&7in deinem Inventar anklicken."
+    - "&7Es wird dann automatisch"
+    - "&7in einen Command umgewandelt."
+    - ""
+    - "&eKlicke um eine neue Belohnung zu erstellen."
+rewards_individual_switch_global:
+  displayname: "&bWechsel zu Global"
+  lore:
+    - ""
+    - "&6Wechsel zu Global:"
+    - "&7Wenn zu Global gewechselt wird, kannst du"
+    - "&7alle Commands und Voreinstellungen"
+    - "&7ändern, wenn der Spieler &7&lalle"
+    - "&7Eier gefunden hat."
+    - ""
+    - "&eKlicke um zu wechseln."
+rewards_individual_information:
+  displayname: "&9Information"
+  lore:
+    - "&7Die individuelle Belohnung zählt"
+    - "&7als &7&lein Ei gefunden Belohnung&7."
+    - "&7Das heißt, wenn der Spieler &7&lein Ei"
+    - "&7findet, werden alle Commands in dem"
+    - "&7Inventar ausgeführt."
+    - ""
+    - "&c&n&oDie Commands gelten nur für dieses Ei."
+    - ""
+    - "&7Du kannst die Commands als Voreinstellung"
+    - "&7um sie in andere Eier zu laden."
+rewards_individual_reward:
+  displayname: "&b&lBelohnung &7#%REWARD_ID%"
+  lore:
+    - ""
+    - "&9Information:"
+    - "&7Command: &6%COMMAND%"
+    - "&7Command Aktiv: %STATUS%"
+    - "&7Wahrscheinlichkeit: &6%CHANCE_PERCENT% &7(%CHANCE_DECIMAL%)"
+    - "&7Seltenheit: %RARITY%"
+    - ""
+    - "&eLINKS-KLICK um aktiv zu ändern."
+    - "&eMITTEL-KLICK um die Wahrscheinlichkeit zu ändern."
+    - "&eRECHTS-KLICK um es zu löschen."
+    - "&eDROPPEN um den Command auszuführen."
+
+rewards_global_save_preset:
+  displayname: "&5Voreinstellung speichern"
+  lore:
+    - ""
+    - "&7Speichere die Aktuellen Commands in"
+    - "&7der Voreinstellung um sie für"
+    - "&7andere Eier wieder zu laden."
+    - ""
+    - "&2Notiz: &7Du benötigst mindestens 1 command um"
+    - "         &7eine Voreinstellung zu speichern."
+    - ""
+    - "&eKlicke um eine neue Voreinstellung zu speichern."
+rewards_global_load_preset:
+  displayname: "&5Voreinstellung laden"
+  lore:
+    - "&eKlicke um Voreinstellungen zu ändern."
+rewards_global_new_reward:
+  displayname: "&5Erstelle ein Belohnung"
+  lore:
+    - ""
+    - "&bDu kannst auch Custom Items hinzufügen:"
+    - "&7Für das kannst du das Item"
+    - "&7in deinem Inventar anklicken."
+    - "&7Es wird dann automatisch"
+    - "&7in einen Command umgewandelt."
+    - ""
+    - "&eKlicke um eine neue Belohnung zu erstellen."
+rewards_global_switch_individual:
+  displayname: "&bWechsel zu Individuell"
+  lore:
+    - ""
+    - "&6Wechsel zu Individuell:"
+    - "&7Wenn zu Individuell gewechselt wird, kannst du"
+    - "&7alle Commands und Voreinstellungen"
+    - "&7ändern, wenn der Spieler &7&lein"
+    - "&7Ei gefunden hat."
+    - ""
+    - "&eKlicke um zu wechseln."
+rewards_global_information:
+  displayname: "&9Information"
+  lore:
+    - "&7Die globale Belohnung zählt"
+    - "&7als &7&lalle Eier gefunden Belohnung&7."
+    - "&7Das heißt, wenn der Spieler &7&lalle Eier"
+    - "&7findet, werden alle Commands in dem"
+    - "&7Inventar ausgeführt."
+    - ""
+    - "&c&n&oDie Commands gelten für die ganze Sammlung."
+    - ""
+    - "&7Du kannst die Commands als Voreinstellung"
+    - "&7um sie in andere Sammlungen zu laden."
+rewards_global_reward:
+  displayname: "&b&lBelo &7#%REWARD_ID%"
+  lore:
+    - ""
+    - "&9Information:"
+    - "&7Command: &6%COMMAND%"
+    - "&7Command Aktiv: %STATUS%"
+    - "&7Wahrscheinlichkeit: &6%CHANCE_PERCENT% &7(%CHANCE_DECIMAL%)"
+    - "&7Seltenheit: %RARITY%"
+    - ""
+    - "&eLINKS-KLICK um aktiv zu ändern."
+    - "&eMITTEL-KLICK um die Wahrscheinlichkeit zu ändern."
+    - "&eRECHTS-KLICK um es zu löschen."
+    - "&eDROPPEN um den Command auszuführen."
+
+
+# Preset related
+
+# Requirement related
+requirements_selection:
+  displayname: "&6Auswahl - %SELECTION%"
+  lore:
+    - "&7Aktiviert: &b%STATUS_ACTIVE%"
+    - ""
+    - "&eKlicke um es zu öffnen."
+requirements_activate:
+  displayname: "&aAktiviere alles"
+  lore:
+    - "&eKlicke um alles zu aktivieren."
+requirements_deactivate:
+  displayname: "&cDeaktiviere alles"
+  lore:
+    - "&eKlicke um alles zu deaktivieren."
+requirements_order:
+  displayname: "&bBedarfsordnung"
+  lore:
+    - ""
+    - "&7Aktuelle Ordnung: &6%CURRENT_ORDER%"
+    - ""
+    - "&a&lINFO:"
+    - "&6OR (oder)"
+    - "&7Macht das nur eins der Anforderungen der"
+    - "&7Auswahl stimmen muss."
+    - "&8Beispiel: Wochentag Montag und Stunde 7 sind aktiviert."
+    - "&8Nun muss es Montag &8&loder &8es muss 7 sein."
+    - "&6AND (und)"
+    - "&7Macht das in jeder Auswahl mindestens"
+    - "&7eins richtig sein muss."
+    - "&8Beispiel: Wochentag Montag und Freitag ist aktiviert"
+    - "&8und Stunde 7 und 10."
+    - "&8Nun muss Montag oder Freitag &8&land"
+    - "&8es muss 7 oder 10 sein."
+    - ""
+    - "&eKlicke um sie zu wechseln."
+
+requirements_season:
+  displayname: "&6%SEASON%"
+  lore:
+    - "&8%SEASON_INFORMATION%"
+    - "&7Macht das, das Ei nur in der"
+    - "&7Jahreszeit %SEASON% verfügbar ist."
+    - ""
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %SEASON% %TO_FROM% the requirements."
+requirements_year:
+  displayname: "&6Jahr %YEAR%"
+  lore:
+    - "&7Macht das, das Ei nur in dem"
+    - "&7Jahr %YEAR% verfügbar ist."
+    - ""
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %YEAR% %TO_FROM% the requirements."
+requirements_month:
+  displayname: "&6%MONTH%"
+  lore:
+    - "&7Macht das, das Ei nur in dem"
+    - "&7Monat %MONTH% verfügbar ist."
+    - ""
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %MONTH% %TO_FROM% the requirements."
+requirements_weekday:
+  displayname: "&6%WEEKDAY%"
+  lore:
+    - "&7Macht das, das Ei nur in dem"
+    - "&7Wochentag %WEEKDAY% verfügbar ist."
+    - ""
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %WEEKDAY% %TO_FROM% the requirements."
+requirements_date:
+  displayname: "&6%DATE%"
+  lore:
+    - "&7Macht das, das Ei nur in dem"
+    - "&7Tag %DATE% verfügbar ist."
+    - ""
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %DATE% %TO_FROM% the requirements."
+requirements_hour:
+  displayname: "&6Stunde %HOUR%"
+  lore:
+    - "&8Hours: (%HOUR_FORMAT%)" # The hour format can be changed in the messages-<lang>.yml file
+    - "&7Macht das, das Ei nur in der"
+    - "&7Stunde %HOUR% verfügbar ist."
+    - ""
+    - "&7Aktueller Status: %STATUS%"
+    - ""
+    - "&eClick to %ADD_REMOVE% %HOUR% %TO_FROM% the requirements."
+
+# Reset related
+reset_year:
+  displayname: "&6Zurücksetzten - Jahr"
+  lore:
+    - "&7Aktuell: &b%YEAR%Y"
+    - "&7Insgesamt: &6%OVERALL%"
+    - ""
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eMITTEL-KLICK um es zurück zu setzten."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+reset_month:
+  displayname: "&6Zurücksetzten - Monat"
+  lore:
+    - "&7Aktuell: &b%MONTH%M"
+    - "&7Insgesamt: &6%OVERALL%"
+    - ""
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eMITTEL-KLICK um es zurück zu setzten."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+reset_day:
+  displayname: "&6Zurücksetzten - Tag"
+  lore:
+    - "&7Aktuell: &b%DAY%d"
+    - "&7Insgesamt: &6%OVERALL%"
+    - ""
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eMITTEL-KLICK um es zurück zu setzten."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+reset_hour:
+  displayname: "&6Zurücksetzten - Stunde"
+  lore:
+    - "&7Aktuell: &b%HOUR%h"
+    - "&7Insgesamt: &6%OVERALL%"
+    - ""
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eMITTEL-KLICK um es zurück zu setzten."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+reset_minute:
+  displayname: "&6Zurücksetzten - Minute"
+  lore:
+    - "&7Aktuell: &b%MINUTE%m"
+    - "&7Insgesamt: &6%OVERALL%"
+    - ""
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eMITTEL-KLICK um es zurück zu setzten."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+reset_second:
+  displayname: "&6Zurücksetzten - Sekunde"
+  lore:
+    - "&7Aktuell: &b%SECOND%s"
+    - "&7Insgesamt: &6%OVERALL%"
+    - ""
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eMITTEL-KLICK um es zurück zu setzten."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+reset_reset_all:
+  displayname: "&cAlles Zurücksetzten"
+  lore:
+    - "&eKlicke um alles zurück zu setzten."
+
+# Settings related
+settings_one_egg_reward:
+  displayname: "&3Ein Ei gefunden Belohnung"
+  lore:
+    - ""
+    - "&7Wenn diese Funktion aktiviert ist,"
+    - "&7werden alle Commands bei einem Ei"
+    - "&7gefunden ausgeführt."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_all_eggs_reward:
+  displayname: "&3Alle Eier gefunden Belohnung"
+  lore:
+    - ""
+    - "&7Wenn diese Funktion aktiviert ist,"
+    - "&7werden alle Commands bei allen Eiern"
+    - "&7gefunden ausgeführt."
+    - ""
+    - "%STATUS%"
+    - "&eKlicke um es zu wechseln."
+settings_updater:
+  displayname: "&3Updater"
+  lore:
+    - ""
+    - "&7Wenn diese Funktion aktiviert ist,"
+    - "&7werden allen Operatoren eine Nachricht"
+    - "&7gesendet wenn eine neue Version des"
+    - "&7des Plugins draußen ist."
+    - ""
+    - "%STATUS%"
+    - "&eKlicke um es zu wechseln."
+settings_command_feedback:
+  displayname: "&3Command Feedback"
+  lore:
+    - ""
+    - "&7Wenn diese Funktion aktiviert ist,"
+    - "&7werden keine Commands an die"
+    - "&7Operatoren gesendet."
+    - ""
+    - "%STATUS%"
+    - "&eKlicke um es zu wechseln."
+settings_sound_volume:
+  displayname: "&3Lautstärke"
+  lore:
+    - ""
+    - "&7Ändere wie laut alle sounds des plugins sind."
+    - "&7Wenn der Wert 0 ist wird kein Ton gespielt."
+    - ""
+    - "&7Aktuelle Lautstärke: %VOLUME%"
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+settings_show_coordinates:
+  displayname: "&3Zeige Koordinaten wenn gefunden"
+  lore:
+    - ""
+    - "&7Wenn diese Funktion aktiviert ist,"
+    - "&7können Spieler die Koordinaten eines"
+    - "&7Ei's im Progress Menu sehen."
+    - ""
+    - "&2Info: &7Die Koordinaten werden nur gezeigt,"
+    - "&7wenn der Spieler das Ei gefunden hat."
+    - ""
+    - "%STATUS%"
+    - "&eKlicke um es zu wechseln."
+settings_armorstand_glow:
+  displayname: "&3Eier Leuchten"
+  lore:
+    - ""
+    - "&7Setze wie lang die Eier für alle"
+    - "&7Spieler sichtbar sind."
+    - ""
+    - "&7Aktuelle Länge: %GLOW_DURATION%"
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+settings_egg_nearby_radius:
+  displayname: "&3Ei in der Nähe Radius"
+  lore:
+    - ""
+    - "&7Ändere die Reichweite der Ei in der Näh Nachricht."
+    - "&7Wenn der Wert 0 ist wird keine Nachricht gezeigt."
+    - ""
+    - "&7Aktueller Radius: %RADIUS%"
+    - "&eLINKS-KLICK um eins hinzuzufügen."
+    - "&eRECHTS-KLICK um eins zu entfernen."
+settings_plugin_prefix:
+  displayname: "&3Zeige den Plugin Prefix"
+  lore:
+    - ""
+    - "&7Wenn diese Funktion aktiviert ist,"
+    - "&7Wird bei jeder Nachricht der Prefix gezeigt."
+    - "&cDazu zählen alle Nachrichten in den messages Dateien."
+    - ""
+    - "%STATUS%"
+    - "&eKlicke um es zu wechseln."
+settings_firework:
+  displayname: "&3Feuerwerk"
+  lore:
+    - ""
+    - "&7Wenn diese Funktion aktiviert ist,"
+    - "&7erscheint ein Feuerwerk wenn ein Ei gefunden wird."
+    - ""
+    - "%STATUS%"
+    - "&eKlicke um es zu wechseln."
+settings_hint_cooldown:
+  displayname: "&3Hinweis Cooldown wenn fehlgeschlagen"
+  lore:
+    - ""
+    - "&7Wenn der Spieler das Hint Menu beendet"
+    - "&7wird ein Cooldown für ihn gesetzt."
+    - ""
+    - "%STATUS%"
+    - "&eKlicke um es zu wechseln."
+
+# Miscellaneous
+list_error:
+  displayname: "&4Keine Eingaben"
+  lore:
+    - "&cEs gibt keine Eingaben in dieser Liste."
+    - ""
+    - "&cWenn du denkst, das es am Plugin"
+    - "&cliegt, melde es bitte im Discord."
+
+

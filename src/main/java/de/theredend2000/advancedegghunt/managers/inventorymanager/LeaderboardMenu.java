@@ -99,8 +99,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         if (Main.getInstance().getEggDataManager().savedPlayers().isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                .setDisplayName("§4§lNo Player")
-                .setLore("§7There are no players in the leaderboard.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                 .build());
             return;
         }
@@ -119,8 +119,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
 
         if (leaderList.isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Player")
-                    .setLore("§7There are no players in the leaderboard.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
             return;
         }
@@ -148,8 +148,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                 return;
             }
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Player")
-                    .setLore("§7There are no players in the leaderboard.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
             return;
         }

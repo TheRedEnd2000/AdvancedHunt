@@ -19,11 +19,11 @@ public class PluginDataConfig extends Configuration {
     }
 
     public void savePluginPath(String pluginName, String path) {
-        set("paths." + pluginName, path);
+        set("paths." + pluginName.replaceAll("\\.","_"), path);
         saveConfig();
     }
 
     public String getStoredPluginPath(String pluginName) {
-        return getConfig().getString("paths." + pluginName);
+        return getConfig().getString("paths." + pluginName.replaceAll("\\.","_"));
     }
 }

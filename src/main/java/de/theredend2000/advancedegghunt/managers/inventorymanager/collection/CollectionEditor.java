@@ -64,53 +64,49 @@ public class CollectionEditor extends InventoryMenu {
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
                 .setDisplayName("§6" + collection)
                 .build());
-//        getInventory().setItem(20, new ItemBuilder(XMaterial.PAPER)
-//                .setDisplayname("§3Rename")
-//                .setLore("§7Currently: " + name, "", "§eClick to change.")
-//                .build());
         getInventory().setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
                 .setCustomId("collection_editor.status")
-                .setDisplayName("§3Status")
-                .setLore("§7Currently: " + (enabled ? "§aEnabled" : "§cDisabled"), "", "§eClick to toggle.")
-                .build());
-        getInventory().setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                .setCustomId("collection_editor.delete")
-                .setDisplayName("§4Delete")
-                .setLore("§8Check if your deletion type is correct. (WOODEN_AXE)", "", "§4§lYOU CAN NOT UNDO THIS", "", "§eClick to delete.")
-                .build());
-        getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR)
-                .setCustomId("collection_editor.requirements")
-                .setDisplayName("§3Requirements")
-                .setLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection))
-                .build());
-        getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER)
-                .setCustomId("collection_editor.reset")
-                .setDisplayName("§3Reset §e§l(BETA)")
-                .setLore("", "§cResets after:", "§6  " + Main.getInstance().getRequirementsManager().getConvertedTime(collection), "", "§4If the time get changed, the value", "§4of the current cooldown of the", "§4player will not change!", "", "§eClick to change.")
-                .build());
-        getInventory().setItem(42, new ItemBuilder(hideforplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
-                .setCustomId("collection_editor.hide")
-                .setDisplayName("§3Hide for player")
-                .setLore("", "§7If a player finds an egg it will not longer","§7be shown to them.","§cThis is only Client-Side", "", "§eClick to toggle.")
-                .build());
-        getInventory().setItem(43, new ItemBuilder(oneplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
-                .setCustomId("collection_editor.only_one")
-                .setDisplayName("§3One Player")
-                .setLore("", "§7Only one player can find the egg.","§7It is after finding not longer accessible.","","§cAfter disabling the feature all eggs that are","§cmaked as found will be reset.", "", "§eClick to toggle.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_STATUS))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_EDITOR_STATUS, "%STATUS%", (enabled ? "&aEnabled" : "&cDisabled")))
                 .build());
 
-        getInventory().setItem(44,  new ItemBuilder(XMaterial.WOODEN_AXE)
+        getInventory().setItem(24, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
+                .setCustomId("collection_editor.delete")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_DELETE))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_EDITOR_DELETE))
+                .build());
+
+        getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR)
+                .setCustomId("collection_editor.requirements")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_REQUIREMENTS))
+                .setLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection))
+                .build());
+
+        getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER)
+                .setCustomId("collection_editor.reset")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_RESET))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_EDITOR_RESET, "%RESET_TIME%", Main.getInstance().getRequirementsManager().getConvertedTime(collection)))
+                .build());
+
+        getInventory().setItem(42, new ItemBuilder(hideforplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setCustomId("collection_editor.hide")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_HIDE_FOR_PLAYER))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_EDITOR_HIDE_FOR_PLAYER))
+                .build());
+
+        getInventory().setItem(43, new ItemBuilder(oneplayer ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
+                .setCustomId("collection_editor.only_one")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_ONE_PLAYER))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_EDITOR_ONE_PLAYER))
+                .build());
+
+        getInventory().setItem(44, new ItemBuilder(XMaterial.WOODEN_AXE)
                 .setCustomId("collection_editor.delete_type")
-                .setDisplayName("§3Deletion Types")
-                .setLore("§8Every player can configure that himself.",
-                        "§7Change what happens after the deletion",
-                        "§7of an collection.",
-                        "",
-                        (deletionType == DeletionTypes.Noting ? "§b➤ " : "§7") + "Nothing", "§8All blocks that were eggs will stay. (includes player heads)",
-                        (deletionType == DeletionTypes.Player_Heads ? "§b➤ " : "§7") + "Player Heads", "§8All blocks that are player heads will be removed.",
-                        (deletionType == DeletionTypes.Everything ? "§b➤ " : "§7") + "Everything", "§8All blocks and will be set to air. (includes player heads)",
-                        "",
-                        "§eClick to change.")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_DELETE_TYPE))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_EDITOR_DELETE_TYPE,
+                        "%NOTHING_TYPE%", (deletionType == DeletionTypes.Noting ? "&b➤ " : "&7"),
+                        "%PLAYER_HEADS_TYPE%", (deletionType == DeletionTypes.Player_Heads ? "&b➤ " : "&7"),
+                        "%EVERYTHING_TYPE%", (deletionType == DeletionTypes.Everything ? "&b➤ " : "&7")))
                 .build());
     }
 

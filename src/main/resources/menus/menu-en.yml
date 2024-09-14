@@ -46,6 +46,100 @@ collection_item:
     - "&eLEFT-CLICK to select."
     - "&7%PERMISSION%RIGHT-CLICK to edit."
 
+# Collection editor
+collection_editor_status:
+  displayname: "&3Status"
+  lore:
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to toggle."
+collection_editor_delete:
+  displayname: "&4Delete"
+  lore:
+    - "&8Check if your deletion type is correct. (WOODEN_AXE)"
+    - ""
+    - "&4&lYOU CAN NOT UNDO THIS"
+    - ""
+    - "&eClick to delete."
+collection_editor_requirements:
+  displayname: "&3Requirements"
+  lore:
+    - "%REQUIREMENTS%" # The requirements translations can be changed in the messages files.
+collection_editor_reset:
+  displayname: "&3Reset &e&l(BETA)"
+  lore:
+    - ""
+    - "&cResets after:"
+    - "&6  %RESET_TIME%"
+    - ""
+    - "&4If the time gets changed, the value"
+    - "&4of the current cooldown of the"
+    - "&4player will not change!"
+    - ""
+    - "&eClick to change."
+collection_editor_hide_for_player:
+  displayname: "&8&mHide for player"
+  lore:
+    - ""
+    - "&7If a player finds an egg it will not longer"
+    - "&7be shown to them."
+    - "&cThis is only Client-Side"
+    - ""
+    - "&4&lCOMING SOON"
+collection_editor_one_player:
+  displayname: "&3One Player"
+  lore:
+    - ""
+    - "&7Only one player can find the egg."
+    - "&7It is after finding no longer accessible."
+    - ""
+    - "&cAfter disabling the feature, all eggs that are"
+    - "&cmade as found will be reset."
+    - ""
+    - "&eClick to toggle."
+collection_editor_delete_type:
+  displayname: "&3Deletion Types"
+  lore:
+    - "&8Every player can configure that themselves."
+    - "&7Change what happens after the deletion"
+    - "&7of a collection."
+    - ""
+    - "%NOTHING_TYPE%Nothing"
+    - "&8All blocks that were eggs will stay. (includes player heads)"
+    - "%PLAYER_HEADS_TYPE%Player Heads"
+    - "&8All blocks that are player heads will be removed."
+    - "%EVERYTHING_TYPE%Everything"
+    - "&8All blocks will be set to air. (includes player heads)"
+    - ""
+    - "&eClick to change."
+
+# Collection creator
+collection_creator_name:
+  displayname: "&3Name"
+  lore:
+    - "&7Currently: %NAME%"
+    - ""
+    - "&eClick to change."
+collection_creator_status:
+  displayname: "&3Status"
+  lore:
+    - "&7Currently: %STATUS%"
+    - ""
+    - "&eClick to toggle."
+collection_creator_requirements:
+  displayname: "&3Requirements"
+  lore:
+    - "&cYou can change the requirements"
+    - "&cafter creating the new collection."
+    - ""
+    - "&7All Requirements will be active"
+    - "&7on creating a new collection."
+collection_creator_create:
+  displayname: "&2Create"
+  lore:
+    - ""
+    - "&eClick to create."
+
 # Egg related
 eggslist_egg:
   displayname: "&2&lEgg &7(ID#%EGG_ID%)"
@@ -230,6 +324,72 @@ rewards_individual_reward:
     - "&eRIGHT-CLICK to delete."
     - "&eDROP to execute command."
 
+rewards_global_save_preset:
+  displayname: "&5Save preset"
+  lore:
+    - ""
+    - "&7Saves the current listed commands"
+    - "&7in a preset that you can load"
+    - "&7for other eggs again."
+    - ""
+    - "&2Note: &7You need at least 1 command to save a preset!"
+    - ""
+    - "&eClick to save a new preset."
+rewards_global_load_preset:
+  displayname: "&5Load presets"
+  lore:
+    - "&eClick to load or change presets."
+rewards_global_new_reward:
+  displayname: "&5Create new reward"
+  lore:
+    - ""
+    - "&bYou can also add custom items:"
+    - "&7For that get your custom item in your"
+    - "&7inventory and click it when this"
+    - "&7menu is open. The item will"
+    - "&7get converted into a command"
+    - "&7and can then be used as the other commands."
+    - ""
+    - "&eClick to create a new reward."
+rewards_global_switch_individual:
+  displayname: "&bSwitch to Individual"
+  lore:
+    - ""
+    - "&6Switch to Individual:"
+    - "&7Switching to individual lets you manage"
+    - "&7all commands and presets for"
+    - "&7the function if a player has found"
+    - "&7&lone &7egg."
+    - ""
+    - "&eClick to switch."
+rewards_global_information:
+  displayname: "&9Information"
+  lore:
+    - "&7The global egg rewards count"
+    - "&7as &7&lall egg reward&7."
+    - "&7This means if the player finds &7&lall eggs&7,"
+    - "&7all commands that are in this inventory"
+    - "&7will get executed."
+    - ""
+    - "&c&n&oThese commands will count for the entire collection."
+    - ""
+    - "&7You can save all listed commands as preset"
+    - "&7to load it in other collections or set it as default."
+rewards_global_reward:
+  displayname: "&b&lReward &7#%REWARD_ID%"
+  lore:
+    - ""
+    - "&9Information:"
+    - "&7Command: &6%COMMAND%"
+    - "&7Command Enabled: %STATUS%"
+    - "&7Chance: &6%CHANCE_PERCENT% &7(%CHANCE_DECIMAL%)"
+    - "&7Rarity: %RARITY%"
+    - ""
+    - "&eLEFT-CLICK to toggle enabled."
+    - "&eMIDDLE-CLICK to change chance."
+    - "&eRIGHT-CLICK to delete."
+    - "&eDROP to execute command."
+
 
 # Preset related
 
@@ -256,7 +416,7 @@ requirements_order:
     - ""
     - "&a&lINFO:"
     - "&6OR"
-    - "&7Makes that only one think musst be right"
+    - "&7Makes that only one thing musst be right"
     - "&7in the selection."
     - "&8Example: Weekday Monday and Hour 7 is enable."
     - "&8Now it must be Monday &8&lOR &8it must be 7."
@@ -327,8 +487,187 @@ requirements_hour:
     - ""
     - "&eClick to %ADD_REMOVE% %HOUR% %TO_FROM% the requirements."
 
+# Reset related
+reset_year:
+  displayname: "&6Reset - Year"
+  lore:
+    - "&7Current: &b%YEAR%Y"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_month:
+  displayname: "&6Reset - Month"
+  lore:
+    - "&7Current: &b%MONTH%M"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_day:
+  displayname: "&6Reset - Day"
+  lore:
+    - "&7Current: &b%DAY%d"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_hour:
+  displayname: "&6Reset - Hour"
+  lore:
+    - "&7Current: &b%HOUR%h"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_minute:
+  displayname: "&6Reset - Minute"
+  lore:
+    - "&7Current: &b%MINUTE%m"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_second:
+  displayname: "&6Reset - Second"
+  lore:
+    - "&7Current: &b%SECOND%s"
+    - "&7Overall: &6%OVERALL%"
+    - ""
+    - "&eLEFT-CLICK add one."
+    - "&eMIDDLE-CLICK reset it."
+    - "&eRIGHT-CLICK remove one."
+reset_reset_all:
+  displayname: "&cReset all"
+  lore:
+    - "&eClick to reset all."
+
 # Settings related
+settings_one_egg_reward:
+  displayname: "&3One egg found reward"
+  lore:
+    - ""
+    - "&7If this function is activated"
+    - "&7all commands entered in one egg found"
+    - "&7will be executed."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_all_eggs_reward:
+  displayname: "&3All eggs found reward"
+  lore:
+    - ""
+    - "&7If this function is activated"
+    - "&7all commands entered in all eggs found"
+    - "&7will be executed."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_updater:
+  displayname: "&3Updater"
+  lore:
+    - ""
+    - "&7If this function is activated"
+    - "&7all operators will get an information"
+    - "&7if a new plugin version is out."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_command_feedback:
+  displayname: "&3Command feedback"
+  lore:
+    - ""
+    - "&7If this function is activated"
+    - "&7no more commands are sent"
+    - "&7to the operators listed in the console."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_sound_volume:
+  displayname: "&3Sound volume"
+  lore:
+    - ""
+    - "&7Change the volume of all sound of the plugin"
+    - "&7If volume equals 0 no sound will be played."
+    - ""
+    - "&7Currently: %VOLUME%"
+    - "&eLEFT-CLICK to add one."
+    - "&eRIGHT-CLICK to remove one."
+settings_show_coordinates:
+  displayname: "&3Show coordinates when found"
+  lore:
+    - ""
+    - "&7If this function is activated"
+    - "&7players can see the coordinates"
+    - "&7in the progress menu."
+    - ""
+    - "&2Info: &7The coordinates are only visible if"
+    - "&7the player has found the egg."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_armorstand_glow:
+  displayname: "&3Armorstand glow"
+  lore:
+    - ""
+    - "&7Set how long the armorstands are"
+    - "&7visible for all players."
+    - ""
+    - "&7Currently: %GLOW_DURATION%"
+    - "&eLEFT-CLICK to add one."
+    - "&eRIGHT-CLICK to remove one."
+settings_egg_nearby_radius:
+  displayname: "&3Nearby title radius"
+  lore:
+    - ""
+    - "&7Change the radius of the egg nearby message for all players"
+    - "&7If radius equals 0 no title will be displayed."
+    - ""
+    - "&7Currently: %RADIUS%"
+    - "&eLEFT-CLICK to add one."
+    - "&eRIGHT-CLICK to remove one."
+settings_plugin_prefix:
+  displayname: "&3Show plugin prefix"
+  lore:
+    - ""
+    - "&7If enabled, the plugin prefix"
+    - "&7will show on each message."
+    - "&cThis will affect every message in the messages.yml file."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_firework:
+  displayname: "&3Firework"
+  lore:
+    - ""
+    - "&7If this function is activated"
+    - "&7a firework will spawn when an egg is found."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
+settings_hint_cooldown:
+  displayname: "&3Hint cooldown on fail"
+  lore:
+    - ""
+    - "&7Set if the cooldown of the hint function"
+    - "&7applies when the player fails."
+    - ""
+    - "%STATUS%"
+    - "&eClick to toggle."
 
 # Miscellaneous
+list_error:
+  displayname: "&4No entry's"
+  lore:
+    - "&cThere are no entry's in this list."
+    - ""
+    - "&cIf you think this is an issue"
+    - "&cof the plugin, please report"
+    - "&cit on the discord."
 
 

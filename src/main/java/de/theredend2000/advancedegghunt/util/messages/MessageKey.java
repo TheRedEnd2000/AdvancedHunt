@@ -86,6 +86,8 @@ public enum MessageKey {
     REQUIREMENTS_NAME_MONTH("requirements-name-month"),
     REQUIREMENTS_NAME_YEAR("requirements-name-year"),
     REQUIREMENTS_NAME_SEASON("requirements-name-season"),
+    REQUIREMENTS_MORE("requirements-more"),
+    REQUIREMENTS_CLICK_TO_CHANGE("requirements-click_to_change"),
 
     REQUIREMENTS_SEASON_WINTER("requirements-season-winter"),
     REQUIREMENTS_SEASON_FALL("requirements-season-fall"),
@@ -98,12 +100,21 @@ public enum MessageKey {
     MONTH_APRIL("month-april"),
     MONTH_MAY("month-may"),
     MONTH_JUNE("month-june"),
-    MONTH_JULI("month-juli"),
+    MONTH_JULY("month-july"),
     MONTH_AUGUST("month-august"),
     MONTH_SEPTEMBER("month-september"),
     MONTH_OCTOBER("month-october"),
     MONTH_NOVEMBER("month-november"),
     MONTH_DECEMBER("month-december"),
+
+    DAY_MONDAY("day-monday"),
+    DAY_TUESDAY("day-tuesday"),
+    DAY_WEDNESDAY("day-wednesday"),
+    DAY_THURSDAY("day-thursday"),
+    DAY_FRIDAY("day-friday"),
+    DAY_SATURDAY("day-saturday"),
+    DAY_SUNDAY("day-sunday"),
+
 
     HOUR_FORMAT("hour-format"),
 
