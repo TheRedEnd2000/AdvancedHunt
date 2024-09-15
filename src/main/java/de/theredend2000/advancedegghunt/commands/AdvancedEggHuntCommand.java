@@ -43,7 +43,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         switch (args.length) {
             case 1:
-                String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "eggImport"};
+                String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "import"};
                 for (String permission : tabs) {
                     if (plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permission)))
                         completions.add(permission);
@@ -136,8 +136,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             case "hint":
                 handleHint(player);
                 break;
-            case "eggimport":
-                handleEggImport(player);
+            case "import":
+                handleImport(player);
                 break;
             case "reset":
                 handleReset(player, args);
@@ -258,7 +258,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void handleEggImport(Player player) {
+    private void handleImport(Player player) {
         if (!checkPermission(player, Permission.Command.eggImport)) return;
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!(item.getItemMeta() instanceof SkullMeta)) {
