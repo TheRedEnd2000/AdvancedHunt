@@ -42,7 +42,7 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
                 .setCustomId("rewards_global_preset.close")
-                .setDisplayName("§cClose")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("rewards_global_preset.back")

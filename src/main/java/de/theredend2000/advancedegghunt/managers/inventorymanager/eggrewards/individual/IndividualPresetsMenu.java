@@ -9,7 +9,6 @@ import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -43,7 +42,7 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
                 .setCustomId("rewards_individual_preset.close")
-                .setDisplayName("§cClose")
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("rewards_individual_preset.back")
