@@ -33,7 +33,7 @@ public class PlaceholderExtension extends PlaceholderExpansion {
         if (params.equalsIgnoreCase("selected_collection")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
-            return String.valueOf(collection);
+            return collection;
         }
         if (params.equalsIgnoreCase("collection_size")) {
             int collection = Main.getInstance().getEggDataManager().savedEggCollections().size();
