@@ -416,7 +416,7 @@ requirements_order:
     - ""
     - "&a&lINFO:"
     - "&6OR"
-    - "&7Makes that only one thing musst be right"
+    - "&7Makes that only one thing must be right"
     - "&7in the selection."
     - "&8Example: Weekday Monday and Hour 7 is enable."
     - "&8Now it must be Monday &8&lOR &8it must be 7."
