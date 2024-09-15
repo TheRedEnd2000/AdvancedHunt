@@ -6,10 +6,12 @@ import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Function;
@@ -91,5 +93,11 @@ public class ItemHelper {
 
         String modifiedURL = skinURL.replaceFirst("^http://textures\\.minecraft\\.net/texture/", "") + "\"}}}";
         return Base64.getEncoder().encodeToString(modifiedURL.getBytes());
+    }
+
+    public static String convertItemIntoCommand(ItemStack itemStack){
+        String itemNBT = NBT.get(itemStack, Object::toString);
+
+        return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount());
     }
 }

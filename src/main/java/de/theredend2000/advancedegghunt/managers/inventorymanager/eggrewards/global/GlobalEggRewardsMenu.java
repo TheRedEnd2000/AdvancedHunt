@@ -25,7 +25,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -180,8 +179,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
     }
 
     public void convertItemIntoCommand(ItemStack itemStack, String collection){
-        String itemNBT = NBT.get(itemStack, Object::toString);
-        addCommand(MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"GlobalRewards.");
+        addCommand(ItemHelper.convertItemIntoCommand(itemStack), collection, "GlobalRewards.");
     }
 
     private void addCommand(String command, String collection, String path){

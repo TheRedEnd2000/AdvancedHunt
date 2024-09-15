@@ -25,7 +25,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -181,14 +180,10 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
     }
 
     public void convertItemIntoCommand(ItemStack itemStack, String id, String collection){
-        String itemNBT = NBT.get(itemStack, Object::toString);
-        var item = XMaterial.PLAYER_HEAD.parseItem();
-        String json = NBT.get(itemStack, Object::toString);
-        NBT.modify(item, (Consumer<ReadWriteItemNBT>) nbt -> nbt.mergeCompound(NBT.parseNBT(json)));
-        addCommand(id, MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount()), collection,"PlacedEggs." + id + ".Rewards.");
+        addCommand(ItemHelper.convertItemIntoCommand(itemStack), collection,"PlacedEggs." + id + ".Rewards.");
     }
 
-    private void addCommand(String id, String command, String collection,String path){
+    private void addCommand(String command, String collection,String path){
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         if (placedEggs.contains(path)) {
             ConfigurationSection rewardsSection = placedEggs.getConfigurationSection(path);
