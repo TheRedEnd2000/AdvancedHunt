@@ -1,10 +1,8 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
-import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.configurations.InventoryConfig;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
-import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import net.md_5.bungee.api.ChatMessageType;
@@ -74,14 +72,6 @@ public class EggManager {
                 break;
         }
         return texture;
-    }
-
-    public ItemStack giveFinishedEggToPlayer(int id){
-        return new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setDisplayName("§6Easter Egg")
-                .setLore("§7Place this egg around the map", "§7that everyone can search and find it.")
-                .setSkullOwner(getRandomEggTexture(id))
-                .build();
     }
 
     public void finishEggPlacing(Player player){
