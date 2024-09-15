@@ -1,16 +1,16 @@
 package de.theredend2000.advancedegghunt.util;
 
 import de.theredend2000.advancedegghunt.util.enums.Seasons;
-import org.bukkit.Bukkit;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Month;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public abstract class DateTimeUtil {
 
@@ -111,7 +111,7 @@ public abstract class DateTimeUtil {
     }
 
     public static String getWeek(Calendar calendar) {
-        final String dayNames[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+        final String[] dayNames = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         return dayNames[dayOfWeek - 1];
     }

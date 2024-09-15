@@ -116,7 +116,7 @@ public abstract class MultiFileConfiguration {
 
         for (String key : keyList) {
             if (oldConfig.isSet(key) && !oldConfig.isConfigurationSection(key) &&
-                    (hasTemplates ? newConfig.contains(key) : true)) {
+                    (!hasTemplates || newConfig.contains(key))) {
                 newConfig.set(key, oldConfig.get(key));
             }
         }
