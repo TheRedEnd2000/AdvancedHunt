@@ -43,6 +43,7 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
                 .setCustomId("rewards_individual_preset.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("rewards_individual_preset.back")
@@ -68,17 +69,13 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
 
         IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
         ArrayList<String> keys = new ArrayList<>();
-        if(presetDataManager.savedPresets().size() >= 1){
+        if(!presetDataManager.savedPresets().isEmpty()){
             keys.addAll(presetDataManager.savedPresets());
-        }else
+        }
+        if (keys.isEmpty() || presetDataManager.savedPresets().isEmpty()) {
             getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Presets")
-                    .setLore("§7Create new one to select them.")
-                    .build());
-        if (keys == null || keys.isEmpty()) {
-            getInventory().setItem(22, new ItemBuilder(XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName("§4§lNo Presets")
-                    .setLore("§7Create new one to select them.")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LIST_ERROR))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LIST_ERROR))
                     .build());
             return;
         }

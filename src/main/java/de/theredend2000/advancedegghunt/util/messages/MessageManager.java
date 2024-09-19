@@ -92,6 +92,8 @@ public class MessageManager {
         blacklisted.add("HOUR_FORMAT");
         blacklisted.add("REQUIREMENTS_MORE");
         blacklisted.add("REQUIREMENTS_CLICK_TO_CHANGE");
+        blacklisted.add("PRESET_IS_DEFAULT_1");
+        blacklisted.add("PRESET_IS_DEFAULT_2");
         return blacklisted;
     }
 }

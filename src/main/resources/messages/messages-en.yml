@@ -75,6 +75,8 @@ preset-not-delete-default: '&cYou cannot delete the preset that is selected as d
 preset-loading-no: '&cPreset loading is already in progress.'
 preset-loading-success: '&aSuccessfully loaded preset &6%PRESET%&a into all eggs.'
 preset-loading-progress: '&bLoading presets... (%COUNT%/%MAX%)'
+preset-is-default-1: '&2This preset is selected as default preset.'
+preset-is-default-2: '&2It will be loaded every time a new egg is created.'
 
 setting-commandfeedback: '&aCommand Feedback has been &4discontinued.&a Either manually do "/gamerule sendCommandFeedback false" or remove the "minecraft.admin.command_feedback" permission.'
 

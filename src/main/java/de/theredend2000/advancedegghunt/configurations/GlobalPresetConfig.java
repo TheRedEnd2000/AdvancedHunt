@@ -1,16 +1,18 @@
 package de.theredend2000.advancedegghunt.configurations;
 
+import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class GlobalPresetConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
+    private MessageManager messageManager;
 
     public GlobalPresetConfig(JavaPlugin plugin) {
         super(plugin, "presets/global", "yml", 1.0);
@@ -77,30 +79,30 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
      * @return A list of lore strings.
      */
     public List<String> getAllCommandsAsLore(String preset, boolean isDefault) {
-        List<String> lore = new ArrayList<>();
-        lore.add(" ");
-        lore.add("§9Commands:");
+        /*
+            TODO: Lore of command and default isnt working right. Need to be fixed
+         */
+        messageManager = Main.getInstance().getMessageManager();
+        List<String> commandLore = new ArrayList<>();
+        List<String> defaultLore = new ArrayList<>();
         ConfigurationSection commands = getConfig(preset).getConfigurationSection("Commands.");
         if (commands != null) {
             int counter = 0;
             for (String commandID : commands.getKeys(false)) {
                 if (counter < 10)
-                    lore.add("§7- §b" + commands.getString(commandID + ".command"));
+                    commandLore.add("§7- §b" + commands.getString(commandID + ".command")+"\n");
                 counter++;
             }
             if (counter > 10)
-                lore.add("  §7§o+" + (counter - 10) + " more...");
+                commandLore.add("  §7§o+" + (counter - 10) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
         }
         if (isDefault) {
-            lore.add(" ");
-            lore.add("§2This preset is selected as default preset.");
-            lore.add("§2It will be loaded every time a new egg is created.");
+            defaultLore.add(" ");
+            defaultLore.add(messageManager.getMessage(MessageKey.PRESET_IS_DEFAULT_1));
+            defaultLore.add(messageManager.getMessage(MessageKey.PRESET_IS_DEFAULT_2));
         }
-        lore.add(" ");
-        lore.add("§eLEFT-CLICK to load.");
-        lore.add("§eMIDDLE-CLICK to set it as default preset.");
-        lore.add("§eRIGHT-CLICK to delete.");
-        return lore;
+
+        return Main.getInstance().getMenuManager().getMenuItemLore(MenuMessageKey.PRESET_GLOBAL,"%COMMANDS%", String.valueOf(Collections.singletonList(commandLore)),"%IS_DEFAULT%",String.valueOf(Collections.singletonList(defaultLore)));
     }
 
     /**

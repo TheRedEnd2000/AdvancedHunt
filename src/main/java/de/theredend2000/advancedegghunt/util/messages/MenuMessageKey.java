@@ -63,6 +63,7 @@ public enum MenuMessageKey {
     REWARDS_GLOBAL_REWARD("rewards_global_reward"),
 
     // Preset related
+    PRESET_GLOBAL("preset_global"),
 
     // Requirement related
     REQUIREMENTS_SELECTION("requirements_selection"),

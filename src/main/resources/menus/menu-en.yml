@@ -393,6 +393,19 @@ rewards_global_reward:
 
 # Preset related
 
+preset_global:
+  displayname: "&b&l%PRESET%"
+  lore:
+    - ""
+    - "&9Commands:"
+    - "%COMMANDS%"
+    - "%IS_DEFAULT%"
+    - ""
+    - "&eLEFT-CLICK to load."
+    - "&eMIDDLE-CLICK to set it as default preset."
+    - "&eRIGHT-CLICK to delete."
+
+
 # Requirement related
 requirements_selection:
   displayname: "&6Selection - %SELECTION%"

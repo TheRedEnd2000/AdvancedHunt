@@ -75,6 +75,8 @@ public enum MessageKey {
     PRESET_DELETE("preset-delete"),
     PRESET_DEFAULT("preset-default"),
     PRESET_NOT_DELETE_DEFAULT("preset-not-delete-default"),
+    PRESET_IS_DEFAULT_1("preset-is-default-1"),
+    PRESET_IS_DEFAULT_2("preset-is-default-2"),
 
     SETTING_COMMANDFEEDBACK("setting-commandfeedback"),
 
