@@ -200,7 +200,7 @@ public abstract class MultiFileConfiguration {
         }
     }
 
-    public FileConfiguration getConfig(String configName) {
+    protected FileConfiguration getConfig(String configName) {
         if (!configName.endsWith(fileExtension)) {
             configName += fileExtension;
         }
