@@ -181,7 +181,7 @@ help-message: |
   &6/advancedegghunt help &7-> &bEi sohayok bartagulo abong totthosomuho dekhte.
   &6/advancedegghunt reload &7-> &bPunorai config load korte.
   &6/advancedegghunt list &7-> &bSob boshano dim gulor talika ber korte.
-  &6/advancedegghunt placeEggs &7-> &bPlace-Mode e dhuke dim gula boshano othoba vangte.
+  &6/advancedegghunt place &7-> &bPlace-Mode e dhuke dim gula boshano othoba vangte.
   &6/advancedegghunt settings &7-> &bPlugin tir onek setting configure korte.
   &6/advancedegghunt hint &7-> &bSohoje dim gulo khujar jonno songket er menu ti khulte.
   &6/advancedegghunt progress &7-> &bApnar dim er ogrogoti dekhte.

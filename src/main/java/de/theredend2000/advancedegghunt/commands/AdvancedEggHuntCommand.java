@@ -43,7 +43,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         switch (args.length) {
             case 1:
-                String[] tabs = {"placeEggs", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "import"};
+                String[] tabs = {"place", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "import"};
                 for (String permission : tabs) {
                     if (plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permission)))
                         completions.add(permission);
@@ -103,8 +103,8 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
         String subCommand = args[0].toLowerCase();
         switch (subCommand) {
-            case "placeeggs":
-                handlePlaceEggs(player);
+            case "place":
+                handlePlace(player);
                 break;
             case "list":
                 handleList(player);
@@ -149,16 +149,16 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private void handlePlaceEggs(Player player) {
-        if (!checkPermission(player, Permission.Command.placeEggs)) return;
+    private void handlePlace(Player player) {
+        if (!checkPermission(player, Permission.Command.place)) return;
 
-        if (Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+        if (Main.getInstance().getPlacePlayers().contains(player)) {
             eggManager.finishEggPlacing(player);
-            Main.getInstance().getPlaceEggsPlayers().remove(player);
+            Main.getInstance().getPlacePlayers().remove(player);
             messageManager.sendMessage(player, MessageKey.LEAVE_PLACEMODE);
         } else {
             eggManager.startEggPlacing(player);
-            Main.getInstance().getPlaceEggsPlayers().add(player);
+            Main.getInstance().getPlacePlayers().add(player);
             messageManager.sendMessage(player, MessageKey.ENTER_PLACEMODE);
             player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR)
                     .setDisplayName("§6§lEggs Types §7(Right-Click)")
@@ -167,7 +167,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD)
                     .setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0="))
                     .setDisplayName("§2§lFinish setup §7(Drop)")
-                    .setLore("§7Drop to finish the setup", "§7or type §e/egghunt placeEggs §7again.")
+                    .setLore("§7Drop to finish the setup", "§7or type §e/egghunt place §7again.")
                     .setCustomId("egghunt.finish")
                     .build());
         }

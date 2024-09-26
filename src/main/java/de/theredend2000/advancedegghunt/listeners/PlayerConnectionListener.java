@@ -34,9 +34,9 @@ public class PlayerConnectionListener implements Listener {
     public void onLeave(PlayerQuitEvent event){
         Player player = event.getPlayer();
         Main.getInstance().getPlayerEggDataManager().unloadPlayerData(player.getUniqueId());
-        if(Main.getInstance().getPlaceEggsPlayers().contains(player)){
+        if(Main.getInstance().getPlacePlayers().contains(player)){
             Main.getInstance().getEggManager().finishEggPlacing(player);
-            Main.getInstance().getPlaceEggsPlayers().remove(player);
+            Main.getInstance().getPlacePlayers().remove(player);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LEAVE_PLACEMODE));
         }
     }

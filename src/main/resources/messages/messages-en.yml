@@ -183,7 +183,7 @@ help-message: |
   &6/advancedegghunt help &7-> &bShows this help messages and information.
   &6/advancedegghunt reload &7-> &bReloads the config.
   &6/advancedegghunt list &7-> &bLists all placed eggs.
-  &6/advancedegghunt placeEggs &7-> &bEnter Place-Mode to place or break eggs.
+  &6/advancedegghunt place &7-> &bEnter Place-Mode to place or break eggs.
   &6/advancedegghunt settings &7-> &bConfigure many settings of the plugin.
   &6/advancedegghunt hint &7-> &bOpens the hint menu to find eggs easier.
   &6/advancedegghunt progress &7-> &bView your progress of the eggs.

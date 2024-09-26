@@ -180,7 +180,7 @@ help-message: |
   &6/advancedegghunt help &7-> &bZeigt dir diese angaben.
   &6/advancedegghunt reload &7-> &bLäd die config neu.
   &6/advancedegghunt list &7-> &bZeigt dir eine Liste aller Eier.
-  &6/advancedegghunt placeEggs &7-> &bBegib dich in Place-Mode um Eier zu ändern.
+  &6/advancedegghunt place &7-> &bBegib dich in Place-Mode um Eier zu ändern.
   &6/advancedegghunt settings &7-> &bBearbeite Einstellungen des Plugins.
   &6/advancedegghunt hint &7-> &bÖffnet das Hinweis menu das dir hilt Eier zu finden.
   &6/advancedegghunt progress &7-> &bZeigt dir deinen Fortschritt mit der Eiersuche.

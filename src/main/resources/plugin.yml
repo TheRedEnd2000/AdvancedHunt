@@ -24,7 +24,7 @@ permissions:
     description: "Reload plugin"
   AdvancedEggHunt.command.commands:
     description: "Reward commands that are ran when a player finds an egg"
-  AdvancedEggHunt.command.placeEggs:
+  AdvancedEggHunt.command.place:
     description: "Allow a player to enter and exit egg placing mode"
   AdvancedEggHunt.command.eggImport:
     description: "Import a player head that is help in the main hand"
@@ -68,7 +68,7 @@ permissions:
       AdvancedEggHunt.command.reset: true
       AdvancedEggHunt.command.settings: true
       AdvancedEggHunt.command.commands: true
-      AdvancedEggHunt.command.placeEggs: true
+      AdvancedEggHunt.command.place: true
       AdvancedEggHunt.command.show: true
       AdvancedEggHunt.command.list: true
       AdvancedEggHunt.command.eggImport: true

@@ -67,7 +67,7 @@ public final class Main extends JavaPlugin {
 
     // Collections
     private HashMap<String, Long> refreshCooldown;
-    private ArrayList<Player> placeEggsPlayers;
+    private ArrayList<Player> placePlayers;
     private HashMap<Player, Integer> playerAddCommand;
     private ArrayList<ArmorStand> showedArmorstands;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
@@ -158,7 +158,7 @@ public final class Main extends JavaPlugin {
 
     private void initializeCollections() {
         refreshCooldown = new HashMap<>();
-        placeEggsPlayers = new ArrayList<>();
+        placePlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
         playerAddCommand = new HashMap<>();
         sortTypeLeaderboard = new HashMap<>();
@@ -273,7 +273,7 @@ public final class Main extends JavaPlugin {
 
     private void giveAllItemsBack(){
         for(Player player : Bukkit.getServer().getOnlinePlayers()){
-            if(placeEggsPlayers.contains(player)){
+            if(placePlayers.contains(player)){
                 eggManager.finishEggPlacing(player);
             }
         }
@@ -314,8 +314,8 @@ public final class Main extends JavaPlugin {
         return playerMenuUtilityMap.computeIfAbsent(p, PlayerMenuUtility::new);
     }
 
-    public ArrayList<Player> getPlaceEggsPlayers() {
-        return placeEggsPlayers;
+    public ArrayList<Player> getPlacePlayers() {
+        return placePlayers;
     }
     public Map<String, Long> getRefreshCooldown() {
         return refreshCooldown;

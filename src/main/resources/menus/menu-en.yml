@@ -404,6 +404,18 @@ preset_global:
     - "&eLEFT-CLICK to load."
     - "&eMIDDLE-CLICK to set it as default preset."
     - "&eRIGHT-CLICK to delete."
+preset_individual:
+  displayname: "&b&l%PRESET%"
+  lore:
+    - ""
+    - "&9Commands:"
+    - "%COMMANDS%"
+    - "%IS_DEFAULT%"
+    - ""
+    - "&eLEFT-CLICK to load."
+    - "&eMIDDLE-CLICK to set it as default preset."
+    - "&eRIGHT-CLICK to delete."
+    - "&eDROP to load it in all placed eggs."
 
 
 # Requirement related

@@ -39,7 +39,7 @@ public class BlockBreakEventListener implements Listener {
             return;
         }
         String collection = eggManager.getEggCollection(block);
-        if(Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+        if(Main.getInstance().getPlacePlayers().contains(player)) {
             if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.BreakEgg)){
                 eggManager.removeEgg(player, block, collection);
                 player.playSound(player.getLocation(), soundManager.playEggBreakSound(), soundManager.getSoundVolume(), 1);

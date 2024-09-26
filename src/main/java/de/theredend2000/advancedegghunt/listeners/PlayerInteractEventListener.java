@@ -51,7 +51,7 @@ public class PlayerInteractEventListener implements Listener {
                     !Main.getInstance().getPluginConfig().getLeftClickEgg()) ||
                 event.getClickedBlock() == null ||
                 !eggManager.containsEgg(event.getClickedBlock()) ||
-                Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+                Main.getInstance().getPlacePlayers().contains(player)) {
             return;
         }
         for (String collection : Main.getInstance().getEggDataManager().savedEggCollections()) {

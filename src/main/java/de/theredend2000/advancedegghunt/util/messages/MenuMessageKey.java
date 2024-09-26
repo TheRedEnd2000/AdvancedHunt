@@ -64,6 +64,7 @@ public enum MenuMessageKey {
 
     // Preset related
     PRESET_GLOBAL("preset_global"),
+    PRESET_INDIVIDUAL("preset_individual"),
 
     // Requirement related
     REQUIREMENTS_SELECTION("requirements_selection"),

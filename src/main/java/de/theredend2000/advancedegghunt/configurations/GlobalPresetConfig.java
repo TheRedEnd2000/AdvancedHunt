@@ -4,6 +4,7 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -79,30 +80,43 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
      * @return A list of lore strings.
      */
     public List<String> getAllCommandsAsLore(String preset, boolean isDefault) {
-        /*
-            TODO: Lore of command and default isnt working right. Need to be fixed
-         */
         messageManager = Main.getInstance().getMessageManager();
         List<String> commandLore = new ArrayList<>();
         List<String> defaultLore = new ArrayList<>();
+
         ConfigurationSection commands = getConfig(preset).getConfigurationSection("Commands.");
         if (commands != null) {
             int counter = 0;
             for (String commandID : commands.getKeys(false)) {
-                if (counter < 10)
-                    commandLore.add("§7- §b" + commands.getString(commandID + ".command")+"\n");
+                if (counter < 10) {
+                    commandLore.add("§7- §b" + commands.getString(commandID + ".command"));
+                }
                 counter++;
             }
-            if (counter > 10)
-                commandLore.add("  §7§o+" + (counter - 10) + " "+messageManager.getMessage(MessageKey.REQUIREMENTS_MORE)+"...");
+            if (counter > 10) {
+                commandLore.add("  §7§o+" + (counter - 10) + " " + messageManager.getMessage(MessageKey.REQUIREMENTS_MORE) + "...");
+            }
         }
         if (isDefault) {
             defaultLore.add(" ");
             defaultLore.add(messageManager.getMessage(MessageKey.PRESET_IS_DEFAULT_1));
             defaultLore.add(messageManager.getMessage(MessageKey.PRESET_IS_DEFAULT_2));
         }
+        List<String> finalLore = new ArrayList<>();
+        List<String> globalLoreTemplate = Main.getInstance().getMenuManager().getMenuItemLore(MenuMessageKey.PRESET_GLOBAL);
 
-        return Main.getInstance().getMenuManager().getMenuItemLore(MenuMessageKey.PRESET_GLOBAL,"%COMMANDS%", String.valueOf(Collections.singletonList(commandLore)),"%IS_DEFAULT%",String.valueOf(Collections.singletonList(defaultLore)));
+        for (String line : globalLoreTemplate) {
+            if (line.contains("%COMMANDS%")) {
+                finalLore.addAll(commandLore);
+            }
+            else if (line.contains("%IS_DEFAULT%")) {
+                finalLore.addAll(defaultLore);
+            } else {
+                finalLore.add(line);
+            }
+        }
+
+        return finalLore;
     }
 
     /**
