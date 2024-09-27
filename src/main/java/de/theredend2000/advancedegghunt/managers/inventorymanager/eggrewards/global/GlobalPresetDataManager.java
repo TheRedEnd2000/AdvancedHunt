@@ -52,7 +52,7 @@ public class GlobalPresetDataManager {
     }
 
     public boolean containsPreset(String preset) {
-        return presetConfig.getConfig(preset) != null;
+        return presetConfig.containsConfig(preset);
     }
 
     public List<String> savedPresets() {

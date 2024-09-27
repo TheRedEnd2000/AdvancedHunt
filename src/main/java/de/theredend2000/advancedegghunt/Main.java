@@ -78,6 +78,12 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         initializePlugin();
+
+        String version = Bukkit.getBukkitVersion().split("-", 2)[0];
+        if (VersionComparator.isGreaterThan(version, "1.21")) {
+            this.getLogger().warning("The plugin has not been tested on the current version.");
+        }
+
         setupAutoUpdating();
 
         if (!checkDependencies())

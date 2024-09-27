@@ -1,7 +1,5 @@
 package de.theredend2000.advancedegghunt.configurations;
 
-import de.theredend2000.advancedegghunt.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,7 +8,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class MultiFileConfiguration {
     protected final JavaPlugin plugin;
@@ -211,6 +208,13 @@ public abstract class MultiFileConfiguration {
             reloadConfig(configName);
         }
         return configs.get(configName);
+    }
+
+    public Boolean containsConfig(String configName) {
+        if (!configName.endsWith(fileExtension)) {
+            configName += fileExtension;
+        }
+        return configs.containsKey(configName);
     }
 
     public void set(String configName, String path, Object value) {
