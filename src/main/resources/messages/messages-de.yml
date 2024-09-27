@@ -78,8 +78,6 @@ preset-loading-progress: '&bLade Voreinstellung... (%COUNT%/%MAX%)'
 
 setting-commandfeedback: '&aCommand Feedback wurde &4eingestellt. &aEntweder man benutzt nun dem Command "/gamerule sendCommandFeedback false" oder entfernt die Berechtigung "minecraft.admin.command_feedback".'
 
-commands-outdated: '&cDieses System is veraltet. Du kannst nun commands ändern mit SHIFT + RIGHT-CLICK auf ein Ei.'
-
 egg-data-converted-success: '&aDie Daten wurden erfolgreich zum neuen system geändert.'
 egg-data-converted-broadcast: '&aDie Daten wurden erfolgreich zum neuen system geändert. Bitte überprüfe ob alles funktioniert.'
 egg-data-converted-failed: '&cFehler beim Daten ändern. Überprüfe die Konsole auf Fehler.'

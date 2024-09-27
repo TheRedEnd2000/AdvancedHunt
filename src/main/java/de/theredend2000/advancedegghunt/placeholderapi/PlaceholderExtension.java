@@ -59,22 +59,34 @@ public class PlaceholderExtension extends PlaceholderExpansion {
         }
 
         if (params.matches("player_name_\\d+")) {
-            int number = extractNumberFromPlaceholder(params);
-            return String.valueOf(eggManager.getLeaderboardPositionName(number-1, player.getUniqueId()));
+            int number = extractNumberFromPlaceholder(params,2);
+            return String.valueOf(eggManager.getLeaderboardPositionName(number-1, player.getUniqueId(),null));
         }
 
         if (params.matches("player_count_\\d+")) {
-            int number = extractNumberFromPlaceholder(params);
-            return String.valueOf(eggManager.getLeaderboardPositionCount(number-1, player.getUniqueId()));
+            int number = extractNumberFromPlaceholder(params,2);
+            return String.valueOf(eggManager.getLeaderboardPositionCount(number-1, player.getUniqueId(),null));
+        }
+
+        if (params.matches("player_name_\\d+_.*")) {
+            int number = extractNumberFromPlaceholder(params,2);
+            String collection = extractStringFromPlaceholder(params,3);
+            return String.valueOf(eggManager.getLeaderboardPositionCount(number-1, player.getUniqueId(),collection));
+        }
+
+        if (params.matches("player_count_\\d+_.*")) {
+            int number = extractNumberFromPlaceholder(params,2);
+            String collection = extractStringFromPlaceholder(params,3);
+            return String.valueOf(eggManager.getLeaderboardPositionCount(number-1, player.getUniqueId(),collection));
         }
 
         return null;
     }
 
-    public static int extractNumberFromPlaceholder(String placeholder) {
+    public static int extractNumberFromPlaceholder(String placeholder, int part) {
         String[] parts = placeholder.split("_");
-        if (parts.length >= 3) {
-            String numberString = parts[2];
+        if (parts.length >= part+1) {
+            String numberString = parts[part];
 
             try {
                 return Integer.parseInt(numberString);
@@ -84,5 +96,20 @@ public class PlaceholderExtension extends PlaceholderExpansion {
         }
 
         return -1;
+    }
+
+    public static String extractStringFromPlaceholder(String placeholder, int part) {
+        String[] parts = placeholder.split("_");
+        if (parts.length >= part+1) {
+            String string = parts[part];
+
+            try {
+                return string;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "";
     }
 }

@@ -80,8 +80,6 @@ preset-is-default-2: '&2It will be loaded every time a new egg is created.'
 
 setting-commandfeedback: '&aCommand Feedback has been &4discontinued.&a Either manually do "/gamerule sendCommandFeedback false" or remove the "minecraft.admin.command_feedback" permission.'
 
-commands-outdated: '&cThis system is outdated. You can now change commands by SHIFT + RIGHT-CLICK an egg.'
-
 egg-data-converted-success: '&aSuccessfully converted egg data to new format.'
 egg-data-converted-broadcast: '&aEgg data has been converted to a new format. Please check if everything is working correctly.'
 egg-data-converted-failed: '&cFailed to convert egg data. Please check the console for more information.'

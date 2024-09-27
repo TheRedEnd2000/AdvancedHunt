@@ -95,7 +95,7 @@ public final class Main extends JavaPlugin {
         initializeData();
         setupDefaultCollectionIfNeeded();
         finalizeSetup();
-        //setupPlaceholderAPI();
+        setupPlaceholderAPI();
     }
 
     /**
@@ -334,7 +334,6 @@ public final class Main extends JavaPlugin {
     public ArrayList<ArmorStand> getShowedArmorstands() {
         return showedArmorstands;
     }
-
 
     public HashMap<Player, Integer> getPlayerAddCommand() {
         return playerAddCommand;
