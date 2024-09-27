@@ -140,7 +140,7 @@ public abstract class Configuration {
         }
     }
 
-    protected FileConfiguration getConfig() {
+    public FileConfiguration getConfig() {
         if (config == null) {
             reloadConfig();
         }
