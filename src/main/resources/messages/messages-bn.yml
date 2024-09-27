@@ -78,8 +78,6 @@ preset-loading-progress: '&bPresetguli load hocche... (%COUNT%/%MAX%)'
 
 setting-commandfeedback: '&aCommand Feedback &4bondho kora hoyeche.&a Hoi manually "/gamerule sendCommandFeedback false" likhun othoba "minecraft.admin.command_feedback" onumoti ti soriye felun.'
 
-commands-outdated: '&cEkhon ei command ti oprocholito. Apni ekhon theke dimgulote SHIFT + RIGHT-CLICK kore command poriborton korte parben.'
-
 egg-data-converted-success: '&aSofolvabe dimgulor data guloke notun format e rupantorito kora hoyeche.'
 egg-data-converted-broadcast: '&aDimgulor data guloke notun format e rupantorito kora hoyeche. Onugroho kore dekhun sob kichu thik moto colche kina.'
 egg-data-converted-failed: '&cDimgulor data rupantor bertho hoyeche. Onugroho kore aro tottho dekhar jonno console dekhun.'

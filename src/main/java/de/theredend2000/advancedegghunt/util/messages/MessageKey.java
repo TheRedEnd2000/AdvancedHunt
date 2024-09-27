@@ -80,8 +80,6 @@ public enum MessageKey {
 
     SETTING_COMMANDFEEDBACK("setting-commandfeedback"),
 
-    COMMANDS_OUTDATED("commands-outdated"),
-
     REQUIREMENTS_NAME_HOUR("requirements-name-hour"),
     REQUIREMENTS_NAME_DATE("requirements-name-date"),
     REQUIREMENTS_NAME_WEEKDAY("requirements-name-weekday"),

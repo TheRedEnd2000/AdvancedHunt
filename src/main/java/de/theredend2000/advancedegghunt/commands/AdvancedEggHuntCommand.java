@@ -43,7 +43,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         switch (args.length) {
             case 1:
-                String[] tabs = {"place", "reload", "reset", "list", "help", "settings", "progress", "show", "commands", "leaderboard", "hint", "collection", "import"};
+                String[] tabs = {"place", "reload", "reset", "list", "help", "settings", "progress", "show", "leaderboard", "hint", "collection", "import"};
                 for (String permission : tabs) {
                     if (plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permission)))
                         completions.add(permission);
@@ -126,9 +126,6 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 break;
             case "progress":
                 handleProgress(player);
-                break;
-            case "commands":
-                handleCommands(player);
                 break;
             case "leaderboard":
                 handleLeaderboard(player);
@@ -222,11 +219,6 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     private void handleProgress(Player player) {
         if (!checkPermission(player, Permission.Command.progress)) return;
         new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
-    }
-
-    private void handleCommands(Player player) {
-        if (!checkPermission(player, Permission.Command.commands)) return;
-        messageManager.sendMessage(player, MessageKey.COMMANDS_OUTDATED);
     }
 
     private void handleLeaderboard(Player player) {

@@ -36,11 +36,9 @@ public enum Permission {
         settings,
         collection,
         progress,
-        commands,
         leaderboard,
         hint,
-        reset,
-        exportPreset;
+        reset;
 
         @Override
         public String toString() {

@@ -492,11 +492,11 @@ public class EggManager {
         }.runTaskTimer(Main.getInstance(), 0, 20);
     }
 
-    public String getLeaderboardPositionName(int position, UUID holder){
+    public String getLeaderboardPositionName(int position, UUID holder, String collection){
+        if(collection == null) collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(holder);
         HashMap<String, Integer> leaderboard = new HashMap<>();
         if(Main.getInstance().getEggDataManager().savedPlayers().size() != 0){
             for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
-                String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(holder);
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
                 if(playerConfig.getString("FoundEggs." + collection) == null) continue;
                 leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
@@ -514,11 +514,11 @@ public class EggManager {
 
     }
 
-    public String getLeaderboardPositionCount(int position, UUID holder){
+    public String getLeaderboardPositionCount(int position, UUID holder, String collection){
+        if(collection == null) collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(holder);
         HashMap<String, Integer> leaderboard = new HashMap<>();
         if(!Main.getInstance().getEggDataManager().savedPlayers().isEmpty()){
             for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
-                String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(holder);
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
                 if(playerConfig.getString("FoundEggs." + collection) == null) continue;
                 leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
