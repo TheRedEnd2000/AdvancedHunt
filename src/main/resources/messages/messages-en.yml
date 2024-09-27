@@ -190,6 +190,5 @@ help-message: |
   &6/advancedegghunt show &7-> &bSpawns an glowing armorstand at every egg.
   &6/advancedegghunt commands &7-> &bChange commands or add more.
   &6/advancedegghunt reset [player | all] [Collection] &7-> &bResets the FoundEggs.
-  &6/advancedegghunt eggImport &7-> &bImport a new place egg.
   &5&l==========HELP==========
   &3-----------------------------------------
