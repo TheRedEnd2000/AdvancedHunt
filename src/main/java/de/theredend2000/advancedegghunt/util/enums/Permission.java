@@ -27,7 +27,7 @@ public enum Permission {
         }
     }
     public enum Command {
-        placeEggs,
+        place,
         eggImport,
         list,
         show,

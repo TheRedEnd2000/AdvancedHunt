@@ -180,13 +180,12 @@ help-message: |
   &6/advancedegghunt help &7-> &bZeigt dir diese angaben.
   &6/advancedegghunt reload &7-> &bLäd die config neu.
   &6/advancedegghunt list &7-> &bZeigt dir eine Liste aller Eier.
-  &6/advancedegghunt placeEggs &7-> &bBegib dich in Place-Mode um Eier zu ändern.
+  &6/advancedegghunt place &7-> &bBegib dich in Place-Mode um Eier zu ändern.
   &6/advancedegghunt settings &7-> &bBearbeite Einstellungen des Plugins.
   &6/advancedegghunt hint &7-> &bÖffnet das Hinweis menu das dir hilt Eier zu finden.
   &6/advancedegghunt progress &7-> &bZeigt dir deinen Fortschritt mit der Eiersuche.
   &6/advancedegghunt show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen Eiern.
   &6/advancedegghunt commands &7-> &bÄndere commands.
   &6/advancedegghunt reset [player | all] [Collection] &7-> &bSetzt die Eier der Spieler zurück.
-  &6/advancedegghunt eggImport &7-> &bLässt dich neue Eier zum platzieren laden.
   &5&l==========HELP==========
   &3-----------------------------------------

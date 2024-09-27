@@ -1,5 +1,9 @@
 package de.theredend2000.advancedegghunt.configurations;
 
+import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,6 +15,7 @@ import java.util.TreeMap;
 
 public class IndividualPresetConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
+    private MessageManager messageManager;
 
     public IndividualPresetConfig(JavaPlugin plugin) {
         super(plugin, "presets/individual", "yml", 1);
@@ -87,31 +92,43 @@ public class IndividualPresetConfig extends MultiFileConfiguration {
      * @return A list of lore strings.
      */
     public List<String> getAllCommandsAsLore(String preset, boolean isDefault) {
-        List<String> lore = new ArrayList<>();
-        lore.add(" ");
-        lore.add("§9Commands:");
+        messageManager = Main.getInstance().getMessageManager();
+        List<String> commandLore = new ArrayList<>();
+        List<String> defaultLore = new ArrayList<>();
+
         ConfigurationSection commands = getConfig(preset).getConfigurationSection("Commands.");
         if (commands != null) {
             int counter = 0;
             for (String commandID : commands.getKeys(false)) {
-                if (counter < 10)
-                    lore.add("§7- §b" + commands.getString(commandID + ".command"));
+                if (counter < 10) {
+                    commandLore.add("§7- §b" + commands.getString(commandID + ".command"));
+                }
                 counter++;
             }
-            if (counter > 10)
-                lore.add("  §7§o+" + (counter - 10) + " more...");
+            if (counter > 10) {
+                commandLore.add("  §7§o+" + (counter - 10) + " " + messageManager.getMessage(MessageKey.REQUIREMENTS_MORE) + "...");
+            }
         }
         if (isDefault) {
-            lore.add(" ");
-            lore.add("§2This preset is selected as default preset.");
-            lore.add("§2It will be loaded every time a new egg is created.");
+            defaultLore.add(" ");
+            defaultLore.add(messageManager.getMessage(MessageKey.PRESET_IS_DEFAULT_1));
+            defaultLore.add(messageManager.getMessage(MessageKey.PRESET_IS_DEFAULT_2));
         }
-        lore.add(" ");
-        lore.add("§eLEFT-CLICK to load.");
-        lore.add("§eMIDDLE-CLICK to set it as default preset.");
-        lore.add("§eRIGHT-CLICK to delete.");
-        lore.add("§eDROP to load it in all placed eggs.");
-        return lore;
+        List<String> finalLore = new ArrayList<>();
+        List<String> globalLoreTemplate = Main.getInstance().getMenuManager().getMenuItemLore(MenuMessageKey.PRESET_INDIVIDUAL);
+
+        for (String line : globalLoreTemplate) {
+            if (line.contains("%COMMANDS%")) {
+                finalLore.addAll(commandLore);
+            }
+            else if (line.contains("%IS_DEFAULT%")) {
+                finalLore.addAll(defaultLore);
+            } else {
+                finalLore.add(line);
+            }
+        }
+
+        return finalLore;
     }
 
     /**

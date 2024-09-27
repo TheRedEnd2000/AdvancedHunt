@@ -395,6 +395,29 @@ rewards_global_reward:
 
 
 # Preset related
+preset_global:
+  displayname: "&b&l%PRESET%"
+  lore:
+    - ""
+    - "&9Befehle:"
+    - "%COMMANDS%"
+    - "%IS_DEFAULT%"
+    - ""
+    - "&eLINKS-KLICK um zu laden."
+    - "&eMITTEL-KLICK um es als Standard Preset zu setzen."
+    - "&eRECHTS-KLICK um es zu löschen."
+preset_individual:
+  displayname: "&b&l%PRESET%"
+  lore:
+    - ""
+    - "&9Befehle:"
+    - "%COMMANDS%"
+    - "%IS_DEFAULT%"
+    - ""
+    - "&eLINKS-KLICK um zu laden."
+    - "&eMITTEL-KLICK um es als Standard Preset zu setzen."
+    - "&eRECHTS-KLICK um es zu löschen."
+    - "&eDROPPEN um das Preset in alle Eier zu laden."
 
 # Requirement related
 requirements_selection:

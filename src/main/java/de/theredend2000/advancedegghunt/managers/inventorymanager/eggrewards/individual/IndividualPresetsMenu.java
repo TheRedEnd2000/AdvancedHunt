@@ -85,7 +85,7 @@ public class IndividualPresetsMenu extends PaginatedInventoryMenu {
             if (keys.get(index) != null){
                 String defaultPreset = plugin.getPluginConfig().getDefaultIndividualLoadingPreset();
                 getInventory().addItem(new ItemBuilder(XMaterial.PAPER)
-                        .setDisplayName("§b§l" + keys.get(index))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PRESET_INDIVIDUAL,"%PRESET%",keys.get(index)))
                         .setLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset)))
                         .setCustomId(keys.get(index))
                         .build());

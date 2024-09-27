@@ -21,7 +21,7 @@ public class BlockPlaceEventListener implements Listener {
     @EventHandler
     public void onPlaceEggEvent(BlockPlaceEvent event){
         Player player = event.getPlayer();
-        if (!Main.getInstance().getPlaceEggsPlayers().contains(player)) {
+        if (!Main.getInstance().getPlacePlayers().contains(player)) {
             return;
         }
 
