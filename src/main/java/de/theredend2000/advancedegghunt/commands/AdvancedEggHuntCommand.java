@@ -50,7 +50,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }
                 break;
             case 2:
-                if (args[0].equalsIgnoreCase("reset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
+                if (args[0].equalsIgnoreCase("reset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.RESET)) {
                     completions.add("all");
                     for (UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
                         String playerData = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs.");
@@ -66,7 +66,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
                 }
                 break;
             case 3:
-                if (args[0].equalsIgnoreCase("reset") && !args[1].equalsIgnoreCase("all") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.reset)) {
+                if (args[0].equalsIgnoreCase("reset") && !args[1].equalsIgnoreCase("all") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.RESET)) {
                     completions.addAll(plugin.getEggDataManager().savedEggCollections());
                 }
                 break;
@@ -147,7 +147,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handlePlace(Player player) {
-        if (!checkPermission(player, Permission.Command.place)) return;
+        if (!checkPermission(player, Permission.Command.PLACE)) return;
 
         if (Main.getInstance().getPlacePlayers().contains(player)) {
             eggManager.finishEggPlacing(player);
@@ -171,19 +171,19 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleList(Player player) {
-        if (!checkPermission(player, Permission.Command.list)) return;
+        if (!checkPermission(player, Permission.Command.LIST)) return;
         new EggListMenu(Main.getPlayerMenuUtility(player)).open();
     }
 
     private void handleShow(Player player) {
-        if (!checkPermission(player, Permission.Command.show)) return;
+        if (!checkPermission(player, Permission.Command.SHOW)) return;
         eggManager.showAllEggs();
         messageManager.sendMessage(player, MessageKey.EGG_SHOW_WARNING);
         messageManager.sendMessage(player, MessageKey.EGG_VISIBLE, "%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow()));
     }
 
     private void handleReload(Player player) {
-        if (!checkPermission(player, Permission.Command.reload)) return;
+        if (!checkPermission(player, Permission.Command.RELOAD)) return;
         Main.getInstance().getPluginConfig().reloadConfig();
         messageManager.reloadMessages();
         eggManager.spawnEggParticle();
@@ -196,7 +196,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleHelp(Player player) {
-        if (!checkPermission(player, Permission.Command.help)) return;
+        if (!checkPermission(player, Permission.Command.HELP)) return;
         messageManager.sendMessage(player, MessageKey.HELP_MESSAGE,
                 "%NAME%", Main.getInstance().getDescription().getName(),
                 "%VERSION%", Main.getInstance().getDescription().getVersion(),
@@ -206,28 +206,28 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleSettings(Player player) {
-        if (!checkPermission(player, Permission.Command.settings)) return;
+        if (!checkPermission(player, Permission.Command.SETTINGS)) return;
         new SettingsMenu(Main.getPlayerMenuUtility(player)).open();
     }
 
     private void handleCollection(Player player) {
-        if (!checkPermission(player, Permission.Command.collection)) return;
+        if (!checkPermission(player, Permission.Command.COLLECTION)) return;
         Main.getInstance().setLastOpenedInventory(null,player);
         new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
     }
 
     private void handleProgress(Player player) {
-        if (!checkPermission(player, Permission.Command.progress)) return;
+        if (!checkPermission(player, Permission.Command.PROGRESS)) return;
         new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
     }
 
     private void handleLeaderboard(Player player) {
-        if (!checkPermission(player, Permission.Command.leaderboard)) return;
+        if (!checkPermission(player, Permission.Command.LEADERBOARD)) return;
         new LeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
     }
 
     private void handleHint(Player player) {
-        if (!checkPermission(player, Permission.Command.hint)) return;
+        if (!checkPermission(player, Permission.Command.HINT)) return;
         int counter = 0;
         int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
 
@@ -251,7 +251,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleImport(Player player) {
-        if (!checkPermission(player, Permission.Command.eggImport)) return;
+        if (!checkPermission(player, Permission.Command.IMPORT)) return;
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!(item.getItemMeta() instanceof SkullMeta)) {
             messageManager.sendMessage(player, MessageKey.EGGIMPORT_HAND);
@@ -279,7 +279,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleReset(Player player, String[] args) {
-        if (!checkPermission(player, Permission.Command.reset)) return;
+        if (!checkPermission(player, Permission.Command.RESET)) return;
         if (args.length < 2) {
             player.sendMessage(usage());
             return;

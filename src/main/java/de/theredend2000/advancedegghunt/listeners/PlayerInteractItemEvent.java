@@ -30,7 +30,7 @@ public class PlayerInteractItemEvent implements Listener {
             case "egghunt.finish":
                 if(Main.getInstance().getPlacePlayers().contains(player)) {
                     event.getItemDrop().remove();
-                    Bukkit.dispatchCommand(player, "egghunt placeEggs");
+                    Bukkit.dispatchCommand(player, "egghunt place");
                 }
                 return;
             case "egghunt.eggs":

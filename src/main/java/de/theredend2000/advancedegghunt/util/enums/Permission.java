@@ -27,27 +27,27 @@ public enum Permission {
         }
     }
     public enum Command {
-        place,
-        eggImport,
-        list,
-        show,
-        reload,
-        help,
-        settings,
-        collection,
-        progress,
-        leaderboard,
-        hint,
-        reset;
+        PLACE,
+        IMPORT,
+        LIST,
+        SHOW,
+        RELOAD,
+        HELP,
+        SETTINGS,
+        COLLECTION,
+        PROGRESS,
+        LEADERBOARD,
+        HINT,
+        RESET;
 
         @Override
         public String toString() {
-            return "AdvancedEggHunt.Command." + this.name();
+            return "AdvancedEggHunt.Command." + this.name().toLowerCase();
         }
 
         public static Command getEnum(String value) {
             try {
-                return valueOf(value);
+                return valueOf(value.toUpperCase());
             } catch (IllegalArgumentException e) {
                 Main.getInstance().getLogger().log(Level.SEVERE, MessageFormat.format("Failed to convert {0} to Enum.", value), e);
                 return null;
