@@ -23,7 +23,7 @@ hint-timeout: '&cApni jothesto somoye tip dite paren ni.'
 hint-cancelled: '&aApni sofolvabe nirdeshonati batil korechen.'
 egg-not-accessed: '&cApni ei muhurte ei dimti upolovdi korte parben nah.'
 
-only-in-placemode: '&cApni shudumatro nirman poddhotite e dim boshate othoba sorate parben. Ei poddhotite jawar jonno &e/egghunt placeEggs &clikhun.'
+only-in-placemode: '&cApni shudumatro nirman poddhotite e dim boshate othoba sorate parben. Ei poddhotite jawar jonno &e/egghunt place &clikhun.'
 enter-placemode: '&aApni ekhon Place mode e. Apni ekhon dim boshate othoba sorate parben.'
 leave-placemode: '&cApni Place mode theke ber hoye giyechen. Apni ekhon ar dim boshate othoba sorate parben nah'
 

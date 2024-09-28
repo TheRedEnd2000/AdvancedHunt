@@ -23,7 +23,7 @@ hint-timeout: '&cDu hast nicht schnell genug Gedrückt.'
 hint-cancelled: '&aDu dies das erfolgreich abgebrochen.'
 egg-not-accessed: '&cDu hast aktuell kein Zugang hierzu.'
 
-only-in-placemode: '&cDu kannst Eier nur im Platzier-Modus zerstören. Schreibe &e/egghunt placeEggs &cum in diesen Modus zu wechseln.'
+only-in-placemode: '&cDu kannst Eier nur im Platzier-Modus zerstören. Schreibe &e/egghunt place &cum in diesen Modus zu wechseln.'
 enter-placemode: '&aDu bist nun im Platzier-Modus. Du kannst nun Eier platzieren und zerstören.'
 leave-placemode: '&cDu bist nun nicht mehr im Platzier-Modus. Du kannst nun keine Eier mehr platzieren oder zerstören.'
 

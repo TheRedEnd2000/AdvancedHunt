@@ -23,7 +23,7 @@ hint-timeout: '&cYou have not clicked fast enough.'
 hint-cancelled: '&aYou have successfully canceled this.'
 egg-not-accessed: '&cYou cannot access this right now.'
 
-only-in-placemode: '&cYou can only place or break eggs in build mode. Type &e/egghunt placeEggs &cto go in this mode.'
+only-in-placemode: '&cYou can only place or break eggs in build mode. Type &e/egghunt place &cto go in this mode.'
 enter-placemode: '&aYou are now in Place mode. You can now add or remove eggs.'
 leave-placemode: '&cYou left the Place mode. You can`t longer add or remove eggs.'
 
