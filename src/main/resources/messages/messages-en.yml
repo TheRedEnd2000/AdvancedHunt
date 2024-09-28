@@ -64,6 +64,7 @@ rarity-message: '%RARITY% DROP! &7You receive &b%ITEM% &7x%COUNT%'
 eggimport-hand: '&7Please hold the &eplayer head &7with the &2egg texture &7in your hand.'
 eggimport-failed-profile: '&cFailed to load a player profile.'
 eggimport-success: '&aSuccessfully &7imported a new head to the &eplace eggs&7.'
+eggimport-failed: '&cThe item import system failed. This may be because it is currently unsupported in your version.'
 
 preset-already-exists: '&cThis preset does already exist.'
 preset-saved: '&aSuccessfully &7saved the &epreset %PRESET%&7.'

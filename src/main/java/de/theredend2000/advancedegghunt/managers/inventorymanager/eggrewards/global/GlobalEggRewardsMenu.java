@@ -178,8 +178,13 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
     }
 
-    public void convertItemIntoCommand(ItemStack itemStack, String collection){
-        addCommand(ItemHelper.convertItemIntoCommand(itemStack), collection, "GlobalRewards.");
+    public void convertItemIntoCommand(ItemStack itemStack, String collection, Player player){
+        var command = ItemHelper.convertItemIntoCommand(itemStack);
+        if (command == null) {
+            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_FAILED));
+            return;
+        }
+        addCommand(command, collection, "GlobalRewards.");
     }
 
     private void addCommand(String command, String collection, String path){
@@ -204,7 +209,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
 
         if(event.getClickedInventory().equals(player.getInventory())){
-            convertItemIntoCommand(event.getCurrentItem(), collection);
+            convertItemIntoCommand(event.getCurrentItem(), collection, player);
             messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
             menuContent(collection);
             return;

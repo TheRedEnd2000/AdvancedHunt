@@ -179,8 +179,13 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         return (int) Math.ceil((double) keys.size() / maxItemsPerPage);
     }
 
-    public void convertItemIntoCommand(ItemStack itemStack, String id, String collection){
-        addCommand(ItemHelper.convertItemIntoCommand(itemStack), collection,"PlacedEggs." + id + ".Rewards.");
+    public void convertItemIntoCommand(ItemStack itemStack, String id, String collection, Player player){
+        var command = ItemHelper.convertItemIntoCommand(itemStack);
+        if (command == null) {
+            player.sendMessage(messageManager.getMessage(MessageKey.EGGIMPORT_FAILED));
+            return;
+        }
+        addCommand(command, collection,"PlacedEggs." + id + ".Rewards.");
     }
 
     private void addCommand(String command, String collection,String path){
@@ -210,7 +215,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
 
         if(event.getClickedInventory().equals(player.getInventory())){
-            convertItemIntoCommand(event.getCurrentItem(), id, collection);
+            convertItemIntoCommand(event.getCurrentItem(), id, collection, player);
             messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
             menuContent(collection);
             return;

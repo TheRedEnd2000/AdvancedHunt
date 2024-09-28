@@ -6,7 +6,6 @@ import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
@@ -98,6 +97,10 @@ public class ItemHelper {
     public static String convertItemIntoCommand(ItemStack itemStack){
         String itemNBT = NBT.get(itemStack, Object::toString);
 
+        String version = Bukkit.getBukkitVersion().split("-", 2)[0];
+        if (VersionComparator.isGreaterThanOrEqual(version, "1.20.5")) {
+            return null;
+        }
         return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount());
     }
 }

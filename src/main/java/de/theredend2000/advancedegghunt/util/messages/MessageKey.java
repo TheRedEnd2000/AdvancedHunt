@@ -67,6 +67,7 @@ public enum MessageKey {
     EGGIMPORT_HAND("eggimport-hand"),
     EGGIMPORT_FAILED_PROFILE("eggimport-failed-profile"),
     EGGIMPORT_SUCCESS("eggimport-success"),
+    EGGIMPORT_FAILED("eggimport-failed"),
 
     PRESET_ALREADY_EXISTS("preset-already-exists"),
     PRESET_SAVED("preset-saved"),
