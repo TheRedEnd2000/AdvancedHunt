@@ -43,11 +43,7 @@ public abstract class Configuration {
     }
 
     protected File getDataFolder() {
-        try {
-            return (File) plugin.getClass().getMethod("getCustomDataFolder").invoke(plugin);
-        } catch (Exception e) {
-            return plugin.getDataFolder();
-        }
+        return plugin.getDataFolder();
     }
 
     protected void loadConfig() {
