@@ -28,7 +28,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
+public class  IndividualEggRewardsMenu extends PaginatedInventoryMenu {
     private MessageManager messageManager;
     private Main plugin;
     private String id;
@@ -186,6 +186,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
             return;
         }
         addCommand(command, collection,"PlacedEggs." + id + ".Rewards.");
+        messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
     }
 
     private void addCommand(String command, String collection,String path){
@@ -216,7 +217,6 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
 
         if(event.getClickedInventory().equals(player.getInventory())){
             convertItemIntoCommand(event.getCurrentItem(), id, collection, player);
-            messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
             menuContent(collection);
             return;
         }

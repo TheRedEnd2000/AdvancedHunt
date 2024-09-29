@@ -185,6 +185,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
             return;
         }
         addCommand(command, collection, "GlobalRewards.");
+        messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
     }
 
     private void addCommand(String command, String collection, String path){
@@ -210,7 +211,6 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
 
         if(event.getClickedInventory().equals(player.getInventory())){
             convertItemIntoCommand(event.getCurrentItem(), collection, player);
-            messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
             menuContent(collection);
             return;
         }

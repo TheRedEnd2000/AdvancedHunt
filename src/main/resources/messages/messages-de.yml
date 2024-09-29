@@ -64,6 +64,7 @@ rarity-message: '%RARITY% DROP! &7Du erhältst &b%ITEM% §7x%COUNT%'
 eggimport-hand: '&7Bitte halte den &eSpieler Kopf &7mit der &2Ei textur &7in deiner Hand.'
 eggimport-failed-profile: '&cEs gab einen Fehler im Spielerprofile.'
 eggimport-success: '&7Der neue Kopf wurde &aerfolgreich &7zu den &ePlatzier-Eiern &7hinzugefügt.'
+eggimport-failed: '&cDas Importieren des Items ist fehlgeschlagen. Deine Version wird nicht für das Feature unterstützt.'
 
 preset-already-exists: '&cDiese Voreinstellung existiert bereits.'
 preset-saved: '&7Die &eVoreinstellung %PRESET% &7wurde &aerfolgreich &7gespeichert.'
