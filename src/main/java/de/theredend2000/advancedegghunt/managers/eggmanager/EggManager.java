@@ -319,9 +319,13 @@ public class EggManager {
                         time = 0;
                     else
                         time += 0.025;
-                    if (!placedEggs.contains("PlacedEggs.")) {
+                    if (!placedEggs.contains("PlacedEggs.") || !placedEggs.contains("Enabled")) {
                         continue;
                     }
+                    // check if the collection is enabled
+                    boolean enabled = placedEggs.getBoolean("Enabled");
+                    if(!enabled) return;
+
                     for (String eggId : placedEggs.getConfigurationSection("PlacedEggs.").getKeys(false)) {
                         ConfigLocationUtil locationUtil = new ConfigLocationUtil(plugin, "PlacedEggs." + eggId);
                         if (locationUtil.loadLocation(collection) == null) {
