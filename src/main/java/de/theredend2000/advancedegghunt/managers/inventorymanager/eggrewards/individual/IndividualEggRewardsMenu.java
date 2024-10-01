@@ -28,7 +28,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class  IndividualEggRewardsMenu extends PaginatedInventoryMenu {
+public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
     private MessageManager messageManager;
     private Main plugin;
     private String id;

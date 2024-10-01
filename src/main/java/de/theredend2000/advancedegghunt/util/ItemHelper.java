@@ -6,12 +6,14 @@ import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBTList;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -102,5 +104,15 @@ public class ItemHelper {
             return null;
         }
         return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount());
+    }
+
+    public static ItemStack getItemStackFromBlock(Block block) {
+        Collection<ItemStack> drops = block.getDrops();
+
+        if (!drops.isEmpty()) {
+            return drops.iterator().next();
+        }
+
+        return null;
     }
 }
