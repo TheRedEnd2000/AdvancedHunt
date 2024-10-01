@@ -281,7 +281,7 @@ public class PluginDownloader {
             loadPlugin(pluginName, filename);
             return;
         }
-        handleFileOrder(pluginName, filename, filePath);
+        handleFileOrder(pluginName, filename, filePath, currentFile);
     }
 
     /**
@@ -328,10 +328,10 @@ public class PluginDownloader {
      * @param filename The filename of the downloaded plugin
      * @param filePath The path where the plugin was downloaded
      */
-    private void handleFileOrder(String pluginName, String filename, Path filePath) {
+    private void handleFileOrder(String pluginName, String filename, Path filePath, Path currentFilePath) {
         if (!FileOrderChecker.isNewFileFirst(pluginsDir.toFile(), filename)) {
             logger.warning("Downloaded plugin " + pluginName + " will not get loaded first. Scheduling removal.");
-            pathConfig.savePluginPath(filename, filePath.toString());
+            pathConfig.savePluginPath(pluginName, currentFilePath.toString());
         } else {
             pathConfig.savePluginPath(pluginName, filePath.toString());
         }
