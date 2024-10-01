@@ -10,6 +10,7 @@ import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -89,7 +90,6 @@ public class EggListMenu extends PaginatedInventoryMenu {
             if (keys.get(index) == null) {
                 continue;
             }
-            int random = new Random().nextInt(7);
             String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
             String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
             String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
@@ -97,9 +97,12 @@ public class EggListMenu extends PaginatedInventoryMenu {
             String time = Main.getInstance().getEggManager().getEggTimePlaced(keys.get(index), collection);
             int timesFound = Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection);
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD)
+            XMaterial item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index),collection);
+            boolean isSkull = item == XMaterial.PLAYER_HEAD || item == XMaterial.PLAYER_WALL_HEAD;
+            String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index),collection);
+            getInventory().setItem(slotIndex, new ItemBuilder(item)
                     .setCustomId("egg_list.id." + keys.get(index))
-                    .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(random))
+                    .setSkullOwner(isSkull ? texture : "")
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGSLIST_EGG,"%EGG_ID%",keys.get(index)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGSLIST_EGG,"%LOCATION_X%",x,"%LOCATION_Y%",y,"%LOCATION_Z%",z,"%TIMES_FOUND%", String.valueOf(timesFound),"%DATE%",date,"%TIME%",time))
                     .setCustomId(keys.get(index))

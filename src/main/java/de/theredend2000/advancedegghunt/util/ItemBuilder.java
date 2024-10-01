@@ -116,6 +116,7 @@ public class ItemBuilder {
 
     public ItemBuilder setSkullOwner(String texture) {
         itemStack = build();
+        if(itemStack == XMaterial.PLAYER_HEAD.parseItem() || itemStack == XMaterial.PLAYER_WALL_HEAD.parseItem()) return this;
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
 

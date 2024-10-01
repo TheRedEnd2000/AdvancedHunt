@@ -1,16 +1,21 @@
 package de.theredend2000.advancedegghunt.managers.eggmanager;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.configurations.InventoryConfig;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
+import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,6 +24,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -213,6 +219,11 @@ public class EggManager {
             }
         }
         return null;
+    }
+
+    public Location getEggLocation(String eggID, String collection){
+        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + eggID + ".");
+        return location.loadLocation(collection);
     }
 
     public String getEggCollectionFromPlayerData(UUID uuid){
@@ -560,6 +571,16 @@ public class EggManager {
         } else if (currentMajor == targetMajor && currentMinor < targetMinor) {
             return true;
         } else return currentMajor == targetMajor && currentMinor == targetMinor && currentPatch < targetPatch;
+    }
+
+    public XMaterial getBlockMaterialOfEgg(String eggID, String collection){
+        return XMaterial.matchXMaterial(getEggLocation(eggID,collection).getBlock().getType());
+    }
+    public String getHeadTextureValue(String eggID, String collection) {
+        /*
+            TODO: Add value to get texture String
+         */
+        return Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7));
     }
 
     public void convertEggData() {
