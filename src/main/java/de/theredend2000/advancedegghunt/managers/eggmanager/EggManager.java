@@ -7,6 +7,7 @@ import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
+import de.tr7zw.nbtapi.NBT;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -482,6 +483,11 @@ public class EggManager {
                 armorStand.setCustomNameVisible(true);
                 armorStand.setSmall(true);
                 armorStand.setVisible(false);
+
+                NBT.modify(armorStand, nbt -> {
+                    nbt.getStringList("Tags").add("AdvancedEggHunt_show");
+                });
+
                 plugin.getShowedArmorstands().add(armorStand);
             }
         }
