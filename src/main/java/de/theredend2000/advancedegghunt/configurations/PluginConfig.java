@@ -376,6 +376,10 @@ public class PluginConfig extends Configuration {
     public boolean getAutoDownloadPlaceholderAPI() {
         return getConfig().getBoolean("Download.PlaceholderAPI");
     }
+
+    public boolean isProtocolLibSupportEnabled() {
+        return getConfig().getBoolean("Experimental.ProtocolLibSupport", false);
+    }
     //endregion
 
     //region Rarity

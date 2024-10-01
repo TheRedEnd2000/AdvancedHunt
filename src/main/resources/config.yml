@@ -13,6 +13,11 @@ Download:
   ProtocolLib: false
   PlaceholderAPI: true
 
+# Experimental feature toggles
+Experimental:
+  # Enable ProtocolLib support (requires ProtocolLib plugin)
+  ProtocolLibSupport: false
+
 prefix: '&f[&eAdvancedEggHunt&f] &r'
 
 Settings:

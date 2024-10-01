@@ -77,7 +77,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        initializePlugin();
+        initialisePlugin();
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
         if (VersionComparator.isGreaterThan(version, "1.21")) {
@@ -92,7 +92,7 @@ public final class Main extends JavaPlugin {
         setupManagers();
         registerCommands();
         initListeners();
-        initializeData();
+        initialiseData();
         setupDefaultCollectionIfNeeded();
         finalizeSetup();
         setupPlaceholderAPI();
@@ -129,40 +129,53 @@ public final class Main extends JavaPlugin {
      * Checks for soft dependencies and logs their status.
      */
     private void checkSoftDependencies() {
-        List<String> missingDependencies = new ArrayList<>();
-        List<String> presentDependencies = new ArrayList<>();
+        checkSoftDependency("PlaceholderAPI");
+        checkSoftDependency("ProtocolLib");
+    }
 
-        // List of soft dependency plugin names
-        String[] softDependencies = {"PlaceholderAPI", "ProtocolLib"};
-
-        for (String pluginName : softDependencies) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
-            if (plugin == null || !plugin.isEnabled()) {
-                missingDependencies.add(pluginName);
-            } else {
-                presentDependencies.add(pluginName);
-            }
-        }
-
-        if (!missingDependencies.isEmpty()) {
-            getLogger().log(Level.WARNING, "Some soft dependencies are missing: " + String.join(", ", missingDependencies));
-            getLogger().log(Level.WARNING, "The plugin will continue to run, but some features may be unavailable.");
-        }
-
-        if (!presentDependencies.isEmpty()) {
-            getLogger().log(Level.INFO, "Detected soft dependencies: " + String.join(", ", presentDependencies));
+    private void checkSoftDependency(String pluginName) {
+        Plugin dependency = Bukkit.getPluginManager().getPlugin(pluginName);
+        if (dependency != null && dependency.isEnabled()) {
+            getLogger().log(Level.INFO, "Detected soft dependency: " + pluginName);
+            initialiseSoftDependency(pluginName);
+        } else {
+            getLogger().log(Level.WARNING, "Soft dependency not found or not enabled: " + pluginName);
+            getLogger().log(Level.WARNING, "Some features related to " + pluginName + " may be unavailable.");
         }
     }
 
-    private void initializePlugin() {
+    private void initialiseSoftDependency(String pluginName) {
+        switch (pluginName) {
+            case "ProtocolLib":
+                initialiseProtocolLib();
+                break;
+            default:
+                getLogger().log(Level.INFO, "No specific initialization needed for " + pluginName);
+        }
+    }
+
+    private void initialiseProtocolLib() {
+        if (pluginConfig.isProtocolLibSupportEnabled()) {
+            protocolManager = ProtocolLibrary.getProtocolManager();
+            if (protocolManager != null) {
+                getLogger().log(Level.INFO, "ProtocolLib support initialised successfully.");
+            } else {
+                getLogger().log(Level.WARNING, "Failed to initialize ProtocolLib support.");
+            }
+        } else {
+            getLogger().log(Level.INFO, "ProtocolLib support is disabled in the config.");
+        }
+    }
+
+    private void initialisePlugin() {
         setupConfigs();
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
         new Metrics(this, 19495);
-        initializeCollections();
+        initialiseCollections();
     }
 
-    private void initializeCollections() {
+    private void initialiseCollections() {
         refreshCooldown = new HashMap<>();
         placePlayers = new ArrayList<>();
         showedArmorstands = new ArrayList<>();
@@ -189,7 +202,7 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    private void initializeData() {
+    private void initialiseData() {
         getEggManager().convertEggData();
         initData();
         sendCurrentLanguage();
@@ -247,7 +260,7 @@ public final class Main extends JavaPlugin {
         permissionManager = new PermissionManager();
         rarityManager = new RarityManager();
         embedCreator = new EmbedCreator();
-        protocolManager = ProtocolLibrary.getProtocolManager();
+        checkSoftDependencies();
         eggHidingManager = new EggHidingManager();
     }
 
@@ -406,6 +419,10 @@ public final class Main extends JavaPlugin {
 
     public ProtocolManager getProtocolManager() {
         return protocolManager;
+    }
+
+    public boolean isProtocolLibEnabled() {
+        return protocolManager != null;
     }
 
     public EggHidingManager getEggHidingManager() {
