@@ -433,6 +433,7 @@ public class PluginDownloader {
                 Path oldPluginPath = oldPluginsDir.resolve(storedPath.getFileName());
                 Files.move(storedPath, oldPluginPath, StandardCopyOption.REPLACE_EXISTING);
                 logger.info("Moved old version of " + pluginName + " to " + oldPluginsDir);
+                pathConfig.savePluginPath(pluginName, null);
             } else {
                 logger.warning("Current version of " + pluginName + " is the same as the stored version. Skipping move.");
             }
