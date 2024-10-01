@@ -427,10 +427,11 @@ public class PluginDownloader {
     private void moveOldVersion(String pluginName) throws IOException {
         Path currentPluginPath = findCurrentPlugin(pluginName);
         if (currentPluginPath != null) {
-            String storedPath = pathConfig.getStoredPluginPath(pluginName);
-            if (storedPath != null && !storedPath.equals(currentPluginPath.toString())) {
-                Path oldPluginPath = oldPluginsDir.resolve(currentPluginPath.getFileName());
-                Files.move(currentPluginPath, oldPluginPath, StandardCopyOption.REPLACE_EXISTING);
+            String storedPathString = pathConfig.getStoredPluginPath(pluginName);
+            if (storedPathString != null && !storedPathString.equals(currentPluginPath.toString())) {
+                Path storedPath = Path.of(storedPathString);
+                Path oldPluginPath = oldPluginsDir.resolve(storedPath.getFileName());
+                Files.move(storedPath, oldPluginPath, StandardCopyOption.REPLACE_EXISTING);
                 logger.info("Moved old version of " + pluginName + " to " + oldPluginsDir);
             } else {
                 logger.warning("Current version of " + pluginName + " is the same as the stored version. Skipping move.");
