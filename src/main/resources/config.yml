@@ -14,9 +14,10 @@ Download:
   PlaceholderAPI: true
 
 # Experimental feature toggles
+# Remove the '#' and set to true to use
 Experimental:
   # Enable ProtocolLib support (requires ProtocolLib plugin)
-  ProtocolLibSupport: false
+#  ProtocolLibSupport: false
 
 prefix: '&f[&eAdvancedEggHunt&f] &r'
 
