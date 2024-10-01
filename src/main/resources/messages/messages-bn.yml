@@ -49,7 +49,7 @@ one-command: '&cApni ekbar e shudumatro ekti command i likhte parben.'
 command-blacklisted: '&cCommand ti kalo talikavukto kora hoyeche!'
 
 foundeggs-reset: '&7Somostho &ePrapto Dim er tottho &cmuche&7 fela hoyeche.'
-foundeggs-player-reset: '&a%PLAYER% &7er somostho &ePrapto Dimer tottho&cmuche &7fela hoyeche.'
+foundeggs-player-reset: '&a%PLAYER% &7er somostho &ePrapto Dimer tottho &cmuche &7fela hoyeche.'
 foundeggs-player-reset-collection: '&a%PLAYER% &7er &6%COLLECTION% &7e songrohito sokol &eprapto dim er tottho &cmuche &7fela hoyeche.'
 
 activate-requirements: '&aSomosto proyojoniyota bostu sokriyo kora holo.'
@@ -64,6 +64,7 @@ rarity-message: '%RARITY% FELANO HOLO! &7Apni peyechen &b%ITEM% &7x%COUNT%'
 eggimport-hand: '&7Onugroho kore &2dim er texture e &7dewa &eplayer head &7ti apnar hat e dhore rakhun.'
 eggimport-failed-profile: '&cPlayer profile load korte bertho hoyeche.'
 eggimport-success: '&aSofolvabe &7notun ekti matha jog kora holo &eboshate jawa dim &7gulor moddhe.'
+eggimport-failed: '&cItem import korar kriyati bertho hoyeche. Apnar bortomane oshomorthito songskorone thakar fole hoito eti hoyeche.'
 
 preset-already-exists: '&cEi preset ti itimoddhei royeche.'
 preset-saved: '&aSofolvabe &e%PRESET% preset &7ti songrokkhon kora holo.'

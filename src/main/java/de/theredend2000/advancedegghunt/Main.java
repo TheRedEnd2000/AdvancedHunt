@@ -262,6 +262,7 @@ public final class Main extends JavaPlugin {
         new PlayerChatEventListener();
         new PlayerConnectionListener();
         new EntityChangeListener();
+        new EntityDamageEventListener();
     }
 
     private void setupAutoUpdating() {

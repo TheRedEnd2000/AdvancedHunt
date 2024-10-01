@@ -1,6 +1,7 @@
 package de.theredend2000.advancedegghunt.managers;
 
 import com.cryptomorin.xseries.XEntityType;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -8,9 +9,17 @@ import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 public class ExtraManager{
+
+    private ArrayList<UUID> fireworkUUID;
+
+    public ExtraManager(){
+        fireworkUUID = new ArrayList<>();
+    }
 
     public void spawnFireworkRocket(Location location) {
         Firework firework = (Firework) location.getWorld().spawnEntity(location, XEntityType.FIREWORK_ROCKET.get());
@@ -21,6 +30,8 @@ public class ExtraManager{
         fireworkMeta.addEffect(effect);
         fireworkMeta.setPower(random.nextInt(2) + 1);
         firework.setFireworkMeta(fireworkMeta);
+        fireworkUUID.add(firework.getUniqueId());
+        Bukkit.broadcastMessage(String.valueOf(fireworkUUID));
     }
 
     public Color getColor(int i) {
@@ -82,5 +93,9 @@ public class ExtraManager{
 
     private long gcd(long a, long b) {
         return b == 0 ? a : gcd(b, a % b);
+    }
+
+    public ArrayList<UUID> getFireworkUUID() {
+        return fireworkUUID;
     }
 }
