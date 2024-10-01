@@ -577,7 +577,7 @@ public class EggManager {
         ItemStack treasure = ItemHelper.getItemStackFromBlock(getEggLocation(eggID,collection).getBlock());
         if (treasure == null)
             return Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7));
-        return ItemHelper.getSkullTexture(treasure);
+        return Main.getTexture(ItemHelper.getSkullTexture(treasure));
     }
 
     public void convertEggData() {
