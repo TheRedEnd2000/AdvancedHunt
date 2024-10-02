@@ -13,6 +13,7 @@ import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.*;
 
@@ -35,10 +36,6 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
-    public void reopen() {
-        getInventory().setContents(inventoryContent);
-        setMenuItems();
-    }
 
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)

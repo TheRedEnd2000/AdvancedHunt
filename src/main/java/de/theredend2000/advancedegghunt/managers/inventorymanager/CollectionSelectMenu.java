@@ -15,6 +15,7 @@ import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -157,6 +158,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                     return;
                 }
                 player.openInventory(Main.getInstance().getLastOpenedInventory(player));
+                //ADD REOPEN HERE
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "collection_select.close":

@@ -10,6 +10,7 @@ import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
