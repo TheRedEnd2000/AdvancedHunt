@@ -13,7 +13,6 @@ import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 
 public class SettingsMenu extends InventoryMenu {
     private MessageManager messageManager;
@@ -249,5 +248,4 @@ public class SettingsMenu extends InventoryMenu {
                 break;
         }
     }
-
 }

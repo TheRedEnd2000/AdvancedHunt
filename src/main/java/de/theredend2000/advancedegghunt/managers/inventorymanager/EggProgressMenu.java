@@ -7,22 +7,15 @@ import de.theredend2000.advancedegghunt.managers.inventorymanager.common.Paginat
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
-import de.theredend2000.advancedegghunt.util.enums.Seasons;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-public class EggProgressMenu extends PaginatedInventoryMenu{
+public class EggProgressMenu extends PaginatedInventoryMenu {
 
     public EggProgressMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Egg progress", (short) 54);

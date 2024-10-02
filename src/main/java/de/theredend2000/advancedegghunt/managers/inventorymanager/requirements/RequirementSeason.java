@@ -15,10 +15,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class RequirementSeason extends InventoryMenu {
