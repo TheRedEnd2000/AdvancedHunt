@@ -63,33 +63,33 @@ public class RequirementMenu extends InventoryMenu {
 
         getInventory().setItem(10, new ItemBuilder(XMaterial.CLOCK)
                 .setCustomId("requirement_menu.hour")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%",messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_HOUR)))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%",plugin.getRequirementsManager().getActives(Requirements.Hours, collection)))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%", messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_HOUR)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%", plugin.getRequirementsManager().getActives(Requirements.Hours, collection)))
                 .build());
         getInventory().setItem(11, new ItemBuilder(XMaterial.CLOCK)
                 .setCustomId("requirement_menu.date")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%",messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_DATE)))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%",plugin.getRequirementsManager().getActives(Requirements.Date, collection)))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%", messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_DATE)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%", plugin.getRequirementsManager().getActives(Requirements.Date, collection)))
                 .build());
         getInventory().setItem(12, new ItemBuilder(XMaterial.CLOCK)
                 .setCustomId("requirement_menu.weekday")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%",messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_WEEKDAY)))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%",plugin.getRequirementsManager().getActives(Requirements.Weekday, collection)))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%", messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_WEEKDAY)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%", plugin.getRequirementsManager().getActives(Requirements.Weekday, collection)))
                 .build());
         getInventory().setItem(13, new ItemBuilder(XMaterial.CLOCK)
                 .setCustomId("requirement_menu.month")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%",messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_MONTH)))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%",plugin.getRequirementsManager().getActives(Requirements.Month, collection)))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%", messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_MONTH)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%", plugin.getRequirementsManager().getActives(Requirements.Month, collection)))
                 .build());
         getInventory().setItem(14, new ItemBuilder(XMaterial.CLOCK)
                 .setCustomId("requirement_menu.year")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%",messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_YEAR)))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%",plugin.getRequirementsManager().getActives(Requirements.Year, collection)))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%", messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_YEAR)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%", plugin.getRequirementsManager().getActives(Requirements.Year, collection)))
                 .build());
         getInventory().setItem(15, new ItemBuilder(XMaterial.CLOCK)
                 .setCustomId("requirement_menu.season")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%",messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_SEASON)))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%",plugin.getRequirementsManager().getActives(Requirements.Season, collection)))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%", messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_SEASON)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SELECTION,"%STATUS_ACTIVE%", plugin.getRequirementsManager().getActives(Requirements.Season, collection)))
                 .build());
         getInventory().setItem(37, new ItemBuilder(XMaterial.LIME_TERRACOTTA)
                 .setCustomId("requirement_menu.all_on")
@@ -105,7 +105,7 @@ public class RequirementMenu extends InventoryMenu {
         getInventory().setItem(43, new ItemBuilder(XMaterial.REDSTONE_TORCH)
                 .setCustomId("requirement_menu.order")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_ORDER))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_ORDER,"%CURRENT_ORDER%",currentOrder))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_ORDER,"%CURRENT_ORDER%", currentOrder))
                 .build());
     }
 

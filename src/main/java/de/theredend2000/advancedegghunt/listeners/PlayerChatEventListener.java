@@ -83,7 +83,7 @@ public class PlayerChatEventListener implements Listener {
         }
     }
 
-    public void addCommand(FileConfiguration placedEggs, String id, String command, String collection, Player player,String path){
+    public void addCommand(FileConfiguration placedEggs, String id, String command, String collection, Player player, String path){
         if (placedEggs.contains(path)) {
             ConfigurationSection rewardsSection = placedEggs.getConfigurationSection(path);
             int nextNumber = 0;
@@ -97,14 +97,14 @@ public class PlayerChatEventListener implements Listener {
                     }
                 }
             }
-            setConfiguration(String.valueOf(nextNumber), id , command, collection,path);
+            setConfiguration(String.valueOf(nextNumber), id, command, collection, path);
             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", String.valueOf(nextNumber)));
         } else {
-            setConfiguration("0", id , command, collection,path);
+            setConfiguration("0", id, command, collection, path);
             player.sendMessage(messageManager.getMessage(MessageKey.COMMAND_ADD).replaceAll("%ID%", "0"));
         }
     }
-    private void setConfiguration(String commandID, String id, String command, String collection,String path){
+    private void setConfiguration(String commandID, String id, String command, String collection, String path){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         placedEggs.set(path + commandID + ".command", command);
         placedEggs.set(path + commandID + ".enabled", true);

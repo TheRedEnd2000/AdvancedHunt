@@ -25,7 +25,7 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
     }
 
     public void open() {
-        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems();
 
@@ -54,13 +54,13 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("egg_progress.previous_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("egg_progress.next_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -96,27 +96,27 @@ public class EggProgressMenu extends PaginatedInventoryMenu {
             boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index), collection);
             String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
             String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
-            XMaterial item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index),collection);
+            XMaterial item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index), collection);
             boolean isSkull = item == XMaterial.PLAYER_HEAD || item == XMaterial.PLAYER_WALL_HEAD;
-            String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index),collection);
+            String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index), collection);
             if(showCoordinates && hasFound){
                 getInventory().setItem(slotIndex, new ItemBuilder(item)
                 .setSkullOwner(isSkull ? texture : "")
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_LOCATION_FOUND,"%ID%",keys.get(index)))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_LOCATION_FOUND,"%LOCATION_X%",x,"%LOCATION_Y%",y,"%LOCATION_Z%",z,"%DATE%",date,"%TIME%",time))
+                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_LOCATION_FOUND,"%ID%", keys.get(index)))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_LOCATION_FOUND,"%LOCATION_X%", x,"%LOCATION_Y%", y,"%LOCATION_Z%", z,"%DATE%", date,"%TIME%", time))
                 .setCustomId(keys.get(index))
                 .build());
             }else if(hasFound && !showCoordinates) {
                 getInventory().setItem(slotIndex, new ItemBuilder(item)
                         .setSkullOwner(isSkull ? texture : "")
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_FOUND,"%ID%",keys.get(index)))
-                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_FOUND,"%DATE%",date,"%TIME%",time))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_FOUND,"%ID%", keys.get(index)))
+                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_FOUND,"%DATE%", date,"%TIME%", time))
                         .setCustomId(keys.get(index))
                         .build());
             }else
                 getInventory().setItem(slotIndex, new ItemBuilder(item)
                         .setSkullOwner(isSkull ? texture : "")
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_NOT_FOUND,"%ID%",keys.get(index)))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPROGRESS_NOT_FOUND,"%ID%", keys.get(index)))
                         .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPROGRESS_NOT_FOUND))
                         .setCustomId(keys.get(index))
                         .build());

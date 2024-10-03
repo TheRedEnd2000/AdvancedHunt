@@ -26,7 +26,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
     }
 
     public void open(String eggId) {
-        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems(eggId);
 
@@ -61,13 +61,13 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
     public void setMenuItems(String eggId) {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("egg_info.previous_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages(eggId))))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages(eggId))))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("egg_info.next_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages(eggId))))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages(eggId))))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -94,8 +94,8 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
                     String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs." + collection + ".Count");
                     getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                             .setOwner(keys.get(index))
-                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%",keys.get(index),"%PLAYER_UUID%",uuid.get(index)))
-                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%",keys.get(index),"%EGG_ID%",eggId,"%EGGS_FOUND%",eggsFound,"%EGGS_MAX%", maxEggs,"%DATE%",date,"%TIME%",time))
+                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%", keys.get(index),"%PLAYER_UUID%", uuid.get(index)))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%", keys.get(index),"%EGG_ID%", eggId,"%EGGS_FOUND%", eggsFound,"%EGGS_MAX%", maxEggs,"%DATE%", date,"%TIME%", time))
                             .setCustomId(keys.get(index))
                             .build());
                 }

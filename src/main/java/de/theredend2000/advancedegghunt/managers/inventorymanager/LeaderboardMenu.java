@@ -27,7 +27,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
     }
 
     public void open() {
-        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
         page = 0;
         getInventory().setContents(inventoryContent);
         setMenuItems();
@@ -63,13 +63,13 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("leaderboard.previous_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("leaderboard.next_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -141,8 +141,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                 int count = leaderList.get(i).getValue();
                 getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                         .setOwner(playerName)
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
                         .build());
 
                 return;
@@ -165,16 +165,16 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
             switch (sortTypes) {
                 case ALL:
                     getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
-                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
+                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
                             .build());
                     break;
                 case TOP3:
                     numberOfPlayers = 3;
                     if (i < 3) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
-                                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
+                                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
                                 .build());
                     }
                     break;
@@ -182,8 +182,8 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                     numberOfPlayers = 10;
                     if (i < 10) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
-                                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%",String.valueOf(index+1),"%PLAYER_NAME%",playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%",String.valueOf(maxEggs-count),"%EGGS_MAX%",String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
+                                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
+                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
                                 .build());
                     }
                     break;

@@ -63,7 +63,7 @@ public class RequirementSeason extends InventoryMenu {
         for(String season : new ArrayList<>(DateTimeUtil.getSeasonList())){
             boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS)
-                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SEASON,"%SEASON%",plugin.getRequirementsManager().getRequirementsTranslation(season)))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SEASON,"%SEASON%", plugin.getRequirementsManager().getRequirementsTranslation(season)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SEASON,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%SEASON_INFORMATION%", getSeasonInformation(Seasons.valueOf(season)),"%SEASON%", plugin.getRequirementsManager().getRequirementsTranslation(season),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .withGlow(enabled)
                     .setCustomId(season)

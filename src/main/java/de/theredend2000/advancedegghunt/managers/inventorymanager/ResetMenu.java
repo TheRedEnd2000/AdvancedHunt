@@ -71,32 +71,32 @@ public class ResetMenu extends InventoryMenu {
         getInventory().setItem(10, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_year")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_YEAR))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_YEAR,"%YEAR%", String.valueOf(placedEggs.getInt("Reset.Year")),"%OVERALL%",overall))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_YEAR,"%YEAR%", String.valueOf(placedEggs.getInt("Reset.Year")),"%OVERALL%", overall))
                 .build());
         getInventory().setItem(11, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_month")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_MONTH))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_MONTH,"%MONTH%", String.valueOf(placedEggs.getInt("Reset.Month")),"%OVERALL%",overall))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_MONTH,"%MONTH%", String.valueOf(placedEggs.getInt("Reset.Month")),"%OVERALL%", overall))
                 .build());
         getInventory().setItem(12, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_day")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_DAY))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_DAY,"%DAY%", String.valueOf(placedEggs.getInt("Reset.Day")),"%OVERALL%",overall))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_DAY,"%DAY%", String.valueOf(placedEggs.getInt("Reset.Day")),"%OVERALL%", overall))
                 .build());
         getInventory().setItem(13, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_hour")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_HOUR))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_HOUR,"%HOUR%", String.valueOf(placedEggs.getInt("Reset.Hour")),"%OVERALL%",overall))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_HOUR,"%HOUR%", String.valueOf(placedEggs.getInt("Reset.Hour")),"%OVERALL%", overall))
                 .build());
         getInventory().setItem(14, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_minute")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_MINUTE))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_MINUTE,"%MINUTE%", String.valueOf(placedEggs.getInt("Reset.Minute")),"%OVERALL%",overall))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_MINUTE,"%MINUTE%", String.valueOf(placedEggs.getInt("Reset.Minute")),"%OVERALL%", overall))
                 .build());
         getInventory().setItem(15, new ItemBuilder(XMaterial.REDSTONE)
                 .setCustomId("reset.reset_second")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.RESET_SECOND))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_SECOND,"%SECOND%", String.valueOf(placedEggs.getInt("Reset.Second")),"%OVERALL%",overall))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.RESET_SECOND,"%SECOND%", String.valueOf(placedEggs.getInt("Reset.Second")),"%OVERALL%", overall))
                 .build());
     }
 

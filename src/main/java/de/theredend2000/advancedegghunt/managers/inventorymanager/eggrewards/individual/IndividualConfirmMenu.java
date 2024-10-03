@@ -64,7 +64,7 @@ public class IndividualConfirmMenu extends PaginatedInventoryMenu {
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "rewards_individual_confirm.confirm":
-                plugin.getIndividualPresetDataManager().loadPresetIntoAllEggs(preset,collection,player);
+                plugin.getIndividualPresetDataManager().loadPresetIntoAllEggs(preset, collection, player);
                 player.closeInventory();
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;

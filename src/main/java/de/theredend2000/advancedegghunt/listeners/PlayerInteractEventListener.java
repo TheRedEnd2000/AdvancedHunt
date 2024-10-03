@@ -88,7 +88,7 @@ public class PlayerInteractEventListener implements Listener {
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
                 return;
             }
-            if(eggManager.isMarkedAsFound(collection,id)){
+            if(eggManager.isMarkedAsFound(collection, id)){
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_ALREADY_FOUND_BY_PLAYER));
                 return;
             }
@@ -103,8 +103,8 @@ public class PlayerInteractEventListener implements Listener {
 
             if (Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound())
                 extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
-            if(placedEggs.getBoolean("OnePlayer") && !eggManager.isMarkedAsFound(collection,id))
-                eggManager.markEggAsFound(collection,id,true);
+            if(placedEggs.getBoolean("OnePlayer") && !eggManager.isMarkedAsFound(collection, id))
+                eggManager.markEggAsFound(collection, id, true);
             if (Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()) {
                 player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
                 if(!placedEggs.contains("PlacedEggs." + id + ".Rewards.")) continue;
@@ -119,7 +119,7 @@ public class PlayerInteractEventListener implements Listener {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
 
                             if(startsWithGive)
-                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%",Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%",getItemName(cmd).getType().name()).replaceAll("%COUNT%",String.valueOf(getItemCount(cmd))));
+                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
                         }
                     }
                 }
@@ -137,7 +137,7 @@ public class PlayerInteractEventListener implements Listener {
                         if(random < chance) {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                             if(startsWithGive)
-                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%",Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%",getItemName(cmd).getType().name()).replaceAll("%COUNT%",String.valueOf(getItemCount(cmd))));
+                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
                         }
                     }
                 }

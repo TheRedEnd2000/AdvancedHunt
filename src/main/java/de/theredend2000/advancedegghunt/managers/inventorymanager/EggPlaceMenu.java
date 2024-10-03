@@ -33,7 +33,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
     }
 
     public void open() {
-        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems();
 
@@ -67,12 +67,12 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
 
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -100,13 +100,13 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
             if(mat.equals(XMaterial.PLAYER_HEAD))
                 getInventory().setItem(slotIndex, new ItemBuilder(mat)
                         .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index))))
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%EGG_ID%",keys.get(index)))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%EGG_ID%", keys.get(index)))
                         .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPLACE_EGG))
                         .setCustomId(keys.get(index))
                 .build());
             else
                 getInventory().setItem(slotIndex, new ItemBuilder(mat)
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%EGG_ID%",keys.get(index)))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%EGG_ID%", keys.get(index)))
                         .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPLACE_EGG))
                         .setCustomId(keys.get(index))
                         .build());

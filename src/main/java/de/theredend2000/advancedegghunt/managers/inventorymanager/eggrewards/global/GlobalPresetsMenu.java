@@ -56,13 +56,13 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("rewards_global_preset.previous_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("rewards_global_preset.next_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -85,7 +85,7 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
             if (keys.get(index) != null){
                 String defaultPreset = plugin.getPluginConfig().getDefaultGlobalLoadingPreset();
                 getInventory().addItem(new ItemBuilder(XMaterial.PAPER)
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PRESET_GLOBAL,"%PRESET%",keys.get(index)))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PRESET_GLOBAL,"%PRESET%", keys.get(index)))
                         .setLore(presetDataManager.getAllCommandsAsLore(keys.get(index), keys.get(index).equals(defaultPreset)))
                         .setCustomId(keys.get(index))
                         .build());
@@ -149,14 +149,14 @@ public class GlobalPresetsMenu extends PaginatedInventoryMenu {
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 } else {
                     page = page - 1;
-                    this.open(id,collection);
+                    this.open(id, collection);
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
                 break;
             case "rewards_global_preset.next_page":
                 if (!((index + 1) >= presetDataManager.savedPresets().size())) {
                     page = page + 1;
-                    this.open(id,collection);
+                    this.open(id, collection);
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 } else {
                     player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
