@@ -14,6 +14,7 @@ commands:
       - egghunt
       - eggs
       - easter
+      - treasures
 
 permissions:
   AdvancedEggHunt.command.reset:
