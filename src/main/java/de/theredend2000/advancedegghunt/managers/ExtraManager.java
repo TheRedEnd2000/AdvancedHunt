@@ -1,7 +1,6 @@
 package de.theredend2000.advancedegghunt.managers;
 
 import com.cryptomorin.xseries.XEntityType;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -31,7 +30,6 @@ public class ExtraManager{
         fireworkMeta.setPower(random.nextInt(2) + 1);
         firework.setFireworkMeta(fireworkMeta);
         fireworkUUID.add(firework.getUniqueId());
-        Bukkit.broadcastMessage(String.valueOf(fireworkUUID));
     }
 
     public Color getColor(int i) {
