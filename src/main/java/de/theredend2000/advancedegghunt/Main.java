@@ -25,7 +25,6 @@ import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -34,7 +33,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class Main extends JavaPlugin {
 
@@ -191,11 +189,8 @@ public final class Main extends JavaPlugin {
         cooldownManager = new CooldownManager(this);
     }
 
-    public void registerCommands() {
-        //TODO make that command is not null (Check plugin.yml
-        PluginCommand command = this.getCommand(getPluginConfig().getCommandFirstEntry());
-        command.setAliases(getPluginConfig().getCommandAlias());
-        getCommand(getPluginConfig().getCommandFirstEntry()).setExecutor(new AdvancedEggHuntCommand());
+    private void registerCommands() {
+        getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
     }
 
 

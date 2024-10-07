@@ -192,7 +192,6 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         Main.getInstance().getGlobalPresetDataManager().reload();
         Main.getInstance().getIndividualPresetDataManager().reload();
         Main.PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', plugin.getPluginConfig().getPrefix()));
-        plugin.registerCommands();
         messageManager.sendMessage(player, MessageKey.RELOAD_CONFIG);
     }
 
