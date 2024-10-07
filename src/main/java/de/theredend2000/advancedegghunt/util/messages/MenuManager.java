@@ -3,7 +3,6 @@ package de.theredend2000.advancedegghunt.util.messages;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.configurations.MenuMessageConfig;
 import de.theredend2000.advancedegghunt.util.HexColor;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class MenuManager {
 
         return HexColor.color(ChatColor.translateAlternateColorCodes('&', menuMessage));
     }
-    public String getMenuMessage(MenuMessageKey key,String loc) {
+    public String getMenuMessage(MenuMessageKey key, String loc) {
         String menuMessage = menuMessageConfig.getMenuMessage(key.getPath()+"."+loc);
 
         return HexColor.color(ChatColor.translateAlternateColorCodes('&', menuMessage));

@@ -22,7 +22,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
@@ -91,12 +90,12 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         getInventory().setContents(inventoryContent);
 
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -132,8 +131,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                         }
                     }
                     getInventory().addItem(new ItemBuilder(itemStack)
-                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_INDIVIDUAL_REWARD,"%REWARD_ID%",keys.get(index)))
-                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_INDIVIDUAL_REWARD,"%COMMAND%",command,"%STATUS%",(enabled ? "§atrue" : "§cfalse"),"%CHANCE_PERCENT%",new DecimalFormat("0.##############").format(chance),"%CHANCE_DECIMAL%",plugin.getExtraManager().decimalToFraction(chance/100),"%RARITY%",rarity))
+                            .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_INDIVIDUAL_REWARD,"%REWARD_ID%", keys.get(index)))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_INDIVIDUAL_REWARD,"%COMMAND%", command,"%STATUS%",(enabled ? "§atrue" : "§cfalse"),"%CHANCE_PERCENT%", new DecimalFormat("0.##############").format(chance),"%CHANCE_DECIMAL%", plugin.getExtraManager().decimalToFraction(chance/100),"%RARITY%", rarity))
                             .setCustomId(keys.get(index))
                             .build());
                 }
@@ -190,7 +189,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         messageManager.sendMessage(player, MessageKey.ITEM_ADDED_SUCCESS);
     }
 
-    private void addCommand(String command, String collection,String path){
+    private void addCommand(String command, String collection, String path){
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         if (placedEggs.contains(path)) {
             ConfigurationSection rewardsSection = placedEggs.getConfigurationSection(path);
@@ -205,9 +204,9 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     }
                 }
             }
-            plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), command, collection,path);
+            plugin.getEggDataManager().setRewards(String.valueOf(nextNumber), command, collection, path);
         } else {
-            plugin.getEggDataManager().setRewards("0", command, collection,path);
+            plugin.getEggDataManager().setRewards("0", command, collection, path);
         }
     }
 
@@ -251,7 +250,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                                             messageManager.sendMessage(player, MessageKey.INVALID_CHANCE);
                                     }else
                                         messageManager.sendMessage(player, MessageKey.NOT_NUMBER);
-                                    open(id,collection);
+                                    open(id, collection);
                                 })
                                 .onClick((slot, stateSnapshot) -> Collections.singletonList(AnvilGUI.ResponseAction.close()))
                                 .text(String.valueOf(placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + commandID + ".chance")))
@@ -287,14 +286,14 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventoryFailedSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 } else {
                     page = page - 1;
-                    this.open(id,collection);
+                    this.open(id, collection);
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 }
                 break;
             case "rewards_individual_rewards.next_page":
                 if (!((index + 1) >= keys.size())) {
                     page = page + 1;
-                    this.open(id,collection);
+                    this.open(id, collection);
                     player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 } else {
                     player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LAST_PAGE));
@@ -329,7 +328,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                                     presetDataManager.createPresetFile(stateSnapshot.getText());
                                     presetDataManager.loadCommandsIntoPreset(preset, collection, id);
                                     menuContent(collection);
-                                    open(id,collection);
+                                    open(id, collection);
                                     messageManager.sendMessage(player, MessageKey.PRESET_SAVED, "%PRESET%", preset);
                                 } else {
                                     messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
@@ -350,7 +349,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 break;
             case "rewards_individual_rewards.switch_global":
                 if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Global")) {
-                    new GlobalEggRewardsMenu(super.playerMenuUtility).open(id,collection);
+                    new GlobalEggRewardsMenu(super.playerMenuUtility).open(id, collection);
                 }
                 break;
         }

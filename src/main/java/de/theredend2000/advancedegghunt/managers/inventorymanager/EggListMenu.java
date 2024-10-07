@@ -10,15 +10,12 @@ import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class EggListMenu extends PaginatedInventoryMenu {
 
@@ -30,7 +27,7 @@ public class EggListMenu extends PaginatedInventoryMenu {
     }
 
     public void open() {
-        Main.getInstance().setLastOpenedInventory(getInventory(),playerMenuUtility.getOwner());
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems();
 
@@ -60,13 +57,13 @@ public class EggListMenu extends PaginatedInventoryMenu {
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("egg_list.previous_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("egg_list.next_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -98,14 +95,14 @@ public class EggListMenu extends PaginatedInventoryMenu {
             String time = Main.getInstance().getEggManager().getEggTimePlaced(keys.get(index), collection);
             int timesFound = Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection);
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-            XMaterial item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index),collection);
+            XMaterial item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index), collection);
             boolean isSkull = item == XMaterial.PLAYER_HEAD || item == XMaterial.PLAYER_WALL_HEAD;
-            String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index),collection);
+            String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index), collection);
             getInventory().setItem(slotIndex, new ItemBuilder(item)
                     .setCustomId("egg_list.id." + keys.get(index))
                     .setSkullOwner(isSkull ? texture : "")
-                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGSLIST_EGG,"%EGG_ID%",keys.get(index)))
-                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGSLIST_EGG,"%LOCATION_X%",x,"%LOCATION_Y%",y,"%LOCATION_Z%",z,"%TIMES_FOUND%", String.valueOf(timesFound),"%DATE%",date,"%TIME%",time))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGSLIST_EGG,"%EGG_ID%", keys.get(index)))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGSLIST_EGG,"%LOCATION_X%", x,"%LOCATION_Y%", y,"%LOCATION_Z%", z,"%TIMES_FOUND%", String.valueOf(timesFound),"%DATE%", date,"%TIME%", time))
                     .setCustomId(keys.get(index))
                     .build());
         }

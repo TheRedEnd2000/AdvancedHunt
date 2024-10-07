@@ -35,7 +35,7 @@ public class RarityManager {
         Map<String, Map<String, Double>> rarityMap = new HashMap<>();
 
         for(String r : plugin.getPluginConfig().getRarityList())
-            rarityMap.put(getRarityDisplay(r),createRarityMap(r));
+            rarityMap.put(getRarityDisplay(r), createRarityMap(r));
 
         return rarityMap;
     }

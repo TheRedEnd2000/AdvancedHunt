@@ -440,6 +440,6 @@ public final class Main extends JavaPlugin {
 
     public void setLastOpenedInventory(Inventory lastOpenedInventory, Player player) {
         this.lastOpenedInventory.remove(player);
-        this.lastOpenedInventory.put(player,lastOpenedInventory);
+        this.lastOpenedInventory.put(player, lastOpenedInventory);
     }
 }

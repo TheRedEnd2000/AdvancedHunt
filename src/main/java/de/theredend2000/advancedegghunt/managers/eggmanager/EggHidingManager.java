@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class EggHidingManager {
 
     private Main plugin;
-    private HashMap<Player,Location> blocks;
+    private HashMap<Player, Location> blocks;
 
     public EggHidingManager(){
         plugin = Main.getInstance();
@@ -25,7 +25,7 @@ public class EggHidingManager {
     }
 
     public void hideEggForPlayer(Player player, Location location) {
-        blocks.put(player,location);
+        blocks.put(player, location);
     }
 
     private void hide(){

@@ -15,7 +15,6 @@ import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -68,13 +67,13 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
     public void setMenuItems() {
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("collection_select.previous_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("collection_select.next_page")
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%",String.valueOf(page + 1),"%MAX_PAGES%",String.valueOf(getMaxPages())))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
                 .build());
@@ -102,8 +101,8 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
             getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PAPER)
                     .setCustomId(keys.get(index))
                     .withGlow(applied)
-                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_ITEM,"%COLLECTION%",keys.get(index),"%SELECTED%",selected ? "§a(Selected)" : ""))
-                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_ITEM,"%MAX_EGGS%", String.valueOf(maxEggs),"%PERMISSION%",permission ? "§e" : "§m"))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_ITEM,"%COLLECTION%", keys.get(index),"%SELECTED%", selected ? "§a(Selected)" : ""))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_ITEM,"%MAX_EGGS%", String.valueOf(maxEggs),"%PERMISSION%", permission ? "§e" : "§m"))
                     .build());
         }
     }
@@ -158,7 +157,6 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                     return;
                 }
                 player.openInventory(Main.getInstance().getLastOpenedInventory(player));
-                //ADD REOPEN HERE
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "collection_select.close":

@@ -10,7 +10,6 @@ import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
 
@@ -65,7 +64,7 @@ public class IndividualConfirmMenu extends PaginatedInventoryMenu {
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "rewards_individual_confirm.confirm":
-                plugin.getIndividualPresetDataManager().loadPresetIntoAllEggs(preset,collection,player);
+                plugin.getIndividualPresetDataManager().loadPresetIntoAllEggs(preset, collection, player);
                 player.closeInventory();
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;

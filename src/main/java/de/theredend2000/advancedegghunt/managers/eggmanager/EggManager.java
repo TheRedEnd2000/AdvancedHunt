@@ -576,11 +576,11 @@ public class EggManager {
     }
 
     public XMaterial getBlockMaterialOfEgg(String eggID, String collection){
-        return XMaterial.matchXMaterial(getEggLocation(eggID,collection).getBlock().getType());
+        return XMaterial.matchXMaterial(getEggLocation(eggID, collection).getBlock().getType());
     }
 
     public String getHeadTextureValue(String eggID, String collection) {
-        ItemStack treasure = ItemHelper.getItemStackFromBlock(getEggLocation(eggID,collection).getBlock());
+        ItemStack treasure = ItemHelper.getItemStackFromBlock(getEggLocation(eggID, collection).getBlock());
         if (treasure == null)
             return Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7));
         return Main.getTexture(ItemHelper.getSkullTexture(treasure));

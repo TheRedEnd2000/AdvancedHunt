@@ -15,7 +15,6 @@ import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.Collections;
 
@@ -134,7 +133,7 @@ public class CollectionCreator extends InventoryMenu {
                     Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
                     Main.getInstance().getRequirementsManager().changeActivity(name, true);
                     Main.getInstance().getRequirementsManager().resetReset(name);
-                    Main.getInstance().getGlobalPresetDataManager().loadPresetIntoCollectionCommands(Main.getInstance().getPluginConfig().getDefaultGlobalLoadingPreset(),name);
+                    Main.getInstance().getGlobalPresetDataManager().loadPresetIntoCollectionCommands(Main.getInstance().getPluginConfig().getDefaultGlobalLoadingPreset(), name);
                     Main.getInstance().getEggManager().spawnEggParticle();
                 } else {
                     messageManager.sendMessage(player, MessageKey.COLLECTION_NAME_EXISTS);
