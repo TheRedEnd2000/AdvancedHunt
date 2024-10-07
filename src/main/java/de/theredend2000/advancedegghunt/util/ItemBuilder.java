@@ -24,6 +24,9 @@ public class ItemBuilder {
     private ItemMeta itemMeta;
     private ItemStack itemStack;
 
+    public ItemBuilder() {
+    }
+
     public ItemBuilder(XMaterial mat) {
         this(mat.parseItem());
     }
@@ -48,6 +51,17 @@ public class ItemBuilder {
         if (!lore.isEmpty()) {
             setLore(lore);
         }
+        return this;
+    }
+
+    public ItemBuilder setItemType(XMaterial mat) {
+        setItemType(mat.parseItem());
+        return this;
+    }
+
+    public ItemBuilder setItemType(ItemStack itemStack) {
+        this.itemStack = itemStack;
+        this.itemMeta = itemStack.getItemMeta();
         return this;
     }
 
@@ -104,6 +118,10 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
+        if (itemStack == null) {
+            throw new NullPointerException("ItemStack cannot be null");
+        }
+
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }

@@ -173,17 +173,19 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                 }
                 if(event.getAction() == InventoryAction.PICKUP_ALL){
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+
+                    ItemBuilder itemBuilder = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                            .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)))
+                            .setDisplayName("§6Easter Egg")
+                            .setLore("§7Place this egg around the map", "§7that everyone can search and find it.");
+
                     if (event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
-                        player.getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
-                                .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)))
-                                .setDisplayName("§6Easter Egg")
-                                .setLore("§7Place this egg around the map", "§7that everyone can search and find it.")
-                                .build());
+                        itemBuilder.setItemType(XMaterial.PLAYER_HEAD)
+                                .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)));
                     else
-                        player.getInventory().addItem(new ItemBuilder(XMaterial.matchXMaterial(event.getCurrentItem().getType()))
-                                .setDisplayName("§6Easter Egg")
-                                .setLore("§7Place this egg around the map", "§7that everyone can search and find it.")
-                                .build());
+                        itemBuilder.setItemType(XMaterial.matchXMaterial(event.getCurrentItem().getType()));
+
+                    player.getInventory().addItem(itemBuilder.build());
                 }else if(event.getAction() == InventoryAction.PICKUP_HALF){
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     Main.getInstance().getPluginConfig().removePlaceEggType(Integer.parseInt(id));
