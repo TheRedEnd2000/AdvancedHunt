@@ -27,5 +27,4 @@ public class InventoryCloseEventListener implements Listener {
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT_CANCELLED));
         }
     }
-
 }
