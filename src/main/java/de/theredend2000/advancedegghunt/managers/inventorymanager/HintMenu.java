@@ -67,7 +67,7 @@ public class HintMenu extends InventoryMenu {
             public void run() {
                 UpdateFrame(true);
             }
-        }.runTaskLater(Main.getInstance(), Main.getInstance().getPluginConfig().getHintUpdateTime());
+        }.runTaskLater(Main.getInstance(), Main.getInstance().getPluginConfig().getHintUpdateTime() + 5);
     }
 
     private void UpdateFrame(boolean timeout) {
@@ -108,13 +108,13 @@ public class HintMenu extends InventoryMenu {
         if (Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail())
             Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
 
-        this.active = false;
         cancelHintMenu();
         player.closeInventory();
         player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playErrorSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
     }
 
     public void cancelHintMenu() {
+        active = false;
         hintMenuInstances.remove(playerMenuUtility.getOwner().getUniqueId());
 
         if (failTask != null)
@@ -151,11 +151,14 @@ public class HintMenu extends InventoryMenu {
             currentCount++;
             playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
             if (currentCount == Main.getInstance().getPluginConfig().getHintCount()) {
-                active = false;
+                cancelHintMenu();
+
                 Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
                 playerMenuUtility.getOwner().closeInventory();
                 playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playAllEggsFound(), soundManager.getSoundVolume(), 1);
                 playerMenuUtility.getOwner().sendMessage(getReward(playerMenuUtility.getOwner()));
+
+                return;
             }
             clickedCorrectSlot = true;
             lastClicked = currentSlot;
@@ -164,9 +167,10 @@ public class HintMenu extends InventoryMenu {
                 @Override
                 public void run() {
                     UpdateFrame(false);
-                    restartFailedTask();
                 }
             }.runTaskLater(Main.getInstance(), 5);
+
+            restartFailedTask();
         } else {
             fail(playerMenuUtility.getOwner());
             playerMenuUtility.getOwner().sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.CLICKED_SAME));
