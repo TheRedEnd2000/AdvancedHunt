@@ -498,7 +498,7 @@ public class EggManager {
             @Override
             public void run() {
                 count--;
-                if (count == 0) {
+                if (count <= 0) {
                     for (ArmorStand a : Main.getInstance().getShowedArmorstands()) {
                         a.remove();
                     }
