@@ -57,7 +57,7 @@ public class MenuManager {
             displayname = displayname.replace(replacements[i], replacements[i + 1]);
         }
 
-        return HexColor.color(ChatColor.translateAlternateColorCodes('&', displayname));
+        return HexColor.color(ChatColor.translateAlternateColorCodes('&', displayname.replaceAll("%PLUGIN_NAME_S%",plugin.getPluginConfig().getPluginNameSingular()).replaceAll("%PLUGIN_NAME_P%",plugin.getPluginConfig().getPluginNamePlural())));
     }
     public List<String> getMenuItemLore(MenuMessageKey key, String... replacements) {
         List<String> lore = menuMessageConfig.getMenuMessageList(key.getPath() + ".lore");
@@ -68,7 +68,7 @@ public class MenuManager {
             for (int i = 0; i < replacements.length; i += 2) {
                 line = line.replace(replacements[i], replacements[i + 1]);
             }
-            processedLore.add(HexColor.color(ChatColor.translateAlternateColorCodes('&', line)));
+            processedLore.add(HexColor.color(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%PLUGIN_NAME_S%",plugin.getPluginConfig().getPluginNameSingular()).replaceAll("%PLUGIN_NAME_P%",plugin.getPluginConfig().getPluginNamePlural()))));
         }
 
         return processedLore;

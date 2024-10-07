@@ -1,5 +1,9 @@
 config-version: 1.0
 
+# %PLUGIN_NAME_S% ist plugin-name-singular in der config
+# %PLUGIN_NAME_P% ist plugin-name-plural in der config
+# %PLUGIN_COMMAND% ist der erste eintrag in commands in der config
+
 # General buttons
 back_button:
   displayname: "&7« Zurück"
@@ -37,7 +41,7 @@ collection_item:
   lore:
     - ""
     - "&9Sammlung Information:"
-    - "&7   - Platzierte Eier: &6%MAX_EGGS%"
+    - "&7   - Platzierte %PLUGIN_NAME_P%: &6%MAX_EGGS%"
     - ""
     - "&aNotiz:"
     - "&7Diese Sammlung gilt für alle durchgeführten Aktionen."
@@ -81,7 +85,7 @@ collection_editor_hide_for_player:
   displayname: "&8&mFür den Spieler verstecken"
   lore:
     - ""
-    - "&7Wenn ein Spieler ein Ei findet"
+    - "&7Wenn ein Spieler ein %PLUGIN_NAME_S% findet"
     - "&7wird es ihm nicht länger angezeigt."
     - "&cDas ist nur Client-Seitig"
     - ""
@@ -90,12 +94,12 @@ collection_editor_one_player:
   displayname: "&3Ein Spieler"
   lore:
     - ""
-    - "&7Nur ein Spieler kann das Ei finden."
+    - "&7Nur ein Spieler kann das %PLUGIN_NAME_S% finden."
     - "&7Danach wird es für die anderen nicht"
     - "&7mehr zugänglich sein."
     - ""
     - "&cWenn diese Funktion deaktiviert wird,"
-    - "&cwerden alle Eier, die als gefunden"
+    - "&cwerden alle %PLUGIN_NAME_P%, die als gefunden"
     - "&cmarkiert wurden, zurückgesetzt."
     - ""
     - "&eKlicke um es zu ändern."
@@ -107,7 +111,7 @@ collection_editor_delete_type:
     - "&7gelöscht wird."
     - ""
     - "%NOTHING_TYPE%Nichts"
-    - "&8Alle Blöcke die Eier waren bleiben. (Eingeschlossen Spieler Köpfe)"
+    - "&8Alle Blöcke die %PLUGIN_NAME_P% waren bleiben. (Eingeschlossen Spieler Köpfe)"
     - "%PLAYER_HEADS_TYPE%Spieler Köpfe"
     - "&8Alle Blöcke die Spieler Köpfe sind, werden gelöscht."
     - "%EVERYTHING_TYPE%Alles"
@@ -144,7 +148,7 @@ collection_creator_create:
 
 # Egg related
 eggslist_egg:
-  displayname: "&2&lEi &7(ID#%EGG_ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
   lore:
     - "&9Standort:"
     - "&7X: &e%LOCATION_X%"
@@ -165,14 +169,14 @@ eggplace_information:
   displayname: "&9Informationen"
   lore:
     - ""
-    - "&2Wie eigene Ei-Texturen erstellt werden:"
-    - "&7Benutzerdefinierte Texturen für Eier (Spieler Köpfe)"
+    - "&2Wie eigene %PLUGIN_NAME_S%-Texturen erstellt werden:"
+    - "&7Benutzerdefinierte Texturen für %PLUGIN_NAME_P% (Spieler Köpfe)"
     - "&7können hinzugefügt werden, wenn man den Gegenstand"
     - "&7im Inventar anklickt. Es wird die Texture"
     - "&7automatisch hinzugefügt."
     - ""
     - "&2Andere Blöcke:"
-    - "&7Du kannst Eier hinzufügen die Blöcke sind,"
+    - "&7Du kannst %PLUGIN_NAME_P% hinzufügen die Blöcke sind,"
     - "&7so das die Spieler nach Blöcken statt"
     - "&7Spieler Köpfen suchen müssen."
     - ""
@@ -181,14 +185,14 @@ eggplace_information:
     - ""
     - "&eKlicke um den Discord-Link zu erhalten."
 eggplace_egg:
-  displayname: "&b&lEi Typ #%EGG_ID%"
+  displayname: "&b&l%PLUGIN_NAME_S% Typ #%EGG_ID%"
   lore:
     - ""
     - "&eLINKS-KLICK um es in dein Inventar hinzuzufügen."
     - "&eRECHTS-KLICK um es zu löschen."
 
 eggprogress_location_found:
-  displayname: "&2&lEi &7(ID#%ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
     - "&9Standort:"
@@ -196,34 +200,34 @@ eggprogress_location_found:
     - "&7Y: &e%LOCATION_Y%"
     - "&7Z: &e%LOCATION_Z%"
     - ""
-    - "&2&lDu hast dieses Ei gefunden."
+    - "&2&lDu hast dieses %PLUGIN_NAME_S% gefunden."
     - ""
     - "&9Gesammelt:"
     - "&7Datum: &6%DATE%"
     - "&7Zeit: &6%TIME%"
 eggprogress_found:
-  displayname: "&2&lEi &7(ID#%ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
-    - "&2&lDu hast dieses Ei gefunden."
+    - "&2&lDu hast dieses %PLUGIN_NAME_S% gefunden."
     - ""
     - "&9Gesammelt:"
     - "&7Datum: &6%DATE%"
     - "&7Zeit: &6%TIME%"
 eggprogress_not_found:
-  displayname: "&2&lEi &7(ID#%ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S%i &7(ID#%ID%)"
   lore:
     - ""
-    - "&4&lDu hast dieses Ei noch nicht gefunden."
+    - "&4&lDu hast dieses %PLUGIN_NAME_S% noch nicht gefunden."
 
 # Player related
 information_player:
   displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
   lore:
-    - "&7%PLAYER_NAME% hat das &2Ei #%EGG_ID% &7gefunden."
+    - "&7%PLAYER_NAME% hat das &2%PLUGIN_NAME_S% #%EGG_ID% &7gefunden."
     - ""
     - "&9Informationen zu %PLAYER_NAME%:"
-    - "&7Eier gefunden: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_S%er gefunden: &6%EGGS_FOUND%/%EGGS_MAX%"
     - ""
     - "&7Datum: &6%DATE%"
     - "&7Zeit: &6%TIME%"
@@ -243,9 +247,9 @@ leaderboard_player:
   displayname: "&6&l%PLACE%&6ter &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
-    - "&7Eier gefunden: &3%EGGS_FOUND%"
-    - "&7Eier übrig: &3%EGGS_REMAINING%"
-    - "&7Maximale Eier: &3%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% gefunden: &3%EGGS_FOUND%"
+    - "&7%PLUGIN_NAME_P% übrig: &3%EGGS_REMAINING%"
+    - "&7Maximale %PLUGIN_NAME_P%: &3%EGGS_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 
@@ -255,7 +259,7 @@ rewards_confirm_menu_confirm:
   lore:
     - ""
     - "&7Wenn diese Aktion bestätigt wird,"
-    - "&7wird die Voreinstellung in alle Eier geladen."
+    - "&7wird die Voreinstellung in alle %PLUGIN_NAME_P% geladen."
     - ""
     - "&eKlicke um es zu bestätigen."
 rewards_confirm_menu_cancel:
@@ -267,7 +271,7 @@ rewards_individual_save_preset:
     - ""
     - "&7Speichere die Aktuellen Commands in"
     - "&7der Voreinstellung um sie für"
-    - "&7andere Eier wieder zu laden."
+    - "&7andere %PLUGIN_NAME_P% wieder zu laden."
     - ""
     - "&2Notiz: &7Du benötigst mindestens 1 command um"
     - "         &7eine Voreinstellung zu speichern."
@@ -296,22 +300,22 @@ rewards_individual_switch_global:
     - "&7Wenn zu Global gewechselt wird, kannst du"
     - "&7alle Commands und Voreinstellungen"
     - "&7ändern, wenn der Spieler &7&lalle"
-    - "&7Eier gefunden hat."
+    - "&7%PLUGIN_NAME_P% gefunden hat."
     - ""
     - "&eKlicke um zu wechseln."
 rewards_individual_information:
   displayname: "&9Information"
   lore:
     - "&7Die individuelle Belohnung zählt"
-    - "&7als &7&lein Ei gefunden Belohnung&7."
-    - "&7Das heißt, wenn der Spieler &7&lein Ei"
+    - "&7als &7&lein %PLUGIN_NAME_S% gefunden Belohnung&7."
+    - "&7Das heißt, wenn der Spieler &7&lein %PLUGIN_NAME_S%"
     - "&7findet, werden alle Commands in dem"
     - "&7Inventar ausgeführt."
     - ""
-    - "&c&n&oDie Commands gelten nur für dieses Ei."
+    - "&c&n&oDie Commands gelten nur für dieses %PLUGIN_NAME_S%."
     - ""
     - "&7Du kannst die Commands als Voreinstellung"
-    - "&7um sie in andere Eier zu laden."
+    - "&7um sie in andere %PLUGIN_NAME_P% zu laden."
 rewards_individual_reward:
   displayname: "&b&lBelohnung &7#%REWARD_ID%"
   lore:
@@ -333,7 +337,7 @@ rewards_global_save_preset:
     - ""
     - "&7Speichere die Aktuellen Commands in"
     - "&7der Voreinstellung um sie für"
-    - "&7andere Eier wieder zu laden."
+    - "&7andere %PLUGIN_NAME_P% wieder zu laden."
     - ""
     - "&2Notiz: &7Du benötigst mindestens 1 command um"
     - "         &7eine Voreinstellung zu speichern."
@@ -362,15 +366,15 @@ rewards_global_switch_individual:
     - "&7Wenn zu Individuell gewechselt wird, kannst du"
     - "&7alle Commands und Voreinstellungen"
     - "&7ändern, wenn der Spieler &7&lein"
-    - "&7Ei gefunden hat."
+    - "&7%PLUGIN_NAME_S% gefunden hat."
     - ""
     - "&eKlicke um zu wechseln."
 rewards_global_information:
   displayname: "&9Information"
   lore:
     - "&7Die globale Belohnung zählt"
-    - "&7als &7&lalle Eier gefunden Belohnung&7."
-    - "&7Das heißt, wenn der Spieler &7&lalle Eier"
+    - "&7als &7&lalle %PLUGIN_NAME_P% gefunden Belohnung&7."
+    - "&7Das heißt, wenn der Spieler &7&lalle %PLUGIN_NAME_P%"
     - "&7findet, werden alle Commands in dem"
     - "&7Inventar ausgeführt."
     - ""
@@ -417,7 +421,7 @@ preset_individual:
     - "&eLINKS-KLICK um zu laden."
     - "&eMITTEL-KLICK um es als Standard Preset zu setzen."
     - "&eRECHTS-KLICK um es zu löschen."
-    - "&eDROPPEN um das Preset in alle Eier zu laden."
+    - "&eDROPPEN um das Preset in alle %PLUGIN_NAME_P% zu laden."
 
 # Requirement related
 requirements_selection:
@@ -460,7 +464,7 @@ requirements_season:
   displayname: "&6%SEASON%"
   lore:
     - "&8%SEASON_INFORMATION%"
-    - "&7Macht das, das Ei nur in der"
+    - "&7Macht das, das %PLUGIN_NAME_S% nur in der"
     - "&7Jahreszeit %SEASON% verfügbar ist."
     - ""
     - "&7Aktueller Status: %STATUS%"
@@ -469,7 +473,7 @@ requirements_season:
 requirements_year:
   displayname: "&6Jahr %YEAR%"
   lore:
-    - "&7Macht das, das Ei nur in dem"
+    - "&7Macht das, das %PLUGIN_NAME_S% nur in dem"
     - "&7Jahr %YEAR% verfügbar ist."
     - ""
     - "&7Aktueller Status: %STATUS%"
@@ -478,7 +482,7 @@ requirements_year:
 requirements_month:
   displayname: "&6%MONTH%"
   lore:
-    - "&7Macht das, das Ei nur in dem"
+    - "&7Macht das, das %PLUGIN_NAME_S% nur in dem"
     - "&7Monat %MONTH% verfügbar ist."
     - ""
     - "&7Aktueller Status: %STATUS%"
@@ -487,7 +491,7 @@ requirements_month:
 requirements_weekday:
   displayname: "&6%WEEKDAY%"
   lore:
-    - "&7Macht das, das Ei nur in dem"
+    - "&7Macht das, das %PLUGIN_NAME_S% nur in dem"
     - "&7Wochentag %WEEKDAY% verfügbar ist."
     - ""
     - "&7Aktueller Status: %STATUS%"
@@ -496,7 +500,7 @@ requirements_weekday:
 requirements_date:
   displayname: "&6%DATE%"
   lore:
-    - "&7Macht das, das Ei nur in dem"
+    - "&7Macht das, das %PLUGIN_NAME_S% nur in dem"
     - "&7Tag %DATE% verfügbar ist."
     - ""
     - "&7Aktueller Status: %STATUS%"
@@ -506,7 +510,7 @@ requirements_hour:
   displayname: "&6Stunde %HOUR%"
   lore:
     - "&8Hours: (%HOUR_FORMAT%)" # The hour format can be changed in the messages-<lang>.yml file
-    - "&7Macht das, das Ei nur in der"
+    - "&7Macht das, das %PLUGIN_NAME_S% nur in der"
     - "&7Stunde %HOUR% verfügbar ist."
     - ""
     - "&7Aktueller Status: %STATUS%"
@@ -575,21 +579,21 @@ reset_reset_all:
 
 # Settings related
 settings_one_egg_reward:
-  displayname: "&3Ein Ei gefunden Belohnung"
+  displayname: "&3Ein %PLUGIN_NAME_S% gefunden Belohnung"
   lore:
     - ""
     - "&7Wenn diese Funktion aktiviert ist,"
-    - "&7werden alle Commands bei einem Ei"
+    - "&7werden alle Commands bei einem %PLUGIN_NAME_S%"
     - "&7gefunden ausgeführt."
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
 settings_all_eggs_reward:
-  displayname: "&3Alle Eier gefunden Belohnung"
+  displayname: "&3Alle %PLUGIN_NAME_P% gefunden Belohnung"
   lore:
     - ""
     - "&7Wenn diese Funktion aktiviert ist,"
-    - "&7werden alle Commands bei allen Eiern"
+    - "&7werden alle Commands bei allen %PLUGIN_NAME_P%"
     - "&7gefunden ausgeführt."
     - ""
     - "%STATUS%"
@@ -631,28 +635,28 @@ settings_show_coordinates:
     - ""
     - "&7Wenn diese Funktion aktiviert ist,"
     - "&7können Spieler die Koordinaten eines"
-    - "&7Ei's im Progress Menu sehen."
+    - "&7%PLUGIN_NAME_S%'s im Progress Menu sehen."
     - ""
     - "&2Info: &7Die Koordinaten werden nur gezeigt,"
-    - "&7wenn der Spieler das Ei gefunden hat."
+    - "&7wenn der Spieler das %PLUGIN_NAME_S% gefunden hat."
     - ""
     - "%STATUS%"
     - "&eKlicke um es zu wechseln."
 settings_armorstand_glow:
-  displayname: "&3Eier Leuchten"
+  displayname: "&3%PLUGIN_NAME_P% Leuchten"
   lore:
     - ""
-    - "&7Setze wie lang die Eier für alle"
+    - "&7Setze wie lang die %PLUGIN_NAME_P% für alle"
     - "&7Spieler sichtbar sind."
     - ""
     - "&7Aktuelle Länge: %GLOW_DURATION%"
     - "&eLINKS-KLICK um eins hinzuzufügen."
     - "&eRECHTS-KLICK um eins zu entfernen."
 settings_egg_nearby_radius:
-  displayname: "&3Ei in der Nähe Radius"
+  displayname: "&3%PLUGIN_NAME_S% in der Nähe Radius"
   lore:
     - ""
-    - "&7Ändere die Reichweite der Ei in der Näh Nachricht."
+    - "&7Ändere die Reichweite der %PLUGIN_NAME_S% in der Näh Nachricht."
     - "&7Wenn der Wert 0 ist wird keine Nachricht gezeigt."
     - ""
     - "&7Aktueller Radius: %RADIUS%"
@@ -673,7 +677,7 @@ settings_firework:
   lore:
     - ""
     - "&7Wenn diese Funktion aktiviert ist,"
-    - "&7erscheint ein Feuerwerk wenn ein Ei gefunden wird."
+    - "&7erscheint ein Feuerwerk wenn ein %PLUGIN_NAME_S% gefunden wird."
     - ""
     - "%STATUS%"
     - "&eKlicke um es zu wechseln."

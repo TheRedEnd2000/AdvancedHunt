@@ -55,6 +55,30 @@ public class PluginConfig extends Configuration {
         getConfig().set("messages-lang", language);
     }
 
+    public String getPluginNameSingular() {
+        return getConfig().getString("plugin-name-singular");
+    }
+    public void setPluginNameSingular(String nameSingular) {
+        getConfig().set("plugin-name-singular", nameSingular);
+    }
+    public String getPluginNamePlural() {
+        return getConfig().getString("plugin-name-plural");
+    }
+    public void setPluginNamePlural(String namePlural) {
+        getConfig().set("plugin-name-plural", namePlural);
+    }
+
+    public String getCommandFirstEntry() {
+        if(getConfig().getStringList("commands").isEmpty()) return "ERROR";
+        return getConfig().getStringList("commands").get(0);
+    }
+    public List<String> getCommandAlias() {
+        if(getConfig().getStringList("commands").size() < 2) return Collections.singletonList("ERROR");
+        List<String> alias = new ArrayList<>(getConfig().getStringList("commands"));
+        alias.remove(0);
+        return alias;
+    }
+
     public String getPrefix() {
         return getConfig().getString("prefix");
     }

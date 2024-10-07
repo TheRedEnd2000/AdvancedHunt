@@ -1,44 +1,48 @@
 config-version: 2.5
 
+# %PLUGIN_NAME_S% ist plugin-name-singular in der config
+# %PLUGIN_NAME_P% ist plugin-name-plural in der config
+# %PLUGIN_COMMAND% ist der erste eintrag in commands in der config
+
 no-permission-error: '&cDu hast die &6Berechtigung %PERMISSION% &cnicht.'
-command-not-found: '&cKein Befehl gefunden! &7Schreibe &e/egghunt help &7um alle Befehle zu sehen.'
+command-not-found: '&cKein Befehl gefunden! &7Schreibe &e/%PLUGIN_COMMAND% help &7um alle Befehle zu sehen.'
 only-player: '&cNur Spieler können diesen Befehl benutzen.'
 reload-config: '&7Die Config wurde &aerfolgreich &eneu geladen&7.'
 player-not-found: '&7Das System hat &ckeinen Eintrag &7für den Spieler &a%PLAYER%&7.'
 not-number: '&cBitte gebe eine Nummer an.'
 
-egg-placed: '&aDu hast erfolgreich &aein neues Ei &2erstellt. &7(ID#%ID%)'
-egg-broken: '&aDu hast erfolgreich &aein Ei &centfernt. &7(ID#%ID%)'
-teleport-to-egg: '&aDu wurdest zu dem Ei #%ID% &ateleportiert&7.'
+egg-placed: '&aDu hast erfolgreich &aein neues %PLUGIN_NAME_S% &2erstellt. &7(ID#%ID%)'
+egg-broken: '&aDu hast erfolgreich &aein %PLUGIN_NAME_S% &centfernt. &7(ID#%ID%)'
+teleport-to-egg: '&aDu wurdest zu dem %PLUGIN_NAME_S% #%ID% &ateleportiert&7.'
 
-egg-found: '&aDu hast ein Ei gefunden. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
-egg-already-found: '&cDu hast dieses Ei bereits gefunden.'
-egg-already-found-by-player: '&cDieses Ei wurde bereits von einem anderen Spieler gefunden.'
-all-eggs-found: '&cDu hast bereits alle Eier gefunden.'
-no-eggs: '&cEs sind keine Eier platziert.'
-egg-hint: '&aEin Ei wurde bei &6X: %X%&6, Y: %Y%&6, Z: %Z%&a gefunden.'
+egg-found: '&aDu hast ein %PLUGIN_NAME_S% gefunden. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&cDu hast dieses %PLUGIN_NAME_S% bereits gefunden.'
+egg-already-found-by-player: '&cDieses %PLUGIN_NAME_S% wurde bereits von einem anderen Spieler gefunden.'
+all-eggs-found: '&cDu hast bereits alle %PLUGIN_NAME_P% gefunden.'
+no-eggs: '&cEs sind keine %PLUGIN_NAME_P% platziert.'
+egg-hint: '&aEin %PLUGIN_NAME_S% wurde bei &6X: %X%&6, Y: %Y%&6, Z: %Z%&a gefunden.'
 hint-cooldown: '&4&lCOOLDOWN! &cBitte warte &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c um den Befehl erneuert auszuführen.'
 clicked-same: '&4&lFEHLGESCHLAGEN! &cDu hast die falsche Scheibe oder eine Scheibe doppelt gedrückt.'
 hint-timeout: '&cDu hast nicht schnell genug Gedrückt.'
 hint-cancelled: '&aDu dies das erfolgreich abgebrochen.'
 egg-not-accessed: '&cDu hast aktuell kein Zugang hierzu.'
 
-only-in-placemode: '&cDu kannst Eier nur im Platzier-Modus zerstören. Schreibe &e/egghunt place &cum in diesen Modus zu wechseln.'
-enter-placemode: '&aDu bist nun im Platzier-Modus. Du kannst nun Eier platzieren und zerstören.'
-leave-placemode: '&cDu bist nun nicht mehr im Platzier-Modus. Du kannst nun keine Eier mehr platzieren oder zerstören.'
+only-in-placemode: '&cDu kannst %PLUGIN_NAME_P% nur im Platzier-Modus zerstören. Schreibe &e/%PLUGIN_COMMAND% place &cum in diesen Modus zu wechseln.'
+enter-placemode: '&aDu bist nun im Platzier-Modus. Du kannst nun %PLUGIN_NAME_P% platzieren und zerstören.'
+leave-placemode: '&cDu bist nun nicht mehr im Platzier-Modus. Du kannst nun keine %PLUGIN_NAME_P% mehr platzieren oder zerstören.'
 
 first-page: '&7Du bist bereits auf der ersten Seite.'
 last-page: '&7Du bist bereits auf der letzten Seite.'
 wait-refresh: '&cBitte warte bevor du dies neu lädst.'
 block-listed: '&cDieser Block ist schon in der liste!'
 
-egg-nearby: '&3&lEI IN DER NÄHE'
+egg-nearby: '&3&l%PLUGIN_NAME_S% IN DER NÄHE'
 
 sound-volume: '&cDie Sound Lautstärke kann nur zwischen &e0 und 15&c sein!'
-egg-visible: '&aAlle Eier sind nun für &6%TIME_VISIBLE% Sekunden&a sichtbar.'
-egg-show-warning: '&4ACHTUNG: &aDie Eier sind sichtbar für alle Spieler.'
+egg-visible: '&aAlle %PLUGIN_NAME_P% sind nun für &6%TIME_VISIBLE% Sekunden&a sichtbar.'
+egg-show-warning: '&4ACHTUNG: &aDie %PLUGIN_NAME_P% sind sichtbar für alle Spieler.'
 armorstand-glow: '&cRüstungsständer-Leuchten kann nur zwischen &e0 und 120&c sein!'
-egg-radius: '&cEi nahe kann nur zwischen &e0 und 50&c sein!'
+egg-radius: '&c%PLUGIN_NAME_S% nahe kann nur zwischen &e0 und 50&c sein!'
 
 command-delete: '&7Du hast &aerfolgreich &7den &6Befehl #%ID% &cgelöscht&7.'
 new-command: '&7Schreibe den &3Befehl &7in &aChat&7 oder schreibe &c"cancel" &7um zurück zu kehren. Die Aktion wird in &22 minutes&7 ablaufen.'
@@ -48,9 +52,9 @@ command-expired: '&7Du hast den &6Befehl &cnicht schnell genug &3eingegeben. &4V
 one-command: '&cDu kannst nur einen Befehl zu gleichen Zeit eingeben.'
 command-blacklisted: '&cDieser Command ist auf der Black-List!'
 
-foundeggs-reset: '&7Alle &egefundenen Eier &7wurden &czurückgesetzt&7.'
-foundeggs-player-reset: '&7Alle &egefunden Eier &7von &a%PLAYER% &7wurden &czurückgesetzt&7.'
-foundeggs-player-reset-collection: '&7Alle &egefundenen Eier &7in der Sammlung &6%COLLECTION% &7von &a%PLAYER% &7wurden &czurückgesetzt&7.'
+foundeggs-reset: '&7Alle &egefundenen %PLUGIN_NAME_P% &7wurden &czurückgesetzt&7.'
+foundeggs-player-reset: '&7Alle &egefunden %PLUGIN_NAME_P% &7von &a%PLAYER% &7wurden &czurückgesetzt&7.'
+foundeggs-player-reset-collection: '&7Alle &egefundenen %PLUGIN_NAME_P% &7in der Sammlung &6%COLLECTION% &7von &a%PLAYER% &7wurden &czurückgesetzt&7.'
 
 activate-requirements: '&aAlle Anforderungen wurden aktiviert.'
 deactivate-requirements: '&cAlle Anforderungen wurden deaktiviert.'
@@ -61,9 +65,9 @@ collection-deleted: '&aDie Sammlung &6%COLLECTION% &awurde erfolgreich gelöscht
 chanced-chance: '&aDie Wahrscheinlichkeit wurde erfolgreich zu &e%CHANCE%% &ageändert.'
 rarity-message: '%RARITY% DROP! &7Du erhältst &b%ITEM% §7x%COUNT%'
 
-eggimport-hand: '&7Bitte halte den &eSpieler Kopf &7mit der &2Ei textur &7in deiner Hand.'
+eggimport-hand: '&7Bitte halte den &eSpieler Kopf &7mit der &2%PLUGIN_NAME_S% textur &7in deiner Hand.'
 eggimport-failed-profile: '&cEs gab einen Fehler im Spielerprofile.'
-eggimport-success: '&7Der neue Kopf wurde &aerfolgreich &7zu den &ePlatzier-Eiern &7hinzugefügt.'
+eggimport-success: '&7Der neue Kopf wurde &aerfolgreich &7zu den &ePlatzierungen &7hinzugefügt.'
 eggimport-failed: '&cDas Importieren des Items ist fehlgeschlagen. Deine Version wird nicht für das Feature unterstützt.'
 
 preset-already-exists: '&cDiese Voreinstellung existiert bereits.'
@@ -74,7 +78,7 @@ preset-delete: '&7Du hast &aerfolgreich &7die &eVoreinstellung %PRESET% &cgelös
 preset-default: '&7Du hast die &aStandard ladende &7Voreinstellung zu &e%PRESET% &7geändert.'
 preset-not-delete-default: '&cDu kannst die Standard ladende Voreinstellung nicht löschen.'
 preset-loading-no: '&cEine Voreinstellung wird bereits geladen.'
-preset-loading-success: '&aDie Voreinstellung &6%PRESET%&a wurde erfolgreich in alle Eier geladen.'
+preset-loading-success: '&aDie Voreinstellung &6%PRESET%&a wurde erfolgreich in alle %PLUGIN_NAME_P% geladen.'
 preset-loading-progress: '&bLade Voreinstellung... (%COUNT%/%MAX%)'
 
 setting-commandfeedback: '&aCommand Feedback wurde &4eingestellt. &aEntweder man benutzt nun dem Command "/gamerule sendCommandFeedback false" oder entfernt die Berechtigung "minecraft.admin.command_feedback".'
@@ -85,7 +89,7 @@ egg-data-converted-failed: '&cFehler beim Daten ändern. Überprüfe die Konsole
 egg-data-convert-start: '&cAdvancedEggHunt hat das alte Configurations System gefunden.\n&cEs wird nun zum neuen geändert.\n&4Das kann etwas dauern!'
 egg-data-convert-broadcast: '&4AdvancedEggHunt aktualisiert grad das Configurations System. Bitte nicht bewegen.'
 egg-data-convert-op-message: '&cAm besten wäre es wenn niemand auf dem Server ist. &4Die Konsole zeigt den Fortschritt.'
-egg-data-convert-locations: '&aAdvancedEggHunt hat alle Eier-Locations aktualisiert!'
+egg-data-convert-locations: '&aAdvancedEggHunt hat alle %PLUGIN_NAME_P%-Locations aktualisiert!'
 egg-data-convert-player: '&eAktualisiere die Daten von %UUID%.'
 egg-data-convert-done: '&aUPDATE fertig!'
 egg-data-convert-success: '&aeggs.yml wurde erfolgreich geändert.'
@@ -125,7 +129,7 @@ feature-coming-soon: '&cDieses Feature kommt bald.'
 item-added-success: '&aEs wurde das Item erfolgreich hinzugefügt.'
 invalid-chance: '&cUngültig! Bitte gebe eine Zahl zwischen 0.0000001 und 100 an.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Verfügbare Placeholders:\n&b- %PLAYER% --> Name des Spielers\n&b- & --> Für Farb-Codes (&6=gold)\n&b- %EGGS_FOUND% --> Wie viele Eier der Spieler gefunden hat\n&b- %EGGS_MAX% --> Wie viele Eier platziert sind\n&b- %PREFIX% --> Der Prefix des Plugins'
+placeholders-hover-content: '&2Verfügbare Placeholders:\n&b- %PLAYER% --> Name des Spielers\n&b- & --> Für Farb-Codes (&6=gold)\n&b- %EGGS_FOUND% --> Wie viele %PLUGIN_NAME_P% der Spieler gefunden hat\n&b- %EGGS_MAX% --> Wie viele %PLUGIN_NAME_P% platziert sind\n&b- %PREFIX% --> Der Prefix des Plugins'
 
 requirements-name-hour: 'Stunde'
 requirements-name-date: 'Datum'
@@ -178,13 +182,13 @@ help-message: |
   &6/advancedegghunt collection &7-> &bÄndere und bearbeite die Sammlungen.
   &6/advancedegghunt help &7-> &bZeigt dir diese angaben.
   &6/advancedegghunt reload &7-> &bLäd die config neu.
-  &6/advancedegghunt list &7-> &bZeigt dir eine Liste aller Eier.
-  &6/advancedegghunt place &7-> &bBegib dich in Place-Mode um Eier zu ändern.
+  &6/advancedegghunt list &7-> &bZeigt dir eine Liste aller %PLUGIN_NAME_P%.
+  &6/advancedegghunt place &7-> &bBegib dich in Place-Mode um %PLUGIN_NAME_P% zu ändern.
   &6/advancedegghunt settings &7-> &bBearbeite Einstellungen des Plugins.
-  &6/advancedegghunt hint &7-> &bÖffnet das Hinweis menu das dir hilt Eier zu finden.
-  &6/advancedegghunt progress &7-> &bZeigt dir deinen Fortschritt mit der Eiersuche.
-  &6/advancedegghunt show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen Eiern.
+  &6/advancedegghunt hint &7-> &bÖffnet das Hinweis menu das dir hilt %PLUGIN_NAME_P% zu finden.
+  &6/advancedegghunt progress &7-> &bZeigt dir deinen Fortschritt mit der %PLUGIN_NAME_P%suche.
+  &6/advancedegghunt show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen %PLUGIN_NAME_P%.
   &6/advancedegghunt commands &7-> &bÄndere commands.
-  &6/advancedegghunt reset [player | all] [Collection] &7-> &bSetzt die Eier der Spieler zurück.
+  &6/advancedegghunt reset [player | all] [Collection] &7-> &bSetzt die %PLUGIN_NAME_P% der Spieler zurück.
   &5&l==========HELP==========
   &3-----------------------------------------

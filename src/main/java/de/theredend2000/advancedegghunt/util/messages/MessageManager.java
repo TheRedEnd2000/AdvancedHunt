@@ -40,12 +40,13 @@ public class MessageManager {
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', Main.PREFIX + message));
         else
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', message));
-        return message;
+        return message.replaceAll("%PLUGIN_COMMAND%",plugin.getPluginConfig().getCommandFirstEntry()).replaceAll("%PLUGIN_NAME_S%",plugin.getPluginConfig().getPluginNameSingular()).replaceAll("%PLUGIN_NAME_P%",plugin.getPluginConfig().getPluginNamePlural());
     }
 
     public void sendMessage(CommandSender player, MessageKey key) {
         player.sendMessage(this.getMessage(key));
     }
+
 
     public void sendMessage(CommandSender player, MessageKey key, String... replacements) {
         String[] messages = this.getMessage(key).split("\n");

@@ -4,6 +4,17 @@ config-version: 3.3
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali)
 messages-lang: en
 
+# Change the plugin name or the main purpose
+plugin-name-singular: "egg"
+plugin-name-plural: "eggs"
+# The first command listed here is going to be the main command
+commands:
+  - "egghunt"
+  - "eggs"
+  - "advancedegghunt"
+  - "aeh"
+  - "easter"
+
 #Auto download
 Download:
   # Will be downloaded if a new plugin version is out

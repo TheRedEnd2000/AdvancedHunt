@@ -152,7 +152,7 @@ public class IndividualPresetConfig extends MultiFileConfiguration {
      * @param preset The name of the preset.
      */
     public void addDefaultRewardCommands(String preset) {
-        set(preset, "Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an egg. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
+        set(preset, "Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&aYou found an "+Main.getInstance().getPluginConfig().getPluginNameSingular()+". &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)\"");
         set(preset, "Commands.0.enabled", true);
         set(preset, "Commands.0.chance", 100);
         set(preset, "Commands.1.command", "minecraft:give %PLAYER% diamond");

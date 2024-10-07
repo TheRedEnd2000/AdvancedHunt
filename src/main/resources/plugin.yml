@@ -8,12 +8,7 @@ authors: [ TheRedEnd2000, GrafterCrafter ]
 
 commands:
   AdvancedEggHunt:
-    aliases:
-      - aeh
-      - advancedhunt
-      - egghunt
-      - eggs
-      - easter
+    aliases: []
 
 permissions:
   AdvancedEggHunt.command.reset:
