@@ -1,5 +1,9 @@
 config-version: 1.0
 
+# %PLUGIN_NAME_S% ist plugin-name-singular in der config
+# %PLUGIN_NAME_P% ist plugin-name-plural in der config
+# %PLUGIN_COMMAND% ist der erste eintrag in commands in der config
+
 # General buttons
 back_button:
   displayname: "&7« Back"
@@ -37,7 +41,7 @@ collection_item:
   lore:
     - ""
     - "&9Collection Information:"
-    - "&7   - Placed eggs: &6%MAX_EGGS%"
+    - "&7   - Placed %PLUGIN_NAME_P%: &6%MAX_EGGS%"
     - ""
     - "&aNote:"
     - "&7This collection applies to all actions that are carried out."
@@ -81,7 +85,7 @@ collection_editor_hide_for_player:
   displayname: "&8&mHide for player"
   lore:
     - ""
-    - "&7If a player finds an egg it will not longer"
+    - "&7If a player finds an %PLUGIN_NAME_S% it will not longer"
     - "&7be shown to them."
     - "&cThis is only Client-Side"
     - ""
@@ -90,10 +94,10 @@ collection_editor_one_player:
   displayname: "&3One Player"
   lore:
     - ""
-    - "&7Only one player can find the egg."
+    - "&7Only one player can find the %PLUGIN_NAME_S%."
     - "&7It is after finding no longer accessible."
     - ""
-    - "&cAfter disabling the feature, all eggs that are"
+    - "&cAfter disabling the feature, all %PLUGIN_NAME_P% that are"
     - "&cmade as found will be reset."
     - ""
     - "&eClick to toggle."
@@ -105,7 +109,7 @@ collection_editor_delete_type:
     - "&7of a collection."
     - ""
     - "%NOTHING_TYPE%Nothing"
-    - "&8All blocks that were eggs will stay. (includes player heads)"
+    - "&8All blocks that were %PLUGIN_NAME_P% will stay. (includes player heads)"
     - "%PLAYER_HEADS_TYPE%Player Heads"
     - "&8All blocks that are player heads will be removed."
     - "%EVERYTHING_TYPE%Everything"
@@ -142,7 +146,7 @@ collection_creator_create:
 
 # Egg related
 eggslist_egg:
-  displayname: "&2&lEgg &7(ID#%EGG_ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
   lore:
     - "&9Location:"
     - "&7X: &e%LOCATION_X%"
@@ -164,12 +168,12 @@ eggplace_information:
   lore:
     - ""
     - "&2How to add custom textures:"
-    - "&7Custom textures for eggs (player heads)"
+    - "&7Custom textures for %PLUGIN_NAME_P% (player heads)"
     - "&7can be added by clicking the item in your"
     - "&7inventory. It will get the texture."
     - ""
     - "&2Other blocks:"
-    - "&7You can add eggs that are blocks,"
+    - "&7You can add %PLUGIN_NAME_P% that are blocks,"
     - "&7so players have to search for blocks"
     - "&7instead of player heads."
     - ""
@@ -178,14 +182,14 @@ eggplace_information:
     - ""
     - "&eClick to get the discord link."
 eggplace_egg:
-  displayname: "&b&lEggs Type #%EGG_ID%"
+  displayname: "&b&l%PLUGIN_NAME_P% Type #%EGG_ID%"
   lore:
     - ""
     - "&eLEFT-CLICK to add to your inventory."
     - "&eRIGHT-CLICK to remove."
 
 eggprogress_location_found:
-  displayname: "&2&lEgg &7(ID#%ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
     - "&9Location:"
@@ -193,34 +197,34 @@ eggprogress_location_found:
     - "&7Y: &e%LOCATION_Y%"
     - "&7Z: &e%LOCATION_Z%"
     - ""
-    - "&2&lYou found this egg."
+    - "&2&lYou found this %PLUGIN_NAME_S%."
     - ""
     - "&9Collected:"
     - "&7Date: &6%DATE%"
     - "&7Time: &6%TIME%"
 eggprogress_found:
-  displayname: "&2&lEgg &7(ID#%ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
-    - "&2&lYou found this egg."
+    - "&2&lYou found this %PLUGIN_NAME_S%."
     - ""
     - "&9Collected:"
     - "&7Date: &6%DATE%"
     - "&7Time: &6%TIME%"
 eggprogress_not_found:
-  displayname: "&2&lEgg &7(ID#%ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
-    - "&4&lYou haven't found this egg yet."
+    - "&4&lYou haven't found this %PLUGIN_NAME_S% yet."
 
 # Player related
 information_player:
   displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
   lore:
-    - "&7%PLAYER_NAME% has found the &2egg #%EGG_ID%&7."
+    - "&7%PLAYER_NAME% has found the &2%PLUGIN_NAME_S% #%EGG_ID%&7."
     - ""
     - "&9Information of %PLAYER_NAME%:"
-    - "&7Eggs found: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% found: &6%EGGS_FOUND%/%EGGS_MAX%"
     - ""
     - "&7Date: &6%DATE%"
     - "&7Time: &6%TIME%"
@@ -240,9 +244,9 @@ leaderboard_player:
   displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
-    - "&7Eggs Found: &3%EGGS_FOUND%"
-    - "&7Eggs Remaining: &3%EGGS_REMAINING%"
-    - "&7Max Eggs: &3%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% Found: &3%EGGS_FOUND%"
+    - "&7%PLUGIN_NAME_P% Remaining: &3%EGGS_REMAINING%"
+    - "&7Max E%PLUGIN_NAME_P%: &3%EGGS_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 
@@ -252,7 +256,7 @@ rewards_confirm_menu_confirm:
   lore:
     - ""
     - "&7By clicking this button you will load"
-    - "&7this preset into all placed eggs."
+    - "&7this preset into all placed %PLUGIN_NAME_P%."
     - ""
     - "&eClick to confirm"
 rewards_confirm_menu_cancel:
@@ -264,7 +268,7 @@ rewards_individual_save_preset:
     - ""
     - "&7Saves the current listed commands"
     - "&7in a preset that you can load"
-    - "&7for other eggs again."
+    - "&7for other %PLUGIN_NAME_P% again."
     - ""
     - "&2Note: &7You need at least 1 command to save a preset!"
     - ""
@@ -293,22 +297,22 @@ rewards_individual_switch_global:
     - "&7Switching to global lets you manage"
     - "&7all commands and presets for"
     - "&7the function if a player has found"
-    - "&7&lall &7eggs."
+    - "&7&lall &7%PLUGIN_NAME_P%."
     - ""
     - "&eClick to switch."
 rewards_individual_information:
   displayname: "&9Information"
   lore:
-    - "&7The individual egg rewards count"
-    - "&7as &7&lone egg reward&7."
-    - "&7This means if the player finds &7&lone egg&7,"
+    - "&7The individual %PLUGIN_NAME_S% rewards count"
+    - "&7as &7&lone %PLUGIN_NAME_S% reward&7."
+    - "&7This means if the player finds &7&lone %PLUGIN_NAME_S%&7,"
     - "&7all commands that are in this inventory"
     - "&7will get executed."
     - ""
-    - "&c&n&oThese commands will only count for this egg."
+    - "&c&n&oThese commands will only count for this %PLUGIN_NAME_S%."
     - ""
     - "&7You can save all listed commands as preset"
-    - "&7to load it in other eggs or set it as default."
+    - "&7to load it in other %PLUGIN_NAME_P% or set it as default."
 rewards_individual_reward:
   displayname: "&b&lReward &7#%REWARD_ID%"
   lore:
@@ -330,7 +334,7 @@ rewards_global_save_preset:
     - ""
     - "&7Saves the current listed commands"
     - "&7in a preset that you can load"
-    - "&7for other eggs again."
+    - "&7for other %PLUGIN_NAME_P% again."
     - ""
     - "&2Note: &7You need at least 1 command to save a preset!"
     - ""
@@ -359,15 +363,15 @@ rewards_global_switch_individual:
     - "&7Switching to individual lets you manage"
     - "&7all commands and presets for"
     - "&7the function if a player has found"
-    - "&7&lone &7egg."
+    - "&7&lone &7%PLUGIN_NAME_S%g."
     - ""
     - "&eClick to switch."
 rewards_global_information:
   displayname: "&9Information"
   lore:
-    - "&7The global egg rewards count"
-    - "&7as &7&lall egg reward&7."
-    - "&7This means if the player finds &7&lall eggs&7,"
+    - "&7The global %PLUGIN_NAME_S% rewards count"
+    - "&7as &7&lall %PLUGIN_NAME_S% reward&7."
+    - "&7This means if the player finds &7&lall %PLUGIN_NAME_P%&7,"
     - "&7all commands that are in this inventory"
     - "&7will get executed."
     - ""
@@ -415,7 +419,7 @@ preset_individual:
     - "&eLEFT-CLICK to load."
     - "&eMIDDLE-CLICK to set it as default preset."
     - "&eRIGHT-CLICK to delete."
-    - "&eDROP to load it in all placed eggs."
+    - "&eDROP to load it in all placed %PLUGIN_NAME_P%."
 
 
 # Requirement related
@@ -459,7 +463,7 @@ requirements_season:
   displayname: "&6%SEASON%"
   lore:
     - "&8%SEASON_INFORMATION%"
-    - "&7Makes that the eggs are only"
+    - "&7Makes that the %PLUGIN_NAME_P% are only"
     - "&7available in the season %SEASON%"
     - ""
     - "&7Currently: %STATUS%"
@@ -468,7 +472,7 @@ requirements_season:
 requirements_year:
   displayname: "&6Year %YEAR%"
   lore:
-    - "&7Makes that the eggs are only"
+    - "&7Makes that the %PLUGIN_NAME_P% are only"
     - "&7available in the year %YEAR%."
     - ""
     - "&7Currently: %STATUS%"
@@ -477,7 +481,7 @@ requirements_year:
 requirements_month:
   displayname: "&6%MONTH%"
   lore:
-    - "&7Makes that the eggs are only"
+    - "&7Makes that the %PLUGIN_NAME_P% are only"
     - "&7available in the month %MONTH%."
     - ""
     - "&7Currently: %STATUS%"
@@ -486,7 +490,7 @@ requirements_month:
 requirements_weekday:
   displayname: "&6%WEEKDAY%"
   lore:
-    - "&7Makes that the eggs are only"
+    - "&7Makes that the %PLUGIN_NAME_P% are only"
     - "&7available in the weekday %WEEKDAY%."
     - ""
     - "&7Currently: %STATUS%"
@@ -495,7 +499,7 @@ requirements_weekday:
 requirements_date:
   displayname: "&6%DATE%"
   lore:
-    - "&7Makes that the eggs are only"
+    - "&7Makes that the %PLUGIN_NAME_P% are only"
     - "&7available on %DATE%."
     - ""
     - "&7Currently: %STATUS%"
@@ -505,7 +509,7 @@ requirements_hour:
   displayname: "&6Hour %HOUR%"
   lore:
     - "&8Hours: (%HOUR_FORMAT%)" # The hour format can be changed in the messages-<lang>.yml file
-    - "&7Makes that the eggs are only"
+    - "&7Makes that the %PLUGIN_NAME_P% are only"
     - "&7available in the hour %HOUR%."
     - ""
     - "&7Currently: %STATUS%"
@@ -574,21 +578,21 @@ reset_reset_all:
 
 # Settings related
 settings_one_egg_reward:
-  displayname: "&3One egg found reward"
+  displayname: "&3One %PLUGIN_NAME_S% found reward"
   lore:
     - ""
     - "&7If this function is activated"
-    - "&7all commands entered in one egg found"
+    - "&7all commands entered in one %PLUGIN_NAME_S% found"
     - "&7will be executed."
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
 settings_all_eggs_reward:
-  displayname: "&3All eggs found reward"
+  displayname: "&3All %PLUGIN_NAME_P% found reward"
   lore:
     - ""
     - "&7If this function is activated"
-    - "&7all commands entered in all eggs found"
+    - "&7all commands entered in all %PLUGIN_NAME_P% found"
     - "&7will be executed."
     - ""
     - "%STATUS%"
@@ -632,7 +636,7 @@ settings_show_coordinates:
     - "&7in the progress menu."
     - ""
     - "&2Info: &7The coordinates are only visible if"
-    - "&7the player has found the egg."
+    - "&7the player has found the %PLUGIN_NAME_S%."
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
@@ -650,7 +654,7 @@ settings_egg_nearby_radius:
   displayname: "&3Nearby title radius"
   lore:
     - ""
-    - "&7Change the radius of the egg nearby message for all players"
+    - "&7Change the radius of the %PLUGIN_NAME_S% nearby message for all players"
     - "&7If radius equals 0 no title will be displayed."
     - ""
     - "&7Currently: %RADIUS%"
@@ -671,7 +675,7 @@ settings_firework:
   lore:
     - ""
     - "&7If this function is activated"
-    - "&7a firework will spawn when an egg is found."
+    - "&7a firework will spawn when an %PLUGIN_NAME_S% is found."
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
