@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.listeners;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.EggPlaceMenu;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
+import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,7 +31,9 @@ public class PlayerInteractItemEvent implements Listener {
             case "egghunt.finish":
                 if(Main.getInstance().getPlacePlayers().contains(player)) {
                     event.getItemDrop().remove();
-                    Bukkit.dispatchCommand(player, "egghunt place");
+                    Main.getInstance().getEggManager().finishEggPlacing(player);
+                    Main.getInstance().getPlacePlayers().remove(player);
+                    Main.getInstance().getMessageManager().sendMessage(player, MessageKey.LEAVE_PLACEMODE);
                 }
                 return;
             case "egghunt.eggs":
