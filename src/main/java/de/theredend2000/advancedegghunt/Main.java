@@ -25,12 +25,17 @@ import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import de.theredend2000.advancedegghunt.util.saveinventory.DatetimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -190,7 +195,10 @@ public final class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("advancedegghunt").setExecutor(new AdvancedEggHuntCommand());
+        /*
+            Register custom commands out of config
+         */
+        new CustomCommandRegisterManager().registerDynamicCommand();
     }
 
 

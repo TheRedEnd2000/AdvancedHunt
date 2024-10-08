@@ -7,8 +7,6 @@ website: https://www.spigotmc.org/resources/advancedegghunt.109085/
 authors: [ TheRedEnd2000, GrafterCrafter ]
 
 commands:
-  AdvancedEggHunt:
-    aliases: []
 
 permissions:
   AdvancedEggHunt.command.reset:

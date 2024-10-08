@@ -39,7 +39,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         return handleTabComplete(sender, args);
     }
 
-    private List<String> handleTabComplete(CommandSender sender, String[] args) {
+    public List<String> handleTabComplete(CommandSender sender, String[] args) {
         List<String> completions = new ArrayList<>();
         switch (args.length) {
             case 1:
