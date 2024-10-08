@@ -164,7 +164,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
             player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD)
                     .setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0="))
                     .setDisplayName("§2§lFinish setup §7(Drop)")
-                    .setLore("§7Drop to finish the setup", "§7or type §e/egghunt place §7again.")
+                    .setLore("§7Drop to finish the setup", "§7or type §e/"+plugin.getPluginConfig().getCommandFirstEntry()+" place §7again.")
                     .setCustomId("egghunt.finish")
                     .build());
         }
