@@ -2,6 +2,7 @@ package de.theredend2000.advancedegghunt.commands;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.configurations.PluginConfig;
 import de.theredend2000.advancedegghunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.*;
 import de.theredend2000.advancedegghunt.util.HexColor;
@@ -28,10 +29,23 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     private Main plugin;
     private EggManager eggManager;
 
+    private static volatile AdvancedEggHuntCommand instance;
+
     public AdvancedEggHuntCommand() {
         messageManager = Main.getInstance().getMessageManager();
         plugin = Main.getInstance();
         eggManager = Main.getInstance().getEggManager();
+    }
+
+    public static AdvancedEggHuntCommand getInstance() {
+        if (instance == null) {
+            synchronized (PluginConfig.class) {
+                if (instance == null) {
+                    instance = new AdvancedEggHuntCommand();
+                }
+            }
+        }
+        return instance;
     }
 
     @Override

@@ -4,7 +4,9 @@ import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.commands.AdvancedEggHuntCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -29,7 +31,12 @@ public class CustomCommandRegisterManager {
                 command = new BukkitCommand(commandName) {
                     @Override
                     public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
-                        return new AdvancedEggHuntCommand().onCommand(sender, this, label, args);
+                        return AdvancedEggHuntCommand.getInstance().onCommand(sender, this, label, args);
+                    }
+
+                    @Override
+                    public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+                        return AdvancedEggHuntCommand.getInstance().handleTabComplete(sender, args);
                     }
                 };
                 command.setAliases(aliases);
