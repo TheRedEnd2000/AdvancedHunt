@@ -179,16 +179,16 @@ help-message: |
   &7Hersteller: &6%AUTHOR%
 
   &2&lCommands
-  &6/advancedegghunt collection &7-> &bÄndere und bearbeite die Sammlungen.
-  &6/advancedegghunt help &7-> &bZeigt dir diese angaben.
-  &6/advancedegghunt reload &7-> &bLäd die config neu.
-  &6/advancedegghunt list &7-> &bZeigt dir eine Liste aller %PLUGIN_NAME_P%.
-  &6/advancedegghunt place &7-> &bBegib dich in Place-Mode um %PLUGIN_NAME_P% zu ändern.
-  &6/advancedegghunt settings &7-> &bBearbeite Einstellungen des Plugins.
-  &6/advancedegghunt hint &7-> &bÖffnet das Hinweis menu das dir hilt %PLUGIN_NAME_P% zu finden.
-  &6/advancedegghunt progress &7-> &bZeigt dir deinen Fortschritt mit der %PLUGIN_NAME_P%suche.
-  &6/advancedegghunt show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen %PLUGIN_NAME_P%.
-  &6/advancedegghunt commands &7-> &bÄndere commands.
-  &6/advancedegghunt reset [player | all] [Collection] &7-> &bSetzt die %PLUGIN_NAME_P% der Spieler zurück.
+  &6/%PLUGIN_COMMAND% collection &7-> &bÄndere und bearbeite die Sammlungen.
+  &6/%PLUGIN_COMMAND% help &7-> &bZeigt dir diese angaben.
+  &6/%PLUGIN_COMMAND% reload &7-> &bLäd die config neu.
+  &6/%PLUGIN_COMMAND% list &7-> &bZeigt dir eine Liste aller %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% place &7-> &bBegib dich in Place-Mode um %PLUGIN_NAME_P% zu ändern.
+  &6/%PLUGIN_COMMAND% settings &7-> &bBearbeite Einstellungen des Plugins.
+  &6/%PLUGIN_COMMAND% hint &7-> &bÖffnet das Hinweis menu das dir hilt %PLUGIN_NAME_P% zu finden.
+  &6/%PLUGIN_COMMAND% progress &7-> &bZeigt dir deinen Fortschritt mit der %PLUGIN_NAME_P%suche.
+  &6/%PLUGIN_COMMAND% show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% commands &7-> &bÄndere commands.
+  &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bSetzt die %PLUGIN_NAME_P% der Spieler zurück.
   &5&l==========HELP==========
   &3-----------------------------------------

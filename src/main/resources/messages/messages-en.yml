@@ -182,16 +182,16 @@ help-message: |
   &7Author: &6%AUTHOR%
 
   &2&lCommands
-  &6/advancedegghunt collection &7-> &bSwitch and edit collections.
-  &6/advancedegghunt help &7-> &bShows this help messages and information.
-  &6/advancedegghunt reload &7-> &bReloads the config.
-  &6/advancedegghunt list &7-> &bLists all placed %PLUGIN_NAME_P%.
-  &6/advancedegghunt place &7-> &bEnter Place-Mode to place or break %PLUGIN_NAME_P%.
-  &6/advancedegghunt settings &7-> &bConfigure many settings of the plugin.
-  &6/advancedegghunt hint &7-> &bOpens the hint menu to find %PLUGIN_NAME_P% easier.
-  &6/advancedegghunt progress &7-> &bView your progress of the %PLUGIN_NAME_P%.
-  &6/advancedegghunt show &7-> &bSpawns an glowing armorstand at every %PLUGIN_NAME_S%.
-  &6/advancedegghunt commands &7-> &bChange commands or add more.
-  &6/advancedegghunt reset [player | all] [Collection] &7-> &bResets the Found%PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% collection &7-> &bSwitch and edit collections.
+  &6/%PLUGIN_COMMAND% help &7-> &bShows this help messages and information.
+  &6/%PLUGIN_COMMAND% reload &7-> &bReloads the config.
+  &6/%PLUGIN_COMMAND% list &7-> &bLists all placed %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% place &7-> &bEnter Place-Mode to place or break %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% settings &7-> &bConfigure many settings of the plugin.
+  &6/%PLUGIN_COMMAND% hint &7-> &bOpens the hint menu to find %PLUGIN_NAME_P% easier.
+  &6/%PLUGIN_COMMAND% progress &7-> &bView your progress of the %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% show &7-> &bSpawns an glowing armorstand at every %PLUGIN_NAME_S%.
+  &6/%PLUGIN_COMMAND% commands &7-> &bChange commands or add more.
+  &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bResets the Found%PLUGIN_NAME_P%.
   &5&l==========HELP==========
   &3-----------------------------------------

@@ -8,6 +8,7 @@ messages-lang: en
 plugin-name-singular: "egg"
 plugin-name-plural: "eggs"
 # The first command listed here is going to be the main command
+# IMPORTANT: COMMANDS WILL ONLY APPLY IF THE SERVER RESTARTS; A PLUGIN RELOAD WILL NOW CHANGE THIS!
 commands:
   - "egghunt"
   - "eggs"
