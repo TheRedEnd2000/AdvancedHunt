@@ -1,11 +1,11 @@
 config-version: 2.6
 
-# %PLUGIN_NAME_S% ist plugin-name-singular in der config
-# %PLUGIN_NAME_P% ist plugin-name-plural in der config
-# %PLUGIN_COMMAND% ist der erste eintrag in commands in der config
+# %PLUGIN_NAME_S% is plugin-name-singular in the config
+# %PLUGIN_NAME_P% is plugin-name-plural in the config
+# %PLUGIN_COMMAND% is the first custom command set
 
 no-permission-error: "&cYou don't have the &6%PERMISSION% permission&c to use this command."
-command-not-found: '&cNo command found! &7Please type &e/egghunt help &7to see all command.'
+command-not-found: '&cNo command found! &7Please type &e/%PLUGIN_COMMAND% help &7to see all command.'
 only-player: '&cOnly player can use this command.'
 reload-config: '&7The config was &ereloaded &asuccessfully&7.'
 player-not-found: '&7The system has &cno entry &7for the player &a%PLAYER%&7.'
@@ -27,7 +27,7 @@ hint-timeout: '&cYou have not clicked fast enough.'
 hint-cancelled: '&aYou have successfully canceled this.'
 egg-not-accessed: '&cYou cannot access this right now.'
 
-only-in-placemode: '&cYou can only place or break %PLUGIN_NAME_P% in build mode. Type &e/egghunt place &cto go in this mode.'
+only-in-placemode: '&cYou can only place or break %PLUGIN_NAME_P% in build mode. Type &e/%PLUGIN_COMMAND% place &cto go in this mode.'
 enter-placemode: '&aYou are now in Place mode. You can now add or remove %PLUGIN_NAME_P%.'
 leave-placemode: '&cYou left the Place mode. You can`t longer add or remove %PLUGIN_NAME_P%.'
 

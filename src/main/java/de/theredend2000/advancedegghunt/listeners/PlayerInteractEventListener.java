@@ -70,12 +70,14 @@ public class PlayerInteractEventListener implements Listener {
 
             if(!Main.getInstance().getPermissionManager().checkPermission(player, Permission.FindEggs)){
                 player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR));
+                player.playSound(player.getLocation(), soundManager.playErrorSound(), soundManager.getSoundVolume(), 1);
                 return;
             }
 
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
             if(!placedEggs.getBoolean("Enabled")){
                 player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
+                player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
                 return;
             }
             if (eggManager.hasFound(player, id, collection)) {
@@ -86,10 +88,12 @@ public class PlayerInteractEventListener implements Listener {
 
             if(!Main.getInstance().getRequirementsManager().canBeAccessed(collection)){
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
+                player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
                 return;
             }
             if(eggManager.isMarkedAsFound(collection, id)){
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_ALREADY_FOUND_BY_PLAYER));
+                player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
                 return;
             }
 
@@ -115,10 +119,11 @@ public class PlayerInteractEventListener implements Listener {
                         double chance = placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + commandID + ".chance") / 100;
                         double random = new Random().nextDouble();
                         boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
+                        boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
                         if(random < chance) {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
 
-                            if(startsWithGive)
+                            if(startsWithGive && sendRarityMessage)
                                 player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
                         }
                     }
@@ -134,9 +139,11 @@ public class PlayerInteractEventListener implements Listener {
                         double chance = placedEggs.getDouble("GlobalRewards." + commandID + ".chance") / 100;
                         double random = new Random().nextDouble();
                         boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
+                        boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
                         if(random < chance) {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%EGGS_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%EGGS_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
-                            if(startsWithGive)
+
+                            if(startsWithGive && sendRarityMessage)
                                 player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
                         }
                     }

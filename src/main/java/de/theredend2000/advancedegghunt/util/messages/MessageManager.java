@@ -34,13 +34,14 @@ public class MessageManager {
         if (message == null) {
             return "Message not found: " + key.name();
         }
+        message = message.replaceAll("%PLUGIN_COMMAND%",plugin.getPluginConfig().getCommandFirstEntry()).replaceAll("%PLUGIN_NAME_S%",plugin.getPluginConfig().getPluginNameSingular()).replaceAll("%PLUGIN_NAME_P%",plugin.getPluginConfig().getPluginNamePlural());
         for(String blacklisted :  blacklistKeys())
             if(key.name().equals(blacklisted)) return HexColor.color(message);
         if(prefix_enabled)
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', Main.PREFIX + message));
         else
             message = HexColor.color(ChatColor.translateAlternateColorCodes('&', message));
-        return message.replaceAll("%PLUGIN_COMMAND%",plugin.getPluginConfig().getCommandFirstEntry()).replaceAll("%PLUGIN_NAME_S%",plugin.getPluginConfig().getPluginNameSingular()).replaceAll("%PLUGIN_NAME_P%",plugin.getPluginConfig().getPluginNamePlural());
+        return message;
     }
 
     public void sendMessage(CommandSender player, MessageKey key) {

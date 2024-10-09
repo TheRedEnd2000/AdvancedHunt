@@ -416,5 +416,9 @@ public class PluginConfig extends Configuration {
         return config.getString("Rarity."+rarity.toLowerCase()+".display").replaceAll("&","§");
     }
 
+    public boolean sendRarityMessage(){
+        return config.getBoolean("send-rarity-messages");
+    }
+
     //endregion
 }

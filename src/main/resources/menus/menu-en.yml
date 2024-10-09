@@ -1,8 +1,8 @@
 config-version: 1.0
 
-# %PLUGIN_NAME_S% ist plugin-name-singular in der config
-# %PLUGIN_NAME_P% ist plugin-name-plural in der config
-# %PLUGIN_COMMAND% ist der erste eintrag in commands in der config
+# %PLUGIN_NAME_S% is plugin-name-singular in the config
+# %PLUGIN_NAME_P% is plugin-name-plural in the config
+# %PLUGIN_COMMAND% is the first custom command set
 
 # General buttons
 back_button:

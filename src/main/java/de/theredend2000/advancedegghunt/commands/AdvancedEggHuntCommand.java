@@ -200,6 +200,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         if (!checkPermission(player, Permission.Command.RELOAD)) return;
         Main.getInstance().getPluginConfig().reloadConfig();
         messageManager.reloadMessages();
+        Main.getInstance().getMessageManager().reloadMessages();
         eggManager.spawnEggParticle();
         Main.getInstance().getPlayerEggDataManager().reload();
         Main.getInstance().getEggDataManager().reload();
