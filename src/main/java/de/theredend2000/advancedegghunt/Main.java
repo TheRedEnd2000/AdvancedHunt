@@ -195,9 +195,6 @@ public final class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        /*
-            Register custom commands out of config
-         */
         new CustomCommandRegisterManager().registerDynamicCommand();
     }
 
