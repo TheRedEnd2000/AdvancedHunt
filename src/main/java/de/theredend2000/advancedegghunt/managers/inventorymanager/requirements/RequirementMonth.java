@@ -43,7 +43,7 @@ public class RequirementMonth extends InventoryMenu {
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
                 .build();
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
-                .setCustomId("requirement_month.back")
+                .setCustomId("requirement_month.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
                 .build();

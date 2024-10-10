@@ -129,7 +129,8 @@ public class RequirementMenu extends InventoryMenu {
                 new RequirementHours(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
             case "requirement_menu.date":
-                messageManager.sendMessage(player, MessageKey.REQUIREMENT_SECTION_UNAVAILABLE);
+                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+                new RequirementsDate(Main.getPlayerMenuUtility(player)).open(collection);
                 break;
             case "requirement_menu.weekday":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

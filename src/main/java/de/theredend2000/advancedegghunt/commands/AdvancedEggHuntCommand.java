@@ -10,6 +10,7 @@ import de.theredend2000.advancedegghunt.util.HexColor;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
 import de.theredend2000.advancedegghunt.util.enums.Permission;
+import de.theredend2000.advancedegghunt.util.messages.MenuManager;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
     private MessageManager messageManager;
+    private MenuManager menuManager;
     private Main plugin;
     private EggManager eggManager;
 
@@ -34,6 +36,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
 
     public AdvancedEggHuntCommand() {
         messageManager = Main.getInstance().getMessageManager();
+        menuManager = Main.getInstance().getMenuManager();
         plugin = Main.getInstance();
         eggManager = Main.getInstance().getEggManager();
     }
@@ -201,7 +204,7 @@ public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
         if (!checkPermission(player, Permission.Command.RELOAD)) return;
         Main.getInstance().getPluginConfig().reloadConfig();
         messageManager.reloadMessages();
-        Main.getInstance().getMessageManager().reloadMessages();
+        menuManager.reloadMessages();
         eggManager.spawnEggParticle();
         Main.getInstance().getPlayerEggDataManager().reload();
         Main.getInstance().getEggDataManager().reload();

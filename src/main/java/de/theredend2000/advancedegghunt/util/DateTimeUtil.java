@@ -18,6 +18,43 @@ public abstract class DateTimeUtil {
 
     public static final String CUSTOM_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    // Neue Funktion: Anzahl der Tage im aktuellen Jahr
+    public static int getDaysInCurrentYear() {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
+    }
+
+    // Neue Funktion: Liste aller Tage im aktuellen Jahr als String im "yyyy-MM-dd" Format
+    public static List<String> getAllDaysOfYear() {
+        List<String> days = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        int totalDays = getDaysInCurrentYear();
+
+        for (int i = 1; i <= totalDays; i++) {
+            calendar.set(Calendar.DAY_OF_YEAR, i);
+            days.add(dateToString(calendar.getTime(), ISO_DATE_FORMAT));
+        }
+        return days;
+    }
+
+    public static ArrayList<String> getDaysOfMonth(int month) {
+        ArrayList<String> daysOfMonth = new ArrayList<>();
+
+        // Schleife durch alle Tage des Jahres
+        for (String day : getAllDaysOfYear()) {
+            // Split den Tag nach dem "-" Zeichen (Format: yyyy-MM-dd)
+            String[] parts = day.split("-");
+
+            // Extrahiere den Monatsteil und überprüfe, ob er mit dem angegebenen Monat übereinstimmt
+            int monthOfDay = Integer.parseInt(parts[1]);
+            if (monthOfDay == month) {
+                daysOfMonth.add(day);  // Füge nur die Tage des ausgewählten Monats hinzu
+            }
+        }
+
+        return daysOfMonth;
+    }
+
     public static long getDayRemain(Date currentDate, Date openDate){
         long interval = openDate.getTime() - currentDate.getTime();
         long day = interval/(24*3600*1000);

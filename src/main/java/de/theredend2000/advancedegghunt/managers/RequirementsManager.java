@@ -61,7 +61,7 @@ public class RequirementsManager {
             List<String> dateList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Date").getKeys(false));
 
             if (!dateList.isEmpty()) {
-                dateList.sort(Comparator.comparingInt(Integer::parseInt));
+                dateList.sort(Comparator.comparingInt(day -> DateTimeUtil.getAllDaysOfYear().indexOf(day)));
                 int counter = 0;
                 lore.add("§d"+messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_DATE)+":");
                 for (String dates : dateList) {
@@ -186,6 +186,7 @@ public class RequirementsManager {
         String pre = "Requirements.";
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         String currentHour = String.valueOf(LocalTime.now().getHour());
+        String currentDate = DateTimeUtil.getCurrentDateString();
         String currentWeekday = String.valueOf(DateTimeUtil.getWeek(Calendar.getInstance()));
         String currentMonth = String.valueOf(DateTimeUtil.getMonth(Calendar.getInstance()));
         String currentYear = String.valueOf(DateTimeUtil.getCurrentYear());
@@ -196,17 +197,17 @@ public class RequirementsManager {
                     .filter(hours -> placedEggs.getBoolean(pre + ".Hours." + hours))
                     .collect(Collectors.toList()));
         }
-        /*if (placedEggs.contains("Requirements.Date")) {
-            String currentHour = String.valueOf(LocalTime.now().getHour());
-            List<String> hoursList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Hours").getKeys(false));
+        if (placedEggs.contains("Requirements.Date")) {
+            Bukkit.broadcastMessage(String.valueOf(DateTimeUtil.getAllDaysOfYear()));
+            List<String> dateList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Date").getKeys(false));
 
-            List<String> available = hoursList.stream()
-                    .filter(hours -> placedEggs.getBoolean(pre + ".Hours." + hours))
+            List<String> available = dateList.stream()
+                    .filter(date -> placedEggs.getBoolean(pre + ".Date." + date))
                     .collect(Collectors.toList());
 
-            Bukkit.broadcastMessage(currentHour);
-            return available.contains(currentHour);
-        }*/
+            Bukkit.broadcastMessage(currentDate);
+            return available.contains(currentDate);
+        }
         if (placedEggs.contains("Requirements.Weekday")) {
             allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Weekday").getKeys(false).stream()
                     .filter(weekday -> placedEggs.getBoolean(pre + ".Weekday." + weekday))
@@ -238,6 +239,9 @@ public class RequirementsManager {
         for(int i = 0; i < 24; i++){
             placedEggs.set("Requirements.Hours." + i, active);
         }
+        for(String currentDate : DateTimeUtil.getAllDaysOfYear()){
+            placedEggs.set("Requirements.Date." + currentDate, active);
+        }
         for(String weekday : DateTimeUtil.getWeekList()){
             placedEggs.set("Requirements.Weekday." + weekday, active);
         }
@@ -258,7 +262,7 @@ public class RequirementsManager {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         placedEggs.set("Reset.Year", 0);
         placedEggs.set("Reset.Month", 0);
-        placedEggs.set("Reset.Day", 0);
+        placedEggs.set("Reset.Date", 0);
         placedEggs.set("Reset.Hour", 0);
         placedEggs.set("Reset.Minute", 0);
         placedEggs.set("Reset.Second", 0);
@@ -269,7 +273,7 @@ public class RequirementsManager {
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         int years = placedEggs.getInt("Reset.Year") * 365 * 24 * 60 * 60;
         int months = placedEggs.getInt("Reset.Month") * 30 * 24 * 60 * 60;
-        int days = placedEggs.getInt("Reset.Day") * 24 * 60 * 60;
+        int days = placedEggs.getInt("Reset.Date") * 24 * 60 * 60;
         int hours = placedEggs.getInt("Reset.Hour") * 60 * 60;
         int min = placedEggs.getInt("Reset.Minute") * 60;
         int seconds = placedEggs.getInt("Reset.Second");
@@ -363,7 +367,12 @@ public class RequirementsManager {
                 }
                 return hours + "/24";
             case Date:
-                return "§4DISABLED";
+                int date = 0;
+                for(String currentDate : DateTimeUtil.getAllDaysOfYear()){
+                    boolean enabled = placedEggs.getBoolean("Requirements.Date." + currentDate);
+                    if(enabled) date++;
+                }
+                return date + "/"+DateTimeUtil.getDaysInCurrentYear();
             case Weekday:
                 int weekdays = 0;
                 for(String weekday : DateTimeUtil.getWeekList()){
