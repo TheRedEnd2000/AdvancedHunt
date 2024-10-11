@@ -35,11 +35,6 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
         playerMenuUtility.getOwner().openInventory(getInventory());
     }
 
-    public void reopen() {
-        getInventory().setContents(inventoryContent);
-        setMenuItems();
-    }
-
     public void addMenuBorderButtons() {
         inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
                 .setCustomId("leaderboard.close")

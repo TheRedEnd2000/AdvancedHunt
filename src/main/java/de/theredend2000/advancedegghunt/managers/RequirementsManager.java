@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class RequirementsManager {
@@ -28,7 +29,14 @@ public class RequirementsManager {
         messageManager = plugin.getMessageManager();
     }
 
-    public List<String> getListRequirementsLore(String collection){
+    public void getListRequirementsLoreAsync(String collection, Consumer<List<String>> callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            List<String> lore = getListRequirementsLore(collection);
+            Bukkit.getScheduler().runTask(Main.getInstance(), () -> callback.accept(lore));
+        });
+    }
+
+    private List<String> getListRequirementsLore(String collection){
         String pre = "Requirements.";
         ArrayList<String> lore = new ArrayList<>();
         lore.add("§6§lListed:");
@@ -58,7 +66,7 @@ public class RequirementsManager {
             lore.add("  §cN/A");
         }
         if (placedEggs.contains("Requirements.Date")) {
-            List<String> dateList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Date").getKeys(false));
+            ArrayList<String> dateList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Date").getKeys(false));
 
             if (!dateList.isEmpty()) {
                 dateList.sort(Comparator.comparingInt(day -> DateTimeUtil.getAllDaysOfYear().indexOf(day)));

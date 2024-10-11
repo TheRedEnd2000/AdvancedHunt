@@ -19,6 +19,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
 
@@ -79,8 +80,15 @@ public class CollectionEditor extends InventoryMenu {
         getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR)
                 .setCustomId("collection_editor.requirements")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_REQUIREMENTS))
-                .setLore(Main.getInstance().getRequirementsManager().getListRequirementsLore(collection))
+                .setLore(Collections.singletonList("§7Loading..."))
                 .build());
+        Main.getInstance().getRequirementsManager().getListRequirementsLoreAsync(collection, lore -> {
+            getInventory().setItem(13, new ItemBuilder(XMaterial.COMPARATOR)
+                    .setCustomId("collection_editor.requirements")
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_EDITOR_REQUIREMENTS))
+                    .setLore(lore)
+                    .build());
+        });
 
         getInventory().setItem(31, new ItemBuilder(XMaterial.REPEATER)
                 .setCustomId("collection_editor.reset")
