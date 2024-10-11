@@ -111,11 +111,17 @@ public class RequirementsDate extends PaginatedInventoryMenu {
 
             FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
             boolean enabled = placedEggs.getBoolean("Requirements.Date." + keys.get(index));
-            getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.NAME_TAG)
+            getInventory().setItem(slotIndex, new ItemBuilder(enabled ? XMaterial.NAME_TAG : XMaterial.RED_STAINED_GLASS)
                     .setCustomId(keys.get(index))
                     .withGlow(enabled)
-                    .setDisplayName("§6Date: "+keys.get(index))
-                    .setLore("§bOn: "+enabled)
+                    .setDisplayName("§6"+keys.get(index))
+                    .setLore("§7Makes that the "+plugin.getPluginConfig().getPluginNameSingular()+" are only",
+                            "§7available on the date "+keys.get(index)+".",
+                            "",
+                            "§7Currently: "+(enabled ? "§aEnabled" : "§cDisabled"),
+                            "",
+                            "§eClick to "+(enabled ? "remove" : "add")+" "+keys.get(index)+" "+(enabled ? "from" : "to")+" the requirements.",
+                            "§8Note: This inventory is currently NOT translated!")
                     .build());
         }
     }
@@ -204,6 +210,7 @@ public class RequirementsDate extends PaginatedInventoryMenu {
         lore.add("");
         lore.add("§eLEFT-CLICK to go down.");
         lore.add("§eRIGHT-CLICK to go up.");
+        lore.add("§8Note: This inventory is currently NOT translated!");
         return lore;
     }
 
