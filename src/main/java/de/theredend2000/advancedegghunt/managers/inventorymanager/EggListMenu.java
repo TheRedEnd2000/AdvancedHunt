@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenuOpen;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
@@ -14,10 +15,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
 
-public class EggListMenu extends PaginatedInventoryMenu {
+public class EggListMenu extends PaginatedInventoryMenu implements IInventoryMenuOpen {
 
     public EggListMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Eggs list", (short) 54);
@@ -190,6 +192,13 @@ public class EggListMenu extends PaginatedInventoryMenu {
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onOpen(InventoryOpenEvent event) {
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
+        getInventory().setContents(inventoryContent);
+        setMenuItems();
     }
 }
 

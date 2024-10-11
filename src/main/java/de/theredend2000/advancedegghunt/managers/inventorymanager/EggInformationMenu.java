@@ -2,6 +2,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenuOpen;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
@@ -11,12 +12,15 @@ import de.theredend2000.advancedegghunt.util.messages.MessageKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
-public class EggInformationMenu extends PaginatedInventoryMenu {
+public class EggInformationMenu extends PaginatedInventoryMenu implements IInventoryMenuOpen {
+
+    String eggId;
 
     public EggInformationMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility, "Egg information", (short) 54);
@@ -26,6 +30,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
     }
 
     public void open(String eggId) {
+        this.eggId = eggId;
         Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems(eggId);
@@ -42,7 +47,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
         inventoryContent[53] = new ItemBuilder(XMaterial.EMERALD_BLOCK)
                 .setCustomId("egg_info.refresh")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))
-                .setLore(menuMessageManager.getMenuItemName(MenuMessageKey.REFRESH_BUTTON))
+                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REFRESH_BUTTON))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("egg_info.back")
@@ -181,6 +186,14 @@ public class EggInformationMenu extends PaginatedInventoryMenu {
         }
         if(keys.isEmpty()) return 1;
         return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
+    }
+
+    @Override
+    public void onOpen(InventoryOpenEvent event) {
+        if(eggId == null) return;
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
+        getInventory().setContents(inventoryContent);
+        setMenuItems(this.eggId);
     }
 }
 

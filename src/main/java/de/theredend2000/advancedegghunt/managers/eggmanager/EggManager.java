@@ -300,12 +300,7 @@ public class EggManager {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         placedEggs.set("PlacedEggs." + eggID + ".markedAsFound", marked);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection);
-    }
-
-    public void removeEggAsFound(String collection, String eggID, boolean marked){
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-        placedEggs.set("PlacedEggs." + eggID + ".markedAsFound", marked);
-        Main.getInstance().getEggDataManager().savePlacedEggs(collection);
+        Bukkit.broadcastMessage("reset "+eggID+" in "+collection+ " "+marked);
     }
 
     public boolean isMarkedAsFound(String collection, String eggID){
@@ -345,7 +340,7 @@ public class EggManager {
                         if (locationUtil.loadLocation(collection) == null) {
                             continue;
                         }
-                        if(isMarkedAsFound(collection,eggId)) return;
+                        if(isMarkedAsFound(collection,eggId)) continue;
                         String world = placedEggs.getString("PlacedEggs." + eggId + ".World");
                         int x = placedEggs.getInt("PlacedEggs." + eggId + ".X");
                         int y = placedEggs.getInt("PlacedEggs." + eggId + ".Y");
@@ -446,6 +441,33 @@ public class EggManager {
         plugin.getEggDataManager().savePlacedEggs(collection);
     }
 
+    public void resetStatsAll(){
+        for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
+            for (String collection : plugin.getEggDataManager().savedEggCollections()) {
+                ArrayList<String> eggID = new ArrayList<>();
+
+                FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
+                if(playerConfig.getString("FoundEggs." + collection) == null) return;
+                eggID.addAll(playerConfig.getConfigurationSection("FoundEggs." + collection).getKeys(false));
+                playerConfig.set("FoundEggs." + collection, null);
+                plugin.getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
+
+                FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+                ConfigurationSection eggsSection = placedEggs.getConfigurationSection("PlacedEggs");
+
+                if (eggsSection != null) {
+                    for (String ids : eggsSection.getKeys(false)) {
+                        if (eggID.contains(ids)) {
+                            placedEggs.set("PlacedEggs." + ids + ".TimesFound", getTimesFound(ids, collection) - 1);
+                            markEggAsFound(collection,ids,false);
+                            plugin.getEggDataManager().savePlacedEggs(collection);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public boolean containsPlayer(String name) {
         for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
@@ -459,14 +481,6 @@ public class EggManager {
             }
         }
         return false;
-    }
-    public void resetStatsAll(){
-        for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
-            FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-            String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(uuids);
-            playerConfig.set("FoundEggs." + collection, null);
-            plugin.getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
-        }
     }
     public void showAllEggs(){
         for(String collection : plugin.getEggDataManager().savedEggCollections()) {

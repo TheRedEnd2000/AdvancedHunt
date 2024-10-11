@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenuOpen;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
@@ -10,13 +11,17 @@ import de.theredend2000.advancedegghunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedegghunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedegghunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedegghunt.util.messages.MessageKey;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.util.StringUtil;
 
 import java.util.*;
 
-public class LeaderboardMenu extends PaginatedInventoryMenu {
+public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventoryMenuOpen {
     private int numberOfPlayers = 0;
 
     public LeaderboardMenu(PlayerMenuUtility playerMenuUtility) {
@@ -268,5 +273,13 @@ public class LeaderboardMenu extends PaginatedInventoryMenu {
                 open();
                 break;
         }
+    }
+
+    @Override
+    public void onOpen(InventoryOpenEvent event) {
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
+        page = 0;
+        getInventory().setContents(inventoryContent);
+        setMenuItems();
     }
 }

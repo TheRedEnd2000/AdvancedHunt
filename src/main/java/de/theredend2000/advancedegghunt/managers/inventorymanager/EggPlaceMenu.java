@@ -3,6 +3,7 @@ package de.theredend2000.advancedegghunt.managers.inventorymanager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedegghunt.Main;
 import de.theredend2000.advancedegghunt.managers.SoundManager;
+import de.theredend2000.advancedegghunt.managers.inventorymanager.common.IInventoryMenuOpen;
 import de.theredend2000.advancedegghunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedegghunt.util.ItemBuilder;
 import de.theredend2000.advancedegghunt.util.ItemHelper;
@@ -16,12 +17,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 
-public class EggPlaceMenu extends PaginatedInventoryMenu {
+public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMenuOpen {
     private MessageManager messageManager;
 
     public EggPlaceMenu(PlayerMenuUtility playerMenuUtility) {
@@ -245,6 +247,13 @@ public class EggPlaceMenu extends PaginatedInventoryMenu {
                 player.spigot().sendMessage(textComponent);
                 break;
         }
+    }
+
+    @Override
+    public void onOpen(InventoryOpenEvent event) {
+        Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
+        getInventory().setContents(inventoryContent);
+        setMenuItems();
     }
 }
 
