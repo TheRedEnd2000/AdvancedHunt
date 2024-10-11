@@ -1,0 +1,196 @@
+config-version: 2.6
+
+# %PLUGIN_NAME_S% 是配置文件中的 plugin-name-singular
+# %PLUGIN_NAME_P% 是配置文件中的 plugin-name-plural
+# %PLUGIN_COMMAND% 是第一个自定义命令
+
+no-permission-error: "&c你没有&6%PERMISSION%权限&c来使用这个命令。"
+command-not-found: '&c未找到命令！&7请输入 &e/%PLUGIN_COMMAND% help &7来查看所有命令。'
+only-player: '&c只有玩家才能使用这个命令。'
+reload-config: '&7配置文件&e重新加载&a成功&7.'
+player-not-found: '&7系统中&c没有&7玩家&a%PLAYER%&7的记录。'
+not-number: '&cP请输入一个数字。'
+
+egg-placed: '&a你成功&2创建了&a一个新的%PLUGIN_NAME_S%。&7(ID#%ID%)'
+egg-broken: '&a你成功&c移除了&a一个%PLUGIN_NAME_S%。&7(ID#%ID%)'
+teleport-to-egg: '&a你已被传送至%PLUGIN_NAME_S% #%ID%。'
+
+egg-found: '&a你找到了一个%PLUGIN_NAME_S%。&7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&c你已经找过了这个%PLUGIN_NAME_S%。'
+egg-already-found-by-player: '&c这个%PLUGIN_NAME_S%已经被另一个玩家找过了。'
+all-eggs-found: '&c你已经找到了所有的%PLUGIN_NAME_P%。'
+no-eggs: '&c还没有放置任何%PLUGIN_NAME_P%。'
+egg-hint: '&2&l成功！&a一个%PLUGIN_NAME_S%被发现于&6X：%X%&6，Y：%Y%&6，Z：%Z%&a。'
+hint-cooldown: '&4&l冷却中！&c请等待&6%DAYS%天%HOURS%小时%MINUTES%分钟%SECONDS%秒&c。'
+clicked-same: '&4&l失败！&c你点击了错误的玻璃板、没有玻璃板或两次点击相同。'
+hint-timeout: '&c你点得不够快。'
+hint-cancelled: '&a你已成功取消此操作。'
+egg-not-accessed: '&c你现在无法访问这个。'
+
+only-in-placemode: '&c你只能在建筑模式中放置或破坏%PLUGIN_NAME_P%。输入 &e/%PLUGIN_COMMAND% place &c来进入这个模式。'
+enter-placemode: '&a你已进入建筑模式。你现在可以放置或破坏%PLUGIN_NAME_P%了。'
+leave-placemode: '&c你离开了建筑模式。你不能再放置或破坏%PLUGIN_NAME_P%了。'
+
+first-page: '&7你已经在第一页了。'
+last-page: '&7你已经在最后一页了。'
+wait-refresh: '&c请稍等片刻后再刷新。'
+block-listed: '&c该方块已经加入过列表了！'
+
+egg-nearby: '&3&l附近有%PLUGIN_NAME_S%'
+
+sound-volume: '&c音量只能在&e0到15&c之间！'
+egg-visible: '&a所有的%PLUGIN_NAME_P%现在都可见&6%TIME_VISIBLE%秒了&a。'
+egg-show-warning: '&4警告：&a%PLUGIN_NAME_P%现在对所有玩家可见。'
+armorstand-glow: '&c盔甲架的亮度只能在&e0到120&c之间！'
+egg-radius: '&c%PLUGIN_NAME_S%附近信息的距离只能在&e0到50&c之间！'
+
+command-delete: '&7你已&a成功&c删除&7了&6命令 #%ID%&7。'
+new-command: '&7将&3命令&7输入到&a聊天&7中或输入&c“cancel”&7来返回。此操作将在&22分钟&7内过期。'
+command-cancel: '&c你已成功取消操作。'
+command-add: '&7已&a成功&7添加&6命令 #%ID%&7。'
+command-expired: '&7你&c没有&3在限时内&7输入&6命令。&7&l请重试！'
+one-command: '&c你一次只能输入一个命令。'
+command-blacklisted: '&c该命令已被加入黑名单！'
+
+foundeggs-reset: '&7所有&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7.'
+foundeggs-player-reset: '&7玩家&a%PLAYER%&7的所有&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7。'
+foundeggs-player-reset-collection: '&7所有在集合&6%COLLECTION%&7中的玩家&a%PLAYER%&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7。'
+
+activate-requirements: '&a已启用所有需求。'
+deactivate-requirements: '&c已停用所有需求。'
+
+collection-disabled: '&c该集合目前已被禁用。'
+collection-selected: '&7你选择了集合&6%SELECTION%'
+collection-deleted: '&a已成功删除集合&6%COLLECTION%'
+chanced-chance: '&a已成功将概率设置为&e%CHANCE%%&a。'
+rarity-message: '%RARITY%掉落！&7你得到了&b%ITEM%&7x%COUNT%'
+
+eggimport-hand: '&7请手持带有&2%PLUGIN_NAME_S%纹理&7的&e玩家头颅&7。'
+eggimport-failed-profile: '&c无法加载玩家资料。'
+eggimport-success: '&a已成功&7导入新的&e%PLUGIN_NAME_S%&7头颅。'
+eggimport-failed: '&c物品导入系统失败。这可能是由于目前你的版本不支持。'
+
+preset-already-exists: '&c此预设已存在。'
+preset-saved: '&a已成功&7保存&e预设%PRESET%&7。'
+preset-failed-commands: '&c需要多于一条命令才能保存。'
+preset-loaded: '&e预设%PRESET%&7加载&a成功&7。'
+preset-delete: '&7你已&a成功&c删除了&e预设%PRESET%&7。'
+preset-default: '&7你已将&a默认加载&7的预设更改为&e%PRESET%&7.'
+preset-not-delete-default: '&c你无法删除已被选为默认加载的预设。'
+preset-loading-no: '&c已经在加载预设了。'
+preset-loading-success: '&a已成功将预设&6%PRESET%&a加载到所有%PLUGIN_NAME_P%中。'
+preset-loading-progress: '&b正在加载预设… (%COUNT%/%MAX%)'
+preset-is-default-1: '&2此预设已被选为默认预设。'
+preset-is-default-2: '&2每次创建新的%PLUGIN_NAME_S%时都会加载此预设。'
+
+setting-commandfeedback: '&a命令反馈已被&4停用&a。请手动执行“/gamerule sendCommandFeedback false”或移除“minecraft.admin.command_feedback”权限。'
+
+egg-data-converted-success: '&a已成功转换%PLUGIN_NAME_S%的数据到新的格式。'
+egg-data-converted-broadcast: '&a%PLUGIN_NAME_S%的数据已被转换为新的格式。请检查一切是否正常工作。'
+egg-data-converted-failed: '&无法转换%PLUGIN_NAME_S%的数据。请查看控制台来获取更多信息。'
+egg-data-convert-start: '&cAdvancedEggHunt发现了旧的配置系统。\n&c正在将其转换为新的。\n&4这可能需要一段时间！'
+egg-data-convert-broadcast: '&4AdvancedEggHunt正在更新配置系统，请不要在完成前移动'
+egg-data-convert-op-message: '&c建议在服务器上没有玩家时转换。&4进度将显示在控制台中'
+egg-data-convert-locations: '&aAdvancedEggHunt转换了所有%PLUGIN_NAME_S%的位置！'
+egg-data-convert-player: '&e已转换玩家%UUID%的数据。'
+egg-data-convert-done: '&a更新完成！'
+egg-data-convert-success: '&aeggs.yml已转换成功。'
+egg-data-convert-delete-fail: "&c无法删除eggs.yml。"
+egg-data-convert-delete-error: '&4在删除eggs.yml文件时发生了错误：%ERROR%'
+egg-data-convert-complete: '&aAdvancedEggHunt已将所有数据转换到了新的系统。\n&2插件现已正常运行\n&4请在Discord上报告任何遇到的问题：&9https://discord.gg/qapvQMUt34'
+
+placeholderapi-detected: '&aAdvancedEggHunt已检测到PlaceholderAPI，正在启用占位符…'
+placeholderapi-enabled: '&2&l所有占位符均已成功启用。'
+language-detected: '&7检测到语言&6%LANG%&7。已加载文件messages-%LANG%.yml。'
+command-system-updated: '&2命令系统已更新'
+command-system-check: '&2请检查你的命令！'
+command-system-chances-updated: '&2你的命令系统已被更新'
+command-system-chances-contains: '&2它现在可以包含概率设置了'
+update-available: '&a已检测到可用的新版本。请更新你的插件。&a版本：&2&l%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+update-error: '&4&l错误：&c无法连接到SpigotMC.org'
+console-update-available: '&c你当前使用的&eAdvancedEggHunt&c不是最新版本。请更新版本：&4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+console-update-error: '&4&l错误：&c无法连接到SpigotMC.org'
+
+init-data-players-loaded: '&2&l已加载%COUNT%名玩家的数据。'
+init-data-collections-loaded: '&2&l已加载%COUNT%个集合的数据，'
+
+material-error-console: '&4材料错误：%ERROR%'
+
+successfully-changed-block: '&a已成功将位于 %X% %Y% %Z% 的方块改为空气。'
+
+requirement-section-unavailable: '&c此需求选择当前不可用。'
+requirements-order-coming-soon: '&c此功能即将推出。'
+collection-select-error: '&c出现错误，请重启你的服务器。'
+collection-refresh-cooldown: '&c请稍等片刻后再刷新。'
+collection-refresh-success: '&a已成功刷新集合列表。'
+collection-edit-no-permission: "&c你没有编辑集合的权限。"
+collection-name-required: '&c请输入一个名称以继续操作。'
+collection-name-exists: '&c集合名称已被占用。'
+collection-default-undeletable: '&c由于可能会出现许多问题，无法删除默认集合。如果你想禁用它，只需更改状态。'
+feature-coming-soon: '&c此功能即将推出。'
+item-added-success: '&a已成功添加一个新物品。'
+invalid-chance: '&c无效的数值。请输入在0.0000001到100之间的数字。'
+placeholders-hover-text: '&9-----------&3&l[占位符] &7(悬停查看)&9-----------'
+placeholders-hover-content: '&2可用的占位符：\n&b- %PLAYER% --> 玩家名称\n&b- & --> 颜色代码（&6=金色）\n&b- %EGGS_FOUND% --> 玩家找到了多少个%PLUGIN_NAME_P%\n&b- %EGGS_MAX% --> 总共放置了多少个%PLUGIN_NAME_P%\n&b- %PREFIX% --> 插件前缀'
+
+requirements-name-hour: '小时'
+requirements-name-date: '日期'
+requirements-name-weekday: '星期'
+requirements-name-month: '月份'
+requirements-name-year: '年份'
+requirements-name-season: '季节'
+requirements-more: '更多'
+requirements-click_to_change: '&e点击以更改。'
+
+requirements-season-winter: '冬季'
+requirements-season-fall: '秋季'
+requirements-season-spring: '春季'
+requirements-season-summer: '夏季'
+
+month-january: '一月'
+month-february: '二月'
+month-march: '三月'
+month-april: '四月'
+month-may: '五月'
+month-june: '六月'
+month-july: '七月'
+month-august: '八月'
+month-september: '九月'
+month-october: '十月'
+month-november: '十一月'
+month-december: '十二月'
+
+day-monday: '星期一'
+day-tuesday: '星期二'
+day-wednesday: '星期三'
+day-thursday: '星期四'
+day-friday: '星期五'
+day-saturday: '星期六'
+day-sunday: '星期日'
+
+hour-format: '12' # 可以是12或24小时制
+
+
+help-message: |
+  &3-----------------------------------------
+  &5&l==========帮助==========
+  
+  &2&l信息
+  &7名称：&6%NAME%
+  &7插件版本：&6%VERSION%
+  &7服务器版本：&6%SERVER_VERSION%
+  &7作者：&6%AUTHOR%
+
+  &2&lCommands
+  &6/%PLUGIN_COMMAND% collection &7-> &b切换和编辑集合。
+  &6/%PLUGIN_COMMAND% help &7-> &b显示此帮助信息。
+  &6/%PLUGIN_COMMAND% reload &7-> &b重新加载配置文件。
+  &6/%PLUGIN_COMMAND% list &7-> &b列出所有已放置的%PLUGIN_NAME_P%。
+  &6/%PLUGIN_COMMAND% place &7-> &b进入放置模式来放置或破坏%PLUGIN_NAME_P%。
+  &6/%PLUGIN_COMMAND% settings &7-> &b更改插件的许多设置。
+  &6/%PLUGIN_COMMAND% hint &7-> &b打开提示菜单以便更容易找到%PLUGIN_NAME_P%。
+  &6/%PLUGIN_COMMAND% progress &7-> &b查看你%PLUGIN_NAME_P%的进度。
+  &6/%PLUGIN_COMMAND% show &7-> &b在每个%PLUGIN_NAME_S%上生成一个发光的盔甲架。
+  &6/%PLUGIN_COMMAND% commands &7-> &b更改或添加更多命令。
+  &6/%PLUGIN_COMMAND% reset [player | all] [集合] &7-> &b重置找到的%PLUGIN_NAME_P%，
+  &5&l==========帮助==========
