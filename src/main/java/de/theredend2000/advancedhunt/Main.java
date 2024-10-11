@@ -30,6 +30,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -95,6 +96,20 @@ public final class Main extends JavaPlugin {
         setupDefaultCollectionIfNeeded();
         finalizeSetup();
         setupPlaceholderAPI();
+    }
+
+    private void renameConfigFolder() {
+        File oldFolder = new File(getDataFolder().getParentFile(), "AdvancedEggHunt");
+        File newFolder = new File(getDataFolder().getParentFile(), "AdvancedHunt");
+
+        if (oldFolder.exists() && !newFolder.exists()) {
+            boolean success = oldFolder.renameTo(newFolder);
+            if (success) {
+                getLogger().log(Level.INFO, "Folder 'AdvancedEggHunt' successfully renamed to 'AdvancedHunt'.");
+            } else {
+                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedEggHunt'.");
+            }
+        }
     }
 
     /**
@@ -281,7 +296,7 @@ public final class Main extends JavaPlugin {
         PluginDownloader downloader = new PluginDownloader(plugin);
 
         if (plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt())
-            downloader.downloadPlugin("109085", "AdvancedEggHunt", "spigot");
+            downloader.downloadPlugin("109085", "AdvancedHunt", "spigot");
         if (plugin.getPluginConfig().getAutoDownloadPlaceholderAPI())
             downloader.downloadPlugin("6245", "PlaceholderAPI", "spigot");
         if (plugin.getPluginConfig().getAutoDownloadProtocolLib())
