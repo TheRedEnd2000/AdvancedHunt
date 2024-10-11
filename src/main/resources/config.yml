@@ -12,14 +12,14 @@ plugin-name-plural: "eggs"
 commands:
   - "egghunt"
   - "eggs"
-  - "advancedegghunt"
+  - "advancedhunt"
   - "aeh"
   - "easter"
 
 #Auto download
 Download:
   # Will be downloaded if a new plugin version is out
-  AdvancedEggHunt: true
+  AdvancedHunt: true
   # Will download for the plugin to work (This should not be disabled)
   NBT-API: true
   ProtocolLib: false
@@ -31,7 +31,7 @@ Experimental:
   # Enable ProtocolLib support (requires ProtocolLib plugin)
 #  ProtocolLibSupport: false
 
-prefix: '&f[&eAdvancedEggHunt&f] &r'
+prefix: '&f[&eAdvancedHunt&f] &r'
 
 Settings:
 

@@ -77,6 +77,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        renameConfigFolder();
         initialisePlugin();
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
@@ -105,9 +106,9 @@ public final class Main extends JavaPlugin {
         if (oldFolder.exists() && !newFolder.exists()) {
             boolean success = oldFolder.renameTo(newFolder);
             if (success) {
-                getLogger().log(Level.INFO, "Folder 'AdvancedEggHunt' successfully renamed to 'AdvancedHunt'.");
+                getLogger().log(Level.INFO, "Folder 'AdvancedHunt' successfully renamed to 'AdvancedHunt'.");
             } else {
-                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedEggHunt'.");
+                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedHunt'.");
             }
         }
     }
@@ -295,7 +296,7 @@ public final class Main extends JavaPlugin {
     private void setupAutoUpdating() {
         PluginDownloader downloader = new PluginDownloader(plugin);
 
-        if (plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt())
+        if (plugin.getPluginConfig().getAutoDownloadAdvancedHunt())
             downloader.downloadPlugin("109085", "AdvancedHunt", "spigot");
         if (plugin.getPluginConfig().getAutoDownloadPlaceholderAPI())
             downloader.downloadPlugin("6245", "PlaceholderAPI", "spigot");

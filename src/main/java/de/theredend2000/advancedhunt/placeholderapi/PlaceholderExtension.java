@@ -15,7 +15,7 @@ public class PlaceholderExtension extends PlaceholderExpansion {
 
     @Override
     public String getIdentifier() {
-        return "advancedegghunt";
+        return "advancedhunt";
     }
 
     @Override

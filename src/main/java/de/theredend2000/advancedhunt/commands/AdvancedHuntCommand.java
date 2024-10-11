@@ -25,26 +25,26 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AdvancedEggHuntCommand implements CommandExecutor, TabCompleter {
+public class AdvancedHuntCommand implements CommandExecutor, TabCompleter {
     private MessageManager messageManager;
     private MenuManager menuManager;
     private Main plugin;
     private EggManager eggManager;
 
-    private static volatile AdvancedEggHuntCommand instance;
+    private static volatile AdvancedHuntCommand instance;
 
-    public AdvancedEggHuntCommand() {
+    public AdvancedHuntCommand() {
         messageManager = Main.getInstance().getMessageManager();
         menuManager = Main.getInstance().getMenuManager();
         plugin = Main.getInstance();
         eggManager = Main.getInstance().getEggManager();
     }
 
-    public static AdvancedEggHuntCommand getInstance() {
+    public static AdvancedHuntCommand getInstance() {
         if (instance == null) {
             synchronized (PluginConfig.class) {
                 if (instance == null) {
-                    instance = new AdvancedEggHuntCommand();
+                    instance = new AdvancedHuntCommand();
                 }
             }
         }

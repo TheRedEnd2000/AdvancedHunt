@@ -15,7 +15,7 @@ public enum Permission {
     FindEggs;
     @Override
     public String toString() {
-        return "AdvancedEggHunt." + this.name();
+        return "AdvancedHunt." + this.name();
     }
 
     public static Permission getEnum(String value) {
@@ -42,7 +42,7 @@ public enum Permission {
 
         @Override
         public String toString() {
-            return "AdvancedEggHunt.Command." + this.name().toLowerCase();
+            return "AdvancedHunt.Command." + this.name().toLowerCase();
         }
 
         public static Command getEnum(String value) {

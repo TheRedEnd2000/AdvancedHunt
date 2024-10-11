@@ -508,7 +508,7 @@ public class EggManager {
                 armorStand.setVisible(false);
 
                 NBT.modify(armorStand, nbt -> {
-                    nbt.getStringList("Tags").add("AdvancedEggHunt_show");
+                    nbt.getStringList("Tags").add("AdvancedHunt_show");
                 });
 
                 plugin.getShowedArmorstands().add(armorStand);

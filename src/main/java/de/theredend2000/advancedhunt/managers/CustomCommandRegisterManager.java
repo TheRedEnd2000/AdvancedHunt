@@ -1,7 +1,7 @@
 package de.theredend2000.advancedhunt.managers;
 
 import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.commands.AdvancedEggHuntCommand;
+import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -31,12 +31,12 @@ public class CustomCommandRegisterManager {
                 command = new BukkitCommand(commandName) {
                     @Override
                     public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
-                        return AdvancedEggHuntCommand.getInstance().onCommand(sender, this, label, args);
+                        return AdvancedHuntCommand.getInstance().onCommand(sender, this, label, args);
                     }
 
                     @Override
                     public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
-                        return AdvancedEggHuntCommand.getInstance().handleTabComplete(sender, args);
+                        return AdvancedHuntCommand.getInstance().handleTabComplete(sender, args);
                     }
                 };
                 command.setAliases(aliases);

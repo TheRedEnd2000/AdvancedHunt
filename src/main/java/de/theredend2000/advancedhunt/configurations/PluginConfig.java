@@ -385,8 +385,8 @@ public class PluginConfig extends Configuration {
 
     //Downloader
 
-    public boolean getAutoDownloadAdvancedEggHunt() {
-        return getConfig().getBoolean("Download.AdvancedEggHunt");
+    public boolean getAutoDownloadAdvancedHunt() {
+        return getConfig().getBoolean("Download.AdvancedHunt");
     }
 
     public boolean getAutoDownloadNBTAPI() {
