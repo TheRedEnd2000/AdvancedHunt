@@ -1,6 +1,6 @@
-name: AdvancedEggHunt
+name: AdvancedHunt
 version: 3.0.4
-main: de.theredend2000.advancedegghunt.Main
+main: de.theredend2000.advancedhunt.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI, NBTAPI, ProtocolLib]
 website: https://www.spigotmc.org/resources/advancedegghunt.109085/

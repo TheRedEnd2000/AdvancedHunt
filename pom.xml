@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.theredend2000</groupId>
-    <artifactId>AdvancedEggHunt</artifactId>
+    <artifactId>AdvancedHunt</artifactId>
     <version>v3.0.4</version>
     <packaging>jar</packaging>
 
