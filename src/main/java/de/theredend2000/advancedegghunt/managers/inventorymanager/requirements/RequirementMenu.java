@@ -161,8 +161,12 @@ public class RequirementMenu extends InventoryMenu {
                 menuContent(collection);
                 break;
             case "requirement_menu.order":
+                FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                messageManager.sendMessage(player, MessageKey.REQUIREMENTS_ORDER_COMING_SOON);
+                String currentOrder = placedEggs.getString("RequirementsOrder");
+                placedEggs.set("RequirementsOrder", currentOrder.equalsIgnoreCase("OR") ? "AND" : "OR");
+                plugin.getEggDataManager().savePlacedEggs(collection);
+                menuContent(collection);
                 break;
         }
     }

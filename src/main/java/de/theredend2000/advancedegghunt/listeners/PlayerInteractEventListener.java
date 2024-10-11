@@ -86,7 +86,7 @@ public class PlayerInteractEventListener implements Listener {
                 return;
             }
 
-            if(!Main.getInstance().getRequirementsManager().canBeAccessed(collection)){
+            if(!Main.getInstance().getRequirementsManager().canBeAccessed(collection,placedEggs.getString("RequirementsOrder"))){
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
                 player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
                 return;

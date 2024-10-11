@@ -190,8 +190,19 @@ public class RequirementsManager {
         return lore;
     }
 
-    public boolean canBeAccessed(String collection){
+    private boolean convertCurrentOrder(String current){
+        switch (current.toUpperCase()){
+            case "OR":
+                return false;
+            case "AND":
+                return true;
+        }
+        return false;
+    }
+
+    public boolean canBeAccessed(String collection, String current) {
         String pre = "Requirements.";
+        boolean requireAll = convertCurrentOrder(current);
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         String currentHour = String.valueOf(LocalTime.now().getHour());
         String currentDate = DateTimeUtil.getCurrentDateString();
@@ -199,48 +210,27 @@ public class RequirementsManager {
         String currentMonth = String.valueOf(DateTimeUtil.getMonth(Calendar.getInstance()));
         String currentYear = String.valueOf(DateTimeUtil.getCurrentYear());
         String currentSeason = String.valueOf(DateTimeUtil.getCurrentSeason());
-        ArrayList<String> allAvailable = new ArrayList<>();
-        if (placedEggs.contains("Requirements.Hours")) {
-            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Hours").getKeys(false).stream()
-                    .filter(hours -> placedEggs.getBoolean(pre + ".Hours." + hours))
-                    .collect(Collectors.toList()));
-        }
-        if (placedEggs.contains("Requirements.Date")) {
-            Bukkit.broadcastMessage(String.valueOf(DateTimeUtil.getAllDaysOfYear()));
-            List<String> dateList = new ArrayList<>(placedEggs.getConfigurationSection("Requirements.Date").getKeys(false));
 
-            List<String> available = dateList.stream()
-                    .filter(date -> placedEggs.getBoolean(pre + ".Date." + date))
-                    .collect(Collectors.toList());
+        boolean hourMatched = checkMatch(placedEggs, pre, "Hours", currentHour);
+        boolean dateMatched = checkMatch(placedEggs, pre, "Date", currentDate);
+        boolean weekdayMatched = checkMatch(placedEggs, pre, "Weekday", currentWeekday);
+        boolean monthMatched = checkMatch(placedEggs, pre, "Month", currentMonth);
+        boolean yearMatched = checkMatch(placedEggs, pre, "Year", currentYear);
+        boolean seasonMatched = checkMatch(placedEggs, pre, "Season", currentSeason);
 
-            Bukkit.broadcastMessage(currentDate);
-            return available.contains(currentDate);
-        }
-        if (placedEggs.contains("Requirements.Weekday")) {
-            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Weekday").getKeys(false).stream()
-                    .filter(weekday -> placedEggs.getBoolean(pre + ".Weekday." + weekday))
-                    .collect(Collectors.toList()));
-        }
-        if (placedEggs.contains("Requirements.Month")) {
-            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Month").getKeys(false).stream()
-                    .filter(month -> placedEggs.getBoolean(pre + ".Month." + month))
-                    .collect(Collectors.toList()));
-        }
-        if (placedEggs.contains("Requirements.Year")) {
-            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Year").getKeys(false).stream()
-                    .filter(year -> placedEggs.getBoolean(pre + ".Year." + year))
-                    .collect(Collectors.toList()));
-        }
-        if (placedEggs.contains("Requirements.Season")) {
-            allAvailable.addAll(placedEggs.getConfigurationSection("Requirements.Season").getKeys(false).stream()
-                    .filter(season -> placedEggs.getBoolean(pre + ".Season." + season))
-                    .collect(Collectors.toList()));
-        }
-        boolean isContained = allAvailable.stream().anyMatch(value ->
-                value.equals(currentHour) || value.equals(currentWeekday) || value.equals(currentMonth) || value.equals(currentYear) || value.equals(currentSeason)
-        );
-        return isContained;
+        return requireAll ? hourMatched && dateMatched && weekdayMatched && monthMatched && yearMatched && seasonMatched
+                : hourMatched || dateMatched || weekdayMatched || monthMatched || yearMatched || seasonMatched;
     }
+
+    private boolean checkMatch(FileConfiguration placedEggs, String pre, String key, String current) {
+        if (!placedEggs.contains("Requirements." + key)) return true;
+        boolean matched = placedEggs.getConfigurationSection("Requirements." + key).getKeys(false).stream()
+                .filter(k -> placedEggs.getBoolean(pre + key + "." + k)).anyMatch(k -> k.equals(current));
+        return matched || placedEggs.getConfigurationSection("Requirements." + key).getKeys(false).stream()
+                .allMatch(k -> !placedEggs.getBoolean(pre + key + "." + k));
+    }
+
+
 
     public void changeActivity(String collection, boolean active){
         FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
