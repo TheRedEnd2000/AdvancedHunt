@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.bstats.Metrics;
+import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.listeners.*;
 import de.theredend2000.advancedhunt.managers.*;
@@ -43,6 +44,8 @@ public final class Main extends JavaPlugin {
 
     // Configuration
     private PluginConfig pluginConfig;
+
+    private DynamicCommandRegistrar commandRegistrar;
 
     // Managers
     private MessageManager messageManager;
@@ -97,6 +100,13 @@ public final class Main extends JavaPlugin {
         setupDefaultCollectionIfNeeded();
         finalizeSetup();
         setupPlaceholderAPI();
+    }
+
+    @Override
+    public void onDisable() {
+        commandRegistrar.unregisterCommands();
+        giveAllItemsBack();
+        removeAllArmorStands();
     }
 
     private void renameConfigFolder() {
@@ -187,6 +197,7 @@ public final class Main extends JavaPlugin {
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
         new Metrics(this, 19495);
+        commandRegistrar = new DynamicCommandRegistrar(this);
         initialiseCollections();
     }
 
@@ -205,7 +216,13 @@ public final class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        new CustomCommandRegisterManager().registerDynamicCommand();
+        String commandName = plugin.getPluginConfig().getCommandFirstEntry();
+        List<String> aliases = plugin.getPluginConfig().getCommandAlias();
+
+        commandRegistrar.command(commandName)
+                .aliases(aliases)
+                .tabExecuter(new AdvancedHuntCommand())
+                .register();
     }
 
 
@@ -238,12 +255,6 @@ public final class Main extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
         }
-    }
-
-    @Override
-    public void onDisable() {
-        giveAllItemsBack();
-        removeAllArmorStands();
     }
 
     private void removeAllArmorStands() {

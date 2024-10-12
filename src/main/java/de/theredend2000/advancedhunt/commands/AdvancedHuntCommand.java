@@ -15,9 +15,8 @@ import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -25,7 +24,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AdvancedHuntCommand implements CommandExecutor, TabCompleter {
+public class AdvancedHuntCommand implements TabExecutor {
     private MessageManager messageManager;
     private MenuManager menuManager;
     private Main plugin;
