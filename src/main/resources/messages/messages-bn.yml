@@ -82,16 +82,16 @@ setting-commandfeedback: '&aCommand Feedback &4bondho kora hoyeche.&a Hoi manual
 egg-data-converted-success: '&aSofolvabe dimgulor data guloke notun format e rupantorito kora hoyeche.'
 egg-data-converted-broadcast: '&aDimgulor data guloke notun format e rupantorito kora hoyeche. Onugroho kore dekhun sob kichu thik moto colche kina.'
 egg-data-converted-failed: '&cDimgulor data rupantor bertho hoyeche. Onugroho kore aro tottho dekhar jonno console dekhun.'
-egg-data-convert-start: '&cAdvancedEggHunt purono configuration system e khuje peyeche.\n&cEti ekhon notun ektite poribortito hocche.\n&4ETI EKTU SOMOY NITE PARE!'
-egg-data-convert-broadcast: '&4AdvancedEggHunt CONFIGURATION SYSTEM TI UPDATE KORCHE, ONUGROHO KORE SESH NA HOWA PORJONTO NORBEN NAH'
+egg-data-convert-start: '&cAdvancedHunt purono configuration system e khuje peyeche.\n&cEti ekhon notun ektite poribortito hocche.\n&4ETI EKTU SOMOY NITE PARE!'
+egg-data-convert-broadcast: '&4AdvancedHunt CONFIGURATION SYSTEM TI UPDATE KORCHE, ONUGROHO KORE SESH NA HOWA PORJONTO NORBEN NAH'
 egg-data-convert-op-message: '&cCONVERT SOBCHEYE VALO HOI JOKHON SERVER E KEU NA THAKE. &4CONSOLE E KARJOKOLAP DEKHANO HOCCHE'
-egg-data-convert-locations: '&aAdvancedEggHunt sokol dim er obosthan convert kore feleche!'
+egg-data-convert-locations: '&aAdvancedHunt sokol dim er obosthan convert kore feleche!'
 egg-data-convert-player: '&e%UUID% er player data convert kora hoyeche.'
 egg-data-convert-done: '&aUPDATE KORA HOYECHE!'
 egg-data-convert-success: '&aeggs.yml sofolvabe convert kora hoyeche.'
 egg-data-convert-delete-fail: '&ceggs.yml mucha jabe nah.'
 egg-data-convert-delete-error: '&4eggs.yml muche felar somoi ekti kruti dekha diyeche file: %ERROR%'
-egg-data-convert-complete: '&aAdvancedEggHunt sob data notun system e convert kore feleche.\n&2Plugin ti ekhon abar nikhut vabe colche\n&4Onugroho kore kono kruti pele ta amader discord e janan: &9https://discord.gg/qapvQMUt34'
+egg-data-convert-complete: '&aAdvancedHunt sob data notun system e convert kore feleche.\n&2Plugin ti ekhon abar nikhut vabe colche\n&4Onugroho kore kono kruti pele ta amader discord e janan: &9https://discord.gg/qapvQMUt34'
 
 placeholderapi-detected: '&aAdvanced Egg Hunt PlaceholderAPI ke sonakto koreche, placeholders gulo chalu kora hocche.'
 placeholderapi-enabled: '&2&lSob placeholders gulo sofolvabe chalu kora hoyeche.'
@@ -102,7 +102,7 @@ command-system-chances-updated: '&2AMAR COMMAND SYSTEM TI UPDATE KORA HOYECHE'
 command-system-chances-contains: '&2EKHON ETITE SOMVABONAH ADD KORAR SUJOG ROYECHE'
 update-available: '&aEkti notun beboharjoggo songskoron ber hoyeche. Onugroho kore apnar plugin ti update korun&a. &aVersion: &2&l%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 update-error: '&4&lERROR: &cSpigotMC.org er sathe songjukto hoya jacche nah'
-console-update-available: '&cApnar kache &eAdvancedEggHunt&c er sobcheye notun songskoron ti nei. Onugroho kore songskoron ti poriborton korun: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+console-update-available: '&cApnar kache &eAdvancedHunt&c er sobcheye notun songskoron ti nei. Onugroho kore songskoron ti poriborton korun: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 console-update-error: '&4&lKRUTI: &cSpigotMC.org er sathe songjukto hoya jacche nah'
 
 init-data-players-loaded: '&2&l%COUNT% jon player er data load kora hoyeche.'
@@ -176,17 +176,17 @@ help-message: |
   &7Udhvabok: &6%AUTHOR%
 
   &2&lCommands
-  &6/advancedegghunt collection &7-> &bSongroho somuho guloke switch abong edit korte.
-  &6/advancedegghunt help &7-> &bEi sohayok bartagulo abong totthosomuho dekhte.
-  &6/advancedegghunt reload &7-> &bPunorai config load korte.
-  &6/advancedegghunt list &7-> &bSob boshano dim gulor talika ber korte.
-  &6/advancedegghunt place &7-> &bPlace-Mode e dhuke dim gula boshano othoba vangte.
-  &6/advancedegghunt settings &7-> &bPlugin tir onek setting configure korte.
-  &6/advancedegghunt hint &7-> &bSohoje dim gulo khujar jonno songket er menu ti khulte.
-  &6/advancedegghunt progress &7-> &bApnar dim er ogrogoti dekhte.
-  &6/advancedegghunt show &7-> &Protiti dim er upor ekti ujjol armorstand boshate.
-  &6/advancedegghunt commands &7-> &bCommands poriborton korte othoba aro commands add korte.
-  &6/advancedegghunt reset [player | all] &7-> &bPrapto dim guloke reset korte.
+  &6/advancedhunt collection &7-> &bSongroho somuho guloke switch abong edit korte.
+  &6/advancedhunt help &7-> &bEi sohayok bartagulo abong totthosomuho dekhte.
+  &6/advancedhunt reload &7-> &bPunorai config load korte.
+  &6/advancedhunt list &7-> &bSob boshano dim gulor talika ber korte.
+  &6/advancedhunt place &7-> &bPlace-Mode e dhuke dim gula boshano othoba vangte.
+  &6/advancedhunt settings &7-> &bPlugin tir onek setting configure korte.
+  &6/advancedhunt hint &7-> &bSohoje dim gulo khujar jonno songket er menu ti khulte.
+  &6/advancedhunt progress &7-> &bApnar dim er ogrogoti dekhte.
+  &6/advancedhunt show &7-> &Protiti dim er upor ekti ujjol armorstand boshate.
+  &6/advancedhunt commands &7-> &bCommands poriborton korte othoba aro commands add korte.
+  &6/advancedhunt reset [player | all] &7-> &bPrapto dim guloke reset korte.
   &5&l==========SOHAYOK==========
   &3-----------------------------------------
 

@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.bstats.Metrics;
+import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.listeners.*;
 import de.theredend2000.advancedhunt.managers.*;
@@ -44,6 +45,8 @@ public final class Main extends JavaPlugin {
     // Configuration
     private PluginConfig pluginConfig;
 
+    private DynamicCommandRegistrar commandRegistrar;
+
     // Managers
     private MessageManager messageManager;
     private MenuManager menuMessageManager;
@@ -77,6 +80,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        renameConfigFolder();
         initialisePlugin();
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
@@ -98,6 +102,13 @@ public final class Main extends JavaPlugin {
         setupPlaceholderAPI();
     }
 
+    @Override
+    public void onDisable() {
+        commandRegistrar.unregisterCommands();
+        giveAllItemsBack();
+        removeAllArmorStands();
+    }
+
     private void renameConfigFolder() {
         File oldFolder = new File(getDataFolder().getParentFile(), "AdvancedEggHunt");
         File newFolder = new File(getDataFolder().getParentFile(), "AdvancedHunt");
@@ -105,9 +116,9 @@ public final class Main extends JavaPlugin {
         if (oldFolder.exists() && !newFolder.exists()) {
             boolean success = oldFolder.renameTo(newFolder);
             if (success) {
-                getLogger().log(Level.INFO, "Folder 'AdvancedEggHunt' successfully renamed to 'AdvancedHunt'.");
+                getLogger().log(Level.INFO, "Folder 'AdvancedHunt' successfully renamed to 'AdvancedHunt'.");
             } else {
-                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedEggHunt'.");
+                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedHunt'.");
             }
         }
     }
@@ -186,6 +197,7 @@ public final class Main extends JavaPlugin {
         setupDefaultCollection = false;
         PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
         new Metrics(this, 19495);
+        commandRegistrar = new DynamicCommandRegistrar(this);
         initialiseCollections();
     }
 
@@ -204,7 +216,13 @@ public final class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        new CustomCommandRegisterManager().registerDynamicCommand();
+        String commandName = plugin.getPluginConfig().getCommandFirstEntry();
+        List<String> aliases = plugin.getPluginConfig().getCommandAlias();
+
+        commandRegistrar.command(commandName)
+                .aliases(aliases)
+                .tabExecuter(new AdvancedHuntCommand())
+                .register();
     }
 
 
@@ -237,12 +255,6 @@ public final class Main extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
         }
-    }
-
-    @Override
-    public void onDisable() {
-        giveAllItemsBack();
-        removeAllArmorStands();
     }
 
     private void removeAllArmorStands() {
@@ -295,7 +307,7 @@ public final class Main extends JavaPlugin {
     private void setupAutoUpdating() {
         PluginDownloader downloader = new PluginDownloader(plugin);
 
-        if (plugin.getPluginConfig().getAutoDownloadAdvancedEggHunt())
+        if (plugin.getPluginConfig().getAutoDownloadAdvancedHunt())
             downloader.downloadPlugin("109085", "AdvancedHunt", "spigot");
         if (plugin.getPluginConfig().getAutoDownloadPlaceholderAPI())
             downloader.downloadPlugin("6245", "PlaceholderAPI", "spigot");

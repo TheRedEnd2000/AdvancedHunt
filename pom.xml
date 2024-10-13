@@ -9,7 +9,7 @@
     <version>v3.0.4</version>
     <packaging>jar</packaging>
 
-    <name>AdvancedEggHunt</name>
+    <name>AdvancedHunt</name>
 
     <properties>
         <java.version>1.8</java.version>

@@ -9,6 +9,7 @@ import de.theredend2000.advancedhunt.util.ItemHelper;
 import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -23,7 +24,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
     String eggId;
 
     public EggInformationMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Egg information", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNameSingular()) + " information", (short) 54);
 
         super.addMenuBorder();
         addMenuBorderButtons();

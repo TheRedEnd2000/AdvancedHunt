@@ -10,6 +10,7 @@ import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -18,7 +19,7 @@ public class SettingsMenu extends InventoryMenu {
     private MessageManager messageManager;
 
     public SettingsMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Advanced Egg Settings", (short) 54, XMaterial.RED_STAINED_GLASS_PANE);
+        super(playerMenuUtility, "Advanced " + StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNameSingular()) + " Settings", (short) 54, XMaterial.RED_STAINED_GLASS_PANE);
         messageManager = Main.getInstance().getMessageManager();
     }
 

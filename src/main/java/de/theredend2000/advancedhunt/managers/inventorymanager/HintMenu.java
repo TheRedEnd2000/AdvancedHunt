@@ -8,6 +8,7 @@ import de.theredend2000.advancedhunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,7 +29,7 @@ public class HintMenu extends InventoryMenu {
     private BukkitTask failTask;
 
     public HintMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Eggs Hint", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + "s Hint", (short) 54);
         hintMenuInstances.put(playerMenuUtility.getOwner().getUniqueId(), this);
     }
 

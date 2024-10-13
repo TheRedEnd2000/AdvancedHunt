@@ -9,78 +9,78 @@ authors: [ TheRedEnd2000, GrafterCrafter ]
 commands:
 
 permissions:
-  AdvancedEggHunt.command.reset:
+  AdvancedHunt.command.reset:
     description: "Resets all plugin data"
-  AdvancedEggHunt.command.settings:
+  AdvancedHunt.command.settings:
     description: "Shows and allows for updating of config settings"
-  AdvancedEggHunt.command.reload:
+  AdvancedHunt.command.reload:
     description: "Reload plugin"
-  AdvancedEggHunt.command.commands:
+  AdvancedHunt.command.commands:
     description: "Reward commands that are ran when a player finds an egg"
-  AdvancedEggHunt.command.place:
+  AdvancedHunt.command.place:
     description: "Allow a player to enter and exit egg placing mode"
-  AdvancedEggHunt.command.eggImport:
+  AdvancedHunt.command.eggImport:
     description: "Import a player head that is help in the main hand"
-  AdvancedEggHunt.command.show:
+  AdvancedHunt.command.show:
     description: "Show the location of nearby placed eggs using glowing armor stands"
-  AdvancedEggHunt.command.list:
+  AdvancedHunt.command.list:
     description: "List all placed eggs for the selected collection"
 
-  AdvancedEggHunt.command.help:
+  AdvancedHunt.command.help:
     description: "Show a list of possible commands with short descriptions"
-  AdvancedEggHunt.command.collection:
+  AdvancedHunt.command.collection:
     description: "Change selected collection"
-  AdvancedEggHunt.command.progress:
+  AdvancedHunt.command.progress:
     description: "Shows the progress for eggs found"
-  AdvancedEggHunt.command.leaderboard:
+  AdvancedHunt.command.leaderboard:
     description: "Shows the leaderboard for the egg hunt"
-  AdvancedEggHunt.command.hint:
+  AdvancedHunt.command.hint:
     description: "Shows a hint in the form of coordinates of a nearby egg that the player has not found yet"
 
 
-  AdvancedEggHunt.BreakEgg:
+  AdvancedHunt.BreakEgg:
     description: ""
-  AdvancedEggHunt.PlaceEgg:
+  AdvancedHunt.PlaceEgg:
     description: ""
-  AdvancedEggHunt.IgnoreCooldown:
+  AdvancedHunt.IgnoreCooldown:
     description: ""
-  AdvancedEggHunt.ChangeCollections:
+  AdvancedHunt.ChangeCollections:
     description: ""
-  AdvancedEggHunt.CreateCollection:
+  AdvancedHunt.CreateCollection:
     description: ""
-  AdvancedEggHunt.OpenRewards:
+  AdvancedHunt.OpenRewards:
     description: ""
-  AdvancedEggHunt.FindEggs:
+  AdvancedHunt.FindEggs:
     description: ""
 
-  AdvancedEggHunt.group.admin:
+  AdvancedHunt.group.admin:
     description: "Contains all essential admin permissions"
     default: op
     children:
-      AdvancedEggHunt.command.reload: true
-      AdvancedEggHunt.command.reset: true
-      AdvancedEggHunt.command.settings: true
-      AdvancedEggHunt.command.commands: true
-      AdvancedEggHunt.command.place: true
-      AdvancedEggHunt.command.show: true
-      AdvancedEggHunt.command.list: true
-      AdvancedEggHunt.command.eggImport: true
+      AdvancedHunt.command.reload: true
+      AdvancedHunt.command.reset: true
+      AdvancedHunt.command.settings: true
+      AdvancedHunt.command.commands: true
+      AdvancedHunt.command.place: true
+      AdvancedHunt.command.show: true
+      AdvancedHunt.command.list: true
+      AdvancedHunt.command.eggImport: true
 
-      AdvancedEggHunt.BreakEgg: true
-      AdvancedEggHunt.PlaceEgg: true
-      AdvancedEggHunt.ChangeCollections: true
-      AdvancedEggHunt.CreateCollection: true
-      AdvancedEggHunt.OpenRewards: true
+      AdvancedHunt.BreakEgg: true
+      AdvancedHunt.PlaceEgg: true
+      AdvancedHunt.ChangeCollections: true
+      AdvancedHunt.CreateCollection: true
+      AdvancedHunt.OpenRewards: true
 
-      AdvancedEggHunt.group.default: true
+      AdvancedHunt.group.default: true
 
-  AdvancedEggHunt.group.default:
+  AdvancedHunt.group.default:
     description: "Contains all essential default permissions"
     default: true
     children:
-      AdvancedEggHunt.command.help: true
-      AdvancedEggHunt.command.collection: true
-      AdvancedEggHunt.command.progress: true
-      AdvancedEggHunt.command.leaderboard: true
-      AdvancedEggHunt.command.hint: true
-      AdvancedEggHunt.FindEggs: true
+      AdvancedHunt.command.help: true
+      AdvancedHunt.command.collection: true
+      AdvancedHunt.command.progress: true
+      AdvancedHunt.command.leaderboard: true
+      AdvancedHunt.command.hint: true
+      AdvancedHunt.FindEggs: true
