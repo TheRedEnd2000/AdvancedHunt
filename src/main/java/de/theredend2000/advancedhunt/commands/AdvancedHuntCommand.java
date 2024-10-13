@@ -82,7 +82,8 @@ public class AdvancedHuntCommand implements TabExecutor {
                 }
                 break;
             case 3:
-                if (args[0].equalsIgnoreCase("reset") && !args[1].equalsIgnoreCase("all") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.RESET)) {
+                if (args[0].equalsIgnoreCase("reset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.RESET)) {
+                    completions.add("all");
                     completions.addAll(plugin.getEggDataManager().savedEggCollections());
                 }
                 break;
@@ -303,19 +304,38 @@ public class AdvancedHuntCommand implements TabExecutor {
         }
 
         if (args[1].equalsIgnoreCase("all")) {
-            eggManager.resetStatsAll();
-            messageManager.sendMessage(player, MessageKey.FOUNDEGGS_RESET);
+            if(args[2].equalsIgnoreCase("all")) {
+                eggManager.resetStatsAll();
+                messageManager.sendMessage(player, MessageKey.FOUNDEGGS_RESET);
+                return;
+            }
+            String collection = args[2];
+            if (plugin.getEggDataManager().containsCollection(collection)) {
+                for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
+                    String name = eggManager.getPlayerNameFromUUID(uuid);
+                    eggManager.resetStatsPlayer(name, collection);
+                }
+                player.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7in collection §6" + collection + " §7has been §creset§7!");
+            }else
+                player.sendMessage("§cNo collection with name "+collection+" found.");
             return;
         }
 
         String name = args[1];
         if (args.length == 3) {
             String collection = args[2];
+            if(collection.equalsIgnoreCase("all")){
+                for(String collections : plugin.getEggDataManager().savedEggCollections())
+                    eggManager.resetStatsPlayer(name, collections);
+                player.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7of §a"+name+" §7in all collections has been §creset§7!");
+                return;
+            }
             if (eggManager.containsPlayer(name)) {
                 if (plugin.getEggDataManager().containsCollection(collection)) {
                     eggManager.resetStatsPlayer(name, collection);
                     messageManager.sendMessage(player, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", name, "%COLLECTION%", collection);
-                }
+                }else
+                    player.sendMessage("§cNo collection with name "+collection+" found.");
             } else {
                 messageManager.sendMessage(player, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
             }

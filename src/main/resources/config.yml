@@ -180,7 +180,7 @@ BlacklistedCommands:
   - perms
 
 
-PlaceEggs:
+Place:
   # You can only use textures if the type is a player head
   0:
     type: PLAYER_HEAD

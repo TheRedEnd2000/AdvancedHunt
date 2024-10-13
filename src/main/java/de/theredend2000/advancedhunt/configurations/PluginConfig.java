@@ -53,7 +53,8 @@ public class PluginConfig extends Configuration {
         });
         upgraders.put(3.4, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
-                    new ConfigMigration.ReplacementEntry("egg", "", false, true)
+                    new ConfigMigration.ReplacementEntry("egg", "", false, true),
+            new ConfigMigration.ReplacementEntry("eggs", "", false, true)
             );
 
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
@@ -345,26 +346,26 @@ public class PluginConfig extends Configuration {
 
     //region PlaceEggs
     public Boolean hasPlaceEggs() {
-        return getConfig().contains("PlaceEggs.");
+        return getConfig().contains("Place.");
     }
     public Set<String> getPlaceEggIds() {
-        return getConfig().getConfigurationSection("PlaceEggs.").getKeys(false);
+        return getConfig().getConfigurationSection("Place.").getKeys(false);
     }
     public String getPlaceEggTexture(String id) {
-        return getConfig().getString(MessageFormat.format("PlaceEggs.{0}.texture", id));
+        return getConfig().getString(MessageFormat.format("Place.{0}.texture", id));
     }
 	public void setPlaceEggTexture(int id, String PlaceEggTexture) {
-		getConfig().set(MessageFormat.format("PlaceEggs.{0}.texture", id), PlaceEggTexture);
+		getConfig().set(MessageFormat.format("Place.{0}.texture", id), PlaceEggTexture);
 	}
 
     public String getPlaceEggType(String id) {
-        return getConfig().getString(MessageFormat.format("PlaceEggs.{0}.type", id));
+        return getConfig().getString(MessageFormat.format("Place.{0}.type", id));
     }
     public void setPlaceEggType(int id, String PlaceEggType) {
-        getConfig().set(MessageFormat.format("PlaceEggs.{0}.type", id), PlaceEggType);
+        getConfig().set(MessageFormat.format("Place.{0}.type", id), PlaceEggType);
     }
     public void removePlaceEggType(int id) {
-        getConfig().set(MessageFormat.format("PlaceEggs.{0}", id), null);
+        getConfig().set(MessageFormat.format("Place.{0}", id), null);
     }
 
     public void setPlaceEggPlayerHead(String base64Texture) {

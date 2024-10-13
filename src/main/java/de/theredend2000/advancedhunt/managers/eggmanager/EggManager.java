@@ -482,6 +482,23 @@ public class EggManager {
         }
         return false;
     }
+    public String getPlayerNameFromUUID(UUID uuid) {
+        for (UUID uuids : plugin.getEggDataManager().savedPlayers()) {
+            if(uuid.equals(uuids)){
+                FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuid);
+                for (String collection : Main.getInstance().getEggDataManager().savedEggCollections()) {
+                    if (playerConfig == null || playerConfig.getString("FoundEggs.") == null || playerConfig.getString("FoundEggs." + collection) == null) {
+                        continue;
+                    }
+                    return playerConfig.getString("FoundEggs." + collection + ".Name");
+                }
+            }
+        }
+        return "No Name found";
+    }
+    public boolean containsPlayerUUID(UUID uuid) {
+        return plugin.getEggDataManager().savedPlayers().contains(uuid);
+    }
     public void showAllEggs(){
         for(String collection : plugin.getEggDataManager().savedEggCollections()) {
             FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
