@@ -10,6 +10,7 @@ import de.theredend2000.advancedhunt.util.ItemHelper;
 import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 public class EggProgressMenu extends PaginatedInventoryMenu implements IInventoryMenuOpen {
 
     public EggProgressMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Egg progress", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNameSingular()) + " progress", (short) 54);
 
         super.addMenuBorder();
         addMenuBorderButtons();

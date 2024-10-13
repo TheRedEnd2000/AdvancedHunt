@@ -11,6 +11,7 @@ import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,7 +23,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
     private int numberOfPlayers = 0;
 
     public LeaderboardMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Eggs leaderboard", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + "s leaderboard", (short) 54);
 
         super.addMenuBorder();
         addMenuBorderButtons();

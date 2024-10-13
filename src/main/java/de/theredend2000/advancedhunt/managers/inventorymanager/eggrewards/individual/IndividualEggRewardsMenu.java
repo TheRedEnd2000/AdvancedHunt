@@ -16,6 +16,7 @@ import de.tr7zw.nbtapi.iface.ReadWriteItemNBT;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,7 +36,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
     private String collection;
 
     public IndividualEggRewardsMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Individual Egg Rewards", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
+        super(playerMenuUtility, "Individual " + StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNameSingular()) + " Rewards", (short) 54, XMaterial.WHITE_STAINED_GLASS_PANE);
         this.plugin = Main.getInstance();
         messageManager = this.plugin.getMessageManager();
 

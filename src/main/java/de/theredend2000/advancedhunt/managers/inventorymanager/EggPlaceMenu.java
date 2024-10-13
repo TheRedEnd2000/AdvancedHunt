@@ -14,6 +14,7 @@ import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -27,7 +28,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
     private MessageManager messageManager;
 
     public EggPlaceMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Eggs place list", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + "s place list", (short) 54);
         messageManager = Main.getInstance().getMessageManager();
 
         super.addMenuBorder();

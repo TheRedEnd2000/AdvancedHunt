@@ -11,6 +11,7 @@ import de.theredend2000.advancedhunt.util.ItemHelper;
 import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 public class EggListMenu extends PaginatedInventoryMenu implements IInventoryMenuOpen {
 
     public EggListMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, "Eggs list", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + "s list", (short) 54);
 
         super.addMenuBorder();
         addMenuBorderButtons();
