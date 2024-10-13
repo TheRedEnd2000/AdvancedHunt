@@ -1,2 +1,700 @@
 config-version: 1.0
 
+# %PLUGIN_NAME_S% is plugin-name-singular in the config
+# %PLUGIN_NAME_P% is plugin-name-plural in the config
+# %PLUGIN_COMMAND% is the first custom command set
+
+# General buttons
+back_button:
+  displayname: "&7« Retour"
+  lore:
+    - "&7Cliquez pour revenir en arrière."
+next_page_button:
+  displayname: "&aPage suivante »"
+  lore:
+    - "&6Page: &7(&b%CURRENT_PAGE%&7/&b%MAX_PAGES%&7)"
+    - ""
+    - "&eCliquez pour faire défiler."
+previous_page_button:
+  displayname: "&c« Page précédente"
+  lore:
+    - "&6Page: &7(&b%CURRENT_PAGE%&7/&b%MAX_PAGES%&7)"
+    - ""
+    - "&eCliquez pour faire défiler."
+close_button:
+  displayname: "&cFermer"
+refresh_button:
+  displayname: "&aRafraîchir"
+
+# Collection related
+selected_collection_button:
+  displayname: "&bCollection choisie"
+  lore:
+    - "&7Affiche votre collection actuellement sélectionnée."
+    - ""
+    - "&7Actuelle: &6%COLLECTION%"
+    - "&eCliquez pour changer."
+add_collection_button:
+  displayname: "&5Ajouter une collection"
+collection_item:
+  displayname: "&6Collection: &6&l%COLLECTION% %SELECTED%"
+  lore:
+    - ""
+    - "&9Collection Information:"
+    - "&7   - Placé %PLUGIN_NAME_P%: &6%MAX_EGGS%"
+    - ""
+    - "&aRemarque:"
+    - "&7Cette collection s'applique à toutes les actions qui sont réalisées."
+    - "&7Il peut être modifié à tout moment dans ce menu."
+    - ""
+    - "&eCLIQUE-GAUCHE pour sélectionner."
+    - "&7%PERMISSION%CLIQUE-DROIT pour éditer."
+
+# Collection editor
+collection_editor_status:
+  displayname: "&3Status"
+  lore:
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour changer."
+collection_editor_delete:
+  displayname: "&4Supprimer"
+  lore:
+    - "&8Vérifiez si votre type de suppression est correct. (WOODEN_AXE)"
+    - ""
+    - "&4&lVOUS NE POUVEZ PAS ANNULER CELA"
+    - ""
+    - "&eCliquez pour supprimer."
+collection_editor_requirements:
+  displayname: "&3Exigences"
+  lore:
+    - "%REQUIREMENTS%" # Les traductions des exigences peuvent être modifiées dans les fichiers de messages.
+collection_editor_reset:
+  displayname: "&3Réinitialiser &e&l(BETA)"
+  lore:
+    - ""
+    - "&cRéinitialise après:"
+    - "&6  %RESET_TIME%"
+    - ""
+    - "&4Si l'heure est modifiée, la valeur"
+    - "&4du temps de recharge actuel du"
+    - "&4joueur ne changera pas!"
+    - ""
+    - "&eCliquez pour changer."
+collection_editor_hide_for_player:
+  displayname: "&8&mCacher pour le joueur"
+  lore:
+    - ""
+    - "&7Si un joueur trouve un %PLUGIN_NAME_S%, il ne lui"
+    - "&7sera plus montré."
+    - "&cCeci est uniquement côté client"
+    - ""
+    - "&4&lÀ VENIR"
+collection_editor_one_player:
+  displayname: "&3Un joueur"
+  lore:
+    - ""
+    - "&7Un seul joueur peut trouver le %PLUGIN_NAME_S%."
+    - "&7C'est après avoir trouvé qu'il n'est plus accessible."
+    - ""
+    - "&cAprès avoir désactivé la fonctionnalité, tous les %PLUGIN_NAME_P%"
+    - "&ctrouvés seront réinitialisés."
+    - ""
+    - "&eCliquez pour changer."
+collection_editor_delete_type:
+  displayname: "&3Types de suppression"
+  lore:
+    - "&8Chaque joueur peut le configurer lui-même."
+    - "&7Modifier ce qui se passe après la suppression"
+    - "&7d'une collection."
+    - ""
+    - "%NOTHING_TYPE%Rien"
+    - "&8Tous les blocs qui étaient %PLUGIN_NAME_P% resteront. (y compris les têtes de joueurs)"
+    - "%PLAYER_HEADS_TYPE%Têtes de joueurs"
+    - "&8Tous les blocs qui sont des têtes de joueurs seront supprimés."
+    - "%EVERYTHING_TYPE%Tout"
+    - "&8Tous les blocs seront mis en l'air. (y compris les têtes des joueurs)"
+    - ""
+    - "&eCliquez pour changer."
+
+# Collection creator
+collection_creator_name:
+  displayname: "&3Nom"
+  lore:
+    - "&7Actuellement: %NAME%"
+    - ""
+    - "&eCliquez pour changer."
+collection_creator_status:
+  displayname: "&3Status"
+  lore:
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour changer."
+collection_creator_requirements:
+  displayname: "&3Exigences"
+  lore:
+    - "&cVous pouvez modifier les exigences"
+    - "&caprès avoir créé la nouvelle collection."
+    - ""
+    - "&7Toutes les exigences seront actives"
+    - "&7lors de la création d'une nouvelle collection."
+collection_creator_create:
+  displayname: "&2Créer"
+  lore:
+    - ""
+    - "&eCliquez pour créer."
+
+# Egg related
+eggslist_egg:
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
+  lore:
+    - "&9Emplacement:"
+    - "&7X: &e%LOCATION_X%"
+    - "&7Y: &e%LOCATION_Y%"
+    - "&7Z: &e%LOCATION_Z%"
+    - ""
+    - "&9Information:"
+    - "&7Heures trouvées: &6%TIMES_FOUND%"
+    - ""
+    - "&9Placé:"
+    - "&7Date: &6%DATE%"
+    - "&7Heure: &6%TIME%"
+    - ""
+    - "&eCLIQUE-GAUCHE pour vous téléporter."
+    - "&eCLIQUE-DROIT pour plus d'informations."
+
+eggplace_information:
+  displayname: "&9Information"
+  lore:
+    - ""
+    - "&2Comment ajouter des textures personnalisées:"
+    - "&7Textures personnalisées pour %PLUGIN_NAME_P% (têtes de joueurs)"
+    - "&7peut être ajouté en cliquant sur l'objet dans votre"
+    - "&7inventaire. Il obtiendra la texture."
+    - ""
+    - "&2Autres blocs:"
+    - "&7Vous pouvez ajouter %PLUGIN_NAME_P% qui sont des blocs,"
+    - "&7afin que les joueurs doivent rechercher des blocs"
+    - "&7au lieu des têtes de joueurs."
+    - ""
+    - "&bSi vous avez d'autres questions sur la façon d'ajouter"
+    - "&bdes éléments personnalisés, vous pouvez rejoindre le discord"
+    - ""
+    - "&eCliquez pour obtenir le lien discord."
+eggplace_egg:
+  displayname: "&b&l%PLUGIN_NAME_P% Type #%EGG_ID%"
+  lore:
+    - ""
+    - "&eCLIQUE-GAUCHE pour ajouter à votre inventaire."
+    - "&eCLIQUE-DROIT pour supprimer."
+
+eggprogress_location_found:
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&9Emplacement:"
+    - "&7X: &e%LOCATION_X%"
+    - "&7Y: &e%LOCATION_Y%"
+    - "&7Z: &e%LOCATION_Z%"
+    - ""
+    - "&2&lVous avez trouvé ce %PLUGIN_NAME_S%."
+    - ""
+    - "&9Collecté:"
+    - "&7Date: &6%DATE%"
+    - "&7Heure: &6%TIME%"
+eggprogress_found:
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&2&lVous avez trouvé ce %PLUGIN_NAME_S%."
+    - ""
+    - "&9Collecté:"
+    - "&7Date: &6%DATE%"
+    - "&7Heure: &6%TIME%"
+eggprogress_not_found:
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
+  lore:
+    - ""
+    - "&4&lVous n'avez pas encore trouvé ce %PLUGIN_NAME_S%."
+
+# Player related
+information_player:
+  displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
+  lore:
+    - "&7%PLAYER_NAME% a trouvé le &2%PLUGIN_NAME_S% #%EGG_ID%&7."
+    - ""
+    - "&9Informations de %PLAYER_NAME%:"
+    - "&7%PLUGIN_NAME_P% trouvé: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - ""
+    - "&7Date: &6%DATE%"
+    - "&7Heure: &6%TIME%"
+
+# Leaderboard related
+leaderboard_sort:
+  displayname: "&2Trier"
+  lore:
+    - ""
+    - "%SELECTED_ALL%Afficher le classement complet"
+    - "%SELECTED_10%Afficher uniquement le top 10"
+    - "%SELECTED_3%Afficher uniquement le top 3"
+    - "%SELECTED_YOU%Montrer seulement à vous"
+    - ""
+    - "&eCliquez pour changer"
+leaderboard_player:
+  displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
+  lore:
+    - ""
+    - "&7%PLUGIN_NAME_P% Trouvé: &3%EGGS_FOUND%"
+    - "&7%PLUGIN_NAME_P% Restant: &3%EGGS_REMAINING%"
+    - "&7Max E%PLUGIN_NAME_P%: &3%EGGS_MAX%"
+    - ""
+    - "%IS_IN_TOP_TEN%"
+
+# Reward related
+rewards_confirm_menu_confirm:
+  displayname: "&aConfirmer"
+  lore:
+    - ""
+    - "&7En cliquant sur ce bouton, vous chargerez ce"
+    - "&7préréglage dans tous les emplacements %PLUGIN_NAME_P%."
+    - ""
+    - "&eCliquez pour confirmer"
+rewards_confirm_menu_cancel:
+  displayname: "&cAnnuler"
+
+rewards_individual_save_preset:
+  displayname: "&5Sauvegarder le préréglage"
+  lore:
+    - ""
+    - "&7Sauvegarde les commandes répertoriées actuelles"
+    - "&7dans un préréglage que vous pouvez charger à"
+    - "&7nouveau pour un autre %PLUGIN_NAME_P%."
+    - ""
+    - "&2Note: &7Vous avez besoin d'au moins 1 commande pour sauvegarder un préréglage!"
+    - ""
+    - "&eCliquez pour sauvegarder un nouveau préréglage."
+rewards_individual_load_preset:
+  displayname: "&5Charger les préréglages"
+  lore:
+    - "&eCliquez pour charger ou changer les préréglages."
+rewards_individual_new_reward:
+  displayname: "&5Créer une nouvelle récompense"
+  lore:
+    - ""
+    - "&bVous pouvez également ajouter des articles personnalisés:"
+    - "&7Pour cela, obtenez votre article personnalisé dans votre"
+    - "&7inventaire et cliquez dessus lorsque ce"
+    - "&7menu est ouvert. L'article sera"
+    - "&7converti en commande"
+    - "&7et pourra ensuite être utilisé comme les autres commandes."
+    - ""
+    - "&eCliquez pour créer une nouvelle récompense."
+rewards_individual_switch_global:
+  displayname: "&bChanger vers Global"
+  lore:
+    - ""
+    - "&6Changer vers Global:"
+    - "&7Le fait de basculer en mode global vous permet de gérer"
+    - "&7toutes les commandes et tous les préréglages de"
+    - "&7la fonction si un joueur a trouvé"
+    - "&7&ltous les &7%PLUGIN_NAME_P%."
+    - ""
+    - "&eCliquez pour changer."
+rewards_individual_information:
+  displayname: "&9Information"
+  lore:
+    - "&7Les récompenses individuelles %PLUGIN_NAME_S% comptent"
+    - "&7comme &7&lune récompense %PLUGIN_NAME_S%&7."
+    - "&7Cela signifie que si le joueur trouve &7&lune %PLUGIN_NAME_S%&7,"
+    - "&7toutes les commandes qui se trouvent dans cet inventaire"
+    - "&7seront exécutées."
+    - ""
+    - "&c&n&oCes commandes ne seront prises en compte que pour cette %PLUGIN_NAME_S%."
+    - ""
+    - "&7Vous pouvez sauvegarder toutes les commandes listées comme préréglages"
+    - "&7pour les charger dans d'autres %PLUGIN_NAME_P% ou les définir par défaut."
+rewards_individual_reward:
+  displayname: "&b&lRécompense &7#%REWARD_ID%"
+  lore:
+    - ""
+    - "&9Information:"
+    - "&7Commande: &6%COMMAND%"
+    - "&7Commande activée: %STATUS%"
+    - "&7Chance: &6%CHANCE_PERCENT% &7(%CHANCE_DECIMAL%)"
+    - "&7Rareté: %RARITY%"
+    - ""
+    - "&eCLIQUE-GAUCHE pour passer activé."
+    - "&eCLIQUE-MILIEU pour changer la chance."
+    - "&eCLIQUE-DROIT pour supprimer."
+    - "&eLACHER pour exécuter la commande."
+
+rewards_global_save_preset:
+  displayname: "&5Sauvegarder le préréglage"
+  lore:
+    - ""
+    - "&7Sauvegarde les commandes listées actuellement"
+    - "&7dans un préréglage que vous pouvez charger"
+    - "&7à nouveau pour d'autres %PLUGIN_NAME_P%."
+    - ""
+    - "&2Remarque: &7Vous avez besoin d'au moins 1 commande pour sauvegarder un préréglage!"
+    - ""
+    - "&eCliquez pour sauvegarder un nouveau préréglage."
+rewards_global_load_preset:
+  displayname: "&5Charger les préréglages"
+  lore:
+    - "&eCliquez pour charger ou changer les préréglages."
+rewards_global_new_reward:
+  displayname: "&5Créer une nouvelle récompense"
+  lore:
+    - ""
+    - "&bVous pouvez également ajouter des articles personnalisés:"
+    - "&7Pour cela, récupérez votre article personnalisé dans votre"
+    - "&7inventaire et cliquez dessus lorsque ce"
+    - "&7menu est ouvert. L'article sera"
+    - "&7converti en commande"
+    - "&7et pourra ensuite être utilisé comme les autres commandes."
+    - ""
+    - "&eCliquez pour créer une nouvelle récompense."
+rewards_global_switch_individual:
+  displayname: "&bPasser à l'Individuel"
+  lore:
+    - ""
+    - "&6Passer à l'Individuel:"
+    - "&7Le passage à l'individuel vous permet de gérer"
+    - "&7toutes les commandes et tous les préréglages"
+    - "&7de la fonction si un joueur en a trouvé"
+    - "&7&lune &7%PLUGIN_NAME_S%g."
+    - ""
+    - "&eCliquez pour changer."
+rewards_global_information:
+  displayname: "&9Information"
+  lore:
+    - "&7Les récompenses globales %PLUGIN_NAME_S% comptent"
+    - "&7comme &7&ltoutes les récompenses %PLUGIN_NAME_S%&7."
+    - "&7Cela signifie que si le joueur trouve &7&ltous %PLUGIN_NAME_P%&7,"
+    - "&7toutes les commandes qui se trouvent dans cet inventaire"
+    - "&7seront exécutées."
+    - ""
+    - "&c&n&oCes commandes compteront pour l'ensemble de la collection."
+    - ""
+    - "&7Vous pouvez sauvegarder toutes les commandes répertoriées comme préréglages"
+    - "&7pour les charger dans d'autres collections ou les définir par défaut."
+rewards_global_reward:
+  displayname: "&b&lRécompense &7#%REWARD_ID%"
+  lore:
+    - ""
+    - "&9Information:"
+    - "&7Commande: &6%COMMAND%"
+    - "&7Commande activée: %STATUS%"
+    - "&7Chance: &6%CHANCE_PERCENT% &7(%CHANCE_DECIMAL%)"
+    - "&7Rareté: %RARITY%"
+    - ""
+    - "&eCLIQUE-GAUCHE pour passer activé."
+    - "&eCLIQUE-MILIEU pour changer la chance."
+    - "&eCLIQUE-DROIT pour supprimer."
+    - "&eLACHER pour exécuter la commande."
+
+
+# Preset related
+
+preset_global:
+  displayname: "&b&l%PRESET%"
+  lore:
+    - ""
+    - "&9Commandes:"
+    - "%COMMANDS%"
+    - "%IS_DEFAULT%"
+    - ""
+    - "&eCLIQUE-GAUCHE pour charger."
+    - "&eCLIQUE-MILIEU pour le définir comme préréglage par défaut."
+    - "&eCLIQUE-DROIT pour supprimer."
+preset_individual:
+  displayname: "&b&l%PRESET%"
+  lore:
+    - ""
+    - "&9Commandes:"
+    - "%COMMANDS%"
+    - "%IS_DEFAULT%"
+    - ""
+    - "&eCLIQUE-GAUCHE pour charger."
+    - "&eCLIQUE-MILIEU pour le définir comme préréglage par défaut."
+    - "&eCLIQUE-DROIT pour supprimer."
+    - "&eLACHER pour le charger dans tous les emplacements %PLUGIN_NAME_P%."
+
+
+# Requirement related
+requirements_selection:
+  displayname: "&6Selection - %SELECTION%"
+  lore:
+    - "&7Active: &b%STATUS_ACTIVE%"
+    - ""
+    - "&eCliquez pour ouvrir."
+requirements_activate:
+  displayname: "&aActiver tout"
+  lore:
+    - "&eCliquez pour tout activer."
+requirements_deactivate:
+  displayname: "&cDésactiver tout"
+  lore:
+    - "&eCliquez pour tout désactiver."
+requirements_order:
+  displayname: "&bOrdre des Exigences "
+  lore:
+    - ""
+    - "&7Ordre actuel: &6%CURRENT_ORDER%"
+    - ""
+    - "&a&lINFO:"
+    - "&6OU"
+    - "&7Cela signifie qu'une seule chose doit être correcte"
+    - "&7dans la sélection."
+    - "&8Exemple: Lundi en semaine et l'heure 7 est activée."
+    - "&8Maintenant, ce doit être lundi &8&lOU &8il doit être 7."
+    - "&6ET"
+    - "&7Fait en sorte que dans toutes les sélections, il doit y"
+    - "&7avoir au moins une bonne."
+    - "&8Exemple: Lundi en semaine et vendredi sont activés"
+    - "&8et l'heure 7 et 10."
+    - "&8Maintenant, ce doit être lundi ou vendredi &8&let"
+    - "&8ça doit être 7 ou 10."
+    - ""
+    - "&eCliquez pour changer."
+
+requirements_season:
+  displayname: "&6%SEASON%"
+  lore:
+    - "&8%SEASON_INFORMATION%"
+    - "&7Fait en sorte que les %PLUGIN_NAME_P% soient seulement"
+    - "&7disponibles que pendant la saison %SEASON%"
+    - ""
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour %ADD_REMOVE% %SEASON% %TO_FROM% les exigences."
+requirements_year:
+  displayname: "&6Year %YEAR%"
+  lore:
+    - "&7Fait en sorte que les %PLUGIN_NAME_P% soient seulement"
+    - "&7disponibles que pendant l'année %YEAR%."
+    - ""
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour %ADD_REMOVE% %YEAR% %TO_FROM% les exigences."
+requirements_month:
+  displayname: "&6%MONTH%"
+  lore:
+    - "&7Fait en sorte que les %PLUGIN_NAME_P% soient seulement"
+    - "&7disponibles que pendant le mois %MONTH%."
+    - ""
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour %ADD_REMOVE% %MONTH% %TO_FROM% les exigences."
+requirements_weekday:
+  displayname: "&6%WEEKDAY%"
+  lore:
+    - "&7Fait en sorte que les %PLUGIN_NAME_P% soient seulement"
+    - "&7disponible en pendant la semaine %WEEKDAY%."
+    - ""
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour %ADD_REMOVE% %WEEKDAY% %TO_FROM% les exigences."
+requirements_date:
+  displayname: "&6%DATE%"
+  lore:
+    - "&7Fait en sorte que les %PLUGIN_NAME_P% soient seulement"
+    - "&7disponible le %DATE%."
+    - ""
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour %ADD_REMOVE% %DATE% %TO_FROM% les exigences."
+requirements_hour:
+  displayname: "&6Hour %HOUR%"
+  lore:
+    - "&8Heures: (%HOUR_FORMAT%)" # Le format de l'heure peut être modifié dans le fichier messages-<lang>.yml
+    - "&7Fait en sorte que les %PLUGIN_NAME_P% soient seulement"
+    - "&7disponible en pendant l'heure %HOUR%."
+    - ""
+    - "&7Actuellement: %STATUS%"
+    - ""
+    - "&eCliquez pour %ADD_REMOVE% %HOUR% %TO_FROM% les exigences."
+
+# Reset related
+reset_year:
+  displayname: "&6Réinitialiser - Année"
+  lore:
+    - "&7Actuelle: &b%YEAR%Y"
+    - "&7Globalement: &6%OVERALL%"
+    - ""
+    - "&eCLIQUE-GAUCHE ajouter un."
+    - "&eCLIQUE-MILIEU le réinitialiser."
+    - "&eCLIQUE-DROIT supprimer un."
+reset_month:
+  displayname: "&6Réinitialiser - Mois"
+  lore:
+    - "&7Actuelle: &b%MONTH%M"
+    - "&7Globalement: &6%OVERALL%"
+    - ""
+    - "&eCLIQUE-GAUCHE ajouter un."
+    - "&eCLIQUE-MILIEU le réinitialiser."
+    - "&eCLIQUE-DROIT supprimer un."
+reset_day:
+  displayname: "&6Réinitialisation - Jour"
+  lore:
+    - "&7Actuelle: &b%DAY%d"
+    - "&7Globalement: &6%OVERALL%"
+    - ""
+    - "&eCLIQUE-GAUCHE ajouter un."
+    - "&eCLIQUE-MILIEU le réinitialiser."
+    - "&eCLIQUE-DROIT supprimer un."
+reset_hour:
+  displayname: "&6Réinitialiser - Heure"
+  lore:
+    - "&7Actuelle: &b%HOUR%h"
+    - "&7Globalement: &6%OVERALL%"
+    - ""
+    - "&eCLIQUE-GAUCHE ajouter un."
+    - "&eCLIQUE-MILIEU le réinitialiser."
+    - "&eCLIQUE-DROIT supprimer un."
+reset_minute:
+  displayname: "&6Réinitialiser - Minute"
+  lore:
+    - "&7Actuelle: &b%MINUTE%m"
+    - "&7Globalement: &6%OVERALL%"
+    - ""
+    - "&eCLIQUE-GAUCHE ajouter un."
+    - "&eCLIQUE-MILIEU le réinitialiser."
+    - "&eCLIQUE-DROIT supprimer un."
+reset_second:
+  displayname: "&6Réinitialisation - Deuxième"
+  lore:
+    - "&7Actuelle: &b%SECOND%s"
+    - "&7Globalement: &6%OVERALL%"
+    - ""
+    - "&eCLIQUE-GAUCHE ajouter un."
+    - "&eCLIQUE-MILIEU le réinitialiser."
+    - "&eCLIQUE-DROIT supprimer un."
+reset_reset_all:
+  displayname: "&cRéinitialiser tout"
+  lore:
+    - "&eCliquez pour tout réinitialiser."
+
+# Paramètres liés
+settings_one_egg_reward:
+  displayname: "&3Une récompense trouvée par %PLUGIN_NAME_S%"
+  lore:
+    - ""
+    - "&7Si cette fonction est activée,"
+    - "&7toutes les commandes entrées dans un %PLUGIN_NAME_S% trouvé"
+    - "&7seront exécutées."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+settings_all_eggs_reward:
+  displayname: "&3Toutes les récompenses trouvées pour %PLUGIN_NAME_P%"
+  lore:
+    - ""
+    - "&7Si cette fonction est activée,"
+    - "&7toutes les commandes entrées dans tous les  %PLUGIN_NAME_P% trouvé"
+    - "&7seront exécutées."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+settings_updater:
+  displayname: "&3Mise à jour"
+  lore:
+    - ""
+    - "&7Si cette fonction est activée,"
+    - "&7tous les opérateurs recevront une information"
+    - "&7si une nouvelle version du plugin est sortie."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+settings_command_feedback:
+  displayname: "&3Retour de commande"
+  lore:
+    - ""
+    - "&7Si cette fonction est activée,"
+    - "&7plus aucune commande n'est envoyée"
+    - "&7aux opérateurs listés dans la console."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+settings_sound_volume:
+  displayname: "&3Volume sonore"
+  lore:
+    - ""
+    - "&7Modifier le volume de tous les sons du plugin"
+    - "&7Si le volume est égal à 0, aucun son ne sera joué."
+    - ""
+    - "&7Actuellement: %VOLUME%"
+    - "&eCLIQUE-GAUCHE pour en ajouter un."
+    - "&eCLIQUE-DROIT pour en supprimer un."
+settings_show_coordinates:
+  displayname: "&3Afficher les coordonnées une fois trouvées"
+  lore:
+    - ""
+    - "&7Si cette fonction est activée,"
+    - "&7les joueurs peuvent voir les coordonnées"
+    - "&7dans le menu de progression."
+    - ""
+    - "&2Info: &7Les coordonnées ne sont visibles que si"
+    - "&7le joueur a trouvé le %PLUGIN_NAME_S%."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+settings_armorstand_glow:
+  displayname: "&3Lueur de support d'armure"
+  lore:
+    - ""
+    - "&7Définissez la durée pendant laquelle les supports d'armure sont"
+    - "&7visibles pour tous les joueurs."
+    - ""
+    - "&7Actuellement: %GLOW_DURATION%"
+    - "&eLEFT-CLICK to add one."
+    - "&eRIGHT-CLICK to remove one."
+settings_egg_nearby_radius:
+  displayname: "&3Rayon de titre à proximité"
+  lore:
+    - ""
+    - "&7Modifier le rayon du message à proximité de %PLUGIN_NAME_S% pour tous les joueurs"
+    - "&7Si le rayon est égal à 0, aucun titre ne sera affiché."
+    - ""
+    - "&7Actuellement: %RADIUS%"
+    - "&eCLIQUE-GAUCHE pour en ajouter un."
+    - "&eCLIQUE-DROIT pour en supprimer un."
+settings_plugin_prefix:
+  displayname: "&3Afficher le préfixe du plugin"
+  lore:
+    - ""
+    - "&7Si activé, le préfixe du plugin"
+    - "&7s'affichera sur chaque message."
+    - "&cCela affectera chaque message dans le fichier messages.yml."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+settings_firework:
+  displayname: "&3Feu d'artifice"
+  lore:
+    - ""
+    - "&7Si cette fonction est activée,"
+    - "&7un feu d'artifice apparaîtra lorsqu'un %PLUGIN_NAME_S% sera trouvé."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+settings_hint_cooldown:
+  displayname: "&3Temps de recharge de l'indice en cas d'échec"
+  lore:
+    - ""
+    - "&7Définissez si le temps de recharge de la fonction d'indice"
+    - "&7s'applique lorsque le joueur échoue."
+    - ""
+    - "%STATUS%"
+    - "&eCliquez pour basculer."
+
+# Divers
+list_error:
+  displayname: "&4Aucune entrée"
+  lore:
+    - "&cIl n'y a aucune entrée dans cette liste."
+    - ""
+    - "&cSi vous pensez que c'est un problème"
+    - "&cdu plugin, merci de le signaler"
+    - "&ccela sur le discord."

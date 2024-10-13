@@ -1,167 +1,197 @@
-config-version: 2.5
+config-version: 2.6
 
-no-permission-error: '&cVous n''avez pas la &6%PERMISSION% permission&c pour utiliser cette commande.'
-command-not-found: '&cAucune commande trouvée! &7Veuillez taper &e/egghunt help &7pour voir toutes les commandes.'
+# %PLUGIN_NAME_S% is plugin-name-singular in the config
+# %PLUGIN_NAME_P% is plugin-name-plural in the config
+# %PLUGIN_COMMAND% is the first custom command set
+
+no-permission-error: "&cVous n''avez pas la permission &6%PERMISSION%&c pour utiliser cette commande."
+command-not-found: '&cAucune commande trouvée! &7Veuillez saisir &e/%PLUGIN_COMMAND% help &7pour voir toutes les commandes.'
 only-player: '&cSeulement le joueur peut utiliser cette commande.'
-reload-config: '&7La configuration a été &erechargée &7avec &asuccès&7.'
+reload-config: '&7La configuration a été &erechargée &aavec succès&7.'
 player-not-found: '&7Le système n''a &cpas d''entrée &7pour le joueur &a%PLAYER%&7.'
 not-number: '&cVeuillez entrer un numéro.'
 
-egg-placed: '&aVous avez &2créé &7avec succès &aun nouvel oeuf. &7(ID#%ID%)'
-egg-broken: '&aVous avez &csupprimer &7avec succès &aun oeuf. &7(ID#%ID%)'
-teleport-to-egg: '&aVous avez été téléporté à l''oeuf #%ID%.'
+egg-placed: '&aVous avez &2créé avec succès &aun nouveau %PLUGIN_NAME_S%. &7(ID#%ID%)'
+egg-broken: '&aVous avez &csupprimer &aun %PLUGIN_NAME_S%. &7(ID#%ID%)'
+teleport-to-egg: '&aVous avez été téléporté à %PLUGIN_NAME_S% #%ID%.'
 
-egg-found: '&aVous avez trouvé un oeuf. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
-egg-already-found: '&cVous avez déjà trouvé cet oeuf.'
-all-eggs-found: '&cVous avez déjà trouvé tous les oeufs.'
-no-eggs: '&cIl n''y a pas d''oeufs placés.'
-egg-hint: '&2&lSUCCÈS! &aUn oeuf a été trouvé en &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
-hint-cooldown: '&4&lEN TEMPS DE RECHARGE! &cVeuillez patienter &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'
-clicked-same: '&4&lÉCHOUÉ! &cVous avez cliqué sur la mauvaise vitre, sur aucune vitre ou deux fois sur la même.'
+egg-found: '&aVous avez trouvé un %PLUGIN_NAME_S%. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&cVous avez déjà trouvé ceci %PLUGIN_NAME_S%.'
+egg-already-found-by-player: '&cCe %PLUGIN_NAME_S% a déjà été trouvé par un autre joueur.'
+all-eggs-found: '&cVous avez déjà trouvé tous les %PLUGIN_NAME_P%.'
+no-eggs: '&cIl n''y a pas de %PLUGIN_NAME_P% placé.'
+egg-hint: '&2&lSUCCÈS! &aUn %PLUGIN_NAME_S% a été trouvé en &6X: %X%&6, Y: %Y%&6, Z: %Z%&a.'
+hint-cooldown: '&4&lEN COURS DE RÉCUPÉRATION! &cVeuillez patienter &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c.'
+clicked-same: '&4&lÉCHEC! &cVous avez cliqué sur la mauvaise vitre, sur aucune vitre ou sur la même chose deux fois.'
 hint-timeout: '&cVous n''avez pas cliqué assez vite.'
-hint-cancelled: '&aVous avez réussi à annuler ceci.'
+hint-cancelled: '&aVous avez annulé avec succès ceci.'
 egg-not-accessed: '&cVous ne pouvez pas y accéder pour le moment.'
 
-only-in-placemode: '&cVous pouvez uniquement placer ou casser des oeufs en mode construction. Tapez &e/egghunt placeEggs &cpour aller dans ce mode.'
-enter-placemode: '&aVous êtes maintenant en mode Placement. Vous pouvez maintenant ajouter ou supprimer des oeufs.'
-leave-placemode: '&cVous avez quitté le mode Placement. Vous ne pouvez plus ajouter ou supprimer des oeufs.'
+only-in-placemode: '&cVous ne pouvez placer ou détruire %PLUGIN_NAME_P% qu''en mode construction. Tapez &e/%PLUGIN_COMMAND% place &cpour aller dans ce mode.'
+enter-placemode: '&aVous êtes maintenant en mode Place. Vous pouvez maintenant ajouter ou supprimer %PLUGIN_NAME_P%.'
+leave-placemode: '&cVous avez quitté le mode Place. Vous ne pouvez plus ajouter ou supprimer %PLUGIN_NAME_P%.'
 
 first-page: '&7Vous êtes déjà sur la première page.'
 last-page: '&7Vous êtes sur la dernière page.'
 wait-refresh: '&cVeuillez patienter avant d''actualiser à nouveau.'
 block-listed: '&cCe bloc est déjà listé!'
 
-egg-nearby: '&3&lOEUF À PROXIMITÉ'
+egg-nearby: '&3&l%PLUGIN_NAME_S% PROCHE'
 
 sound-volume: '&cLe volume sonore ne peut être compris qu''entre &e0 et 15&c!'
-egg-visible: '&aTous les oeufs sont maintenant visibles pour &6%TIME_VISIBLE% secondes&a.'
-egg-show-warning: '&4AVERTISSEMENT: &aLes œufs sont visibles pour tous les joueurs.'
+egg-visible: '&aTous les %PLUGIN_NAME_P% sont désormais visibles pendant &6%TIME_VISIBLE% secondes&a.'
+egg-show-warning: '&4ATTENTION: &a%PLUGIN_NAME_P% sont visibles pour tous les joueurs.'
 armorstand-glow: '&cLa lueur du support d''armure ne peut être comprise qu''entre &e0 et 120&c!'
-egg-radius: '&cLe message d''oeuf à proximité ne peut être compris qu''entre &e0 et 50&c!'
+egg-radius: '&c%PLUGIN_NAME_S% le message à proximité ne peut être compris qu''entre &e0 et 50&c!'
 
-command-delete: '&7Vous avez &csupprimé &7avec &asuccès &7la &6commande #%ID%&7.'
+command-delete: '&7Vous avez &csupprimé &aavec succès &7la &6commande #%ID%&7.'
 new-command: '&7Tapez la &3commande &7dans le &atchat&7 ou tapez &c"cancel" &7pour revenir en arrière. Cette action expirera dans &22 minutes&7.'
 command-cancel: '&cVous avez annulé l''action avec succès.'
-command-add: '&7La &6commande #%ID% &7a été ajoutée avec &asuccès&7.'
+command-add: '&7La &6commande #%ID% &7a été ajouté &aavec succès&7.'
 command-expired: '&7Vous n''avez &cpas entré &7la &6commande &7assez &3rapidement. &7&lVeuillez réessayer!'
-one-command: '&cVous ne pouvez saisir qu''une seule commande à la fois.'
+one-command: '&cVous ne pouvez entrer qu''une seule commande à la fois.'
 command-blacklisted: '&cCette commande est sur liste noire!'
 
-foundeggs-reset: '&7Tous les &eOeufs Trouvés &7ont été &créinitialisés&7.'
-foundeggs-player-reset: '&7Tous les &eOeufs Trouvés &7de &a%PLAYER% &7ont été &créinitialisés&7.'
-foundeggs-player-reset-collection: 'MISSING'
+foundeggs-reset: '&7Tous les %PLUGIN_NAME_P% &etrouvés &7ont été &créinitialisés&7.'
+foundeggs-player-reset: '&7Tous les %PLUGIN_NAME_P% &etrouvés &7de &a%PLAYER% &7ont été &créinitialisés&7.'
+foundeggs-player-reset-collection: '&7Tous les%PLUGIN_NAME_P% &etrouvés &7dans la collection &6%COLLECTION% &7de &a%PLAYER% &7ont été &créinitialisés&7.'
 
-activate-requirements: '&aActivé toutes les conditions requises.'
-deactivate-requirements: '&cDésactivé toutes les conditions requises.'
+activate-requirements: '&aActiver toutes les exigences.'
+deactivate-requirements: '&cDésactiver toutes les exigences.'
 
 collection-disabled: '&cCette collection est actuellement désactivée.'
 collection-selected: '&7Vous avez sélectionné la collection &6%SELECTION%'
-collection-deleted: '&aVous avez supprimée avec succès la collection &6%COLLECTION%'
+collection-deleted: '&aCollection supprimée avec succès &6%COLLECTION%'
 chanced-chance: '&aChance défini avec succès à &e%CHANCE%%&a.'
+rarity-message: '%RARITY% LACHER! &7Vous recevez &b%ITEM% &7x%COUNT%'
 
-eggimport-hand: '&7Veuillez tenir la tête du &ejoueur avec la &2texture de l''œuf &7dans votre main.'
-eggimport-failed-profile: '&cÉchec du chargement d''un profil de joueur.'
-eggimport-success: '&7Importation &aréussie &7d''une nouvelle tête vers les &eœufs &eplacés&7.'
+eggimport-hand: '&7Veuillez tenir la &etête du joueur &7avec la &2%PLUGIN_NAME_S% texture &7dans votre main.'
+eggimport-failed-profile: '&cImpossible de charger un profil de joueur.'
+eggimport-success: '&aImportation &7réussie d''une nouvelle tête sur &eplace %PLUGIN_NAME_S%s&7.'
+eggimport-failed: '&cLe système d''importation d''articles a échoué. Cela peut être dû au fait qu''il n''est actuellement pas pris en charge dans votre version.'
 
 preset-already-exists: '&cCe préréglage existe déjà.'
-preset-saved: '&aEnregistrement &7réussi du &epréréglage %PRESET%&7.'
-preset-failed-commands: '&cIl y a trop peu de commandes à enregistrer.'
-preset-loaded: '&7Le &epréréglage %PRESET% &7a été chargé avec &asuccès&7.'
-preset-delete: '&7Vous avez &csupprimé avec &asuccès &7le &epréréglage %PRESET%&7.'
-preset-default: '&7Vous avez modifié le nouveau &7préréglage de &achargement par défaut &7en &e%PRESET%&7.'
+preset-saved: '&eLe préréglage a été &7sauvegardé &eavec succès %PRESET%&7.'
+preset-failed-commands: '&cIl doit y avoir plus d''une commande pour sauvegarder.'
+preset-loaded: '&7Le &epréréglage  %PRESET% &7a été chargé &aavec succès&7.'
+preset-delete: '&7Vous avez &csupprimé &aavec succès &7le &epréréglage %PRESET%&7.'
+preset-default: '&7Vous avez modifié le nouveau &7préréglage de &achargement par défaut en &e%PRESET%&7.'
 preset-not-delete-default: '&cVous ne pouvez pas supprimer le préréglage sélectionné comme préréglage de chargement par défaut.'
-preset-loading-no: 'MISSING'
-preset-loading-success: 'MISSING'
-preset-loading-progress: 'MISSING'
+preset-loading-no: '&cLe chargement des préréglages est déjà en cours.'
+preset-loading-success: '&aLe préréglage &6%PRESET%&a a été chargé avec succès dans tous les %PLUGIN_NAME_P%.'
+preset-loading-progress: '&bChargement des préréglages... (%COUNT%/%MAX%)'
+preset-is-default-1: '&2Ce préréglage est sélectionné comme préréglage par défaut.'
+preset-is-default-2: '&2Il sera chargé à chaque fois qu''un nouveau %PLUGIN_NAME_S% est créé.'
 
-setting-commandfeedback: '&aLes commentaires sur les commandes ont été &4abandonnés.&a Soit faites manuellement "/gamerule sendCommandFeedback false" ou supprimez la permission "minecraft.admin.command_feedback".'
+setting-commandfeedback: '&aLe retour de commande a été &4interrompu.&a Soit faites manuellement "/gamerule sendCommandFeedback false" ou supprimez la permission "minecraft.admin.command_feedback".'
 
-commands-outdated: 'MISSING'
+egg-data-converted-success: '&aLes données %PLUGIN_NAME_S% ont été converties avec succès au nouveau format.'
+egg-data-converted-broadcast: '&aLes données de %PLUGIN_NAME_S% ont été converties dans un nouveau format. Veuillez vérifier si tout fonctionne correctement.'
+egg-data-converted-failed: '&cImpossible de convertir les données de %PLUGIN_NAME_S%. Veuillez consulter la console pour plus d''information.'
+egg-data-convert-start: '&cAdvancedEggHunt a détecté l''ancien système de configuration.\n&cIl est maintenant en train de passer au nouveau.\n&4CELA PEUT PRENDRE UN CERTAIN TEMPS!'
+egg-data-convert-broadcast: '&4AdvancedEggHunt MET À JOUR SON SYSTÈME DE CONFIGURATION VEUILLEZ NE PAS BOUGER AVANT D''AVOIR TERMINÉ'
+egg-data-convert-op-message: '&cLE MEILLEUR EST QUAND PERSONNE N''EST SUR LE SERVEUR PENDANT LA CONVERSION. &4LA CONSOLE MONTRE LA PROGRESSION'
+egg-data-convert-locations: '&aAdvancedEggHunt converti tous les emplacements %PLUGIN_NAME_S%!'
+egg-data-convert-player: '&eDonnées du joueur converties de %UUID%.'
+egg-data-convert-done: '&aMISE À JOUR EFFECTUÉE!'
+egg-data-convert-success: '&aeggs.yml a été converti avec succès.'
+egg-data-convert-delete-fail: "&ceggs.yml ne peut pas être supprimé."
+egg-data-convert-delete-error: '&4Une erreur s''est produite lors de la suppression du fichier eggs.yml: %ERROR%'
+egg-data-convert-complete: '&aAdvancedEggHunt a converti toutes les données vers le nouveau système.\n&2Le plugin fonctionne à nouveau parfaitement\n&4Veuillez signaler les bugs sur le discord: &9https://discord.gg/qapvQMUt34'
 
-egg-data-converted-success: 'MISSING'
-egg-data-converted-broadcast: 'MISSING'
-egg-data-converted-failed: 'MISSING'
-egg-data-convert-start: 'MISSING'
-egg-data-convert-broadcast: 'MISSING'
-egg-data-convert-op-message: 'MISSING'
-egg-data-convert-locations: 'MISSING'
-egg-data-convert-player: 'MISSING'
-egg-data-convert-done: 'MISSING'
-egg-data-convert-success: 'MISSING'
-egg-data-convert-delete-fail: 'MISSING'
-egg-data-convert-delete-error: 'MISSING'
-egg-data-convert-complete: 'MISSING'
+placeholderapi-detected: '&aAdvancedEggHunt a détecté PlaceholderAPI, activant les espaces réservés...'
+placeholderapi-enabled: '&2&lTous les espaces réservés ont été activés avec succès.'
+language-detected: '&7Langue  &6%LANG% &7détectée. Fichier  messages-%LANG%.yml chargé.'
+command-system-updated: '&2MISE À JOUR DU SYSTÈME DE COMMANDE'
+command-system-check: '&2VEUILLEZ VÉRIFIER VOS COMMANDES!'
+command-system-chances-updated: '&2VOTRE SYSTÈME DE COMMANDE A ÉTÉ MIS À JOUR'
+command-system-chances-contains: '&2IL CONTIENT MAINTENANT DES CHANCES'
+update-available: '&aUne version plus récente est disponible. Veuillez mettre à jour votre plugin&a. &aVersion: &2&l%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+update-error: '&4&lERREUR: &cImpossible d''établir la connexion à SpigotMC.org'
+console-update-available: '&cVous n''avez pas la version la plus récente de &eAdvancedEggHunt&c. Veuillez changer de version: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+console-update-error: '&4&lERREUR: &cImpossible d''établir une connexion à SpigotMC.org'
 
-placeholderapi-detected: 'MISSING'
-placeholderapi-enabled: 'MISSING'
-language-detected: 'MISSING'
-command-system-updated: 'MISSING'
-command-system-check: 'MISSING'
-command-system-chances-updated: 'MISSING'
-command-system-chances-contains: 'MISSING'
-update-available: 'MISSING'
-update-error: 'MISSING'
-console-update-available: 'MISSING'
-console-update-error: 'MISSING'
+init-data-players-loaded: '&2&lDonnées chargées de %COUNT% joueur(s).'
+init-data-collections-loaded: '&2&lDonnées chargées de %COUNT% collection(s).'
 
-init-data-players-loaded: 'MISSING'
-init-data-collections-loaded: 'MISSING'
+material-error-console: '&4Erreur matérielle: %ERROR%'
 
-material-error-console: 'MISSING'
+successfully-changed-block: '&aBloc modifié avec succès à %X% %Y% %Z% en air.'
 
-successfully-changed-block: 'MISSING'
+requirement-section-unavailable: '&cCette section d''exigences n''est actuellement pas disponible.'
+requirements-order-coming-soon: '&cCette fonctionnalité arrive bientôt.'
+collection-select-error: '&cUne erreur s''est produite, veuillez redémarrer votre serveur.'
+collection-refresh-cooldown: '&cVeuillez patienter avant d''actualiser à nouveau.'
+collection-refresh-success: '&aLa liste des collections a été actualisée avec succès.'
+collection-edit-no-permission: "&cVous n''avez pas la permission de modifier les collections."
+collection-name-required: '&cVeuillez entrer un nom pour continuer.'
+collection-name-exists: '&cLe nom de la collection est déjà choisi.'
+collection-default-undeletable: '&cEn raison de nombreux problèmes, il n''est pas possible de supprimer la section par défaut. Si vous souhaitez la désactiver, modifiez simplement le statut.'
+feature-coming-soon: '&cCette fonctionnalité arrive bientôt.'
+item-added-success: '&aUn nouvel article a été ajouté avec succès.'
+invalid-chance: '&cNon valide. Veuillez saisir un nombre compris entre 0.0000001 et 100.'
+placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
+placeholders-hover-content: '&2Espace réservé disponibles:\n&b- %PLAYER% --> Nom du joueur\n&b- & --> Pour les codes couleur (&6=gold)\n&b- %EGGS_FOUND% --> Combien de %PLUGIN_NAME_P% le joueur a trouvé\n&b- %EGGS_MAX% --> Combien de %PLUGIN_NAME_P% sont placés\n&b- %PREFIX% --> Le préfixe du plugin'
 
-requirement-section-unavailable: 'MISSING'
-requirements-order-coming-soon: 'MISSING'
-collection-select-error: 'MISSING'
-collection-refresh-cooldown: 'MISSING'
-collection-refresh-success: 'MISSING'
-collection-edit-no-permission: 'MISSING'
-collection-name-required: 'MISSING'
-collection-name-exists: 'MISSING'
-collection-default-undeletable: 'MISSING'
-feature-coming-soon: 'MISSING'
-item-added-success: 'MISSING'
-invalid-chance: 'MISSING'
-placeholders-hover-text: 'MISSING'
-placeholders-hover-content: 'MISSING'
+requirements-name-hour: 'Heure'
+requirements-name-date: 'Date'
+requirements-name-weekday: 'Jour de la semaine'
+requirements-name-month: 'Mois'
+requirements-name-year: 'Année'
+requirements-name-season: 'Saison'
+requirements-more: 'plus'
+requirements-click_to_change: '&eCliquez pour changer.'
 
-requirements-name-hour: 'MISSING'
-requirements-name-date: 'MISSING'
-requirements-name-weekday: 'MISSING'
-requirements-name-month: 'MISSING'
-requirements-name-year: 'MISSING'
-requirements-name-season: 'MISSING'
-requirements-more: 'MISSING'
-requirements-click_to_change: 'MISSING'
+requirements-season-winter: 'Hiver'
+requirements-season-fall: 'Automne'
+requirements-season-spring: 'Printemps'
+requirements-season-summer: 'Été'
 
-requirements-season-winter: 'MISSING'
-requirements-season-fall: 'MISSING'
-requirements-season-spring: 'MISSING'
-requirements-season-summer: 'MISSING'
+month-january: 'Janvier'
+month-february: 'Février'
+month-march: 'Mars'
+month-april: 'Avril'
+month-may: 'Mai'
+month-june: 'Juin'
+month-july: 'Juillet'
+month-august: 'Août'
+month-september: 'Septembre'
+month-october: 'Octobre'
+month-november: 'Novembre'
+month-december: 'Décembre'
 
-month-january: 'MISSING'
-month-february: 'MISSING'
-month-march: 'MISSING'
-month-april: 'MISSING'
-month-may: 'MISSING'
-month-june: 'MISSING'
-month-juli: 'MISSING'
-month-august: 'MISSING'
-month-september: 'MISSING'
-month-october: 'MISSING'
-month-november: 'MISSING'
-month-december: 'MISSING'
+day-monday: 'Lundi'
+day-tuesday: 'Mardi'
+day-wednesday: 'Mercredi'
+day-thursday: 'Jeudi'
+day-friday: 'Vendredi'
+day-saturday: 'Samedi'
+day-sunday: 'Dimanche'
 
-day-monday: 'MISSING'
-day-tuesday: 'MISSING'
-day-wednesday: 'MISSING'
-day-thursday: 'MISSING'
-day-friday: 'MISSING'
-day-saturday: 'MISSING'
-day-sunday: 'MISSING'
+hour-format: '24' # peut être 12 ou 24
 
-hour-format: 'MISSING'
 
 help-message: |
-  MISSING
+  &3-----------------------------------------
+  &5&l==========AIDE==========
+  
+  &2&lInformation
+  &7Nom: &6%NAME%
+  &7Version du plugin: &6%VERSION%
+  &7Version du serveur: &6%SERVER_VERSION%
+  &7Auteur: &6%AUTHOR%
+
+  &2&lCommands
+  &6/%PLUGIN_COMMAND% collection &7-> &bChanger et modifier des collections.
+  &6/%PLUGIN_COMMAND% help &7-> &bAffiche ces messages d aide et informations.
+  &6/%PLUGIN_COMMAND% reload &7-> &bRecharge la configuration.
+  &6/%PLUGIN_COMMAND% list &7-> &bListes tout les placees %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% place &7-> &bEntrez en mode Place pour placer ou casser %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% settings &7-> &bConfigurer de nombreux parametres du plugin.
+  &6/%PLUGIN_COMMAND% hint &7-> &bOuvre le menu d indices pour trouver %PLUGIN_NAME_P% plus facilement.
+  &6/%PLUGIN_COMMAND% progress &7-> &bVisualisez votre progression dans le %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% show &7-> &bFait apparaitre un support d armure brillant a chaque %PLUGIN_NAME_S%.
+  &6/%PLUGIN_COMMAND% commands &7-> &bModifier les commandes ou en ajouter d autres.
+  &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bReinitialiser les trouvees%PLUGIN_NAME_P%.
+  &5&l==========AIDE==========
+  &3-----------------------------------------
