@@ -33,6 +33,40 @@ public class PluginConfig extends Configuration {
     }
 
     @Override
+    public void registerUpgrader() {
+        upgraders.put(3.1, (oldConfig, NewConfig) -> {
+            List<String> blacklistedCommands  = NewConfig.getStringList("BlacklistedCommands");
+            LinkedHashSet<String> blacklistedCommandsSet = new LinkedHashSet<String>(blacklistedCommands);
+            blacklistedCommandsSet.add("restart");
+            blacklistedCommandsSet.add("minecraft:restart");
+            blacklistedCommandsSet.add("execute");
+            blacklistedCommandsSet.add("minecraft:execute");
+            blacklistedCommandsSet.add("setblock");
+            blacklistedCommandsSet.add("minecraft:setblock");
+            blacklistedCommandsSet.add("fill");
+            blacklistedCommandsSet.add("minecraft:fill");
+            blacklistedCommandsSet.add("reload");
+            blacklistedCommandsSet.add("minecraft:reload");
+            blacklistedCommandsSet.add("rl");
+            blacklistedCommandsSet.add("minecraft:rl");
+            NewConfig.set("BlacklistedCommands", new ArrayList<>(blacklistedCommandsSet));
+        });
+        upgraders.put(3.4, (oldConfig, newConfig) -> {
+            List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("egg", "", false, true)
+            );
+
+            List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("advancedegghunt", "advancedhunt", false, false),
+                    new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false)
+            );
+
+            ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);
+            migration.standardUpgrade(oldConfig, newConfig);
+        });
+    }
+
+    @Override
     public TreeMap<Double, ConfigUpgrader> getUpgrader() {
         return upgraders;
     }
@@ -360,27 +394,6 @@ public class PluginConfig extends Configuration {
 
     public boolean isCommandBlacklisted(String command){
         return getConfig().getStringList("BlacklistedCommands").contains(command.split(" ")[0]);
-    }
-
-    @Override
-    public void registerUpgrader() {
-        upgraders.put(3.1, (oldConfig, NewConfig) -> {
-            List<String> blacklistedCommands  = NewConfig.getStringList("BlacklistedCommands");
-            LinkedHashSet<String> blacklistedCommandsSet = new LinkedHashSet<String>(blacklistedCommands);
-            blacklistedCommandsSet.add("restart");
-            blacklistedCommandsSet.add("minecraft:restart");
-            blacklistedCommandsSet.add("execute");
-            blacklistedCommandsSet.add("minecraft:execute");
-            blacklistedCommandsSet.add("setblock");
-            blacklistedCommandsSet.add("minecraft:setblock");
-            blacklistedCommandsSet.add("fill");
-            blacklistedCommandsSet.add("minecraft:fill");
-            blacklistedCommandsSet.add("reload");
-            blacklistedCommandsSet.add("minecraft:reload");
-            blacklistedCommandsSet.add("rl");
-            blacklistedCommandsSet.add("minecraft:rl");
-            NewConfig.set("BlacklistedCommands", new ArrayList<>(blacklistedCommandsSet));
-        });
     }
 
     //Downloader

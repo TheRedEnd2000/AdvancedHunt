@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 public abstract class Configuration {
@@ -108,17 +110,8 @@ public abstract class Configuration {
     }
 
     private void standardUpgrade(YamlConfiguration oldConfig, YamlConfiguration newConfig) {
-        Set<String> allKeys = oldConfig.getKeys(true);
-        List<String> keyList = new ArrayList<>(allKeys);
-
-        keyList.sort((key1, key2) -> Integer.compare(key2.split("\\.").length, key1.split("\\.").length));
-
-        for (String key : keyList) {
-            if (oldConfig.isSet(key) && !oldConfig.isConfigurationSection(key) &&
-                    (!hasTemplate || newConfig.contains(key))) {
-                newConfig.set(key, oldConfig.get(key));
-            }
-        }
+        ConfigMigration migration = new ConfigMigration(hasTemplate, new ArrayList<>(), new ArrayList<>());
+        migration.standardUpgrade(oldConfig, newConfig);
     }
 
     public void reloadConfig() {
