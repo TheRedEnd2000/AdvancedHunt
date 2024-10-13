@@ -81,7 +81,6 @@ Settings:
   HintApplyCooldownOnFail: true
 
 Presets:
-
   # Name of the preset that loads after placing a new egg
   DefaultIndividualPresetLoad: default
 
