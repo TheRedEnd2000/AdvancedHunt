@@ -6,8 +6,6 @@ softdepend: [PlaceholderAPI, NBTAPI, ProtocolLib]
 website: https://www.spigotmc.org/resources/advancedegghunt.109085/
 authors: [ TheRedEnd2000, GrafterCrafter ]
 
-commands:
-
 permissions:
   AdvancedHunt.command.reset:
     description: "Resets all plugin data"

@@ -22,7 +22,7 @@ Download:
   AdvancedHunt: true
   # Will download for the plugin to work (This should not be disabled)
   NBT-API: true
-  ProtocolLib: false
+#  ProtocolLib: false
   PlaceholderAPI: true
 
 # Experimental feature toggles
