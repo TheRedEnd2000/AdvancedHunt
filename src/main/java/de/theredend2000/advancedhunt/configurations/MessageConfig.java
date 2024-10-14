@@ -35,6 +35,8 @@ public class MessageConfig extends Configuration {
 
             ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
             migration.standardUpgrade(oldConfig, newConfig);
+
+            newConfig.set("help-message", newConfig.getDefaults().getString("help-message"));
         });
     }
 

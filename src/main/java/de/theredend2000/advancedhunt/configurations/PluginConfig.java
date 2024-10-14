@@ -54,7 +54,7 @@ public class PluginConfig extends Configuration {
         upgraders.put(3.4, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("egg", "", false, true),
-            new ConfigMigration.ReplacementEntry("eggs", "", false, true)
+                    new ConfigMigration.ReplacementEntry("eggs", "", false, true)
             );
 
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(

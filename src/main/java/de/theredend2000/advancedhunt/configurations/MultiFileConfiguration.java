@@ -81,6 +81,7 @@ public abstract class MultiFileConfiguration {
         if (hasTemplates) {
             configFiles.get(configName).delete();
             saveDefaultConfig(configName);
+
             reloadConfig(configName);
         } else {
             configs.put(configName, new YamlConfiguration());

@@ -90,7 +90,8 @@ public abstract class Configuration {
         if (hasTemplate) {
             configFile.delete();
             plugin.saveResource(configName, false);
-            config = YamlConfiguration.loadConfiguration(configFile);
+
+            reloadConfig();
         } else {
             config = new YamlConfiguration();
         }

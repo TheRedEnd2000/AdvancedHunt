@@ -191,7 +191,6 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &bOpens the hint menu to find %PLUGIN_NAME_P% easier.
   &6/%PLUGIN_COMMAND% progress &7-> &bView your progress of the %PLUGIN_NAME_P%.
   &6/%PLUGIN_COMMAND% show &7-> &bSpawns an glowing armorstand at every %PLUGIN_NAME_S%.
-  &6/%PLUGIN_COMMAND% commands &7-> &bChange commands or add more.
   &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bResets the Found%PLUGIN_NAME_P%.
   &5&l==========HELP==========
   &3-----------------------------------------
