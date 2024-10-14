@@ -30,7 +30,7 @@ public class MessageConfig extends Configuration {
                     new ConfigMigration.ReplacementEntry("%MAX_TREASURES%", "%MAX_TREASURES%", false, false),
                     new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
                     new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
-                    new ConfigMigration.ReplacementEntry("(?<=^.*:)(.*)\\begg(?!s?.yml)", "$1treasure", true, false)
+                    new ConfigMigration.ReplacementEntry("(?<=^.*)\\begg(?!s?.yml)", "$1treasure", true, false)
             );
 
             ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
