@@ -1,4 +1,4 @@
-config-version: 2.6
+config-version: 2.7
 
 # %PLUGIN_NAME_S% 是配置文件中的 plugin-name-singular
 # %PLUGIN_NAME_P% 是配置文件中的 plugin-name-plural
@@ -15,7 +15,7 @@ egg-placed: '&a你成功&2创建了&a一个新的%PLUGIN_NAME_S%。&7(ID#%ID%)'
 egg-broken: '&a你成功&c移除了&a一个%PLUGIN_NAME_S%。&7(ID#%ID%)'
 teleport-to-egg: '&a你已被传送至%PLUGIN_NAME_S% #%ID%。'
 
-egg-found: '&a你找到了一个%PLUGIN_NAME_S%。&7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&a你找到了一个%PLUGIN_NAME_S%。&7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&c你已经找过了这个%PLUGIN_NAME_S%。'
 egg-already-found-by-player: '&c这个%PLUGIN_NAME_S%已经被另一个玩家找过了。'
 all-eggs-found: '&c你已经找到了所有的%PLUGIN_NAME_P%。'
@@ -131,7 +131,7 @@ feature-coming-soon: '&c此功能即将推出。'
 item-added-success: '&a已成功添加一个新物品。'
 invalid-chance: '&c无效的数值。请输入在0.0000001到100之间的数字。'
 placeholders-hover-text: '&9-----------&3&l[占位符] &7(悬停查看)&9-----------'
-placeholders-hover-content: '&2可用的占位符：\n&b- %PLAYER% --> 玩家名称\n&b- & --> 颜色代码（&6=金色）\n&b- %EGGS_FOUND% --> 玩家找到了多少个%PLUGIN_NAME_P%\n&b- %EGGS_MAX% --> 总共放置了多少个%PLUGIN_NAME_P%\n&b- %PREFIX% --> 插件前缀'
+placeholders-hover-content: '&2可用的占位符：\n&b- %PLAYER% --> 玩家名称\n&b- & --> 颜色代码（&6=金色）\n&b- %TREASURES_FOUND% --> 玩家找到了多少个%PLUGIN_NAME_P%\n&b- %TREASURES_MAX% --> 总共放置了多少个%PLUGIN_NAME_P%\n&b- %PREFIX% --> 插件前缀'
 
 requirements-name-hour: '小时'
 requirements-name-date: '日期'

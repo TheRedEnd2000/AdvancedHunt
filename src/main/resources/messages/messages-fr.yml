@@ -1,4 +1,4 @@
-config-version: 2.6
+config-version: 2.7
 
 # %PLUGIN_NAME_S% is plugin-name-singular in the config
 # %PLUGIN_NAME_P% is plugin-name-plural in the config
@@ -15,7 +15,7 @@ egg-placed: '&aVous avez &2créé avec succès &aun nouveau %PLUGIN_NAME_S%. &7(
 egg-broken: '&aVous avez &csupprimer &aun %PLUGIN_NAME_S%. &7(ID#%ID%)'
 teleport-to-egg: '&aVous avez été téléporté à %PLUGIN_NAME_S% #%ID%.'
 
-egg-found: '&aVous avez trouvé un %PLUGIN_NAME_S%. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&aVous avez trouvé un %PLUGIN_NAME_S%. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&cVous avez déjà trouvé ceci %PLUGIN_NAME_S%.'
 egg-already-found-by-player: '&cCe %PLUGIN_NAME_S% a déjà été trouvé par un autre joueur.'
 all-eggs-found: '&cVous avez déjà trouvé tous les %PLUGIN_NAME_P%.'
@@ -88,18 +88,18 @@ setting-commandfeedback: '&aLe retour de commande a été &4interrompu.&a Soit f
 egg-data-converted-success: '&aLes données %PLUGIN_NAME_S% ont été converties avec succès au nouveau format.'
 egg-data-converted-broadcast: '&aLes données de %PLUGIN_NAME_S% ont été converties dans un nouveau format. Veuillez vérifier si tout fonctionne correctement.'
 egg-data-converted-failed: '&cImpossible de convertir les données de %PLUGIN_NAME_S%. Veuillez consulter la console pour plus d''information.'
-egg-data-convert-start: '&cAdvancedEggHunt a détecté l''ancien système de configuration.\n&cIl est maintenant en train de passer au nouveau.\n&4CELA PEUT PRENDRE UN CERTAIN TEMPS!'
-egg-data-convert-broadcast: '&4AdvancedEggHunt MET À JOUR SON SYSTÈME DE CONFIGURATION VEUILLEZ NE PAS BOUGER AVANT D''AVOIR TERMINÉ'
+egg-data-convert-start: '&cAdvancedHunt a détecté l''ancien système de configuration.\n&cIl est maintenant en train de passer au nouveau.\n&4CELA PEUT PRENDRE UN CERTAIN TEMPS!'
+egg-data-convert-broadcast: '&4AdvancedHunt MET À JOUR SON SYSTÈME DE CONFIGURATION VEUILLEZ NE PAS BOUGER AVANT D''AVOIR TERMINÉ'
 egg-data-convert-op-message: '&cLE MEILLEUR EST QUAND PERSONNE N''EST SUR LE SERVEUR PENDANT LA CONVERSION. &4LA CONSOLE MONTRE LA PROGRESSION'
-egg-data-convert-locations: '&aAdvancedEggHunt converti tous les emplacements %PLUGIN_NAME_S%!'
+egg-data-convert-locations: '&aAdvancedHunt converti tous les emplacements %PLUGIN_NAME_S%!'
 egg-data-convert-player: '&eDonnées du joueur converties de %UUID%.'
 egg-data-convert-done: '&aMISE À JOUR EFFECTUÉE!'
 egg-data-convert-success: '&aeggs.yml a été converti avec succès.'
 egg-data-convert-delete-fail: "&ceggs.yml ne peut pas être supprimé."
 egg-data-convert-delete-error: '&4Une erreur s''est produite lors de la suppression du fichier eggs.yml: %ERROR%'
-egg-data-convert-complete: '&aAdvancedEggHunt a converti toutes les données vers le nouveau système.\n&2Le plugin fonctionne à nouveau parfaitement\n&4Veuillez signaler les bugs sur le discord: &9https://discord.gg/qapvQMUt34'
+egg-data-convert-complete: '&aAdvancedHunt a converti toutes les données vers le nouveau système.\n&2Le plugin fonctionne à nouveau parfaitement\n&4Veuillez signaler les bugs sur le discord: &9https://discord.gg/qapvQMUt34'
 
-placeholderapi-detected: '&aAdvancedEggHunt a détecté PlaceholderAPI, activant les espaces réservés...'
+placeholderapi-detected: '&aAdvancedHunt a détecté PlaceholderAPI, activant les espaces réservés...'
 placeholderapi-enabled: '&2&lTous les espaces réservés ont été activés avec succès.'
 language-detected: '&7Langue  &6%LANG% &7détectée. Fichier  messages-%LANG%.yml chargé.'
 command-system-updated: '&2MISE À JOUR DU SYSTÈME DE COMMANDE'
@@ -108,7 +108,7 @@ command-system-chances-updated: '&2VOTRE SYSTÈME DE COMMANDE A ÉTÉ MIS À JOU
 command-system-chances-contains: '&2IL CONTIENT MAINTENANT DES CHANCES'
 update-available: '&aUne version plus récente est disponible. Veuillez mettre à jour votre plugin&a. &aVersion: &2&l%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 update-error: '&4&lERREUR: &cImpossible d''établir la connexion à SpigotMC.org'
-console-update-available: '&cVous n''avez pas la version la plus récente de &eAdvancedEggHunt&c. Veuillez changer de version: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+console-update-available: '&cVous n''avez pas la version la plus récente de &eAdvancedHunt&c. Veuillez changer de version: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 console-update-error: '&4&lERREUR: &cImpossible d''établir une connexion à SpigotMC.org'
 
 init-data-players-loaded: '&2&lDonnées chargées de %COUNT% joueur(s).'
@@ -131,7 +131,7 @@ feature-coming-soon: '&cCette fonctionnalité arrive bientôt.'
 item-added-success: '&aUn nouvel article a été ajouté avec succès.'
 invalid-chance: '&cNon valide. Veuillez saisir un nombre compris entre 0.0000001 et 100.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Espace réservé disponibles:\n&b- %PLAYER% --> Nom du joueur\n&b- & --> Pour les codes couleur (&6=gold)\n&b- %EGGS_FOUND% --> Combien de %PLUGIN_NAME_P% le joueur a trouvé\n&b- %EGGS_MAX% --> Combien de %PLUGIN_NAME_P% sont placés\n&b- %PREFIX% --> Le préfixe du plugin'
+placeholders-hover-content: '&2Espace réservé disponibles:\n&b- %PLAYER% --> Nom du joueur\n&b- & --> Pour les codes couleur (&6=gold)\n&b- %TREASURES_FOUND% --> Combien de %PLUGIN_NAME_P% le joueur a trouvé\n&b- %TREASURES_MAX% --> Combien de %PLUGIN_NAME_P% sont placés\n&b- %PREFIX% --> Le préfixe du plugin'
 
 requirements-name-hour: 'Heure'
 requirements-name-date: 'Date'

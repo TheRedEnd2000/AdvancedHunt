@@ -102,7 +102,7 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                     .setCustomId(keys.get(index))
                     .withGlow(applied)
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.COLLECTION_ITEM,"%COLLECTION%", keys.get(index),"%SELECTED%", selected ? "§a(Selected)" : ""))
-                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_ITEM,"%MAX_EGGS%", String.valueOf(maxEggs),"%PERMISSION%", permission ? "§e" : "§m"))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.COLLECTION_ITEM,"%MAX_TREASURES%", String.valueOf(maxEggs),"%PERMISSION%", permission ? "§e" : "§m"))
                     .build());
         }
     }

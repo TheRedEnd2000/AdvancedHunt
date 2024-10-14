@@ -101,7 +101,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
                     getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                             .setOwner(keys.get(index))
                             .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%", keys.get(index),"%PLAYER_UUID%", uuid.get(index)))
-                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%", keys.get(index),"%EGG_ID%", eggId,"%EGGS_FOUND%", eggsFound,"%EGGS_MAX%", maxEggs,"%DATE%", date,"%TIME%", time))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%", keys.get(index),"%TREASURE_ID%", eggId,"%TREASURES_FOUND%", eggsFound,"%TREASURES_MAX%", maxEggs,"%DATE%", date,"%TIME%", time))
                             .setCustomId(keys.get(index))
                             .build());
                 }

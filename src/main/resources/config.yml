@@ -5,8 +5,8 @@ config-version: 3.4
 messages-lang: en
 
 # Change the plugin name or the main purpose
-plugin-name-singular: "egg"
-plugin-name-plural: "eggs"
+plugin-name-singular: "treasure"
+plugin-name-plural: "treasures"
 # The first command listed here is going to be the main command
 # IMPORTANT: COMMANDS WILL ONLY APPLY IF THE SERVER RESTARTS; A PLUGIN RELOAD WILL NOW CHANGE THIS!
 commands:

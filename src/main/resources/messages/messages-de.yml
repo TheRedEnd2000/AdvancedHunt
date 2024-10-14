@@ -1,4 +1,4 @@
-config-version: 2.5
+config-version: 2.7
 
 # %PLUGIN_NAME_S% ist plugin-name-singular in der config
 # %PLUGIN_NAME_P% ist plugin-name-plural in der config
@@ -15,7 +15,7 @@ egg-placed: '&aDu hast erfolgreich &aein neues %PLUGIN_NAME_S% &2erstellt. &7(ID
 egg-broken: '&aDu hast erfolgreich &aein %PLUGIN_NAME_S% &centfernt. &7(ID#%ID%)'
 teleport-to-egg: '&aDu wurdest zu dem %PLUGIN_NAME_S% #%ID% &ateleportiert&7.'
 
-egg-found: '&aDu hast ein %PLUGIN_NAME_S% gefunden. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&aDu hast ein %PLUGIN_NAME_S% gefunden. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&cDu hast dieses %PLUGIN_NAME_S% bereits gefunden.'
 egg-already-found-by-player: '&cDieses %PLUGIN_NAME_S% wurde bereits von einem anderen Spieler gefunden.'
 all-eggs-found: '&cDu hast bereits alle %PLUGIN_NAME_P% gefunden.'
@@ -97,7 +97,7 @@ egg-data-convert-delete-fail: '&ceggs.yml konnte nicht gelöscht werden.'
 egg-data-convert-delete-error: '&4Es gab ein Fehler beim löschen von eggs.yml. Fehler: %ERROR%'
 egg-data-convert-complete: '&aAdvancedHunt hat die Daten zum neuen System aktualisiert.\n&2Das Plugin sollte nun wieder flüssig laufen\n&4Bitte melde Fehler unter: &9https://discord.gg/qapvQMUt34'
 
-placeholderapi-detected: '&aAdvanced Egg Hunt hat PlaceholderAPI erkannt, alle placeholders werden aktiviert...'
+placeholderapi-detected: '&aAdvanced treasure Hunt hat PlaceholderAPI erkannt, alle placeholders werden aktiviert...'
 placeholderapi-enabled: '&2&lAlle Placeholders wurden aktiviert.'
 language-detected: '&7Sprache &6%LANG% &7gefunden. Datei messages-%LANG%.yml wird geladen.'
 command-system-updated: '&2UPDATE DES COMMAND SYSTEM'
@@ -129,7 +129,7 @@ feature-coming-soon: '&cDieses Feature kommt bald.'
 item-added-success: '&aEs wurde das Item erfolgreich hinzugefügt.'
 invalid-chance: '&cUngültig! Bitte gebe eine Zahl zwischen 0.0000001 und 100 an.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Verfügbare Placeholders:\n&b- %PLAYER% --> Name des Spielers\n&b- & --> Für Farb-Codes (&6=gold)\n&b- %EGGS_FOUND% --> Wie viele %PLUGIN_NAME_P% der Spieler gefunden hat\n&b- %EGGS_MAX% --> Wie viele %PLUGIN_NAME_P% platziert sind\n&b- %PREFIX% --> Der Prefix des Plugins'
+placeholders-hover-content: '&2Verfügbare Placeholders:\n&b- %PLAYER% --> Name des Spielers\n&b- & --> Für Farb-Codes (&6=gold)\n&b- %TREASURES_FOUND% --> Wie viele %PLUGIN_NAME_P% der Spieler gefunden hat\n&b- %TREASURES_MAX% --> Wie viele %PLUGIN_NAME_P% platziert sind\n&b- %PREFIX% --> Der Prefix des Plugins'
 
 requirements-name-hour: 'Stunde'
 requirements-name-date: 'Datum'

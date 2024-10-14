@@ -1,7 +1,7 @@
-config-version: 2.6
+config-version: 2.7
 
 no-permission-error: '&cEi command ti bebohar korar jonno apnar kache ei &6%PERMISSION% ti&c nei.'
-command-not-found: '&cKono command pawa jai ni! &7Onugroho kore sokol command dekhte &e/egghunt help &7likhun.'
+command-not-found: '&cKono command pawa jai ni! &7Onugroho kore sokol command dekhte &e/%PLUGIN_COMMAND% help &7likhun.'
 only-player: '&cShudumatro player rai ei command ti bebohar korte parbe.'
 reload-config: '&7Config ti &asofolvabe &epunorai load &7kora hoyeche.'
 player-not-found: '&a%PLAYER% &7er somporke system e kono kichu &clipiboddho nei&7.'
@@ -11,7 +11,7 @@ egg-placed: '&aApni sofolvabe &aekti notun dim &2boshiyechen. &7(ID#%ID%)'
 egg-broken: '&aApni sofolvabe &aekti dim &csoriyechen. &7(ID#%ID%)'
 teleport-to-egg: '&aApnake dim tir kache isthanantor kora hoyeche #%ID%.'
 
-egg-found: '&aApni ekti dim khuje peyechen. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&aApni ekti dim khuje peyechen. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&cApni itimoddhe ei dim ti khuje peyechen.'
 egg-already-found-by-player: '&cEi dim ti ithimoddhei onno ekjon player khuje peyeche.'
 all-eggs-found: '&cApni itimoddhe sobgulo dim khuje peyechen.'
@@ -23,7 +23,7 @@ hint-timeout: '&cApni jothesto somoye tip dite paren ni.'
 hint-cancelled: '&aApni sofolvabe nirdeshonati batil korechen.'
 egg-not-accessed: '&cApni ei muhurte ei dimti upolovdi korte parben nah.'
 
-only-in-placemode: '&cApni shudumatro nirman poddhotite e dim boshate othoba sorate parben. Ei poddhotite jawar jonno &e/egghunt place &clikhun.'
+only-in-placemode: '&cApni shudumatro nirman poddhotite e dim boshate othoba sorate parben. Ei poddhotite jawar jonno &e/%PLUGIN_COMMAND% place &clikhun.'
 enter-placemode: '&aApni ekhon Place mode e. Apni ekhon dim boshate othoba sorate parben.'
 leave-placemode: '&cApni Place mode theke ber hoye giyechen. Apni ekhon ar dim boshate othoba sorate parben nah'
 
@@ -93,7 +93,7 @@ egg-data-convert-delete-fail: '&ceggs.yml mucha jabe nah.'
 egg-data-convert-delete-error: '&4eggs.yml muche felar somoi ekti kruti dekha diyeche file: %ERROR%'
 egg-data-convert-complete: '&aAdvancedHunt sob data notun system e convert kore feleche.\n&2Plugin ti ekhon abar nikhut vabe colche\n&4Onugroho kore kono kruti pele ta amader discord e janan: &9https://discord.gg/qapvQMUt34'
 
-placeholderapi-detected: '&aAdvanced Egg Hunt PlaceholderAPI ke sonakto koreche, placeholders gulo chalu kora hocche.'
+placeholderapi-detected: '&aAdvanced treasure Hunt PlaceholderAPI ke sonakto koreche, placeholders gulo chalu kora hocche.'
 placeholderapi-enabled: '&2&lSob placeholders gulo sofolvabe chalu kora hoyeche.'
 language-detected: '&6%LANG% &7Vashati sonakto hoyeche. File messages-%LANG%.yml load hoyeche.'
 command-system-updated: '&2COMMAND SYSTEM KE UPDATE KORA HOYECHE'
@@ -125,7 +125,7 @@ feature-coming-soon: '&cEi feature ti sigroi asche.'
 item-added-success: '&aSofolvabe ekti notun bostu jukto kora holo.'
 invalid-chance: '&cOjouktik. Onugroho kore 0.0000001 hote 100 er vitorer kono songkha probesh korun.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Upolovvo placeholders somuho:\n&b- %PLAYER% --> Player er nam\n&b- & --> Rong er songket er jonno (&6=gold)\n&b- %EGGS_FOUND% --> Koto gulo dim player ti peyche\n&b- %EGGS_MAX% --> Koto gulo dim boshano royeche\n&b- %PREFIX% --> Plugin tir uposhorgo'
+placeholders-hover-content: '&2Upolovvo placeholders somuho:\n&b- %PLAYER% --> Player er nam\n&b- & --> Rong er songket er jonno (&6=gold)\n&b- %TREASURES_FOUND% --> Koto gulo dim player ti peyche\n&b- %TREASURES_MAX% --> Koto gulo dim boshano royeche\n&b- %PREFIX% --> Plugin tir uposhorgo'
 
 requirements-name-hour: 'Ghonta'
 requirements-name-date: 'Tarik'

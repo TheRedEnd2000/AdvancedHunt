@@ -1,4 +1,4 @@
-config-version: 2.6
+config-version: 2.7
 
 # %PLUGIN_NAME_S% is plugin-name-singular in the config
 # %PLUGIN_NAME_P% is plugin-name-plural in the config
@@ -15,7 +15,7 @@ egg-placed: '&aYou successfully &2created &aa new %PLUGIN_NAME_S%. &7(ID#%ID%)'
 egg-broken: '&aYou successfully &cremove &aan %PLUGIN_NAME_S%. &7(ID#%ID%)'
 teleport-to-egg: '&aYou were teleported to %PLUGIN_NAME_S% #%ID%.'
 
-egg-found: '&aYou found an %PLUGIN_NAME_S%. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&aYou found an %PLUGIN_NAME_S%. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&cYou have already found this %PLUGIN_NAME_S%.'
 egg-already-found-by-player: '&cThis %PLUGIN_NAME_S% was already found by another player.'
 all-eggs-found: '&cYou have already found all %PLUGIN_NAME_P%.'
@@ -131,7 +131,7 @@ feature-coming-soon: '&cThis feature is coming soon.'
 item-added-success: '&aSuccessfully added a new item.'
 invalid-chance: '&cNot valid. Please enter a number between 0.0000001 and 100.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Available placeholders:\n&b- %PLAYER% --> Name of the player\n&b- & --> For color codes (&6=gold)\n&b- %EGGS_FOUND% --> How many %PLUGIN_NAME_P% the player has found\n&b- %EGGS_MAX% --> How many %PLUGIN_NAME_P% are placed\n&b- %PREFIX% --> The prefix of the plugin'
+placeholders-hover-content: '&2Available placeholders:\n&b- %PLAYER% --> Name of the player\n&b- & --> For color codes (&6=gold)\n&b- %TREASURES_FOUND% --> How many %PLUGIN_NAME_P% the player has found\n&b- %TREASURES_MAX% --> How many %PLUGIN_NAME_P% are placed\n&b- %PREFIX% --> The prefix of the plugin'
 
 requirements-name-hour: 'Hour'
 requirements-name-date: 'Date'

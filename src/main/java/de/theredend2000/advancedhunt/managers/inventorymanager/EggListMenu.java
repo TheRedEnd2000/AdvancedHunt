@@ -104,7 +104,7 @@ public class EggListMenu extends PaginatedInventoryMenu implements IInventoryMen
             getInventory().setItem(slotIndex, new ItemBuilder(item)
                     .setCustomId("egg_list.id." + keys.get(index))
                     .setSkullOwner(isSkull ? texture : "")
-                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGSLIST_EGG,"%EGG_ID%", keys.get(index)))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGSLIST_EGG,"%TREASURE_ID%", keys.get(index)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGSLIST_EGG,"%LOCATION_X%", x,"%LOCATION_Y%", y,"%LOCATION_Z%", z,"%TIMES_FOUND%", String.valueOf(timesFound),"%DATE%", date,"%TIME%", time))
                     .setCustomId(keys.get(index))
                     .build());

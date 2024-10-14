@@ -1,7 +1,7 @@
-config-version: 2.5
+config-version: 2.7
 
 no-permission-error: '&cBạn không có quyền &6%PERMISSION% để sử dụng lệnh này.'
-command-not-found: '&cLệnh không tồn! &7Vui lòng nhập &e/egghunt help &7để xem tất cả các lệnh.'
+command-not-found: '&cLệnh không tồn! &7Vui lòng nhập &e/%PLUGIN_COMMAND% help &7để xem tất cả các lệnh.'
 only-player: '&cChỉ người chơi có thể dùng lệnh này.'
 reload-config: '&7Config đã được &enạp lại &athành công&7.'
 player-not-found: '&7Dữ liệu &ckhông tồn tại &7với tên &a%PLAYER%&7.'
@@ -11,7 +11,7 @@ egg-placed: '&aBạn đã &2tạo &amột quả trứng. &7(ID#%ID%)'
 egg-broken: '&aBạn đã &cgỡ &amột quả trứng. &7(ID#%ID%)'
 teleport-to-egg: '&aBạn đã dịch chuyển đến quả trứng ID #%ID%.'
 
-egg-found: '&aBạn vừa tìm thấy một quả trứng. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&aBạn vừa tìm thấy một quả trứng. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&cBạn đã tìm thấy quả trứng này rồi.'
 all-eggs-found: '&cBạn đã tìm thấy được tất cả quả trứng.'
 no-eggs: '&cChưa có quả trứng nào được đặt.'
@@ -22,7 +22,7 @@ hint-timeout: '&cBạn bấm chưa đủ nhanh.'
 hint-cancelled: '&aBạn đã hủy thành công.'
 egg-not-accessed: '&cBạn không thể truy cập vào đây lúc này.'
 
-only-in-placemode: '&cBạn chỉ có thể đặt hoặc phá trứng ở chế độ xây cả plugin. Gõ &e/egghunt placeEggs &cđể bật chế độ này.'
+only-in-placemode: '&cBạn chỉ có thể đặt hoặc phá trứng ở chế độ xây cả plugin. Gõ &e/%PLUGIN_COMMAND% placeEggs &cđể bật chế độ này.'
 enter-placemode: '&aBạn đang ở Chế độ xây. Giờ bạn có thể đặt và phá trứng.'
 leave-placemode: '&cBạn đã thoát khỏi Chế độ xây. Giờ bạn không thể đặt và phá trứng.'
 
