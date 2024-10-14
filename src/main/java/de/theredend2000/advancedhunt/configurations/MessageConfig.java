@@ -23,14 +23,14 @@ public class MessageConfig extends Configuration {
 
     @Override
     public void registerUpgrader() {
-        upgraders.put(3.7, (oldConfig, newConfig) -> {
+        upgraders.put(2.7, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
                     new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
                     new ConfigMigration.ReplacementEntry("%MAX_TREASURES%", "%MAX_TREASURES%", false, false),
                     new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
                     new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
-                    new ConfigMigration.ReplacementEntry("(?<=^.*)\\begg(?!s?.yml)", "$1treasure", true, false)
+                    new ConfigMigration.ReplacementEntry("(?<=^.*)\\begg(?!s?.yml)", "treasure", true, false)
             );
 
             ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);

@@ -41,6 +41,9 @@ public class ConfigMigration {
     }
 
     private String applyReplacements(String input, List<ReplacementEntry> replacements) {
+        if (replacements == null || replacements.isEmpty()) {
+            return input;
+        }
         for (ReplacementEntry replacement : replacements) {
             if (replacement.isRegex()) {
                 input = Pattern.compile(replacement.getSearch()).matcher(input).replaceAll(replacement.getReplace());
@@ -54,6 +57,9 @@ public class ConfigMigration {
     }
 
     private List<?> applyReplacementsToList(List<?> list, List<ReplacementEntry> replacements) {
+        if (replacements == null || replacements.isEmpty()) {
+            return list;
+        }
         List<Object> newList = new ArrayList<>();
         for (Object item : list) {
             if (item instanceof String) {
