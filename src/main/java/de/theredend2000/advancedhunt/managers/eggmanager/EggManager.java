@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.InventoryConfig;
 import de.theredend2000.advancedhunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedhunt.util.ItemHelper;
+import de.theredend2000.advancedhunt.util.VersionComparator;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import de.tr7zw.nbtapi.NBT;
@@ -593,26 +594,7 @@ public class EggManager {
 
     private boolean isVersionLessThan(String versionToCompare) {
         String pluginVersion = plugin.getDescription().getVersion();
-        String[] currentVersionParts = pluginVersion.split("\\.");
-        String[] targetVersionParts = versionToCompare.split("\\.");
-
-        if (currentVersionParts.length != 3 || targetVersionParts.length != 3) {
-            return false;
-        }
-
-        int currentMajor = Integer.parseInt(currentVersionParts[0]);
-        int currentMinor = Integer.parseInt(currentVersionParts[1]);
-        int currentPatch = Integer.parseInt(currentVersionParts[2]);
-
-        int targetMajor = Integer.parseInt(targetVersionParts[0]);
-        int targetMinor = Integer.parseInt(targetVersionParts[1]);
-        int targetPatch = Integer.parseInt(targetVersionParts[2]);
-
-        if (currentMajor < targetMajor) {
-            return true;
-        } else if (currentMajor == targetMajor && currentMinor < targetMinor) {
-            return true;
-        } else return currentMajor == targetMajor && currentMinor == targetMinor && currentPatch < targetPatch;
+        return VersionComparator.isLessThan(pluginVersion, versionToCompare);
     }
 
     public XMaterial getBlockMaterialOfEgg(String eggID, String collection){
