@@ -107,9 +107,9 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
 
         for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
-            if (!playerConfig.contains("FoundEggs") || !playerConfig.contains("FoundEggs." + collection)) continue;
+            if (!playerConfig.contains("FoundTreasures") || !playerConfig.contains("FoundTreasures." + collection)) continue;
 
-            leaderboard.put(playerConfig.getString("FoundEggs." + collection + ".Name"), playerConfig.getInt("FoundEggs." + collection + ".Count"));
+            leaderboard.put(playerConfig.getString("FoundTreasures." + collection + ".Name"), playerConfig.getInt("FoundTreasures." + collection + ".Count"));
         }
 
         List<Map.Entry<String, Integer>> leaderList = new ArrayList<>(leaderboard.entrySet());
@@ -198,7 +198,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
         if(Main.getInstance().getEggDataManager().savedPlayers() != null){
             for(UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
                 FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid);
-                leaderboard.put(playerConfig.getString("FoundEggs.Name"), playerConfig.getInt("FoundEggs.Count"));
+                leaderboard.put(playerConfig.getString("FoundTreasures.Name"), playerConfig.getInt("FoundTreasures.Count"));
             }
         }
         if(leaderboard.isEmpty()) return 1;

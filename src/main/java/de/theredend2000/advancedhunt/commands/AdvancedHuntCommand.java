@@ -69,12 +69,12 @@ public class AdvancedHuntCommand implements TabExecutor {
                 if (args[0].equalsIgnoreCase("reset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.RESET)) {
                     completions.add("all");
                     for (UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
-                        String playerData = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs.");
+                        String playerData = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundTreasures.");
                         if (playerData == null) {
                             return completions;
                         }
-                        for (String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getConfigurationSection("FoundEggs.").getKeys(false)) {
-                            String playerName = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs." + eggId + ".Name");
+                        for (String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getConfigurationSection("FoundTreasures.").getKeys(false)) {
+                            String playerName = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundTreasures." + eggId + ".Name");
                             if (playerName != null && !completions.contains(playerName))
                                 completions.add(playerName);
                         }

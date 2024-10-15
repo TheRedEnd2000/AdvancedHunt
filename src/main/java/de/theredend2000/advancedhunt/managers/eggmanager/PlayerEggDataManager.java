@@ -78,9 +78,9 @@ public class PlayerEggDataManager {
                 for(UUID uuid : plugin.getEggDataManager().savedPlayers()){
                     FileConfiguration cfg = getPlayerData(uuid);
                     if(cfg == null) continue;
-                    if(!cfg.contains("FoundEggs.")) continue;
-                    for(String collection : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
-                        for(String eggId : cfg.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
+                    if(!cfg.contains("FoundTreasures.")) continue;
+                    for(String collection : cfg.getConfigurationSection("FoundTreasures.").getKeys(false)) {
+                        for(String eggId : cfg.getConfigurationSection("FoundTreasures." + collection).getKeys(false)) {
                             if (eggId.equals("Count") || eggId.equals("Name")) continue;
                             if (canReset(uuid, collection, eggId))
                                 plugin.getEggManager().resetStatsPlayerEgg(uuid, collection, eggId);
