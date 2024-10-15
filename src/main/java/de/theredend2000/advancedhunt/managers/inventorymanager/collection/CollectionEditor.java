@@ -166,7 +166,7 @@ public class CollectionEditor extends InventoryMenu {
                 messageManager.sendMessage(player, MessageKey.COLLECTION_DELETED, "%COLLECTION%", collection);
                 for (UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()) {
                     FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
-                    playerConfig.set("Found." + collection, null);
+                    playerConfig.set("FoundEggs." + collection, null);
                     playerConfig.set("SelectedSection", "default");
                     Main.getInstance().getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
                 }
