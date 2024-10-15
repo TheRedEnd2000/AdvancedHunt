@@ -146,7 +146,7 @@ collection_creator_create:
     - ""
     - "&eKlicke um es zu erstellen."
 
-# Egg related
+# Treasure related
 eggslist_egg:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
