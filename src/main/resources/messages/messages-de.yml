@@ -1,4 +1,4 @@
-config-version: 2.5
+config-version: 2.7
 
 # %PLUGIN_NAME_S% ist plugin-name-singular in der config
 # %PLUGIN_NAME_P% ist plugin-name-plural in der config
@@ -97,7 +97,7 @@ egg-data-convert-delete-fail: '&ceggs.yml konnte nicht gelöscht werden.'
 egg-data-convert-delete-error: '&4Es gab ein Fehler beim löschen von eggs.yml. Fehler: %ERROR%'
 egg-data-convert-complete: '&aAdvancedHunt hat die Daten zum neuen System aktualisiert.\n&2Das Plugin sollte nun wieder flüssig laufen\n&4Bitte melde Fehler unter: &9https://discord.gg/qapvQMUt34'
 
-placeholderapi-detected: '&aAdvanced Egg Hunt hat PlaceholderAPI erkannt, alle placeholders werden aktiviert...'
+placeholderapi-detected: '&aAdvancedHunt hat PlaceholderAPI erkannt, alle placeholders werden aktiviert...'
 placeholderapi-enabled: '&2&lAlle Placeholders wurden aktiviert.'
 language-detected: '&7Sprache &6%LANG% &7gefunden. Datei messages-%LANG%.yml wird geladen.'
 command-system-updated: '&2UPDATE DES COMMAND SYSTEM'
@@ -188,7 +188,6 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &bÖffnet das Hinweis menu das dir hilt %PLUGIN_NAME_P% zu finden.
   &6/%PLUGIN_COMMAND% progress &7-> &bZeigt dir deinen Fortschritt mit der %PLUGIN_NAME_P%suche.
   &6/%PLUGIN_COMMAND% show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen %PLUGIN_NAME_P%.
-  &6/%PLUGIN_COMMAND% commands &7-> &bÄndere commands.
   &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bSetzt die %PLUGIN_NAME_P% der Spieler zurück.
   &5&l==========HELP==========
   &3-----------------------------------------

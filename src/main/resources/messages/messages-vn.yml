@@ -1,4 +1,4 @@
-config-version: 2.6
+config-version: 2.7
 
 # %PLUGIN_NAME_S% là tên của plugin ở dạng số ít trong cấu hình
 # %PLUGIN_NAME_P% là tên của plugin ở dạng số nhiều trong cấu hình
@@ -88,18 +88,18 @@ setting-commandfeedback: '&aPhản hồi lệnh đã &4ngừng hoạt động.&a
 egg-data-converted-success: '&aDữ liệu %PLUGIN_NAME_S% đã được chuyển đổi thành công sang định dạng mới.'
 egg-data-converted-broadcast: '&aDữ liệu %PLUGIN_NAME_S% đã được chuyển đổi sang định dạng mới. Vui lòng kiểm tra nếu mọi thứ hoạt động chính xác.'
 egg-data-converted-failed: '&cKhông thể chuyển đổi dữ liệu %PLUGIN_NAME_S%. Vui lòng kiểm tra bảng điều khiển để biết thêm thông tin.'
-egg-data-convert-start: '&cAdvancedEggHunt đã tìm thấy hệ thống cấu hình cũ.\n&cHiện đang chuyển sang hệ thống mới.\n&4QUÁ TRÌNH NÀY CÓ THỂ MẤT THỜI GIAN!'
-egg-data-convert-broadcast: '&4AdvancedEggHunt ĐANG CẬP NHẬT HỆ THỐNG CẤU HÌNH CỦA HỌ, VUI LÒNG KHÔNG DI CHUYỂN CHO ĐẾN KHI HOÀN THÀNH'
+egg-data-convert-start: '&cAdvancedHunt đã tìm thấy hệ thống cấu hình cũ.\n&cHiện đang chuyển sang hệ thống mới.\n&4QUÁ TRÌNH NÀY CÓ THỂ MẤT THỜI GIAN!'
+egg-data-convert-broadcast: '&4AdvancedHunt ĐANG CẬP NHẬT HỆ THỐNG CẤU HÌNH CỦA HỌ, VUI LÒNG KHÔNG DI CHUYỂN CHO ĐẾN KHI HOÀN THÀNH'
 egg-data-convert-op-message: '&cTỐT NHẤT LÀ KHÔNG AI NÊN TRÊN SERVER TRONG KHI CHUYỂN ĐỔI. &4BẢNG ĐIỀU KHIỂN HIỂN THỊ TIẾN TRÌNH'
-egg-data-convert-locations: '&aAdvancedEggHunt đã chuyển đổi tất cả vị trí %PLUGIN_NAME_S%!'
+egg-data-convert-locations: '&aAdvancedHunt đã chuyển đổi tất cả vị trí %PLUGIN_NAME_S%!'
 egg-data-convert-player: '&eDữ liệu người chơi với UUID %UUID% đã được chuyển đổi.'
 egg-data-convert-done: '&aCHUYỂN ĐỔI HOÀN TẤT!'
 egg-data-convert-success: '&aeggs.yml đã được chuyển đổi thành công.'
 egg-data-convert-delete-fail: "&ceggs.yml không thể bị xóa."
 egg-data-convert-delete-error: '&4Đã xảy ra lỗi khi xóa tệp eggs.yml: %ERROR%'
-egg-data-convert-complete: '&aAdvancedEggHunt đã chuyển đổi tất cả dữ liệu sang hệ thống mới.\n&2Plugin hiện đang hoạt động mượt mà trở lại\n&4Vui lòng báo lỗi trên Discord: &9https://discord.gg/qapvQMUt34'
+egg-data-convert-complete: '&aAdvancedHunt đã chuyển đổi tất cả dữ liệu sang hệ thống mới.\n&2Plugin hiện đang hoạt động mượt mà trở lại\n&4Vui lòng báo lỗi trên Discord: &9https://discord.gg/qapvQMUt34'
 
-placeholderapi-detected: '&aAdvancedEggHunt đã phát hiện PlaceholderAPI, kích hoạt các placeholder...'
+placeholderapi-detected: '&aAdvancedHunt đã phát hiện PlaceholderAPI, kích hoạt các placeholder...'
 placeholderapi-enabled: '&2&lTất cả placeholder đã được kích hoạt thành công.'
 language-detected: '&7Ngôn ngữ &6%LANG% &7đã được phát hiện. Tệp messages-%LANG%.yml đã được tải.'
 command-system-updated: '&2HỆ THỐNG LỆNH ĐÃ ĐƯỢC CẬP NHẬT'
@@ -108,7 +108,7 @@ command-system-chances-updated: '&2HỆ THỐNG LỆNH CỦA BẠN ĐÃ ĐƯỢC
 command-system-chances-contains: '&2HIỆN CHỨA CÁC TỶ LỆ'
 update-available: '&aCó phiên bản mới hơn. Vui lòng cập nhật plugin của bạn.&a &aPhiên bản: &2&l%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 update-error: '&4&lLỖI: &cKhông thể kết nối với SpigotMC.org'
-console-update-available: '&cBạn không có phiên bản cập nhật nhất của &eAdvancedEggHunt&c. Vui lòng cập nhật phiên bản từ: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+console-update-available: '&cBạn không có phiên bản cập nhật nhất của &eAdvancedHunt&c. Vui lòng cập nhật phiên bản từ: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 console-update-error: '&4&lLỖI: &cKhông thể kết nối với SpigotMC.org'
 
 init-data-players-loaded: '&2&lĐã tải dữ liệu của %COUNT% người chơi.'
@@ -182,16 +182,15 @@ help-message: |
   &7Tác giả: &6%AUTHOR%
 
   &2&lCác lệnh
-  &6/advancedegghunt collection &7-> &bChuyển đổi và chỉnh sửa bộ sưu tập.
-  &6/advancedegghunt help &7-> &bHiển thị các lệnh và thông tin về plugin.
-  &6/advancedegghunt reload &7-> &bLàm mới plugin.
-  &6/advancedegghunt list &7-> &bLiệt kê tất cả %PLUGIN_NAME_P% đã được đặt.
-  &6/advancedegghunt place &7-> &bBật/tắt chế độ đặt hoặc phá %PLUGIN_NAME_P%.
-  &6/advancedegghunt settings &7-> &bCài đặt plugin.
-  &6/advancedegghunt hint &7-> &bMở menu gợi ý để tìm %PLUGIN_NAME_P% dễ dàng hơn.
-  &6/advancedegghunt progress &7-> &bXem tiến độ của bạn với %PLUGIN_NAME_P%.
-  &6/advancedegghunt show &7-> &bTriệu hồi một giá đỡ giáp phát sáng tại mỗi %PLUGIN_NAME_S%.
-  &6/advancedegghunt commands &7-> &bThay đổi hoặc thêm lệnh mới.
-  &6/advancedegghunt reset [player | all] [Collection] &7-> &bĐặt lại các %PLUGIN_NAME_P% đã tìm thấy.
+  &6/%PLUGIN_COMMAND% collection &7-> &bChuyển đổi và chỉnh sửa bộ sưu tập.
+  &6/%PLUGIN_COMMAND% help &7-> &bHiển thị các lệnh và thông tin về plugin.
+  &6/%PLUGIN_COMMAND% reload &7-> &bLàm mới plugin.
+  &6/%PLUGIN_COMMAND% list &7-> &bLiệt kê tất cả %PLUGIN_NAME_P% đã được đặt.
+  &6/%PLUGIN_COMMAND% place &7-> &bBật/tắt chế độ đặt hoặc phá %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% settings &7-> &bCài đặt plugin.
+  &6/%PLUGIN_COMMAND% hint &7-> &bMở menu gợi ý để tìm %PLUGIN_NAME_P% dễ dàng hơn.
+  &6/%PLUGIN_COMMAND% progress &7-> &bXem tiến độ của bạn với %PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% show &7-> &bTriệu hồi một giá đỡ giáp phát sáng tại mỗi %PLUGIN_NAME_S%.
+  &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bĐặt lại các %PLUGIN_NAME_P% đã tìm thấy.
   &5&l==========HỖ TRỢ==========
   &3-----------------------------------------

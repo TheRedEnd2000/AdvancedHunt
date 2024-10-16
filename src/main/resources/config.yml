@@ -53,7 +53,7 @@ Settings:
   # If a firework should spawn after clicking an egg
   ShowFireworkAfterEggFound: true
 
-  # How long the armor stands are visible after typing /eggs show
+  # How long the armor stands are visible after typing /%PLUGIN_COMMAND% show
   ArmorstandGlow: 10
 
   # In witch radius the player gets a message that he is near an egg
