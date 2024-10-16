@@ -41,7 +41,7 @@ collection_item:
   lore:
     - ""
     - "&9Thông tin bộ sưu tập:"
-    - "&7   - Đã đặt %PLUGIN_NAME_P%: &6%MAX_EGGS%"
+    - "&7   - Đã đặt %PLUGIN_NAME_P%: &6%MAX_TREASURES%"
     - ""
     - "&aGhi chú:"
     - "&7Bộ sưu tập này áp dụng cho tất cả các hành động đã thực hiện."
@@ -146,7 +146,7 @@ collection_creator_create:
 
 # Liên quan đến trứng
 eggslist_egg:
-  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
     - "&9Vị trí:"
     - "&7X: &e%LOCATION_X%"
@@ -182,7 +182,7 @@ eggplace_information:
     - ""
     - "&eNhấp để nhận liên kết discord."
 eggplace_egg:
-  displayname: "&b&lLoại %PLUGIN_NAME_P% #%EGG_ID%"
+  displayname: "&b&lLoại %PLUGIN_NAME_P% #%TREASURE_ID%"
   lore:
     - ""
     - "&eNHẤP CHUỘT TRÁI để thêm vào kho đồ của bạn."
@@ -221,10 +221,10 @@ eggprogress_not_found:
 information_player:
   displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
   lore:
-    - "&7%PLAYER_NAME% đã tìm thấy %PLUGIN_NAME_S% #%EGG_ID%&7."
+    - "&7%PLAYER_NAME% đã tìm thấy %PLUGIN_NAME_S% #%TREASURE_ID%&7."
     - ""
     - "&9Thông tin về %PLAYER_NAME%:"
-    - "&7%PLUGIN_NAME_P% đã tìm thấy: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% đã tìm thấy: &6%TREASURES_FOUND%/%TREASURES_MAX%"
     - ""
     - "&7Ngày: &6%DATE%"
     - "&7Thời gian: &6%TIME%"
@@ -244,9 +244,9 @@ leaderboard_player:
   displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
-    - "&7%PLUGIN_NAME_P% Đã tìm thấy: &3%EGGS_FOUND%"
-    - "&7%PLUGIN_NAME_P% Còn lại: &3%EGGS_REMAINING%"
-    - "&7Tối đa %PLUGIN_NAME_P%: &3%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% Đã tìm thấy: &3%TREASURES_FOUND%"
+    - "&7%PLUGIN_NAME_P% Còn lại: &3%TREASURES_REMAINING%"
+    - "&7Tối đa %PLUGIN_NAME_P%: &3%TREASURES_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 

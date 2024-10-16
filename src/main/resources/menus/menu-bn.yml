@@ -41,7 +41,7 @@ collection_item:
   lore:
     - ""
     - "&9Songroher totthosomuho:"
-    - "&7   - Boshano %PLUGIN_NAME_P%: &6%MAX_EGGS%"
+    - "&7   - Boshano %PLUGIN_NAME_P%: &6%MAX_TREASURES%"
     - ""
     - "&aLokkho korun:"
     - "&7Ei songrohoti sompadito sokol kormer jonno projojjo."
@@ -146,7 +146,7 @@ collection_creator_create:
 
 # Dim bishoyok
 eggslist_egg:
-  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
     - "&9Obosthan:"
     - "&7X: &e%LOCATION_X%"
@@ -182,7 +182,7 @@ eggplace_information:
     - ""
     - "&eDiscord link pete chap din."
 eggplace_egg:
-  displayname: "&b&l%PLUGIN_NAME_P% er dhoron #%EGG_ID%"
+  displayname: "&b&l%PLUGIN_NAME_P% er dhoron #%TREASURE_ID%"
   lore:
     - ""
     - "&eLEFT-CLICK korun inventory te jukto korte."
@@ -221,10 +221,10 @@ eggprogress_not_found:
 information_player:
   displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
   lore:
-    - "&7%PLAYER_NAME% &2%PLUGIN_NAME_S% #%EGG_ID%&7ti peyeche."
+    - "&7%PLAYER_NAME% &2%PLUGIN_NAME_S% #%TREASURE_ID%&7ti peyeche."
     - ""
     - "&9%PLAYER_NAME% er totthosomuho:"
-    - "&7Prapto %PLUGIN_NAME_P% somuhu: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - "&7Prapto %PLUGIN_NAME_P% somuhu: &6%TREASURES_FOUND%/%TREASURES_MAX%"
     - ""
     - "&7Tarik: &6%DATE%"
     - "&7Somoy: &6%TIME%"
@@ -244,9 +244,9 @@ leaderboard_player:
   displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
-    - "&7Prapto %PLUGIN_NAME_P% somuho: &3%EGGS_FOUND%"
-    - "&7Baki roye jawa %PLUGIN_NAME_P% somuho: &3%EGGS_REMAINING%"
-    - "&7Sorboccho %PLUGIN_NAME_P% somuho: &3%EGGS_MAX%"
+    - "&7Prapto %PLUGIN_NAME_P% somuho: &3%TREASURES_FOUND%"
+    - "&7Baki roye jawa %PLUGIN_NAME_P% somuho: &3%TREASURES_REMAINING%"
+    - "&7Sorboccho %PLUGIN_NAME_P% somuho: &3%TREASURES_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 

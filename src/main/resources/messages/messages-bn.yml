@@ -15,7 +15,7 @@ egg-placed: '&aApni sofolvabe &aekti notun %PLUGIN_NAME_S% &2boshiyechen. &7(ID#
 egg-broken: '&aApni sofolvabe &aekti %PLUGIN_NAME_S% &csoriyechen. &7(ID#%ID%)'
 teleport-to-egg: '&aApnake %PLUGIN_NAME_S% tir kache isthanantor kora hoyeche #%ID%.'
 
-egg-found: '&aApni ekti %PLUGIN_NAME_S% khuje peyechen. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&aApni ekti %PLUGIN_NAME_S% khuje peyechen. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&cApni itimoddhe ei %PLUGIN_NAME_S% ti khuje peyechen.'
 egg-already-found-by-player: '&cEi %PLUGIN_NAME_S% ti ithimoddhei onno ekjon player khuje peyeche.'
 all-eggs-found: '&cApni itimoddhe sobgulo %PLUGIN_NAME_P% khuje peyechen.'
@@ -131,7 +131,7 @@ feature-coming-soon: '&cEi feature ti sigroi asche.'
 item-added-success: '&aSofolvabe ekti notun bostu jukto kora holo.'
 invalid-chance: '&cOjouktik. Onugroho kore 0.0000001 hote 100 er vitorer kono songkha probesh korun.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Upolovvo placeholders somuho:\n&b- %PLAYER% --> Player er nam\n&b- & --> Rong er songket er jonno (&6=gold)\n&b- %EGGS_FOUND% --> Koto gulo %PLUGIN_NAME_P% player ti peyche\n&b- %EGGS_MAX% --> Koto gulo %PLUGIN_NAME_P% boshano royeche\n&b- %PREFIX% --> Plugin tir uposhorgo'
+placeholders-hover-content: '&2Upolovvo placeholders somuho:\n&b- %PLAYER% --> Player er nam\n&b- & --> Rong er songket er jonno (&6=gold)\n&b- %TREASURES_FOUND% --> Koto gulo %PLUGIN_NAME_P% player ti peyche\n&b- %TREASURES_MAX% --> Koto gulo %PLUGIN_NAME_P% boshano royeche\n&b- %PREFIX% --> Plugin tir uposhorgo'
 
 requirements-name-hour: 'Ghonta'
 requirements-name-date: 'Tarik'

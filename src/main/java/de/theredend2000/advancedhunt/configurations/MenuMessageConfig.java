@@ -32,7 +32,7 @@ public class MenuMessageConfig extends Configuration {
 
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
-                    new ConfigMigration.ReplacementEntry("%MAX_TREASURES%", "%MAX_TREASURES%", false, false)
+                    new ConfigMigration.ReplacementEntry("%MAX_EGGS%", "%MAX_TREASURES%", false, false)
             );
 
             ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);

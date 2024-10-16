@@ -15,7 +15,7 @@ egg-placed: '&aBạn đã &2tạo thành công &amột %PLUGIN_NAME_S% mới. &7
 egg-broken: '&aBạn đã &crỡ thành công &amột %PLUGIN_NAME_S%. &7(ID#%ID%)'
 teleport-to-egg: '&aBạn đã được dịch chuyển đến %PLUGIN_NAME_S% #%ID%.'
 
-egg-found: '&aBạn đã tìm thấy %PLUGIN_NAME_S%. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-found: '&aBạn đã tìm thấy %PLUGIN_NAME_S%. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 egg-already-found: '&cBạn đã tìm thấy %PLUGIN_NAME_S% này rồi.'
 egg-already-found-by-player: '&c%PLUGIN_NAME_S% này đã được tìm thấy bởi người chơi khác.'
 all-eggs-found: '&cBạn đã tìm thấy tất cả %PLUGIN_NAME_P%.'
@@ -131,7 +131,7 @@ feature-coming-soon: '&cTính năng này sẽ sớm có mặt.'
 item-added-success: '&aĐã thêm thành công một vật phẩm mới.'
 invalid-chance: '&cKhông hợp lệ. Vui lòng nhập số từ 0.0000001 đến 100.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Các placeholder phù hợp:\n&b- %PLAYER% --> Tên người chơi\n&b- & --> Mã màu (&6=gold)\n&b- %EGGS_FOUND% --> Bao nhiêu %PLUGIN_NAME_P% mà người chơi tìm được\n&b- %EGGS_MAX% --> Bao nhiêu %PLUGIN_NAME_P% đã được đặt\n&b- %PREFIX% --> Tên viết tắt Plugin'
+placeholders-hover-content: '&2Các placeholder phù hợp:\n&b- %PLAYER% --> Tên người chơi\n&b- & --> Mã màu (&6=gold)\n&b- %TREASURES_FOUND% --> Bao nhiêu %PLUGIN_NAME_P% mà người chơi tìm được\n&b- %TREASURES_MAX% --> Bao nhiêu %PLUGIN_NAME_P% đã được đặt\n&b- %PREFIX% --> Tên viết tắt Plugin'
 
 requirements-name-hour: 'Giờ'
 requirements-name-date: 'Ngày'

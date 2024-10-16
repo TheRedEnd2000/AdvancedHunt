@@ -41,7 +41,7 @@ collection_item:
   lore:
     - ""
     - "&9Sammlung Information:"
-    - "&7   - Platzierte %PLUGIN_NAME_P%: &6%MAX_EGGS%"
+    - "&7   - Platzierte %PLUGIN_NAME_P%: &6%MAX_TREASURES%"
     - ""
     - "&aNotiz:"
     - "&7Diese Sammlung gilt für alle durchgeführten Aktionen."
@@ -148,7 +148,7 @@ collection_creator_create:
 
 # Egg related
 eggslist_egg:
-  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
     - "&9Standort:"
     - "&7X: &e%LOCATION_X%"
@@ -185,7 +185,7 @@ eggplace_information:
     - ""
     - "&eKlicke um den Discord-Link zu erhalten."
 eggplace_egg:
-  displayname: "&b&l%PLUGIN_NAME_S% Typ #%EGG_ID%"
+  displayname: "&b&l%PLUGIN_NAME_S% Typ #%TREASURE_ID%"
   lore:
     - ""
     - "&eLINKS-KLICK um es in dein Inventar hinzuzufügen."
@@ -224,10 +224,10 @@ eggprogress_not_found:
 information_player:
   displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
   lore:
-    - "&7%PLAYER_NAME% hat das &2%PLUGIN_NAME_S% #%EGG_ID% &7gefunden."
+    - "&7%PLAYER_NAME% hat das &2%PLUGIN_NAME_S% #%TREASURE_ID% &7gefunden."
     - ""
     - "&9Informationen zu %PLAYER_NAME%:"
-    - "&7%PLUGIN_NAME_S%er gefunden: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_S%er gefunden: &6%TREASURES_FOUND%/%TREASURES_MAX%"
     - ""
     - "&7Datum: &6%DATE%"
     - "&7Zeit: &6%TIME%"
@@ -247,9 +247,9 @@ leaderboard_player:
   displayname: "&6&l%PLACE%&6ter &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
-    - "&7%PLUGIN_NAME_P% gefunden: &3%EGGS_FOUND%"
-    - "&7%PLUGIN_NAME_P% übrig: &3%EGGS_REMAINING%"
-    - "&7Maximale %PLUGIN_NAME_P%: &3%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% gefunden: &3%TREASURES_FOUND%"
+    - "&7%PLUGIN_NAME_P% übrig: &3%TREASURES_REMAINING%"
+    - "&7Maximale %PLUGIN_NAME_P%: &3%TREASURES_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 
