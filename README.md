@@ -7,7 +7,7 @@ If you discover any bugs or have a feature request please use the discord linked
 * [Discord Invite](https://discord.gg/7x2fzYKucZ)
 * [Spigot](https://www.spigotmc.org/resources/advancedhunt.109085/)
 * [Modrinth](https://modrinth.com/plugin/advancedhunt)
-* [Wiki](https://github.com/TheRedEnd2000/AdvancedEggHunt/wiki)
+* [Wiki](https://github.com/TheRedEnd2000/AdvancedHunt/wiki)
 
 ### Languages Supported:
 English | German | France (auracio) | Vietnamese (ThuongTr) | Bangla (Udoyy)
