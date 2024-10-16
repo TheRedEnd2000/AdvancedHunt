@@ -14,7 +14,7 @@ public class EggConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public EggConfig(JavaPlugin plugin) {
-        super(plugin, "eggs", "yml", 2.1);
+        super(plugin, "eggs", "yml", 2.3);
     }
 
 
@@ -35,7 +35,7 @@ public class EggConfig extends MultiFileConfiguration {
         upgraders.put(2.1, (oldConfig, newConfig) -> {
             addChances(oldConfig, newConfig);
         });
-        upgraders.put(2.2, (oldConfig, newConfig) -> {
+        upgraders.put(2.3, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
                     new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
