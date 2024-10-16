@@ -68,7 +68,7 @@ public class PlayerInteractEventListener implements Listener {
                 return;
             }
 
-            if(!Main.getInstance().getPermissionManager().checkPermission(player, Permission.FindEggs)){
+            if(!Main.getInstance().getPermissionManager().checkPermission(player, Permission.FindTreasures)){
                 player.sendMessage(messageManager.getMessage(MessageKey.PERMISSION_ERROR));
                 player.playSound(player.getLocation(), soundManager.playErrorSound(), soundManager.getSoundVolume(), 1);
                 return;

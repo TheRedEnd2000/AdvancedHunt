@@ -6,13 +6,13 @@ import java.text.MessageFormat;
 import java.util.logging.Level;
 
 public enum Permission {
-    BreakEgg,
-    PlaceEgg,
+    BreakTreasure,
+    PlaceTreasure,
     IgnoreCooldown,
     ChangeCollections,
     CreateCollection,
     OpenRewards,
-    FindEggs;
+    FindTreasures;
     @Override
     public String toString() {
         return "AdvancedHunt." + this.name();

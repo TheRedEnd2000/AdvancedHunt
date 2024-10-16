@@ -3,7 +3,7 @@ version: 3.1.0
 main: de.theredend2000.advancedhunt.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI, NBTAPI, ProtocolLib]
-website: https://www.spigotmc.org/resources/advancedegghunt.109085/
+website: https://www.spigotmc.org/resources/advancedtreasurehunt.109085/
 authors: [ TheRedEnd2000, GrafterCrafter ]
 
 permissions:
@@ -14,31 +14,31 @@ permissions:
   AdvancedHunt.command.reload:
     description: "Reload plugin"
   AdvancedHunt.command.commands:
-    description: "Reward commands that are ran when a player finds an egg"
+    description: "Reward commands that are ran when a player finds an treasure"
   AdvancedHunt.command.place:
-    description: "Allow a player to enter and exit egg placing mode"
-  AdvancedHunt.command.eggImport:
+    description: "Allow a player to enter and exit treasure placing mode"
+  AdvancedHunt.command.import:
     description: "Import a player head that is help in the main hand"
   AdvancedHunt.command.show:
-    description: "Show the location of nearby placed eggs using glowing armor stands"
+    description: "Show the location of nearby placed treasures using glowing armor stands"
   AdvancedHunt.command.list:
-    description: "List all placed eggs for the selected collection"
+    description: "List all placed treasures for the selected collection"
 
   AdvancedHunt.command.help:
     description: "Show a list of possible commands with short descriptions"
   AdvancedHunt.command.collection:
     description: "Change selected collection"
   AdvancedHunt.command.progress:
-    description: "Shows the progress for eggs found"
+    description: "Shows the progress for treasures found"
   AdvancedHunt.command.leaderboard:
-    description: "Shows the leaderboard for the egg hunt"
+    description: "Shows the leaderboard for the treasure hunt"
   AdvancedHunt.command.hint:
-    description: "Shows a hint in the form of coordinates of a nearby egg that the player has not found yet"
+    description: "Shows a hint in the form of coordinates of a nearby treasure that the player has not found yet"
 
 
-  AdvancedHunt.BreakEgg:
+  AdvancedHunt.BreakTreasure:
     description: ""
-  AdvancedHunt.PlaceEgg:
+  AdvancedHunt.PlaceTreasure:
     description: ""
   AdvancedHunt.IgnoreCooldown:
     description: ""
@@ -48,7 +48,7 @@ permissions:
     description: ""
   AdvancedHunt.OpenRewards:
     description: ""
-  AdvancedHunt.FindEggs:
+  AdvancedHunt.FindTreasures:
     description: ""
 
   AdvancedHunt.group.admin:
@@ -62,10 +62,10 @@ permissions:
       AdvancedHunt.command.place: true
       AdvancedHunt.command.show: true
       AdvancedHunt.command.list: true
-      AdvancedHunt.command.eggImport: true
+      AdvancedHunt.command.import: true
 
-      AdvancedHunt.BreakEgg: true
-      AdvancedHunt.PlaceEgg: true
+      AdvancedHunt.BreakTreasure: true
+      AdvancedHunt.PlaceTreasure: true
       AdvancedHunt.ChangeCollections: true
       AdvancedHunt.CreateCollection: true
       AdvancedHunt.OpenRewards: true
@@ -81,4 +81,4 @@ permissions:
       AdvancedHunt.command.progress: true
       AdvancedHunt.command.leaderboard: true
       AdvancedHunt.command.hint: true
-      AdvancedHunt.FindEggs: true
+      AdvancedHunt.FindTreasures: true
