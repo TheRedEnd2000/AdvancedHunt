@@ -15,7 +15,7 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
     private MessageManager messageManager;
 
     public GlobalPresetConfig(JavaPlugin plugin) {
-        super(plugin, "presets/global", "yml", 1.0);
+        super(plugin, "presets/global", "yml", 1.1);
     }
 
     @Override
@@ -25,7 +25,19 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
 
     @Override
     public void registerUpgrader() {
-        // Register upgraders if needed
+        upgraders.put(2.3, (oldConfig, newConfig) -> {
+            List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
+                    new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
+                    new ConfigMigration.ReplacementEntry("%MAX_EGGS%", "%MAX_TREASURES%", false, false),
+                    new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
+                    new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
+                    new ConfigMigration.ReplacementEntry("egg(?!s.yml)", "treasure", true, false)
+            );
+
+            ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
+            migration.standardUpgrade(oldConfig, newConfig);
+        });
     }
 
     /**

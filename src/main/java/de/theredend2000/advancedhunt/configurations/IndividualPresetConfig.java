@@ -8,17 +8,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class IndividualPresetConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
     private MessageManager messageManager;
 
     public IndividualPresetConfig(JavaPlugin plugin) {
-        super(plugin, "presets/individual", "yml", 1);
+        super(plugin, "presets/individual", "yml", 1.1);
     }
 
     @Override
@@ -28,7 +25,19 @@ public class IndividualPresetConfig extends MultiFileConfiguration {
 
     @Override
     public void registerUpgrader() {
-        // Register upgraders if needed
+        upgraders.put(2.3, (oldConfig, newConfig) -> {
+            List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
+                    new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
+                    new ConfigMigration.ReplacementEntry("%MAX_EGGS%", "%MAX_TREASURES%", false, false),
+                    new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
+                    new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
+                    new ConfigMigration.ReplacementEntry("egg(?!s.yml)", "treasure", true, false)
+            );
+
+            ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
+            migration.standardUpgrade(oldConfig, newConfig);
+        });
     }
 
     /**
