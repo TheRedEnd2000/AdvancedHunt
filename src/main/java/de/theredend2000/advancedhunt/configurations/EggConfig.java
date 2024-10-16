@@ -37,8 +37,7 @@ public class EggConfig extends MultiFileConfiguration {
         });
         upgraders.put(2.2, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
-                    new ConfigMigration.ReplacementEntry("^(?<=.*)egg(?=.*:)", "treasure", true, true),
-                    new ConfigMigration.ReplacementEntry("(?<=.*)egg(?=.*)", "treasure", true, true)
+                    new ConfigMigration.ReplacementEntry("egg", "treasure", true, true)
             );
 
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
@@ -47,7 +46,7 @@ public class EggConfig extends MultiFileConfiguration {
                     new ConfigMigration.ReplacementEntry("%MAX_EGGS%", "%MAX_TREASURES%", false, false),
                     new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
                     new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
-                    new ConfigMigration.ReplacementEntry("(?<=^.*)\\begg(?!s?.yml)", "treasure", true, false)
+                    new ConfigMigration.ReplacementEntry("egg(?!s.yml)", "treasure", true, false)
             );
 
             ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);

@@ -145,7 +145,7 @@ collection_creator_create:
     - "&eNhấp để tạo."
 
 # Liên quan đến trứng
-eggslist_egg:
+treasureslist_treasure:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
     - "&9Vị trí:"
@@ -163,7 +163,7 @@ eggslist_egg:
     - "&eNHẤP CHUỘT TRÁI để dịch chuyển."
     - "&eNHẤP CHUỘT PHẢI để xem thông tin."
 
-eggplace_information:
+treasureplace_information:
   displayname: "&9Thông tin"
   lore:
     - ""
@@ -181,14 +181,14 @@ eggplace_information:
     - "&bvật phẩm tùy chỉnh, bạn có thể tham gia discord"
     - ""
     - "&eNhấp để nhận liên kết discord."
-eggplace_egg:
+treasureplace_treasure:
   displayname: "&b&lLoại %PLUGIN_NAME_P% #%TREASURE_ID%"
   lore:
     - ""
     - "&eNHẤP CHUỘT TRÁI để thêm vào kho đồ của bạn."
     - "&eNHẤP CHUỘT PHẢI để xóa."
 
-eggprogress_location_found:
+treasureprogress_location_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -202,7 +202,7 @@ eggprogress_location_found:
     - "&9Đã thu thập:"
     - "&7Ngày: &6%DATE%"
     - "&7Thời gian: &6%TIME%"
-eggprogress_found:
+treasureprogress_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -211,7 +211,7 @@ eggprogress_found:
     - "&9Đã thu thập:"
     - "&7Ngày: &6%DATE%"
     - "&7Thời gian: &6%TIME%"
-eggprogress_not_found:
+treasureprogress_not_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -574,7 +574,7 @@ reset_reset_all:
     - "&eNhấp để đặt lại tất cả."
 
 # Liên quan đến cài đặt
-settings_one_egg_reward:
+settings_one_treasure_reward:
   displayname: "&3Phần thưởng khi tìm thấy %PLUGIN_NAME_S% duy nhất"
   lore:
     - ""
@@ -584,7 +584,7 @@ settings_one_egg_reward:
     - ""
     - "%STATUS%"
     - "&eNhấp để chuyển đổi."
-settings_all_eggs_reward:
+settings_all_treasures_reward:
   displayname: "&3Phần thưởng khi tìm thấy tất cả %PLUGIN_NAME_P%"
   lore:
     - ""
@@ -647,7 +647,7 @@ settings_armorstand_glow:
     - "&7Hiện tại: %GLOW_DURATION%"
     - "&eNHẤP CHUỘT TRÁI để tăng một đơn vị."
     - "&eNHẤP CHUỘT PHẢI để giảm một đơn vị."
-settings_egg_nearby_radius:
+settings_treasure_nearby_radius:
   displayname: "&3Bán kính thông báo trứng gần"
   lore:
     - ""

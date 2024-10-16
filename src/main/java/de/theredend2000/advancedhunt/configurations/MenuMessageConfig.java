@@ -25,8 +25,7 @@ public class MenuMessageConfig extends Configuration {
     public void registerUpgrader() {
         upgraders.put(1.1, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
-                    new ConfigMigration.ReplacementEntry("^(?<=.*)egg(s?)(?=.*:)", "treasure$1", true, true),
-                    new ConfigMigration.ReplacementEntry("(?<=.*)egg(s?)(?=.*)", "treasure$1", true, true)
+                    new ConfigMigration.ReplacementEntry("egg", "treasure", false, true)
             );
 
 

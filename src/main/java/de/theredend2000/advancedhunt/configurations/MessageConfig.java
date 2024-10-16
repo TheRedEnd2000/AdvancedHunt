@@ -25,8 +25,7 @@ public class MessageConfig extends Configuration {
     public void registerUpgrader() {
         upgraders.put(2.7, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
-                    new ConfigMigration.ReplacementEntry("^(?<=.*)egg(s?)(?=.*:)", "treasure$1", true, true),
-                    new ConfigMigration.ReplacementEntry("(?<=.*)egg(s?)(?=.*)", "treasure$1", true, true)
+                    new ConfigMigration.ReplacementEntry("egg", "treasure", false, true)
             );
 
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
@@ -35,7 +34,7 @@ public class MessageConfig extends Configuration {
                     new ConfigMigration.ReplacementEntry("%MAX_EGGS%", "%MAX_TREASURES%", false, false),
                     new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
                     new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
-                    new ConfigMigration.ReplacementEntry("(?<=^.*)\\begg(?!s?.yml)", "treasure", true, false)
+                    new ConfigMigration.ReplacementEntry("egg(?!s.yml)", "treasure", true, false)
             );
 
             ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);
