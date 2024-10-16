@@ -14,7 +14,7 @@ public class EggConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public EggConfig(JavaPlugin plugin) {
-        super(plugin, "eggs", "yml", 2.2);
+        super(plugin, "eggs", "yml", 2.1);
     }
 
 

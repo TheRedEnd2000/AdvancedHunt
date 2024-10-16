@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -15,7 +17,7 @@ public class PlayerEggConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public PlayerEggConfig(JavaPlugin plugin) {
-        super(plugin, "playerdata", "yml", 1);
+        super(plugin, "playerdata", "yml", 1.1);
     }
 
     @Override
@@ -25,6 +27,14 @@ public class PlayerEggConfig extends MultiFileConfiguration {
 
     @Override
     public void registerUpgrader() {
+        upgraders.put(1.1, (oldConfig, newConfig) -> {
+            List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("FoundEggs", "FoundTreasures", false, true)
+            );
+
+            ConfigMigration migration = new ConfigMigration(true, keyReplacements, null);
+            migration.standardUpgrade(oldConfig, newConfig);
+        });
     }
 
     public void saveData(String configName) {
