@@ -191,6 +191,6 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &bMở menu gợi ý để tìm %PLUGIN_NAME_P% dễ dàng hơn.
   &6/%PLUGIN_COMMAND% progress &7-> &bXem tiến độ của bạn với %PLUGIN_NAME_P%.
   &6/%PLUGIN_COMMAND% show &7-> &bTriệu hồi một giá đỡ giáp phát sáng tại mỗi %PLUGIN_NAME_S%.
-  &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bĐặt lại các %PLUGIN_NAME_P% đã tìm thấy.
+  &6/%PLUGIN_COMMAND% reset [player | all] [collection | all] &7-> &bĐặt lại các %PLUGIN_NAME_P% đã tìm thấy.
   &5&l==========HỖ TRỢ==========
   &3-----------------------------------------

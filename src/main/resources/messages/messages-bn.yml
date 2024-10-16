@@ -191,6 +191,6 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &bSohoje %PLUGIN_NAME_P% gulo khujar jonno songket er menu ti khulte.
   &6/%PLUGIN_COMMAND% progress &7-> &bApnar %PLUGIN_NAME_P% er ogrogoti dekhte.
   &6/%PLUGIN_COMMAND% show &7-> &Protiti %PLUGIN_NAME_S% er upor ekti ujjol armorstand boshate.
-  &6/%PLUGIN_COMMAND% reset [player | all] &7-> &bPrapto %PLUGIN_NAME_P% guloke reset korte.
+  &6/%PLUGIN_COMMAND% reset [player | all] [collection | all] &7-> &bPrapto %PLUGIN_NAME_P% guloke reset korte.
   &5&l==========SOHAYOK==========
   &3-----------------------------------------
