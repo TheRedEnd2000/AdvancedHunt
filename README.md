@@ -13,7 +13,9 @@ If you discover any bugs or have a feature request please use the discord linked
 English | German | France (auracio) | Vietnamese (ThuongTr) | Bangla (Udoyy)
 
 ### Tested versions:
-1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20
+* Full support 1.14.4-1.20.x
+* Support for all features apart from stopping water breaking player heads when placed on it, 1.13-1.14.3
+* Limited level support(Legacy) 1.9.4-1.12.2
 
 ### Metrics collection
 AdvancedEggHunt collects anonymous server statistics through [bStats](https://bstats.org/), an open-source statistics service for Minecraft software.
