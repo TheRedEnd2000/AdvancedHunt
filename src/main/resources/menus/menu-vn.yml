@@ -41,7 +41,7 @@ collection_item:
   lore:
     - ""
     - "&9Thông tin bộ sưu tập:"
-    - "&7   - Đã đặt %PLUGIN_NAME_P%: &6%MAX_EGGS%"
+    - "&7   - Đã đặt %PLUGIN_NAME_P%: &6%MAX_TREASURES%"
     - ""
     - "&aGhi chú:"
     - "&7Bộ sưu tập này áp dụng cho tất cả các hành động đã thực hiện."
@@ -145,8 +145,8 @@ collection_creator_create:
     - "&eNhấp để tạo."
 
 # Liên quan đến trứng
-eggslist_egg:
-  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
+treasureslist_treasure:
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
     - "&9Vị trí:"
     - "&7X: &e%LOCATION_X%"
@@ -163,7 +163,7 @@ eggslist_egg:
     - "&eNHẤP CHUỘT TRÁI để dịch chuyển."
     - "&eNHẤP CHUỘT PHẢI để xem thông tin."
 
-eggplace_information:
+treasureplace_information:
   displayname: "&9Thông tin"
   lore:
     - ""
@@ -181,14 +181,14 @@ eggplace_information:
     - "&bvật phẩm tùy chỉnh, bạn có thể tham gia discord"
     - ""
     - "&eNhấp để nhận liên kết discord."
-eggplace_egg:
-  displayname: "&b&lLoại %PLUGIN_NAME_P% #%EGG_ID%"
+treasureplace_treasure:
+  displayname: "&b&lLoại %PLUGIN_NAME_P% #%TREASURE_ID%"
   lore:
     - ""
     - "&eNHẤP CHUỘT TRÁI để thêm vào kho đồ của bạn."
     - "&eNHẤP CHUỘT PHẢI để xóa."
 
-eggprogress_location_found:
+treasureprogress_location_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -202,7 +202,7 @@ eggprogress_location_found:
     - "&9Đã thu thập:"
     - "&7Ngày: &6%DATE%"
     - "&7Thời gian: &6%TIME%"
-eggprogress_found:
+treasureprogress_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -211,7 +211,7 @@ eggprogress_found:
     - "&9Đã thu thập:"
     - "&7Ngày: &6%DATE%"
     - "&7Thời gian: &6%TIME%"
-eggprogress_not_found:
+treasureprogress_not_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -221,10 +221,10 @@ eggprogress_not_found:
 information_player:
   displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
   lore:
-    - "&7%PLAYER_NAME% đã tìm thấy %PLUGIN_NAME_S% #%EGG_ID%&7."
+    - "&7%PLAYER_NAME% đã tìm thấy %PLUGIN_NAME_S% #%TREASURE_ID%&7."
     - ""
     - "&9Thông tin về %PLAYER_NAME%:"
-    - "&7%PLUGIN_NAME_P% đã tìm thấy: &6%EGGS_FOUND%/%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% đã tìm thấy: &6%TREASURES_FOUND%/%TREASURES_MAX%"
     - ""
     - "&7Ngày: &6%DATE%"
     - "&7Thời gian: &6%TIME%"
@@ -244,9 +244,9 @@ leaderboard_player:
   displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
-    - "&7%PLUGIN_NAME_P% Đã tìm thấy: &3%EGGS_FOUND%"
-    - "&7%PLUGIN_NAME_P% Còn lại: &3%EGGS_REMAINING%"
-    - "&7Tối đa %PLUGIN_NAME_P%: &3%EGGS_MAX%"
+    - "&7%PLUGIN_NAME_P% Đã tìm thấy: &3%TREASURES_FOUND%"
+    - "&7%PLUGIN_NAME_P% Còn lại: &3%TREASURES_REMAINING%"
+    - "&7Tối đa %PLUGIN_NAME_P%: &3%TREASURES_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 
@@ -574,7 +574,7 @@ reset_reset_all:
     - "&eNhấp để đặt lại tất cả."
 
 # Liên quan đến cài đặt
-settings_one_egg_reward:
+settings_one_treasure_reward:
   displayname: "&3Phần thưởng khi tìm thấy %PLUGIN_NAME_S% duy nhất"
   lore:
     - ""
@@ -584,7 +584,7 @@ settings_one_egg_reward:
     - ""
     - "%STATUS%"
     - "&eNhấp để chuyển đổi."
-settings_all_eggs_reward:
+settings_all_treasures_reward:
   displayname: "&3Phần thưởng khi tìm thấy tất cả %PLUGIN_NAME_P%"
   lore:
     - ""
@@ -647,7 +647,7 @@ settings_armorstand_glow:
     - "&7Hiện tại: %GLOW_DURATION%"
     - "&eNHẤP CHUỘT TRÁI để tăng một đơn vị."
     - "&eNHẤP CHUỘT PHẢI để giảm một đơn vị."
-settings_egg_nearby_radius:
+settings_treasure_nearby_radius:
   displayname: "&3Bán kính thông báo trứng gần"
   lore:
     - ""
