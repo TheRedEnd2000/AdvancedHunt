@@ -25,14 +25,14 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
 
     @Override
     public void registerUpgrader() {
-        upgraders.put(2.3, (oldConfig, newConfig) -> {
+        upgraders.put(1.1, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
                     new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
                     new ConfigMigration.ReplacementEntry("%MAX_EGGS%", "%MAX_TREASURES%", false, false),
                     new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
                     new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
-                    new ConfigMigration.ReplacementEntry("egg(?!s.yml)", "treasure", true, false)
+                    new ConfigMigration.ReplacementEntry("egg", "treasure", true, false)
             );
 
             ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
