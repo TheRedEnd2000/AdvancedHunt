@@ -98,7 +98,7 @@ collection_editor_one_player:
     - "&7It is after finding no longer accessible."
     - ""
     - "&cAfter disabling the feature, all %PLUGIN_NAME_P% that are"
-    - "&cmade as found will be reset."
+    - "&cmarked as found will be reset."
     - ""
     - "&eClick to toggle."
 collection_editor_delete_type:
