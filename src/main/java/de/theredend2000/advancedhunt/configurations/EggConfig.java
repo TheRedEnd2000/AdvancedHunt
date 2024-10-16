@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -13,7 +14,7 @@ public class EggConfig extends MultiFileConfiguration {
     private static final TreeMap<Double, ConfigUpgrader> upgraders = new TreeMap<>();
 
     public EggConfig(JavaPlugin plugin) {
-        super(plugin, "eggs", "yml", 2.1);
+        super(plugin, "eggs", "yml", 2.2);
     }
 
 
@@ -33,6 +34,26 @@ public class EggConfig extends MultiFileConfiguration {
         });
         upgraders.put(2.1, (oldConfig, newConfig) -> {
             addChances(oldConfig, newConfig);
+        });
+        upgraders.put(2.2, (oldConfig, newConfig) -> {
+            List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("^(?<=.*)egg(?=.*:)", "treasure", true, true),
+                    new ConfigMigration.ReplacementEntry("(?<=.*)egg(?=.*)", "treasure", true, true)
+            );
+
+            List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
+                    new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
+                    new ConfigMigration.ReplacementEntry("%MAX_TREASURES%", "%MAX_TREASURES%", false, false),
+                    new ConfigMigration.ReplacementEntry("placeEggs", "place", false, false),
+                    new ConfigMigration.ReplacementEntry("/egghunt", "/%PLUGIN_COMMAND%", false, false),
+                    new ConfigMigration.ReplacementEntry("(?<=^.*)\\begg(?!s?.yml)", "treasure", true, false)
+            );
+
+            ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);
+            migration.standardUpgrade(oldConfig, newConfig);
+
+            newConfig.set("help-message", newConfig.getDefaults().getString("help-message"));
         });
     }
 

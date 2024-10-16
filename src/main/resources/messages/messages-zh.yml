@@ -1,4 +1,4 @@
-config-version: 2.7
+config-version: 2.6
 
 # %PLUGIN_NAME_S% 是配置文件中的 plugin-name-singular
 # %PLUGIN_NAME_P% 是配置文件中的 plugin-name-plural
@@ -11,21 +11,21 @@ reload-config: '&7配置文件&e重新加载&a成功&7.'
 player-not-found: '&7系统中&c没有&7玩家&a%PLAYER%&7的记录。'
 not-number: '&cP请输入一个数字。'
 
-treasure-placed: '&a你成功&2创建了&a一个新的%PLUGIN_NAME_S%。&7(ID#%ID%)'
-treasure-broken: '&a你成功&c移除了&a一个%PLUGIN_NAME_S%。&7(ID#%ID%)'
-teleport-to-treasure: '&a你已被传送至%PLUGIN_NAME_S% #%ID%。'
+egg-placed: '&a你成功&2创建了&a一个新的%PLUGIN_NAME_S%。&7(ID#%ID%)'
+egg-broken: '&a你成功&c移除了&a一个%PLUGIN_NAME_S%。&7(ID#%ID%)'
+teleport-to-egg: '&a你已被传送至%PLUGIN_NAME_S% #%ID%。'
 
-treasure-found: '&a你找到了一个%PLUGIN_NAME_S%。&7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
-treasure-already-found: '&c你已经找过了这个%PLUGIN_NAME_S%。'
-treasure-already-found-by-player: '&c这个%PLUGIN_NAME_S%已经被另一个玩家找过了。'
-all-treasures-found: '&c你已经找到了所有的%PLUGIN_NAME_P%。'
-no-treasures: '&c还没有放置任何%PLUGIN_NAME_P%。'
-treasure-hint: '&2&l成功！&a一个%PLUGIN_NAME_S%被发现于&6X：%X%&6，Y：%Y%&6，Z：%Z%&a。'
+egg-found: '&a你找到了一个%PLUGIN_NAME_S%。&7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&c你已经找过了这个%PLUGIN_NAME_S%。'
+egg-already-found-by-player: '&c这个%PLUGIN_NAME_S%已经被另一个玩家找过了。'
+all-eggs-found: '&c你已经找到了所有的%PLUGIN_NAME_P%。'
+no-eggs: '&c还没有放置任何%PLUGIN_NAME_P%。'
+egg-hint: '&2&l成功！&a一个%PLUGIN_NAME_S%被发现于&6X：%X%&6，Y：%Y%&6，Z：%Z%&a。'
 hint-cooldown: '&4&l冷却中！&c请等待&6%DAYS%天%HOURS%小时%MINUTES%分钟%SECONDS%秒&c。'
 clicked-same: '&4&l失败！&c你点击了错误的玻璃板、没有玻璃板或两次点击相同。'
 hint-timeout: '&c你点得不够快。'
 hint-cancelled: '&a你已成功取消此操作。'
-treasure-not-accessed: '&c你现在无法访问这个。'
+egg-not-accessed: '&c你现在无法访问这个。'
 
 only-in-placemode: '&c你只能在建筑模式中放置或破坏%PLUGIN_NAME_P%。输入 &e/%PLUGIN_COMMAND% place &c来进入这个模式。'
 enter-placemode: '&a你已进入建筑模式。你现在可以放置或破坏%PLUGIN_NAME_P%了。'
@@ -36,13 +36,13 @@ last-page: '&7你已经在最后一页了。'
 wait-refresh: '&c请稍等片刻后再刷新。'
 block-listed: '&c该方块已经加入过列表了！'
 
-treasure-nearby: '&3&l附近有%PLUGIN_NAME_S%'
+egg-nearby: '&3&l附近有%PLUGIN_NAME_S%'
 
 sound-volume: '&c音量只能在&e0到15&c之间！'
-treasure-visible: '&a所有的%PLUGIN_NAME_P%现在都可见&6%TIME_VISIBLE%秒了&a。'
-treasure-show-warning: '&4警告：&a%PLUGIN_NAME_P%现在对所有玩家可见。'
+egg-visible: '&a所有的%PLUGIN_NAME_P%现在都可见&6%TIME_VISIBLE%秒了&a。'
+egg-show-warning: '&4警告：&a%PLUGIN_NAME_P%现在对所有玩家可见。'
 armorstand-glow: '&c盔甲架的亮度只能在&e0到120&c之间！'
-treasure-radius: '&c%PLUGIN_NAME_S%附近信息的距离只能在&e0到50&c之间！'
+egg-radius: '&c%PLUGIN_NAME_S%附近信息的距离只能在&e0到50&c之间！'
 
 command-delete: '&7你已&a成功&c删除&7了&6命令 #%ID%&7。'
 new-command: '&7将&3命令&7输入到&a聊天&7中或输入&c“cancel”&7来返回。此操作将在&22分钟&7内过期。'
@@ -52,9 +52,9 @@ command-expired: '&7你&c没有&3在限时内&7输入&6命令。&7&l请重试！
 one-command: '&c你一次只能输入一个命令。'
 command-blacklisted: '&c该命令已被加入黑名单！'
 
-foundtreasures-reset: '&7所有&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7.'
-foundtreasures-player-reset: '&7玩家&a%PLAYER%&7的所有&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7。'
-foundtreasures-player-reset-collection: '&7所有在集合&6%COLLECTION%&7中的玩家&a%PLAYER%&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7。'
+foundeggs-reset: '&7所有&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7.'
+foundeggs-player-reset: '&7玩家&a%PLAYER%&7的所有&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7。'
+foundeggs-player-reset-collection: '&7所有在集合&6%COLLECTION%&7中的玩家&a%PLAYER%&e找到的%PLUGIN_NAME_P%&7均已被&c重置&7。'
 
 activate-requirements: '&a已启用所有需求。'
 deactivate-requirements: '&c已停用所有需求。'
@@ -65,10 +65,10 @@ collection-deleted: '&a已成功删除集合&6%COLLECTION%'
 chanced-chance: '&a已成功将概率设置为&e%CHANCE%%&a。'
 rarity-message: '%RARITY%掉落！&7你得到了&b%ITEM%&7x%COUNT%'
 
-treasureimport-hand: '&7请手持带有&2%PLUGIN_NAME_S%纹理&7的&e玩家头颅&7。'
-treasureimport-failed-profile: '&c无法加载玩家资料。'
-treasureimport-success: '&a已成功&7导入新的&e%PLUGIN_NAME_S%&7头颅。'
-treasureimport-failed: '&c物品导入系统失败。这可能是由于目前你的版本不支持。'
+eggimport-hand: '&7请手持带有&2%PLUGIN_NAME_S%纹理&7的&e玩家头颅&7。'
+eggimport-failed-profile: '&c无法加载玩家资料。'
+eggimport-success: '&a已成功&7导入新的&e%PLUGIN_NAME_S%&7头颅。'
+eggimport-failed: '&c物品导入系统失败。这可能是由于目前你的版本不支持。'
 
 preset-already-exists: '&c此预设已存在。'
 preset-saved: '&a已成功&7保存&e预设%PRESET%&7。'
@@ -85,19 +85,19 @@ preset-is-default-2: '&2每次创建新的%PLUGIN_NAME_S%时都会加载此预�
 
 setting-commandfeedback: '&a命令反馈已被&4停用&a。请手动执行“/gamerule sendCommandFeedback false”或移除“minecraft.admin.command_feedback”权限。'
 
-treasure-data-converted-success: '&a已成功转换%PLUGIN_NAME_S%的数据到新的格式。'
-treasure-data-converted-broadcast: '&a%PLUGIN_NAME_S%的数据已被转换为新的格式。请检查一切是否正常工作。'
-treasure-data-converted-failed: '&无法转换%PLUGIN_NAME_S%的数据。请查看控制台来获取更多信息。'
-treasure-data-convert-start: '&cAdvancedHunt发现了旧的配置系统。\n&c正在将其转换为新的。\n&4这可能需要一段时间！'
-treasure-data-convert-broadcast: '&4AdvancedHunt正在更新配置系统，请不要在完成前移动'
-treasure-data-convert-op-message: '&c建议在服务器上没有玩家时转换。&4进度将显示在控制台中'
-treasure-data-convert-locations: '&aAdvancedHunt转换了所有%PLUGIN_NAME_S%的位置！'
-treasure-data-convert-player: '&e已转换玩家%UUID%的数据。'
-treasure-data-convert-done: '&a更新完成！'
-treasure-data-convert-success: '&aeggs.yml已转换成功。'
-treasure-data-convert-delete-fail: "&c无法删除eggs.yml。"
-treasure-data-convert-delete-error: '&4在删除eggs.yml文件时发生了错误：%ERROR%'
-treasure-data-convert-complete: '&aAdvancedHunt已将所有数据转换到了新的系统。\n&2插件现已正常运行\n&4请在Discord上报告任何遇到的问题：&9https://discord.gg/qapvQMUt34'
+egg-data-converted-success: '&a已成功转换%PLUGIN_NAME_S%的数据到新的格式。'
+egg-data-converted-broadcast: '&a%PLUGIN_NAME_S%的数据已被转换为新的格式。请检查一切是否正常工作。'
+egg-data-converted-failed: '&无法转换%PLUGIN_NAME_S%的数据。请查看控制台来获取更多信息。'
+egg-data-convert-start: '&cAdvancedHunt发现了旧的配置系统。\n&c正在将其转换为新的。\n&4这可能需要一段时间！'
+egg-data-convert-broadcast: '&4AdvancedHunt正在更新配置系统，请不要在完成前移动'
+egg-data-convert-op-message: '&c建议在服务器上没有玩家时转换。&4进度将显示在控制台中'
+egg-data-convert-locations: '&aAdvancedHunt转换了所有%PLUGIN_NAME_S%的位置！'
+egg-data-convert-player: '&e已转换玩家%UUID%的数据。'
+egg-data-convert-done: '&a更新完成！'
+egg-data-convert-success: '&aeggs.yml已转换成功。'
+egg-data-convert-delete-fail: "&c无法删除eggs.yml。"
+egg-data-convert-delete-error: '&4在删除eggs.yml文件时发生了错误：%ERROR%'
+egg-data-convert-complete: '&aAdvancedHunt已将所有数据转换到了新的系统。\n&2插件现已正常运行\n&4请在Discord上报告任何遇到的问题：&9https://discord.gg/qapvQMUt34'
 
 placeholderapi-detected: '&aAdvancedHunt已检测到PlaceholderAPI，正在启用占位符…'
 placeholderapi-enabled: '&2&l所有占位符均已成功启用。'
@@ -131,7 +131,7 @@ feature-coming-soon: '&c此功能即将推出。'
 item-added-success: '&a已成功添加一个新物品。'
 invalid-chance: '&c无效的数值。请输入在0.0000001到100之间的数字。'
 placeholders-hover-text: '&9-----------&3&l[占位符] &7(悬停查看)&9-----------'
-placeholders-hover-content: '&2可用的占位符：\n&b- %PLAYER% --> 玩家名称\n&b- & --> 颜色代码（&6=金色）\n&b- %TREASURES_FOUND% --> 玩家找到了多少个%PLUGIN_NAME_P%\n&b- %TREASURES_MAX% --> 总共放置了多少个%PLUGIN_NAME_P%\n&b- %PREFIX% --> 插件前缀'
+placeholders-hover-content: '&2可用的占位符：\n&b- %PLAYER% --> 玩家名称\n&b- & --> 颜色代码（&6=金色）\n&b- %EGGS_FOUND% --> 玩家找到了多少个%PLUGIN_NAME_P%\n&b- %EGGS_MAX% --> 总共放置了多少个%PLUGIN_NAME_P%\n&b- %PREFIX% --> 插件前缀'
 
 requirements-name-hour: '小时'
 requirements-name-date: '日期'
@@ -191,5 +191,6 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &b打开提示菜单以便更容易找到%PLUGIN_NAME_P%。
   &6/%PLUGIN_COMMAND% progress &7-> &b查看你%PLUGIN_NAME_P%的进度。
   &6/%PLUGIN_COMMAND% show &7-> &b在每个%PLUGIN_NAME_S%上生成一个发光的盔甲架。
-  &6/%PLUGIN_COMMAND% reset [player | all] [collection || all] &7-> &b重置找到的%PLUGIN_NAME_P%，
+  &6/%PLUGIN_COMMAND% commands &7-> &b更改或添加更多命令。
+  &6/%PLUGIN_COMMAND% reset [player | all] [集合] &7-> &b重置找到的%PLUGIN_NAME_P%，
   &5&l==========帮助==========

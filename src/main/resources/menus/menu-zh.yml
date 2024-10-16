@@ -1,4 +1,4 @@
-config-version: 1.1
+config-version: 1.0
 
 # NOT TRANSLATED YET!
 
@@ -43,7 +43,7 @@ collection_item:
   lore:
     - ""
     - "&9Collection Information:"
-    - "&7   - Placed %PLUGIN_NAME_P%: &6%MAX_TREASURES%"
+    - "&7   - Placed %PLUGIN_NAME_P%: &6%MAX_EGGS%"
     - ""
     - "&aNote:"
     - "&7This collection applies to all actions that are carried out."
@@ -146,9 +146,9 @@ collection_creator_create:
     - ""
     - "&eClick to create."
 
-# Treasure related
-treasureslist_treasure:
-  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
+# Egg related
+eggslist_egg:
+  displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%EGG_ID%)"
   lore:
     - "&9Location:"
     - "&7X: &e%LOCATION_X%"
@@ -165,7 +165,7 @@ treasureslist_treasure:
     - "&eLEFT-CLICK to teleport."
     - "&eRIGHT-CLICK for information."
 
-treasureplace_information:
+eggplace_information:
   displayname: "&9Information"
   lore:
     - ""
@@ -183,14 +183,14 @@ treasureplace_information:
     - "&bcustom stuff, you can join the discord"
     - ""
     - "&eClick to get the discord link."
-treasureplace_treasure:
-  displayname: "&b&l%PLUGIN_NAME_P% Type #%TREASURE_ID%"
+eggplace_egg:
+  displayname: "&b&l%PLUGIN_NAME_P% Type #%EGG_ID%"
   lore:
     - ""
     - "&eLEFT-CLICK to add to your inventory."
     - "&eRIGHT-CLICK to remove."
 
-treasureprogress_location_found:
+eggprogress_location_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -204,7 +204,7 @@ treasureprogress_location_found:
     - "&9Collected:"
     - "&7Date: &6%DATE%"
     - "&7Time: &6%TIME%"
-treasureprogress_found:
+eggprogress_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -213,7 +213,7 @@ treasureprogress_found:
     - "&9Collected:"
     - "&7Date: &6%DATE%"
     - "&7Time: &6%TIME%"
-treasureprogress_not_found:
+eggprogress_not_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -223,10 +223,10 @@ treasureprogress_not_found:
 information_player:
   displayname: "&6&l%PLAYER_NAME% &7(%PLAYER_UUID%)"
   lore:
-    - "&7%PLAYER_NAME% has found the &2%PLUGIN_NAME_S% #%TREASURE_ID%&7."
+    - "&7%PLAYER_NAME% has found the &2%PLUGIN_NAME_S% #%EGG_ID%&7."
     - ""
     - "&9Information of %PLAYER_NAME%:"
-    - "&7%PLUGIN_NAME_P% found: &6%TREASURES_FOUND%/%TREASURES_MAX%"
+    - "&7%PLUGIN_NAME_P% found: &6%EGGS_FOUND%/%EGGS_MAX%"
     - ""
     - "&7Date: &6%DATE%"
     - "&7Time: &6%TIME%"
@@ -246,9 +246,9 @@ leaderboard_player:
   displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
-    - "&7%PLUGIN_NAME_P% Found: &3%TREASURES_FOUND%"
-    - "&7%PLUGIN_NAME_P% Remaining: &3%TREASURES_REMAINING%"
-    - "&7Max E%PLUGIN_NAME_P%: &3%TREASURES_MAX%"
+    - "&7%PLUGIN_NAME_P% Found: &3%EGGS_FOUND%"
+    - "&7%PLUGIN_NAME_P% Remaining: &3%EGGS_REMAINING%"
+    - "&7Max E%PLUGIN_NAME_P%: &3%EGGS_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 
@@ -579,7 +579,7 @@ reset_reset_all:
     - "&eClick to reset all."
 
 # Settings related
-settings_one_treasure_reward:
+settings_one_egg_reward:
   displayname: "&3One %PLUGIN_NAME_S% found reward"
   lore:
     - ""
@@ -589,7 +589,7 @@ settings_one_treasure_reward:
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
-settings_all_treasures_reward:
+settings_all_eggs_reward:
   displayname: "&3All %PLUGIN_NAME_P% found reward"
   lore:
     - ""
@@ -652,7 +652,7 @@ settings_armorstand_glow:
     - "&7Currently: %GLOW_DURATION%"
     - "&eLEFT-CLICK to add one."
     - "&eRIGHT-CLICK to remove one."
-settings_treasure_nearby_radius:
+settings_egg_nearby_radius:
   displayname: "&3Nearby title radius"
   lore:
     - ""

@@ -5,8 +5,8 @@ config-version: 3.4
 messages-lang: en
 
 # Change the plugin name or the main purpose
-plugin-name-singular: "treasure"
-plugin-name-plural: "treasures"
+plugin-name-singular: "egg"
+plugin-name-plural: "eggs"
 # The first command listed here is going to be the main command
 # IMPORTANT: COMMANDS WILL ONLY APPLY IF THE SERVER RESTARTS; A PLUGIN RELOAD WILL NOW CHANGE THIS!
 commands:
@@ -41,31 +41,31 @@ Settings:
   # If a message should be sent if the plugin has a newer version
   Updater: true
 
-  # If the player find on treasure he gets a reward
+  # If the player find on egg he gets a reward
   PlayerFoundOneEggRewards: true
 
-  # If the player find all treasures he gets a reward
+  # If the player find all eggs he gets a reward
   PlayerFoundAllEggsReward: true
 
   # Shows the coordinates in the progress inventory of the player
   ShowCoordinatesWhenEggFoundInProgressInventory: false
 
-  # If a firework should spawn after clicking an treasure
+  # If a firework should spawn after clicking an egg
   ShowFireworkAfterEggFound: true
 
-  # How long the armor stands are visible after typing /treasures show
+  # How long the armor stands are visible after typing /eggs show
   ArmorstandGlow: 10
 
-  # In witch radius the player gets a message that he is near an treasure
+  # In witch radius the player gets a message that he is near an egg
   ShowEggsNearbyMessageRadius: 10
 
   # If the plugin prefix should show up
   PluginPrefixEnabled: true
 
-  # If left-clicking an treasure works
+  # If left-clicking an egg works
   LeftClickEgg: false
 
-  # If right-clicking an treasure works
+  # If right-clicking an egg works
   RightClickEgg: true
 
   # How many panes a player has to click before getting their reward
@@ -81,7 +81,7 @@ Settings:
   HintApplyCooldownOnFail: true
 
 Presets:
-  # Name of the preset that loads after placing a new treasure
+  # Name of the preset that loads after placing a new egg
   DefaultIndividualPresetLoad: default
 
   # Name of the preset that loads after creating a new collection

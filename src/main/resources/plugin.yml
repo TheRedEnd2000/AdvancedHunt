@@ -14,26 +14,26 @@ permissions:
   AdvancedHunt.command.reload:
     description: "Reload plugin"
   AdvancedHunt.command.commands:
-    description: "Reward commands that are ran when a player finds an treasure"
+    description: "Reward commands that are ran when a player finds an egg"
   AdvancedHunt.command.place:
-    description: "Allow a player to enter and exit treasure placing mode"
+    description: "Allow a player to enter and exit egg placing mode"
   AdvancedHunt.command.eggImport:
     description: "Import a player head that is help in the main hand"
   AdvancedHunt.command.show:
-    description: "Show the location of nearby placed treasures using glowing armor stands"
+    description: "Show the location of nearby placed eggs using glowing armor stands"
   AdvancedHunt.command.list:
-    description: "List all placed treasures for the selected collection"
+    description: "List all placed eggs for the selected collection"
 
   AdvancedHunt.command.help:
     description: "Show a list of possible commands with short descriptions"
   AdvancedHunt.command.collection:
     description: "Change selected collection"
   AdvancedHunt.command.progress:
-    description: "Shows the progress for treasures found"
+    description: "Shows the progress for eggs found"
   AdvancedHunt.command.leaderboard:
-    description: "Shows the leaderboard for the treasure hunt"
+    description: "Shows the leaderboard for the egg hunt"
   AdvancedHunt.command.hint:
-    description: "Shows a hint in the form of coordinates of a nearby treasure that the player has not found yet"
+    description: "Shows a hint in the form of coordinates of a nearby egg that the player has not found yet"
 
 
   AdvancedHunt.BreakEgg:
