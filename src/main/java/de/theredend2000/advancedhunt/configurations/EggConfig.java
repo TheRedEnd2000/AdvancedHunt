@@ -36,10 +36,6 @@ public class EggConfig extends MultiFileConfiguration {
             addChances(oldConfig, newConfig);
         });
         upgraders.put(2.2, (oldConfig, newConfig) -> {
-            List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
-                    new ConfigMigration.ReplacementEntry("egg", "treasure", true, true)
-            );
-
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
                     new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
@@ -49,7 +45,7 @@ public class EggConfig extends MultiFileConfiguration {
                     new ConfigMigration.ReplacementEntry("egg(?!s.yml)", "treasure", true, false)
             );
 
-            ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);
+            ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
             migration.standardUpgrade(oldConfig, newConfig);
 
             newConfig.set("help-message", newConfig.getDefaults().getString("help-message"));
