@@ -94,7 +94,7 @@ treasure-data-convert-player: '&eAktualisiere die Daten von %UUID%.'
 treasure-data-convert-done: '&aUPDATE fertig!'
 treasure-data-convert-success: '&aeggs.yml wurde erfolgreich geändert.'
 treasure-data-convert-delete-fail: '&ceggs.yml konnte nicht gelöscht werden.'
-treasure-data-convert-delete-error: '&4Es gab ein Fehler beim löschen von treasures.yml. Fehler: %ERROR%'
+treasure-data-convert-delete-error: '&4Es gab ein Fehler beim löschen von eggs.ymll. Fehler: %ERROR%'
 treasure-data-convert-complete: '&aAdvancedHunt hat die Daten zum neuen System aktualisiert.\n&2Das Plugin sollte nun wieder flüssig laufen\n&4Bitte melde Fehler unter: &9https://discord.gg/qapvQMUt34'
 
 placeholderapi-detected: '&aAdvanced treasure Hunt hat PlaceholderAPI erkannt, alle placeholders werden aktiviert...'

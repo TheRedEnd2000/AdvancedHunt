@@ -22,7 +22,7 @@ hint-timeout: '&cBạn bấm chưa đủ nhanh.'
 hint-cancelled: '&aBạn đã hủy thành công.'
 treasure-not-accessed: '&cBạn không thể truy cập vào đây lúc này.'
 
-only-in-placemode: '&cBạn chỉ có thể đặt hoặc phá trứng ở chế độ xây cả plugin. Gõ &e/%PLUGIN_COMMAND% placeEggs &cđể bật chế độ này.'
+only-in-placemode: '&cBạn chỉ có thể đặt hoặc phá trứng ở chế độ xây cả plugin. Gõ &e/%PLUGIN_COMMAND% place &cđể bật chế độ này.'
 enter-placemode: '&aBạn đang ở Chế độ xây. Giờ bạn có thể đặt và phá trứng.'
 leave-placemode: '&cBạn đã thoát khỏi Chế độ xây. Giờ bạn không thể đặt và phá trứng.'
 
