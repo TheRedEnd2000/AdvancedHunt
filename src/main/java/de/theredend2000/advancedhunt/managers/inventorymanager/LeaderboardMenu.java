@@ -140,7 +140,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
                 getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                         .setOwner(playerName)
                         .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
+                        .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%TREASURES_FOUND%", String.valueOf(count),"%TREASURES_REMAINING%", String.valueOf(maxEggs-count),"%TREASURES_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
                         .build());
 
                 return;
@@ -164,7 +164,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
                 case ALL:
                     getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
                             .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
+                            .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%TREASURES_FOUND%", String.valueOf(count),"%TREASURES_REMAINING%", String.valueOf(maxEggs-count),"%TREASURES_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%",(9 >= index ? "§eTHIS PLAYER IS IN THE TOP 10!" : "§c" + (index - 9) + " place behind 10th place")))
                             .build());
                     break;
                 case TOP3:
@@ -172,7 +172,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
                     if (i < 3) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
                                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
+                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%TREASURES_FOUND%", String.valueOf(count),"%TREASURES_REMAINING%", String.valueOf(maxEggs-count),"%TREASURES_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
                                 .build());
                     }
                     break;
@@ -181,7 +181,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
                     if (i < 10) {
                         getInventory().setItem(slotIndex, new ItemBuilder(XMaterial.PLAYER_HEAD).setOwner(playerName)
                                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.LEADERBOARD_PLAYER,"%PLACE%", String.valueOf(index+1),"%PLAYER_NAME%", playerName,"%PLAYER_HIMSELF%",(playerName.equals(playerMenuUtility.getOwner().getName()) ? "§r §a§lYOU" : "")))
-                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%EGGS_FOUND%", String.valueOf(count),"%EGGS_REMAINING%", String.valueOf(maxEggs-count),"%EGGS_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
+                                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.LEADERBOARD_PLAYER,"%TREASURES_FOUND%", String.valueOf(count),"%TREASURES_REMAINING%", String.valueOf(maxEggs-count),"%TREASURES_MAX%", String.valueOf(maxEggs),"%IS_IN_TOP_TEN%","§eTHIS PLAYER IS IN THE TOP 10!"))
                                 .build());
                     }
                     break;

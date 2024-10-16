@@ -103,13 +103,13 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
             if(mat.equals(XMaterial.PLAYER_HEAD))
                 getInventory().setItem(slotIndex, new ItemBuilder(mat)
                         .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(keys.get(index))))
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%EGG_ID%", keys.get(index)))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%TREASURE_ID%", keys.get(index)))
                         .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPLACE_EGG))
                         .setCustomId(keys.get(index))
                 .build());
             else
                 getInventory().setItem(slotIndex, new ItemBuilder(mat)
-                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%EGG_ID%", keys.get(index)))
+                        .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.EGGPLACE_EGG,"%TREASURE_ID%", keys.get(index)))
                         .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.EGGPLACE_EGG))
                         .setCustomId(keys.get(index))
                         .build());
