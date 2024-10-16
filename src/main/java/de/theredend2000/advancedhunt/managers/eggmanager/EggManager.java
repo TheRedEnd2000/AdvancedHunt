@@ -301,7 +301,6 @@ public class EggManager {
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         placedEggs.set("PlacedEggs." + eggID + ".markedAsFound", marked);
         Main.getInstance().getEggDataManager().savePlacedEggs(collection);
-        Bukkit.broadcastMessage("reset "+eggID+" in "+collection+ " "+marked);
     }
 
     public boolean isMarkedAsFound(String collection, String eggID){
@@ -422,8 +421,8 @@ public class EggManager {
             for (String ids : eggsSection.getKeys(false)) {
                 if (eggID.contains(ids)) {
                     placedEggs.set("PlacedEggs." + ids + ".TimesFound", getTimesFound(ids, collection) - 1);
-                    markEggAsFound(collection,ids,false);
                     plugin.getEggDataManager().savePlacedEggs(collection);
+                    markEggAsFound(collection,ids,false);
                 }
             }
         }
@@ -438,8 +437,8 @@ public class EggManager {
 
         FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         placedEggs.set("PlacedEggs." + id + ".TimesFound", getTimesFound(id, collection)-1);
-        markEggAsFound(collection,id,false);
         plugin.getEggDataManager().savePlacedEggs(collection);
+        markEggAsFound(collection,id,false);
     }
 
     public void resetStatsAll(){
@@ -460,8 +459,8 @@ public class EggManager {
                     for (String ids : eggsSection.getKeys(false)) {
                         if (eggID.contains(ids)) {
                             placedEggs.set("PlacedEggs." + ids + ".TimesFound", getTimesFound(ids, collection) - 1);
-                            markEggAsFound(collection,ids,false);
                             plugin.getEggDataManager().savePlacedEggs(collection);
+                            markEggAsFound(collection,ids,false);
                         }
                     }
                 }
