@@ -147,7 +147,7 @@ collection_creator_create:
     - "&eKlicke um es zu erstellen."
 
 # Treasure related
-eggslist_egg:
+treasureslist_treasure:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
     - "&9Standort:"
@@ -165,7 +165,7 @@ eggslist_egg:
     - "&eLINKS-KLICK um dich zu ihm zu teleportieren."
     - "&eRECHTS-KLICK für mehr Informationen."
 
-eggplace_information:
+treasureplace_information:
   displayname: "&9Informationen"
   lore:
     - ""
@@ -184,14 +184,14 @@ eggplace_information:
     - "&bSachen hinzufügt, kann man dem Discord beitreten."
     - ""
     - "&eKlicke um den Discord-Link zu erhalten."
-eggplace_egg:
+treasureplace_treasure:
   displayname: "&b&l%PLUGIN_NAME_S% Typ #%TREASURE_ID%"
   lore:
     - ""
     - "&eLINKS-KLICK um es in dein Inventar hinzuzufügen."
     - "&eRECHTS-KLICK um es zu löschen."
 
-eggprogress_location_found:
+treasureprogress_location_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -205,7 +205,7 @@ eggprogress_location_found:
     - "&9Gesammelt:"
     - "&7Datum: &6%DATE%"
     - "&7Zeit: &6%TIME%"
-eggprogress_found:
+treasureprogress_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -214,7 +214,7 @@ eggprogress_found:
     - "&9Gesammelt:"
     - "&7Datum: &6%DATE%"
     - "&7Zeit: &6%TIME%"
-eggprogress_not_found:
+treasureprogress_not_found:
   displayname: "&2&l%PLUGIN_NAME_S%i &7(ID#%ID%)"
   lore:
     - ""
@@ -578,7 +578,7 @@ reset_reset_all:
     - "&eKlicke um alles zurück zu setzten."
 
 # Settings related
-settings_one_egg_reward:
+settings_one_treasure_reward:
   displayname: "&3Ein %PLUGIN_NAME_S% gefunden Belohnung"
   lore:
     - ""
@@ -588,7 +588,7 @@ settings_one_egg_reward:
     - ""
     - "%STATUS%"
     - "&eClick to toggle."
-settings_all_eggs_reward:
+settings_all_treasures_reward:
   displayname: "&3Alle %PLUGIN_NAME_P% gefunden Belohnung"
   lore:
     - ""
@@ -652,7 +652,7 @@ settings_armorstand_glow:
     - "&7Aktuelle Länge: %GLOW_DURATION%"
     - "&eLINKS-KLICK um eins hinzuzufügen."
     - "&eRECHTS-KLICK um eins zu entfernen."
-settings_egg_nearby_radius:
+settings_treasure_nearby_radius:
   displayname: "&3%PLUGIN_NAME_S% in der Nähe Radius"
   lore:
     - ""

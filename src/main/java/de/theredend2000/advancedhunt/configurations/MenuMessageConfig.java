@@ -24,12 +24,18 @@ public class MenuMessageConfig extends Configuration {
     @Override
     public void registerUpgrader() {
         upgraders.put(1.1, (oldConfig, newConfig) -> {
+            List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("^(?<=.*)egg(s?)(?=.*:)", "treasure$1", true, true),
+                    new ConfigMigration.ReplacementEntry("(?<=.*)egg(s?)(?=.*)", "treasure$1", true, true)
+            );
+
+
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
                     new ConfigMigration.ReplacementEntry("%MAX_TREASURES%", "%MAX_TREASURES%", false, false)
             );
 
-            ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
+            ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);
             migration.standardUpgrade(oldConfig, newConfig);
         });
     }
