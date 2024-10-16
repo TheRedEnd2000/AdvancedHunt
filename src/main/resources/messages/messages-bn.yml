@@ -1,44 +1,48 @@
-config-version: 2.7
+config-version: 2.6
+
+# %PLUGIN_NAME_S% holo config e plugin-name-ekbochon
+# %PLUGIN_NAME_P% holo config e plugin-name-bohubochon
+# %PLUGIN_COMMAND% holo prothom custom command set
 
 no-permission-error: '&cEi command ti bebohar korar jonno apnar kache ei &6%PERMISSION% ti&c nei.'
-command-not-found: '&cKono command pawa jai ni! &7Onugroho kore sokol command dekhte &e/%PLUGIN_COMMAND% help &7likhun.'
+command-not-found: '&cKono command pawa jai ni! &7Onugroho kore sokol command dekhte &e/egghunt help &7likhun.'
 only-player: '&cShudumatro player rai ei command ti bebohar korte parbe.'
 reload-config: '&7Config ti &asofolvabe &epunorai load &7kora hoyeche.'
 player-not-found: '&a%PLAYER% &7er somporke system e kono kichu &clipiboddho nei&7.'
 not-number: '&cOnugrohokore ekti songkha probesh korun.'
 
-egg-placed: '&aApni sofolvabe &aekti notun dim &2boshiyechen. &7(ID#%ID%)'
-egg-broken: '&aApni sofolvabe &aekti dim &csoriyechen. &7(ID#%ID%)'
-teleport-to-egg: '&aApnake dim tir kache isthanantor kora hoyeche #%ID%.'
+egg-placed: '&aApni sofolvabe &aekti notun %PLUGIN_NAME_S% &2boshiyechen. &7(ID#%ID%)'
+egg-broken: '&aApni sofolvabe &aekti %PLUGIN_NAME_S% &csoriyechen. &7(ID#%ID%)'
+teleport-to-egg: '&aApnake %PLUGIN_NAME_S% tir kache isthanantor kora hoyeche #%ID%.'
 
-egg-found: '&aApni ekti dim khuje peyechen. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
-egg-already-found: '&cApni itimoddhe ei dim ti khuje peyechen.'
-egg-already-found-by-player: '&cEi dim ti ithimoddhei onno ekjon player khuje peyeche.'
-all-eggs-found: '&cApni itimoddhe sobgulo dim khuje peyechen.'
-no-eggs: '&cEkhane kono dim i boshano hoi ni.'
-egg-hint: '&2&lSHAFOLLO! &6X: %X%&6, Y: %Y%&6, Z: %Z% &aEi jaiga tite ekti dim pawa gelo.'
+egg-found: '&aApni ekti %PLUGIN_NAME_S% khuje peyechen. &7(&e%EGGS_FOUND%&7/&e%EGGS_MAX%&7)'
+egg-already-found: '&cApni itimoddhe ei %PLUGIN_NAME_S% ti khuje peyechen.'
+egg-already-found-by-player: '&cEi %PLUGIN_NAME_S% ti ithimoddhei onno ekjon player khuje peyeche.'
+all-eggs-found: '&cApni itimoddhe sobgulo %PLUGIN_NAME_P% khuje peyechen.'
+no-eggs: '&cEkhane kono %PLUGIN_NAME_P% i boshano hoi ni.'
+egg-hint: '&2&lSHAFOLLO! &6X: %X%&6, Y: %Y%&6, Z: %Z% &aEi jaiga tite ekti %PLUGIN_NAME_S% pawa gelo.'
 hint-cooldown: '&4&lBIROTI COLCHE! &cOnugroho kore &6%DAYS%d %HOURS%h %MINUTES%m %SECONDS%s&c opekkha korun.'
 clicked-same: '&4&lBERTHO! &cApni ekti vul glass pane e, othoba ekoi glass pane e duibar othoba kono glass pane ei tip denni'
 hint-timeout: '&cApni jothesto somoye tip dite paren ni.'
 hint-cancelled: '&aApni sofolvabe nirdeshonati batil korechen.'
 egg-not-accessed: '&cApni ei muhurte ei dimti upolovdi korte parben nah.'
 
-only-in-placemode: '&cApni shudumatro nirman poddhotite e dim boshate othoba sorate parben. Ei poddhotite jawar jonno &e/%PLUGIN_COMMAND% place &clikhun.'
-enter-placemode: '&aApni ekhon Place mode e. Apni ekhon dim boshate othoba sorate parben.'
-leave-placemode: '&cApni Place mode theke ber hoye giyechen. Apni ekhon ar dim boshate othoba sorate parben nah'
+only-in-placemode: '&cApni shudumatro nirman poddhotite e %PLUGIN_NAME_P% boshate othoba sorate parben. Ei poddhotite jawar jonno &e/egghunt placeEggs &clikhun.'
+enter-placemode: '&aApni ekhon Place mode e. Apni ekhon %PLUGIN_NAME_P% boshate othoba sorate parben.'
+leave-placemode: '&cApni Place mode theke ber hoye giyechen. Apni ekhon ar %PLUGIN_NAME_P% boshate othoba sorate parben nah'
 
 first-page: '&7Apni itimoddhei prothom pristai royechen.'
 last-page: '&7Apni ekhon sesh pristai.'
 wait-refresh: '&cOnugroho kore abar refresh korar age opekkha korun'
 block-listed: '&cEi block tike etimoddhei talikabhukto kora hoyeche'
 
-egg-nearby: '&3&lKHUB NIKOTBORTI KOTHAU EKTI DIM ROYECHE'
+egg-nearby: '&3&lNIKOTBORTI KOTHAU %PLUGIN_NAME_S% ROYECHE'
 
 sound-volume: '&cSobder matra shudu matro &e0 and 15&c er moddhe hote parbe!'
-egg-visible: '&aSobgulo Dim &6%TIME_VISIBLE% seconds&a er jonno dekha jabe.'
-egg-show-warning: '&4SOTORKOBANI: &aDimgulo sokol player ra dekhte parbe.'
+egg-visible: '&aSobgulo %PLUGIN_NAME_P% &6%TIME_VISIBLE% seconds&a er jonno dekha jabe.'
+egg-show-warning: '&4SOTORKOBANI: &a%PLUGIN_NAME_P% sokol player ra dekhte parbe.'
 armorstand-glow: '&cArmorstand ujjolikoron shudu matro &e0 and 120&c er moddhe hote parbe!'
-egg-radius: '&cDim kachakachi thakar bartati shudu matro &e0 and 50&c er moddhe hote parbe!'
+egg-radius: '&c%PLUGIN_NAME_S% kachakachi thakar bartati shudu matro &e0 and 50&c er moddhe hote parbe!'
 
 command-delete: '&7Apni &asofolvabe &6command ti &csoriye &7felechen #%ID%&7.'
 new-command: '&3Command &7ti &achat&7e likhun othoba &c"cancel" &7lekhe purbosthan e fire ashun. Noito &22 minutes &7por e kriyati bondho hoye hobe.'
@@ -48,9 +52,9 @@ command-expired: '&7Apni &6command &7ti &3jothesto dhruto &7likhte paren ni. &7&
 one-command: '&cApni ekbar e shudumatro ekti command i likhte parben.'
 command-blacklisted: '&cCommand ti kalo talikavukto kora hoyeche!'
 
-foundeggs-reset: '&7Somostho &ePrapto Dim er tottho &cmuche&7 fela hoyeche.'
-foundeggs-player-reset: '&a%PLAYER% &7er somostho &ePrapto Dimer tottho &cmuche &7fela hoyeche.'
-foundeggs-player-reset-collection: '&a%PLAYER% &7er &6%COLLECTION% &7e songrohito sokol &eprapto dim er tottho &cmuche &7fela hoyeche.'
+foundeggs-reset: '&7Somostho &ePrapto %PLUGIN_NAME_P% er tottho &cmuche&7 fela hoyeche.'
+foundeggs-player-reset: '&a%PLAYER% &7er somostho &ePrapto %PLUGIN_NAME_P% er tottho&cmuche &7fela hoyeche.'
+foundeggs-player-reset-collection: '&a%PLAYER% &7er &6%COLLECTION% &7e songrohito sokol &eprapto %PLUGIN_NAME_P% er tottho &cmuche &7fela hoyeche.'
 
 activate-requirements: '&aSomosto proyojoniyota bostu sokriyo kora holo.'
 deactivate-requirements: '&cSomosto proyojoniyota bostu niskriyo kora holo.'
@@ -61,9 +65,9 @@ collection-deleted: '&aSofolvabe &6%COLLECTION% namok songroho muche felechen'
 chanced-chance: '&aSofolvabe somvabona ke &e%CHANCE%%&a e dharjo kora holo.'
 rarity-message: '%RARITY% FELANO HOLO! &7Apni peyechen &b%ITEM% &7x%COUNT%'
 
-eggimport-hand: '&7Onugroho kore &2dim er texture e &7dewa &eplayer head &7ti apnar hat e dhore rakhun.'
+eggimport-hand: '&7Onugroho kore &2%PLUGIN_NAME_S% er texture e &7dewa &eplayer head &7ti apnar hat e dhore rakhun.'
 eggimport-failed-profile: '&cPlayer profile load korte bertho hoyeche.'
-eggimport-success: '&aSofolvabe &7notun ekti matha jog kora holo &eboshate jawa dim &7gulor moddhe.'
+eggimport-success: '&aSofolvabe &7notun ekti matha jog kora holo &eboshate jawa %PLUGIN_NAME_S% &7gulor moddhe.'
 eggimport-failed: '&cItem import korar kriyati bertho hoyeche. Apnar bortomane oshomorthito songskorone thakar fole hoito eti hoyeche.'
 
 preset-already-exists: '&cEi preset ti itimoddhei royeche.'
@@ -74,26 +78,28 @@ preset-delete: '&7Apni &asofolvabe &e%PRESET% namok preset tike &7ti &cmuche &7f
 preset-default: '&7Apni &e%PRESET%&7 namok preset tike notun &adefault loading &7hishebe poriborton korechen.'
 preset-not-delete-default: '&cApni default loading preset hisebe nirbachito preset ti muchte parben nah.'
 preset-loading-no: '&cPreset loading itimoddhei colche.'
-preset-loading-success: '&aSofolvabe somostho dim e &6%PRESET% &anamok preset ti load kora hoyeche.'
+preset-loading-success: '&aSofolvabe somostho %PLUGIN_NAME_P% e &6%PRESET% &anamok preset ti load kora hoyeche.'
 preset-loading-progress: '&bPresetguli load hocche... (%COUNT%/%MAX%)'
+preset-is-default-1: '&2Ei preset tike bachai kora hoyeche default preset hishabe.'
+preset-is-default-2: '&2Eti choloman hobe protibar jokhon ekti notun %PLUGIN_NAME_S% toiri kora hobe.'
 
 setting-commandfeedback: '&aCommand Feedback &4bondho kora hoyeche.&a Hoi manually "/gamerule sendCommandFeedback false" likhun othoba "minecraft.admin.command_feedback" onumoti ti soriye felun.'
 
-egg-data-converted-success: '&aSofolvabe dimgulor data guloke notun format e rupantorito kora hoyeche.'
-egg-data-converted-broadcast: '&aDimgulor data guloke notun format e rupantorito kora hoyeche. Onugroho kore dekhun sob kichu thik moto colche kina.'
-egg-data-converted-failed: '&cDimgulor data rupantor bertho hoyeche. Onugroho kore aro tottho dekhar jonno console dekhun.'
-egg-data-convert-start: '&cAdvancedHunt purono configuration system e khuje peyeche.\n&cEti ekhon notun ektite poribortito hocche.\n&4ETI EKTU SOMOY NITE PARE!'
-egg-data-convert-broadcast: '&4AdvancedHunt CONFIGURATION SYSTEM TI UPDATE KORCHE, ONUGROHO KORE SESH NA HOWA PORJONTO NORBEN NAH'
+egg-data-converted-success: '&aSofolvabe %PLUGIN_NAME_S% data guloke notun format e rupantorito kora hoyeche.'
+egg-data-converted-broadcast: '&a%PLUGIN_NAME_S% data guloke notun format e rupantorito kora hoyeche. Onugroho kore dekhun sob kichu thik moto colche kina.'
+egg-data-converted-failed: '&c%PLUGIN_NAME_S% er data rupantor bertho hoyeche. Onugroho kore aro tottho dekhar jonno console dekhun.'
+egg-data-convert-start: '&cAdvancedEggHunt purono configuration system e khuje peyeche.\n&cEti ekhon notun ektite poribortito hocche.\n&4ETI EKTU SOMOY NITE PARE!'
+egg-data-convert-broadcast: '&4AdvancedEggHunt CONFIGURATION SYSTEM TI UPDATE KORCHE, ONUGROHO KORE SESH NA HOWA PORJONTO NORBEN NAH'
 egg-data-convert-op-message: '&cCONVERT SOBCHEYE VALO HOI JOKHON SERVER E KEU NA THAKE. &4CONSOLE E KARJOKOLAP DEKHANO HOCCHE'
-egg-data-convert-locations: '&aAdvancedHunt sokol dim er obosthan convert kore feleche!'
+egg-data-convert-locations: '&aAdvancedEggHunt sokol %PLUGIN_NAME_S% er obosthan convert kore feleche!'
 egg-data-convert-player: '&e%UUID% er player data convert kora hoyeche.'
 egg-data-convert-done: '&aUPDATE KORA HOYECHE!'
 egg-data-convert-success: '&aeggs.yml sofolvabe convert kora hoyeche.'
 egg-data-convert-delete-fail: '&ceggs.yml mucha jabe nah.'
 egg-data-convert-delete-error: '&4eggs.yml muche felar somoi ekti kruti dekha diyeche file: %ERROR%'
-egg-data-convert-complete: '&aAdvancedHunt sob data notun system e convert kore feleche.\n&2Plugin ti ekhon abar nikhut vabe colche\n&4Onugroho kore kono kruti pele ta amader discord e janan: &9https://discord.gg/qapvQMUt34'
+egg-data-convert-complete: '&aAdvancedEggHunt sob data notun system e convert kore feleche.\n&2Plugin ti ekhon abar nikhut vabe colche\n&4Onugroho kore kono kruti pele ta amader discord e janan: &9https://discord.gg/qapvQMUt34'
 
-placeholderapi-detected: '&aAdvanced treasure Hunt PlaceholderAPI ke sonakto koreche, placeholders gulo chalu kora hocche.'
+placeholderapi-detected: '&aAdvanced Egg Hunt PlaceholderAPI ke sonakto koreche, placeholders gulo chalu kora hocche.'
 placeholderapi-enabled: '&2&lSob placeholders gulo sofolvabe chalu kora hoyeche.'
 language-detected: '&6%LANG% &7Vashati sonakto hoyeche. File messages-%LANG%.yml load hoyeche.'
 command-system-updated: '&2COMMAND SYSTEM KE UPDATE KORA HOYECHE'
@@ -102,7 +108,7 @@ command-system-chances-updated: '&2AMAR COMMAND SYSTEM TI UPDATE KORA HOYECHE'
 command-system-chances-contains: '&2EKHON ETITE SOMVABONAH ADD KORAR SUJOG ROYECHE'
 update-available: '&aEkti notun beboharjoggo songskoron ber hoyeche. Onugroho kore apnar plugin ti update korun&a. &aVersion: &2&l%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 update-error: '&4&lERROR: &cSpigotMC.org er sathe songjukto hoya jacche nah'
-console-update-available: '&cApnar kache &eAdvancedHunt&c er sobcheye notun songskoron ti nei. Onugroho kore songskoron ti poriborton korun: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
+console-update-available: '&cApnar kache &eAdvancedEggHunt&c er sobcheye notun songskoron ti nei. Onugroho kore songskoron ti poriborton korun: &4%OLD_VERSION%&6 --> &2&l%NEW_VERSION%'
 console-update-error: '&4&lKRUTI: &cSpigotMC.org er sathe songjukto hoya jacche nah'
 
 init-data-players-loaded: '&2&l%COUNT% jon player er data load kora hoyeche.'
@@ -125,11 +131,11 @@ feature-coming-soon: '&cEi feature ti sigroi asche.'
 item-added-success: '&aSofolvabe ekti notun bostu jukto kora holo.'
 invalid-chance: '&cOjouktik. Onugroho kore 0.0000001 hote 100 er vitorer kono songkha probesh korun.'
 placeholders-hover-text: '&9-----------&3&l[PLACEHOLDERS] &7(Hover)&9-----------'
-placeholders-hover-content: '&2Upolovvo placeholders somuho:\n&b- %PLAYER% --> Player er nam\n&b- & --> Rong er songket er jonno (&6=gold)\n&b- %TREASURES_FOUND% --> Koto gulo dim player ti peyche\n&b- %TREASURES_MAX% --> Koto gulo dim boshano royeche\n&b- %PREFIX% --> Plugin tir uposhorgo'
+placeholders-hover-content: '&2Upolovvo placeholders somuho:\n&b- %PLAYER% --> Player er nam\n&b- & --> Rong er songket er jonno (&6=gold)\n&b- %EGGS_FOUND% --> Koto gulo %PLUGIN_NAME_P% player ti peyche\n&b- %EGGS_MAX% --> Koto gulo %PLUGIN_NAME_P% boshano royeche\n&b- %PREFIX% --> Plugin tir uposhorgo'
 
 requirements-name-hour: 'Ghonta'
 requirements-name-date: 'Tarik'
-requirements-name-weekday: 'Soptaho'
+requirements-name-weekday: 'Soptaherdin'
 requirements-name-month: 'Mash'
 requirements-name-year: 'Sal'
 requirements-name-season: 'Moushum kal'
@@ -176,16 +182,15 @@ help-message: |
   &7Udhvabok: &6%AUTHOR%
 
   &2&lCommands
-  &6/advancedhunt collection &7-> &bSongroho somuho guloke switch abong edit korte.
-  &6/advancedhunt help &7-> &bEi sohayok bartagulo abong totthosomuho dekhte.
-  &6/advancedhunt reload &7-> &bPunorai config load korte.
-  &6/advancedhunt list &7-> &bSob boshano dim gulor talika ber korte.
-  &6/advancedhunt place &7-> &bPlace-Mode e dhuke dim gula boshano othoba vangte.
-  &6/advancedhunt settings &7-> &bPlugin tir onek setting configure korte.
-  &6/advancedhunt hint &7-> &bSohoje dim gulo khujar jonno songket er menu ti khulte.
-  &6/advancedhunt progress &7-> &bApnar dim er ogrogoti dekhte.
-  &6/advancedhunt show &7-> &Protiti dim er upor ekti ujjol armorstand boshate.
-  &6/advancedhunt reset [player | all] &7-> &bPrapto dim guloke reset korte.
+  &6/advancedegghunt collection &7-> &bSongroho somuho guloke switch abong edit korte.
+  &6/advancedegghunt help &7-> &bEi sohayok bartagulo abong totthosomuho dekhte.
+  &6/advancedegghunt reload &7-> &bPunorai config load korte.
+  &6/advancedegghunt list &7-> &bSob boshano %PLUGIN_NAME_P% gulor talika ber korte.
+  &6/advancedegghunt place &7-> &bPlace-Mode e dhuke %PLUGIN_NAME_P% gula boshano othoba vangte.
+  &6/advancedegghunt settings &7-> &bPlugin tir onek setting configure korte.
+  &6/advancedegghunt hint &7-> &bSohoje %PLUGIN_NAME_P% gulo khujar jonno songket er menu ti khulte.
+  &6/advancedegghunt progress &7-> &bApnar %PLUGIN_NAME_P% er ogrogoti dekhte.
+  &6/advancedegghunt show &7-> &Protiti %PLUGIN_NAME_S% er upor ekti ujjol armorstand boshate.
+  &6/advancedegghunt reset [player | all] [collection | all] &7-> &bPrapto %PLUGIN_NAME_P% guloke reset korte.
   &5&l==========SOHAYOK==========
   &3-----------------------------------------
-

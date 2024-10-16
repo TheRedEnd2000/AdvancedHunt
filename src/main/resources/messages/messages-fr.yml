@@ -191,6 +191,6 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &bOuvre le menu d indices pour trouver %PLUGIN_NAME_P% plus facilement.
   &6/%PLUGIN_COMMAND% progress &7-> &bVisualisez votre progression dans le %PLUGIN_NAME_P%.
   &6/%PLUGIN_COMMAND% show &7-> &bFait apparaitre un support d armure brillant a chaque %PLUGIN_NAME_S%.
-  &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bReinitialiser les trouvees%PLUGIN_NAME_P%.
+  &6/%PLUGIN_COMMAND% reset [player | all] [collection | all] &7-> &bReinitialiser les trouvees%PLUGIN_NAME_P%.
   &5&l==========AIDE==========
   &3-----------------------------------------

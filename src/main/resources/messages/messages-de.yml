@@ -188,6 +188,6 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &bÖffnet das Hinweis menu das dir hilt %PLUGIN_NAME_P% zu finden.
   &6/%PLUGIN_COMMAND% progress &7-> &bZeigt dir deinen Fortschritt mit der %PLUGIN_NAME_P%suche.
   &6/%PLUGIN_COMMAND% show &7-> &bGeneriert einen leuchtenden Armor Stand bei allen %PLUGIN_NAME_P%.
-  &6/%PLUGIN_COMMAND% reset [player | all] [Collection] &7-> &bSetzt die %PLUGIN_NAME_P% der Spieler zurück.
+  &6/%PLUGIN_COMMAND% reset [player | all] [collection | all] &7-> &bSetzt die %PLUGIN_NAME_P% der Spieler zurück.
   &5&l==========HELP==========
   &3-----------------------------------------

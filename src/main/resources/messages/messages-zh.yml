@@ -191,5 +191,5 @@ help-message: |
   &6/%PLUGIN_COMMAND% hint &7-> &b打开提示菜单以便更容易找到%PLUGIN_NAME_P%。
   &6/%PLUGIN_COMMAND% progress &7-> &b查看你%PLUGIN_NAME_P%的进度。
   &6/%PLUGIN_COMMAND% show &7-> &b在每个%PLUGIN_NAME_S%上生成一个发光的盔甲架。
-  &6/%PLUGIN_COMMAND% reset [player | all] [集合] &7-> &b重置找到的%PLUGIN_NAME_P%，
+  &6/%PLUGIN_COMMAND% reset [player | all] [collection || all] &7-> &b重置找到的%PLUGIN_NAME_P%，
   &5&l==========帮助==========
