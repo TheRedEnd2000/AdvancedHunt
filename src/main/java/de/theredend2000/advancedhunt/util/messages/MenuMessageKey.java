@@ -30,12 +30,12 @@ public enum MenuMessageKey {
     COLLECTION_CREATOR_CREATE("collection_creator_create"),
 
     // Egg list related
-    EGGSLIST_EGG("eggslist_egg"),
-    EGGPLACE_INFORMATION("eggplace_information"),
-    EGGPLACE_EGG("eggplace_egg"),
-    EGGPROGRESS_LOCATION_FOUND("eggprogress_location_found"),
-    EGGPROGRESS_FOUND("eggprogress_found"),
-    EGGPROGRESS_NOT_FOUND("eggprogress_not_found"),
+    EGGSLIST_EGG("treasureslist_treasure"),
+    EGGPLACE_INFORMATION("treasureplace_information"),
+    EGGPLACE_EGG("treasureplace_treasure"),
+    EGGPROGRESS_LOCATION_FOUND("treasureprogress_location_found"),
+    EGGPROGRESS_FOUND("treasureprogress_found"),
+    EGGPROGRESS_NOT_FOUND("treasureprogress_not_found"),
 
     // Player related
 
@@ -89,14 +89,14 @@ public enum MenuMessageKey {
 
 
     // Settings related
-    SETTINGS_ONE_EGG_REWARD("settings_one_egg_reward"),
-    SETTINGS_ALL_EGG_REWARD("settings_all_eggs_reward"),
+    SETTINGS_ONE_EGG_REWARD("settings_one_treasure_reward"),
+    SETTINGS_ALL_EGG_REWARD("settings_all_treasures_reward"),
     SETTINGS_UPDATER("settings_updater"),
     SETTINGS_COMMAND_FEEDBACK("settings_command_feedback"),
     SETTINGS_SOUND_VOLUME("settings_sound_volume"),
     SETTINGS_SHOW_COORDINATES("settings_show_coordinates"),
     SETTINGS_ARMORSTAND_GLOW("settings_armorstand_glow"),
-    SETTINGS_EGG_NEARBY_RADIUS("settings_egg_nearby_radius"),
+    SETTINGS_EGG_NEARBY_RADIUS("settings_treasure_nearby_radius"),
     SETTINGS_PLUGIN_PREFIX("settings_plugin_prefix"),
     SETTINGS_FIREWORK("settings_firework"),
     SETTINGS_HINT_COOLDOWN("settings_hint_cooldown"),

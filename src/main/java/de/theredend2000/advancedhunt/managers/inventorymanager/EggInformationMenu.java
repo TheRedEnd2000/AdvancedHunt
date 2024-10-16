@@ -83,8 +83,8 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
-            if(playerConfig.contains("FoundEggs." + collection + "." + eggId)){
-                Collections.addAll(keys, playerConfig.getString("FoundEggs." + collection + ".Name"));
+            if(playerConfig.contains("FoundTreasures." + collection + "." + eggId)){
+                Collections.addAll(keys, playerConfig.getString("FoundTreasures." + collection + ".Name"));
                 Collections.addAll(uuid, String.valueOf(uuids));
             }
         }
@@ -97,7 +97,7 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
                     String maxEggs = String.valueOf(Main.getInstance().getEggManager().getMaxEggs(collection));
                     String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId, collection);
                     String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index), eggId, collection);
-                    String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs." + collection + ".Count");
+                    String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundTreasures." + collection + ".Count");
                     getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                             .setOwner(keys.get(index))
                             .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%", keys.get(index),"%PLAYER_UUID%", uuid.get(index)))
@@ -121,8 +121,8 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
         ArrayList<String> keys = new ArrayList<>();
         String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(playerMenuUtility.getOwner().getUniqueId());
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
-            if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundEggs." + id)){
-                Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundEggs." + collection + ".Name"));
+            if(Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).contains("FoundTreasures." + id)){
+                Collections.addAll(keys, Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids).getString("FoundTreasures." + collection + ".Name"));
             }
         }
 
@@ -181,8 +181,8 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
         ArrayList<String> keys = new ArrayList<>();
         for(UUID uuids : Main.getInstance().getEggDataManager().savedPlayers()){
             FileConfiguration playerConfig = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuids);
-            if(playerConfig.contains("FoundEggs." + eggId)){
-                Collections.addAll(keys, playerConfig.getString("FoundEggs.Name"));
+            if(playerConfig.contains("FoundTreasures." + eggId)){
+                Collections.addAll(keys, playerConfig.getString("FoundTreasures.Name"));
             }
         }
         if(keys.isEmpty()) return 1;

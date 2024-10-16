@@ -144,8 +144,8 @@ collection_creator_create:
     - ""
     - "&eCliquez pour créer."
 
-# Egg related
-eggslist_egg:
+# Treasure related
+treasureslist_treasure:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%TREASURE_ID%)"
   lore:
     - "&9Emplacement:"
@@ -163,7 +163,7 @@ eggslist_egg:
     - "&eCLIQUE-GAUCHE pour vous téléporter."
     - "&eCLIQUE-DROIT pour plus d'informations."
 
-eggplace_information:
+treasureplace_information:
   displayname: "&9Information"
   lore:
     - ""
@@ -181,14 +181,14 @@ eggplace_information:
     - "&bdes éléments personnalisés, vous pouvez rejoindre le discord"
     - ""
     - "&eCliquez pour obtenir le lien discord."
-eggplace_egg:
+treasureplace_treasure:
   displayname: "&b&l%PLUGIN_NAME_P% Type #%TREASURE_ID%"
   lore:
     - ""
     - "&eCLIQUE-GAUCHE pour ajouter à votre inventaire."
     - "&eCLIQUE-DROIT pour supprimer."
 
-eggprogress_location_found:
+treasureprogress_location_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -202,7 +202,7 @@ eggprogress_location_found:
     - "&9Collecté:"
     - "&7Date: &6%DATE%"
     - "&7Heure: &6%TIME%"
-eggprogress_found:
+treasureprogress_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -211,7 +211,7 @@ eggprogress_found:
     - "&9Collecté:"
     - "&7Date: &6%DATE%"
     - "&7Heure: &6%TIME%"
-eggprogress_not_found:
+treasureprogress_not_found:
   displayname: "&2&l%PLUGIN_NAME_S% &7(ID#%ID%)"
   lore:
     - ""
@@ -577,7 +577,7 @@ reset_reset_all:
     - "&eCliquez pour tout réinitialiser."
 
 # Paramètres liés
-settings_one_egg_reward:
+settings_one_treasure_reward:
   displayname: "&3Une récompense trouvée par %PLUGIN_NAME_S%"
   lore:
     - ""
@@ -587,7 +587,7 @@ settings_one_egg_reward:
     - ""
     - "%STATUS%"
     - "&eCliquez pour basculer."
-settings_all_eggs_reward:
+settings_all_treasures_reward:
   displayname: "&3Toutes les récompenses trouvées pour %PLUGIN_NAME_P%"
   lore:
     - ""
@@ -650,7 +650,7 @@ settings_armorstand_glow:
     - "&7Actuellement: %GLOW_DURATION%"
     - "&eLEFT-CLICK to add one."
     - "&eRIGHT-CLICK to remove one."
-settings_egg_nearby_radius:
+settings_treasure_nearby_radius:
   displayname: "&3Rayon de titre à proximité"
   lore:
     - ""

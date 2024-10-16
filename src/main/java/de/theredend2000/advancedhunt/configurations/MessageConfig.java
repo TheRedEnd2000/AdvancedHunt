@@ -24,6 +24,11 @@ public class MessageConfig extends Configuration {
     @Override
     public void registerUpgrader() {
         upgraders.put(2.7, (oldConfig, newConfig) -> {
+            List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
+                    new ConfigMigration.ReplacementEntry("^(?<=.*)egg(s?)(?=.*:)", "treasure$1", true, true),
+                    new ConfigMigration.ReplacementEntry("(?<=.*)egg(s?)(?=.*)", "treasure$1", true, true)
+            );
+
             List<ConfigMigration.ReplacementEntry> valueReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("AdvancedEggHunt", "AdvancedHunt", false, false),
                     new ConfigMigration.ReplacementEntry("%EGG", "%TREASURE", false, false),
@@ -33,7 +38,7 @@ public class MessageConfig extends Configuration {
                     new ConfigMigration.ReplacementEntry("(?<=^.*)\\begg(?!s?.yml)", "treasure", true, false)
             );
 
-            ConfigMigration migration = new ConfigMigration(true, null, valueReplacements);
+            ConfigMigration migration = new ConfigMigration(true, keyReplacements, valueReplacements);
             migration.standardUpgrade(oldConfig, newConfig);
 
             newConfig.set("help-message", newConfig.getDefaults().getString("help-message"));
