@@ -125,6 +125,8 @@ public abstract class MultiFileConfiguration {
             folder.mkdirs();
         }
 
+        configFiles = new HashMap<>();
+
         for (File file : folder.listFiles()) {
             if (file.isFile() && file.getName().endsWith(fileExtension)) {
                 String configName = file.getName();
