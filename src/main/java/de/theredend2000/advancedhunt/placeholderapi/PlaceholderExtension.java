@@ -40,19 +40,19 @@ public class PlaceholderExtension extends PlaceholderExpansion {
             if(collection == 0) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(collection);
         }
-        if (params.equalsIgnoreCase("max_eggs")) {
+        if (params.equalsIgnoreCase("max_treasures")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(eggManager.getMaxEggs(collection));
         }
 
-        if (params.equalsIgnoreCase("found_eggs")) {
+        if (params.equalsIgnoreCase("found_treasures")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(eggManager.getEggsFound(player, collection));
         }
 
-        if (params.equalsIgnoreCase("remaining_eggs")) {
+        if (params.equalsIgnoreCase("remaining_treasures")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
             return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player, collection));
