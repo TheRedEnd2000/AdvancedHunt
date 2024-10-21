@@ -85,11 +85,6 @@ public class PlaceholderExtension extends PlaceholderExpansion {
             return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player, collection));
         }
 
-        if (params.matches("collection_size_.*")) {
-            int collection = Main.getInstance().getEggDataManager().savedEggCollections().size();
-            if(collection == 0) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
-            return String.valueOf(collection);
-        }
         if (params.matches("max_treasures_.*")) {
             String collection = extractStringFromPlaceholder(params, 2);
             return String.valueOf(eggManager.getMaxEggs(collection));
