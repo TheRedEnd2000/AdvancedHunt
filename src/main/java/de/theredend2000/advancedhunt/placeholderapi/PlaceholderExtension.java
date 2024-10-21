@@ -71,7 +71,7 @@ public class PlaceholderExtension extends PlaceholderExpansion {
         if (params.matches("player_name_\\d+_.*")) {
             int number = extractNumberFromPlaceholder(params, 2);
             String collection = extractStringFromPlaceholder(params, 3);
-            return String.valueOf(eggManager.getLeaderboardPositionCount(number-1, player.getUniqueId(), collection));
+            return String.valueOf(eggManager.getLeaderboardPositionName(number-1, player.getUniqueId(), collection));
         }
 
         if (params.matches("player_count_\\d+_.*")) {
