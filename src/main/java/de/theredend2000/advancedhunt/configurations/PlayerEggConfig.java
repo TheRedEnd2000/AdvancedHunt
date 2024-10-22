@@ -32,9 +32,10 @@ public class PlayerEggConfig extends MultiFileConfiguration {
     }
 
     public void createPlayerFile(UUID uuid) {
-        String configName = uuid.toString();
+        String configName = uuid.toString() + super.fileExtension;
+
         FileConfiguration config = getConfig(configName);
-        File playerFile = configFiles.get(configName);
+        File playerFile = getConfigFile(configName);
         if (playerFile != null && playerFile.exists()) {
             return;
         }

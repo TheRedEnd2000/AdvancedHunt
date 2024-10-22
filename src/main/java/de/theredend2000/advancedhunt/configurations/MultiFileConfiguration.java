@@ -209,6 +209,13 @@ public abstract class MultiFileConfiguration {
         return configs.get(configName);
     }
 
+    public File getConfigFile(String configName) {
+        if (!configName.endsWith(fileExtension)) {
+            configName += fileExtension;
+        }
+        return configFiles.get(configName);
+    }
+
     public Boolean containsConfig(String configName) {
         if (!configName.endsWith(fileExtension)) {
             configName += fileExtension;
