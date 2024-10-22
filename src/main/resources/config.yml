@@ -21,9 +21,9 @@ Download:
   # Will be downloaded if a new plugin version is out
   AdvancedHunt: true
   # Will download for the plugin to work (This should not be disabled)
-  NBT-API: true
+  NBT-API: false
 #  ProtocolLib: false
-  PlaceholderAPI: true
+  PlaceholderAPI: false
 
 # Experimental feature toggles
 # Remove the '#' and set to true to use
