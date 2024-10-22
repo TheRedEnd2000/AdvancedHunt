@@ -11,7 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
 public class InventoryClickEventListener implements Listener {
 
@@ -22,6 +24,17 @@ public class InventoryClickEventListener implements Listener {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
         messageManager = Main.getInstance().getMessageManager();
         plugin = Main.getInstance();
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        // Check if the click type involves the number keys (hotbar buttons 1-9)
+        if (event.getClick().isKeyboardClick()) {
+            InventoryHolder holder = event.getInventory().getHolder();
+            if (holder instanceof IInventoryMenu) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler
