@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
@@ -98,8 +99,8 @@ public class EggListMenu extends PaginatedInventoryMenu implements IInventoryMen
             String time = Main.getInstance().getEggManager().getEggTimePlaced(keys.get(index), collection);
             int timesFound = Main.getInstance().getEggManager().getTimesFound(keys.get(index), collection);
             int slotIndex = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-            XMaterial item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index), collection);
-            boolean isSkull = item == XMaterial.PLAYER_HEAD || item == XMaterial.PLAYER_WALL_HEAD;
+            ItemStack item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index), collection);
+            boolean isSkull = XMaterial.matchXMaterial(item.getType()) == XMaterial.PLAYER_HEAD || XMaterial.matchXMaterial(item.getType()) == XMaterial.PLAYER_WALL_HEAD;
             String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index), collection);
             getInventory().setItem(slotIndex, new ItemBuilder(item)
                     .setCustomId("egg_list.id." + keys.get(index))

@@ -1,11 +1,13 @@
 package de.theredend2000.advancedhunt.managers.eggmanager;
 
+import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.InventoryConfig;
 import de.theredend2000.advancedhunt.util.ConfigLocationUtil;
 import de.theredend2000.advancedhunt.util.ItemHelper;
 import de.theredend2000.advancedhunt.util.VersionComparator;
+import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import de.tr7zw.nbtapi.NBT;
@@ -596,10 +598,11 @@ public class EggManager {
         return VersionComparator.isLessThan(pluginVersion, versionToCompare);
     }
 
-    public XMaterial getBlockMaterialOfEgg(String eggID, String collection){
+    public ItemStack getBlockMaterialOfEgg(String eggID, String collection){
         Location location = getEggLocation(eggID, collection);
-        if (location == null) return XMaterial.PLAYER_HEAD;
-        return XMaterial.matchXMaterial(location.getBlock().getType());
+        if (location == null) return XMaterial.PLAYER_HEAD.parseItem();
+
+        return XMaterialHelper.getItemStack(XMaterial.matchXMaterial(location.getBlock().getType()));
     }
 
     public String getHeadTextureValue(String eggID, String collection) {

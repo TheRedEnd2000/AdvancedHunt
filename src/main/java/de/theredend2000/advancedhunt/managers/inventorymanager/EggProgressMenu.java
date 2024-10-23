@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
@@ -99,8 +100,8 @@ public class EggProgressMenu extends PaginatedInventoryMenu implements IInventor
             boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index), collection);
             String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
             String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
-            XMaterial item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index), collection);
-            boolean isSkull = item == XMaterial.PLAYER_HEAD || item == XMaterial.PLAYER_WALL_HEAD;
+            ItemStack item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index), collection);
+            boolean isSkull = XMaterial.matchXMaterial(item.getType()) == XMaterial.PLAYER_HEAD || XMaterial.matchXMaterial(item.getType()) == XMaterial.PLAYER_WALL_HEAD;
             String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index), collection);
             if(showCoordinates && hasFound){
                 getInventory().setItem(slotIndex, new ItemBuilder(item)
