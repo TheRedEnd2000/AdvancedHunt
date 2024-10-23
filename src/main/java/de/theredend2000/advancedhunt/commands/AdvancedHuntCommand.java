@@ -309,7 +309,7 @@ public class AdvancedHuntCommand implements TabExecutor {
                 messageManager.sendMessage(player, MessageKey.FOUNDEGGS_RESET);
                 return;
             }
-            String collection = args[2];
+            String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
             if (plugin.getEggDataManager().containsCollection(collection)) {
                 for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
                     String name = eggManager.getPlayerNameFromUUID(uuid);
@@ -323,11 +323,11 @@ public class AdvancedHuntCommand implements TabExecutor {
 
         String name = args[1];
         if (args.length == 3) {
-            String collection = args[2];
+            String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
             if(collection.equalsIgnoreCase("all")){
                 for(String collections : plugin.getEggDataManager().savedEggCollections())
                     eggManager.resetStatsPlayer(name, collections);
-                player.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7of §a"+name+" §7in all collections has been §creset§7!");
+                player.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + name + " §7in all collections has been §creset§7!");
                 return;
             }
             if (eggManager.containsPlayer(name)) {
@@ -335,15 +335,7 @@ public class AdvancedHuntCommand implements TabExecutor {
                     eggManager.resetStatsPlayer(name, collection);
                     messageManager.sendMessage(player, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", name, "%COLLECTION%", collection);
                 }else
-                    player.sendMessage("§cNo collection with name "+collection+" found.");
-            } else {
-                messageManager.sendMessage(player, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
-            }
-        } else {
-            if (eggManager.containsPlayer(name)) {
-                for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
-                    eggManager.resetStatsPlayer(name, collections);
-                messageManager.sendMessage(player, MessageKey.FOUNDEGGS_PLAYER_RESET, "%PLAYER%", name);
+                    player.sendMessage("§cNo collection with name " + collection + " found.");
             } else {
                 messageManager.sendMessage(player, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
             }
