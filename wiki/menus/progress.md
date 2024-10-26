@@ -26,23 +26,11 @@ Each found item shows:
 - Helps track finding patterns
 - Shows X/Y/Z position
 
-### Time Tracking
-- Precise timestamps
-- Date formatting matches server
-- Historical record keeping
-- Progress timeline
-
 ### Collection Management
 - Switch between collections
 - Track multiple hunts
 - Independent progress
 - Collection-specific stats
-
-## Tips
-- Use coordinates to plan routes
-- Track daily/weekly progress
-- Compare timestamps with friends
-- Monitor collection completion
 
 ## Navigation
 - [Back to Menu Overview](./index.md)
