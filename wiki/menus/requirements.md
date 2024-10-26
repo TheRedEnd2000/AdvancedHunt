@@ -64,6 +64,7 @@ Access through the Collection Editor or use `/advancedhunt collection` and selec
 - Consider timezone effects
 
 ## Navigation
-- [Back to Menu Overview](index.md)
-- [Collection Settings](collection.md)
-- [Configure Rewards](rewards.md)
+- [Back to Menu Overview](./index.md)
+- [Collection Settings](./collection.md)
+- [Configure Rewards](./rewards.md)
+- [Reset Settings](./reset.md)

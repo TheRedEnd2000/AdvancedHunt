@@ -62,3 +62,9 @@ Access through the Collection Editor by clicking the reset times option.
 - Consider timezone differences
 - Test timing on small scale
 - Coordinate with server schedule
+
+## Navigation
+- [Back to Menu Overview](./index.md)
+- [Collection Settings](./collection.md)
+- [Configure Requirements](./requirements.md)
+- [Settings Menu](./settings.md)

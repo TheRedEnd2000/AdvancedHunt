@@ -56,3 +56,9 @@ Access through the Collection Editor or Item List menu by selecting an item to e
 - %TREASURES_FOUND% - Total found
 - %TREASURES_MAX% - Collection total
 - %PREFIX% - Plugin prefix
+
+## Navigation
+- [Back to Menu Overview](./index.md)
+- [Collection Settings](./collection.md)
+- [Configure Requirements](./requirements.md)
+- [Item List](./list.md)

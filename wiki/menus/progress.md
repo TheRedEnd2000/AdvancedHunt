@@ -45,6 +45,7 @@ Each found item shows:
 - Monitor collection completion
 
 ## Navigation
-- [Back to Menu Overview](index.md)
-- [View Leaderboards](leaderboard.md)
-- [Get Hints](hint.md)
+- [Back to Menu Overview](./index.md)
+- [View Leaderboards](./leaderboard.md)
+- [Get Hints](./hint.md)
+- [Collection Settings](./collection.md)

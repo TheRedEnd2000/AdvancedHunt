@@ -39,3 +39,9 @@ Each item entry shows:
 - Monitor popular/unpopular locations
 - Track finding patterns with timestamps
 - Keep item IDs for reference when setting rewards
+
+## Navigation
+- [Back to Menu Overview](./index.md)
+- [Collection Settings](./collection.md)
+- [Configure Rewards](./rewards.md)
+- [Progress View](./progress.md)

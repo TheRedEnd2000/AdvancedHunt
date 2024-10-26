@@ -41,3 +41,9 @@ Use `/advancedhunt settings` to open the menu.
 - Use coordinates for guided hunts
 - Enable fireworks for celebrations
 - Balance hint cooldowns for difficulty
+
+## Navigation
+- [Back to Menu Overview](./index.md)
+- [Collection Settings](./collection.md)
+- [Reset Settings](./reset.md)
+- [Configure Requirements](./requirements.md)

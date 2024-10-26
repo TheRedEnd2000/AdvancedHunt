@@ -22,62 +22,62 @@ All menus include these standard elements:
 
 ## Main Menus
 
-### [Collection Menu](collection.md)
+### [Collection Menu](./collection.md)
 Create and manage item collections
 - Create new collections
 - Edit existing collections
 - Set collection status
 - Configure requirements
 
-### [Item List](list.md)
+### [Item List](./list.md)
 View and manage placed items
 - See all placed items
 - Teleport to items
 - View item details
 - Remove items
 
-### [Progress Menu](progress.md)
+### [Progress Menu](./progress.md)
 Track finding progress
 - View found/unfound items
 - See finding timestamps
 - Check coordinates (if enabled)
 
-### [Requirements Menu](requirements.md)
+### [Requirements Menu](./requirements.md)
 Set finding conditions
 - Time-based requirements
 - Date restrictions
 - Season limitations
 - Requirement combinations
 
-### [Rewards Menu](rewards.md)
+### [Rewards Menu](./rewards.md)
 Configure finding rewards
 - Global rewards
 - Individual rewards
 - Reward presets
 - Chance-based rewards
 
-### [Settings Menu](settings.md)
+### [Settings Menu](./settings.md)
 Adjust plugin behavior
 - Sound settings
 - Visual options
 - Gameplay tweaks
 - System configuration
 
-### [Reset Menu](reset.md)
+### [Reset Menu](./reset.md)
 Configure automatic resets
 - Time-based resets
 - Periodic scheduling
 - Event timing
 - Progress management
 
-### [Hint Menu](hint.md)
+### [Hint Menu](./hint.md)
 Get help finding items
 - Interactive minigame
 - Location hints
 - Cooldown system
 - Balanced assistance
 
-### [Leaderboard Menu](leaderboard.md)
+### [Leaderboard Menu](./leaderboard.md)
 View player rankings
 - Global rankings
 - Collection-specific stats

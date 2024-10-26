@@ -66,3 +66,9 @@ Use `/advancedhunt leaderboard` to open the menu.
 - Track personal improvements
 - Monitor competition
 - Compare collection progress
+
+## Navigation
+- [Back to Menu Overview](./index.md)
+- [Progress View](./progress.md)
+- [Collection Settings](./collection.md)
+- [Hint Menu](./hint.md)

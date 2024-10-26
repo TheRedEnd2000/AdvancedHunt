@@ -51,3 +51,9 @@ Configure in settings menu:
 - Failure penalties
 - Success rewards
 - Game difficulty
+
+## Navigation
+- [Back to Menu Overview](./index.md)
+- [Progress View](./progress.md)
+- [Settings Menu](./settings.md)
+- [Leaderboard](./leaderboard.md)

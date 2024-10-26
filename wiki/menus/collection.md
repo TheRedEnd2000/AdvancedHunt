@@ -45,7 +45,8 @@ Click on any collection to open the editor with these options:
 - Check requirements before enabling
 
 ## Navigation
-- [Back to Menu Overview](index.md)
-- [Configure Requirements](requirements.md)
-- [Manage Items](list.md)
-- [Set Rewards](rewards.md)
+- [Back to Menu Overview](./index.md)
+- [Configure Requirements](./requirements.md)
+- [Manage Items](./list.md)
+- [Set Rewards](./rewards.md)
+- [Reset Settings](./reset.md)
