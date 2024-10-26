@@ -1,5 +1,7 @@
 # Advanced Hunt Wiki
 
+[🏠 Home](./index.md) | [⚙️ Configuration](Configuration.md) | [📜 Commands](Commands.md) | [🎯 Menus](menus/index.md)
+
 Welcome to the Advanced Hunt plugin wiki! This guide will help you understand and use all the features of this powerful treasure hunt plugin.
 
 ## Overview
@@ -47,8 +49,20 @@ Advanced Hunt allows you to create engaging treasure hunts by placing collectibl
 - [Hint System](menus/hint.md)
 - [Leaderboards](menus/leaderboard.md)
 
+## Version Compatibility
+
+| Minecraft Version | Plugin Version | Status |
+|------------------|----------------|---------|
+| 1.20.x | 2.0.0+ | ✅ Full Support |
+| 1.19.x | 1.9.0+ | ✅ Full Support |
+| 1.18.x | 1.8.0+ | ✅ Full Support |
+| 1.17.x | 1.7.0+ | ⚠️ Limited Support |
+| 1.16.x | 1.6.0+ | ⚠️ Limited Support |
+| < 1.16 | < 1.6.0 | ❌ Not Supported |
+
 ## Need Help?
 
 - Use `/advancedhunt help` for command list
 - Check menu information pages
 - Join our Discord for support
+- Report bugs on Discord

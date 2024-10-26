@@ -36,3 +36,25 @@ Permission: `AdvancedHunt.group.admin`
 Permission: `AdvancedHunt.group.default`
 - Basic player permissions
 - Default: true
+
+## Permission Summary
+
+| Feature | Required Permission | Default |
+|---------|-------------------|---------|
+| Basic Finding | `AdvancedHunt.FindTreasures` | true |
+| Break Treasures | `AdvancedHunt.BreakTreasure` | op |
+| Place Treasures | `AdvancedHunt.PlaceTreasure` | op |
+| Bypass Cooldowns | `AdvancedHunt.IgnoreCooldown` | op |
+| Switch Collections | `AdvancedHunt.ChangeCollections` | true |
+| Create Collections | `AdvancedHunt.CreateCollection` | op |
+| Configure Rewards | `AdvancedHunt.OpenRewards` | op |
+
+## Command Aliases
+All commands can be used with these prefixes:
+```
+/treasurehunt
+/treasures
+/advancedhunt
+/aeh
+/easter
+```
