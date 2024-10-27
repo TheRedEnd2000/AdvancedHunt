@@ -71,7 +71,7 @@ public class AdvancedHuntCommand implements TabExecutor {
                     for (UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
                         String playerData = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs.");
                         if (playerData == null) {
-                            return completions;
+                            continue;
                         }
                         for (String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getConfigurationSection("FoundEggs.").getKeys(false)) {
                             String playerName = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs." + eggId + ".Name");
@@ -304,7 +304,7 @@ public class AdvancedHuntCommand implements TabExecutor {
         }
 
         if (args[1].equalsIgnoreCase("all")) {
-            if(args[2].equalsIgnoreCase("all")) {
+            if(args.length > 2 && args[2].equalsIgnoreCase("all")) {
                 eggManager.resetStatsAll();
                 messageManager.sendMessage(player, MessageKey.FOUNDEGGS_RESET);
                 return;
@@ -317,7 +317,7 @@ public class AdvancedHuntCommand implements TabExecutor {
                 }
                 player.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7in collection §6" + collection + " §7has been §creset§7!");
             }else
-                player.sendMessage("§cNo collection with name "+collection+" found.");
+                player.sendMessage("§cNo collection with name '" + collection + "' found.");
             return;
         }
 
