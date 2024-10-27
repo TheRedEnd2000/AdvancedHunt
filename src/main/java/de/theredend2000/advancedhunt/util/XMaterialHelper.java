@@ -13,15 +13,8 @@ public class XMaterialHelper {
     public static ItemStack getItemStack(XMaterial material) {
         ItemStack item;
 
-        // First try to get the item directly
-        try {
-            item = material.parseItem();
-        } catch (IllegalArgumentException e) {
-            item = null;
-        }
-
         // If the item is null and might be a wall variant, try to get the base block
-        if (item == null && material.name().contains("WALL")) {
+        if (material.name().contains("WALL")) {
             String baseName = material.name().replace("WALL_", "");
             try {
                 XMaterial baseMaterial = XMaterial.valueOf(baseName);
@@ -29,6 +22,12 @@ public class XMaterialHelper {
             } catch (IllegalArgumentException e) {
                 // Handle case where base material name is invalid
                 return null;
+            }
+        } else {
+            try {
+                item = material.parseItem();
+            } catch (IllegalArgumentException e) {
+                item = null;
             }
         }
 
