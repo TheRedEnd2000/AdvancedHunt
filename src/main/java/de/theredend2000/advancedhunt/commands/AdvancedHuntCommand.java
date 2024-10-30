@@ -209,7 +209,7 @@ public class AdvancedHuntCommand implements TabExecutor {
         Main.getInstance().getEggDataManager().reload();
         Main.getInstance().getGlobalPresetDataManager().reload();
         Main.getInstance().getIndividualPresetDataManager().reload();
-        Main.PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', plugin.getPluginConfig().getPrefix()));
+        Main.PREFIX = HexColor.color(plugin.getPluginConfig().getPrefix());
         messageManager.sendMessage(player, MessageKey.RELOAD_CONFIG);
     }
 

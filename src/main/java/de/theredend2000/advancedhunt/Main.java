@@ -195,7 +195,7 @@ public final class Main extends JavaPlugin {
     private void initialisePlugin() {
         setupConfigs();
         setupDefaultCollection = false;
-        PREFIX = HexColor.color(ChatColor.translateAlternateColorCodes('&', pluginConfig.getPrefix()));
+        PREFIX = HexColor.color(pluginConfig.getPrefix());
         new Metrics(this, 19495);
         commandRegistrar = new DynamicCommandRegistrar(this);
         initialiseCollections();

@@ -38,9 +38,9 @@ public class MessageManager {
         for(String blacklisted :  blacklistKeys())
             if(key.name().equals(blacklisted)) return HexColor.color(message);
         if(prefix_enabled)
-            message = HexColor.color(ChatColor.translateAlternateColorCodes('&', Main.PREFIX + message));
+            message = HexColor.color(Main.PREFIX + message);
         else
-            message = HexColor.color(ChatColor.translateAlternateColorCodes('&', message));
+            message = HexColor.color(message);
         return message;
     }
 
