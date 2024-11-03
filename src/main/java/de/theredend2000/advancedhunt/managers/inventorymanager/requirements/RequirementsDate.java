@@ -44,7 +44,7 @@ public class RequirementsDate extends PaginatedInventoryMenu {
     public void addMenuBorderButtons(String collection) {
         inventoryContent[4]  = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setDisplayName("§6" + collection)
-                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
+                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(Main.getInstance().getRandom().nextInt(7)))
                 .build();
         inventoryContent[45] = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("date.back")

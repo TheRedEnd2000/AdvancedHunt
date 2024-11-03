@@ -77,6 +77,8 @@ public final class Main extends JavaPlugin {
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     private HashMap<Player, Inventory>  lastOpenedInventory = new HashMap<>();
 
+    private Random random;
+
     @Override
     public void onEnable() {
         plugin = this;
@@ -193,6 +195,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void initialisePlugin() {
+        random = new Random();
         setupConfigs();
         setupDefaultCollection = false;
         PREFIX = HexColor.color(pluginConfig.getPrefix());
@@ -462,5 +465,9 @@ public final class Main extends JavaPlugin {
     public void setLastOpenedInventory(Inventory lastOpenedInventory, Player player) {
         this.lastOpenedInventory.remove(player);
         this.lastOpenedInventory.put(player, lastOpenedInventory);
+    }
+
+    public Random getRandom() {
+        return random;
     }
 }

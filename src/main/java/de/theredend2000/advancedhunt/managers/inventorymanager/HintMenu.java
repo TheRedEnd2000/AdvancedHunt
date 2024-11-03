@@ -42,7 +42,7 @@ public class HintMenu extends InventoryMenu {
         this.currentCount = 0;
         this.lastClicked = -1;
         this.active = true;
-        random = new Random();
+        random = Main.getInstance().getRandom();
 
         playerMenuUtility.getOwner().openInventory(getInventory());
 
@@ -132,7 +132,7 @@ public class HintMenu extends InventoryMenu {
             int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, collection);
             ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".");
             if (location.loadLocation(collection) != null) {
-                int random = new Random().nextInt(2);
+                int random = Main.getInstance().getRandom().nextInt(2);
                 return Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT).replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation(collection).getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation(collection).getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation(collection).getBlockZ()) : "§k1");
             }
         }

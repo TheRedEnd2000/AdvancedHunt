@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.managers;
 
 import com.cryptomorin.xseries.XEntityType;
+import de.theredend2000.advancedhunt.Main;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -24,7 +25,7 @@ public class ExtraManager{
         Firework firework = (Firework) location.getWorld().spawnEntity(location, XEntityType.FIREWORK_ROCKET.get());
         firework.setSilent(true);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
-        Random random = new Random();
+        Random random = Main.getInstance().getRandom();
         FireworkEffect effect = FireworkEffect.builder().flicker(random.nextBoolean()).withColor(getColor(random.nextInt(17) + 1)).withFade(getColor(random.nextInt(17) + 1)).with(FireworkEffect.Type.values()[random.nextInt(FireworkEffect.Type.values().length)]).trail(random.nextBoolean()).build();
         fireworkMeta.addEffect(effect);
         fireworkMeta.setPower(random.nextInt(2) + 1);

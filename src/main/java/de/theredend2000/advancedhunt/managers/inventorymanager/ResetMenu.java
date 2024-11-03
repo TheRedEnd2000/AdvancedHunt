@@ -42,7 +42,7 @@ public class ResetMenu extends InventoryMenu {
         inventoryContent[4] =  new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("reset.collection")
                 .setDisplayName("§6" + collection)
-                .setSkullOwner(plugin.getEggManager().getRandomEggTexture(new Random().nextInt(7)))
+                .setSkullOwner(plugin.getEggManager().getRandomEggTexture(Main.getInstance().getRandom().nextInt(7)))
                 .build();
 
         inventoryContent[37] = new ItemBuilder(XMaterial.RED_TERRACOTTA)
