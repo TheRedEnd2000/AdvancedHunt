@@ -611,7 +611,7 @@ public class EggManager {
 
         ItemStack treasure = ItemHelper.getItemStackFromBlock(location.getBlock());
         if (treasure == null)
-            return Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7));
+            return Main.getInstance().getEggManager().getRandomEggTexture(Main.getInstance().getRandom().nextInt(7));
         return Main.getTexture(ItemHelper.getSkullTexture(treasure));
     }
 

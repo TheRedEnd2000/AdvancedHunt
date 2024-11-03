@@ -41,7 +41,7 @@ public class RequirementMenu extends InventoryMenu {
 
     private void addMenuBorderButtons(String collection) {
         inventoryContent[4] = new ItemBuilder(XMaterial.PLAYER_HEAD)
-                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
+                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(Main.getInstance().getRandom().nextInt(7)))
                 .setDisplayName("§6" + collection)
                 .build();
 

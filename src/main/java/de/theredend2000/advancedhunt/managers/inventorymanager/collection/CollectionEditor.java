@@ -62,7 +62,7 @@ public class CollectionEditor extends InventoryMenu {
 
         getInventory().setItem(4, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setCustomId("collection_editor.collection_selected")
-                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(new Random().nextInt(7)))
+                .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(Main.getInstance().getRandom().nextInt(7)))
                 .setDisplayName("§6" + collection)
                 .build());
         getInventory().setItem(20, new ItemBuilder(enabled ? XMaterial.LIME_DYE : XMaterial.RED_DYE)
