@@ -246,11 +246,6 @@ public class PluginDownloader {
      *
      * @return true if the server version is above 1.19, false otherwise
      */
-    /**
-     * Checks if the server version is above 1.19.
-     *
-     * @return true if the server version is above 1.19, false otherwise
-     */
     private boolean isAbove1_19() {
         String version = Bukkit.getBukkitVersion();
         return VersionComparator.compare(version, "1.19") >= 0;
@@ -281,7 +276,8 @@ public class PluginDownloader {
             loadPlugin(pluginName, filename);
             return;
         }
-        handleFileOrder(pluginName, filename, filePath, currentFile);
+        if (!(isPaperOrPurpur() && isAbove1_19()))
+            handleFileOrder(pluginName, filename, filePath, currentFile);
     }
 
     /**
