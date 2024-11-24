@@ -28,26 +28,6 @@ public class MenuManager {
         menuMessageConfig.reloadConfig();
     }
 
-    /*public String getMenuMessage(MenuMessageKey key) {
-        String menuMessage = menuMessageConfig.getMenuMessage(key.getPath());
-
-        return HexColor.color(menuMessage));
-    }
-    public String getMenuMessage(MenuMessageKey key, String loc) {
-        String menuMessage = menuMessageConfig.getMenuMessage(key.getPath()+"."+loc);
-
-        return HexColor.color(menuMessage));
-    }
-
-    public String getMenuMessage(MenuMessageKey key, String... replacements) {
-        String menuMessage = this.getMenuMessage(key);
-
-        for (int i = 0; i < replacements.length; i += 2) {
-            menuMessage = menuMessage.replace(replacements[i], replacements[i + 1]);
-        }
-
-        return HexColor.color(menuMessage));
-    }*/
     public String getMenuItemName(MenuMessageKey key, String... replacements) {
         String displayname = menuMessageConfig.getMenuMessage(key.getPath() + ".displayname");
         if(displayname == null) return "";
@@ -58,6 +38,7 @@ public class MenuManager {
 
         return HexColor.color(displayname.replaceAll("%PLUGIN_NAME_S%",plugin.getPluginConfig().getPluginNameSingular()).replaceAll("%PLUGIN_NAME_P%",plugin.getPluginConfig().getPluginNamePlural()));
     }
+
     public List<String> getMenuItemLore(MenuMessageKey key, String... replacements) {
         List<String> lore = menuMessageConfig.getMenuMessageList(key.getPath() + ".lore");
         if(lore == null) return Collections.singletonList("");
