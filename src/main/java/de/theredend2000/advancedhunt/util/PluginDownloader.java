@@ -418,16 +418,19 @@ public class PluginDownloader {
      * Moves the old version of a plugin to the OLD_PLUGINS directory.
      *
      * @param pluginName The name of the plugin
-     * @throws IOException If an I/O error occurs
      */
-    private void moveOldVersion(String pluginName) throws IOException {
+    private void moveOldVersion(String pluginName) {
         Path currentPluginPath = findCurrentPlugin(pluginName);
         if (currentPluginPath != null) {
             String storedPathString = pathConfig.getStoredPluginPath(pluginName);
             if (storedPathString != null && !storedPathString.equals(currentPluginPath.toString())) {
                 Path storedPath = Path.of(storedPathString);
                 Path oldPluginPath = oldPluginsDir.resolve(storedPath.getFileName());
-                Files.move(storedPath, oldPluginPath, StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.move(storedPath, oldPluginPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException ignored) {
+                    logger.severe("Failed to moved old version of " + pluginName + " to " + oldPluginsDir);
+                }
                 logger.info("Moved old version of " + pluginName + " to " + oldPluginsDir);
                 pathConfig.savePluginPath(pluginName, null);
             } else {
