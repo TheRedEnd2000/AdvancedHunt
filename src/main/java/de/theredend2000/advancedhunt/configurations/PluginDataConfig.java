@@ -21,9 +21,9 @@ public class PluginDataConfig extends Configuration {
     @Override
     public void registerUpgrader() {
         upgraders.put(1.1, (oldConfig, newConfig) -> {
-            String updateDir = Bukkit.getUpdateFolderFile().getPath();
+            if (!newConfig.contains("paths.")) return;
 
-            newConfig.getConfigurationSection("paths.");
+            String updateDir = Bukkit.getUpdateFolderFile().getPath();
 
             for (String path : newConfig.getConfigurationSection("paths").getKeys(false)) {
                 if (newConfig.getString("paths." + path).startsWith(updateDir)) {
