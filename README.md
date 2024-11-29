@@ -5,7 +5,7 @@
 ### Create engaging treasure hunts with customizable rewards for your Minecraft server
 
 [![Discord](https://img.shields.io/discord/1069002119992070215?color=7289DA&label=Discord&logo=discord&logoColor=white)](https://discord.gg/7x2fzYKucZ)
-[![Spigot](https://img.shields.io/spiget/downloads/109085?color=ee7a3b&label=Spigot&logo=spigotmc&logoColor=white)]([https://www.spigotmc.org/resources/advancedhunt.109085/])
+[![Spigot](https://img.shields.io/spiget/downloads/109085?color=ee7a3b&label=Spigot&logo=spigotmc&logoColor=white)](https://www.spigotmc.org/resources/advancedhunt.109085/)
 [![Modrinth](https://img.shields.io/modrinth/dt/advancedhunt?color=8dbb05&logo=modrinth&label=Modrinth&logoColor=white)](https://modrinth.com/plugin/advancedhunt)
 [![Wiki](https://img.shields.io/badge/Wiki-blue?logo=github&logoColor=white)](https://github.com/TheRedEnd2000/AdvancedHunt/wiki)
 
