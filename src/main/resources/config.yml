@@ -1,4 +1,4 @@
-config-version: 3.4
+config-version: 3.5
 
 # Change the language
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali) | zh (Simplified Chinese only messages no menus)
@@ -41,31 +41,25 @@ Settings:
   # If a message should be sent if the plugin has a newer version
   Updater: true
 
-  # If the player find on treasure he gets a reward
-  PlayerFoundOneEggRewards: true
-
-  # If the player find all treasures he gets a reward
-  PlayerFoundAllEggsReward: true
-
   # Shows the coordinates in the progress inventory of the player
   ShowCoordinatesWhenEggFoundInProgressInventory: false
 
-  # If a firework should spawn after clicking an treasure
+  # If a firework should spawn after clicking a treasure
   ShowFireworkAfterEggFound: true
 
   # How long the armor stands are visible after typing /%PLUGIN_COMMAND% show
   ArmorstandGlow: 10
 
-  # In witch radius the player gets a message that he is near an treasure
+  # In witch radius the player gets a message that he is near a treasure
   ShowEggsNearbyMessageRadius: 10
 
   # If the plugin prefix should show up
   PluginPrefixEnabled: true
 
-  # If left-clicking an treasure works
+  # If left-clicking a treasure works
   LeftClickEgg: false
 
-  # If right-clicking an treasure works
+  # If right-clicking a treasure works
   RightClickEgg: true
 
   # How many panes a player has to click before getting their reward

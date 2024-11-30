@@ -243,8 +243,6 @@ public class EggManager {
         playerConfig.set("FoundEggs." + collection + ".Name", player.getName());
         new ConfigLocationUtil(plugin, block.getLocation(), "FoundEggs." + collection + "." + id).saveBlockLocation(player.getUniqueId());
         plugin.getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
-        if(!Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards() || !Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward())
-            player.sendMessage(messageManager.getMessage(MessageKey.EGG_FOUND).replaceAll("%TREASURES_FOUND%", String.valueOf(getEggsFound(player, collection))).replaceAll("%TREASURES_MAX%", String.valueOf(getMaxEggs(collection))));
     }
 
     public int getTimesFound(String id, String collection) {

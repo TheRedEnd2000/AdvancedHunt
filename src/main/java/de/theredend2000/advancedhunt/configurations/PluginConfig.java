@@ -144,20 +144,6 @@ public class PluginConfig extends Configuration {
 		getConfig().set("Settings.Updater", Updater);
 	}
 
-    public boolean getPlayerFoundOneEggRewards() {
-        return getConfig().getBoolean("Settings.PlayerFoundOneEggRewards");
-    }
-	public void setPlayerFoundOneEggRewards(boolean PlayerFoundOneEggRewards) {
-		getConfig().set("Settings.PlayerFoundOneEggRewards", PlayerFoundOneEggRewards);
-	}
-
-    public boolean getPlayerFoundAllEggsReward() {
-        return getConfig().getBoolean("Settings.PlayerFoundAllEggsReward");
-    }
-	public void setPlayerFoundAllEggsReward(boolean PlayerFoundAllEggsReward) {
-		getConfig().set("Settings.PlayerFoundAllEggsReward", PlayerFoundAllEggsReward);
-	}
-
     public boolean getShowCoordinatesWhenEggFoundInProgressInventory() {
         return getConfig().getBoolean("Settings.ShowCoordinatesWhenEggFoundInProgressInventory");
     }
