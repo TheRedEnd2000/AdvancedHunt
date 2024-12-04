@@ -6,7 +6,7 @@
 
     <groupId>de.theredend2000</groupId>
     <artifactId>AdvancedHunt</artifactId>
-    <version>v3.1.1-SNAPSHOT</version>
+    <version>v3.1.1</version>
     <packaging>jar</packaging>
 
     <name>AdvancedHunt</name>
@@ -157,12 +157,12 @@
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.10.2-SNAPSHOT</version>
+            <version>1.10.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api-plugin</artifactId>
-            <version>2.13.2</version>
+            <version>2.14.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -3,8 +3,8 @@
     <output-path>$USER_HOME$/Documents/Server/plugins</output-path>
     <root id="archive" name="AdvancedHunt.jar">
       <element id="module-output" name="AdvancedHunt" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/wesjd/anvilgui/1.10.2-SNAPSHOT/anvilgui-1.10.2-20240818.152127-1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/cryptomorin/XSeries/11.3.0/XSeries-11.3.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/wesjd/anvilgui/1.10.3-SNAPSHOT/anvilgui-1.10.3-20241024.152924-1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
