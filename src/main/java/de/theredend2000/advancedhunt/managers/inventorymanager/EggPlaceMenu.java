@@ -28,7 +28,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
     private MessageManager messageManager;
 
     public EggPlaceMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + "s place list", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + " place list", (short) 54);
         messageManager = Main.getInstance().getMessageManager();
 
         super.addMenuBorder();
