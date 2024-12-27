@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class SettingsMenu extends InventoryMenu {
     private MessageManager messageManager;
@@ -24,7 +26,7 @@ public class SettingsMenu extends InventoryMenu {
     }
 
     public void open() {
-        super.addMenuBorder();
+        menuContent();
         addMenuBorderButtons();
         menuContent();
 
