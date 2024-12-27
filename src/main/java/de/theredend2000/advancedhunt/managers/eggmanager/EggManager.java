@@ -600,16 +600,19 @@ public class EggManager {
         Location location = getEggLocation(eggID, collection);
         if (location == null) return XMaterial.PLAYER_HEAD.parseItem();
 
-        return XMaterialHelper.getItemStack(XMaterial.matchXMaterial(location.getBlock().getType()));
+        XMaterial material = XMaterial.matchXMaterial(location.getBlock().getType());
+        if (material == XMaterial.AIR)
+            return XMaterial.PLAYER_HEAD.parseItem();
+        return XMaterialHelper.getItemStack(material);
     }
 
     public String getHeadTextureValue(String eggID, String collection) {
         Location location = getEggLocation(eggID, collection);
-        if (location == null) return Main.getTexture("NDZiYTYzMzQ0ZjQ5ZGQxYzRmNTQ4OGU5MjZiZjNkOWUyYjI5OTE2YTZjNTBkNjEwYmI0MGE1MjczZGM4YzgyIn19fQ==");
+        if (location == null) return Main.getTexture("YmFkYzA0OGE3Y2U3OGY3ZGFkNzJhMDdkYTI3ZDg1YzA5MTY4ODFlNTUyMmVlZWQxZTNkYWYyMTdhMzhjMWEifX19");
 
         ItemStack treasure = ItemHelper.getItemStackFromBlock(location.getBlock());
         if (treasure == null)
-            return Main.getInstance().getEggManager().getRandomEggTexture(Main.getInstance().getRandom().nextInt(7));
+            return Main.getTexture("YmFkYzA0OGE3Y2U3OGY3ZGFkNzJhMDdkYTI3ZDg1YzA5MTY4ODFlNTUyMmVlZWQxZTNkYWYyMTdhMzhjMWEifX19");
         return Main.getTexture(ItemHelper.getSkullTexture(treasure));
     }
 

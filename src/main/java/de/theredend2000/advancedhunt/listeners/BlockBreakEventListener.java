@@ -12,10 +12,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+
+import java.util.List;
 
 
 public class BlockBreakEventListener implements Listener {
@@ -80,5 +81,23 @@ public class BlockBreakEventListener implements Listener {
     public void onExplode(EntityExplodeEvent event){
         EggManager eggManager = Main.getInstance().getEggManager();
         event.blockList().removeIf(eggManager::containsEgg);
+    }
+
+    @EventHandler
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        EggManager eggManager = Main.getInstance().getEggManager();
+        List<Block> blocks = event.getBlocks();
+        if (blocks.stream().anyMatch(eggManager::containsEgg)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPistonRetract(BlockPistonRetractEvent event) {
+        EggManager eggManager = Main.getInstance().getEggManager();
+        List<Block> blocks = event.getBlocks();
+        if (blocks.stream().anyMatch(eggManager::containsEgg)) {
+            event.setCancelled(true);
+        }
     }
 }
