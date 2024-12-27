@@ -40,22 +40,6 @@ public class SettingsMenu extends InventoryMenu {
     }
 
     private void menuContent() {
-        getInventory().setItem(10, new ItemBuilder(XMaterial.GOLD_INGOT)
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_ONE_EGG_REWARD))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_ONE_EGG_REWARD,
-                        "%STATUS%", Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards() ? "§a§l✔ Enabled" : "§c§l❌ Disabled"))
-                .setCustomId("settings.foundoneegg")
-                .withGlow(Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards())
-                .build());
-
-        getInventory().setItem(11, new ItemBuilder(XMaterial.EMERALD)
-                .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_ALL_EGG_REWARD))
-                .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_ALL_EGG_REWARD,
-                        "%STATUS%", Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward() ? "§a§l✔ Enabled" : "§c§l❌ Disabled"))
-                .setCustomId("settings.foundalleggs")
-                .withGlow(Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward())
-                .build());
-
         getInventory().setItem(12, new ItemBuilder(XMaterial.CLOCK)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_UPDATER))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_UPDATER,
@@ -140,18 +124,6 @@ public class SettingsMenu extends InventoryMenu {
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "settings.close":
                 player.closeInventory();
-                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                break;
-            case "settings.foundoneegg":
-                Main.getInstance().getPluginConfig().setPlayerFoundOneEggRewards(!Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards());
-                Main.getInstance().getPluginConfig().saveData();
-                menuContent();
-                player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                break;
-            case "settings.foundalleggs":
-                Main.getInstance().getPluginConfig().setPlayerFoundAllEggsReward(!Main.getInstance().getPluginConfig().getPlayerFoundAllEggsReward());
-                Main.getInstance().getPluginConfig().saveData();
-                menuContent();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "settings.updater":
