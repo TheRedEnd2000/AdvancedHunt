@@ -156,11 +156,9 @@ public class HintMenu extends InventoryMenu {
             currentCount++;
             playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
             if (currentCount == Main.getInstance().getPluginConfig().getHintCount()) {
-                cancelHintMenu();
+                Success();
 
                 playerMenuUtility.getOwner().playSound(playerMenuUtility.getOwner().getLocation(), soundManager.playAllEggsFound(), soundManager.getSoundVolume(), 1);
-
-                Success();
 
                 return;
             }
@@ -182,6 +180,8 @@ public class HintMenu extends InventoryMenu {
     }
 
     private void Success() {
+        cancelHintMenu();
+
         Main.getInstance().getCooldownManager().setCooldown(playerMenuUtility.getOwner());
         playerMenuUtility.getOwner().closeInventory();
         playerMenuUtility.getOwner().sendMessage(getReward(playerMenuUtility.getOwner()));
