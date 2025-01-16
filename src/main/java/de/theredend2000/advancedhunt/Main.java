@@ -15,6 +15,7 @@ import de.theredend2000.advancedhunt.managers.eggmanager.PlayerEggDataManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
+import de.theredend2000.advancedhunt.mysql.Database;
 import de.theredend2000.advancedhunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedhunt.util.*;
 import de.theredend2000.advancedhunt.util.embed.EmbedCreator;
@@ -32,6 +33,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -77,6 +79,9 @@ public final class Main extends JavaPlugin {
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     private HashMap<Player, Inventory>  lastOpenedInventory = new HashMap<>();
 
+    // MySQL
+    private Database database;
+
     private Random random;
 
     @Override
@@ -84,6 +89,7 @@ public final class Main extends JavaPlugin {
         plugin = this;
         renameConfigFolder();
         initialisePlugin();
+        connectToDatabase();
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
         if (VersionComparator.isGreaterThan(version, "1.21")) {
@@ -109,6 +115,16 @@ public final class Main extends JavaPlugin {
         commandRegistrar.unregisterCommands();
         giveAllItemsBack();
         removeAllArmorStands();
+    }
+
+    private void connectToDatabase(){
+        this.database = new Database();
+        try {
+            this.database.initializeDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Could not initialize database.");
+        }
     }
 
     private void renameConfigFolder() {

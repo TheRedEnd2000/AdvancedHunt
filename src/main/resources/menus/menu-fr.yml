@@ -689,6 +689,7 @@ settings_hint_cooldown:
     - "%STATUS%"
     - "&eCliquez pour basculer."
 
+
 # Divers
 list_error:
   displayname: "&4Aucune entrée"
