@@ -15,7 +15,6 @@ treasure-placed: '&aVous avez &2créé avec succès &aun nouveau %PLUGIN_NAME_S%
 treasure-broken: '&aVous avez &csupprimer &aun %PLUGIN_NAME_S%. &7(ID#%ID%)'
 teleport-to-treasure: '&aVous avez été téléporté à %PLUGIN_NAME_S% #%ID%.'
 
-treasure-found: '&aVous avez trouvé un %PLUGIN_NAME_S%. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 treasure-already-found: '&cVous avez déjà trouvé ceci %PLUGIN_NAME_S%.'
 treasure-already-found-by-player: '&cCe %PLUGIN_NAME_S% a déjà été trouvé par un autre joueur.'
 all-treasures-found: '&cVous avez déjà trouvé tous les %PLUGIN_NAME_P%.'

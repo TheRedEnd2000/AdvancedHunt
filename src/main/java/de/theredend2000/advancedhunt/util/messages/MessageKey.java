@@ -12,7 +12,6 @@ public enum MessageKey {
     EGG_BROKEN("treasure-broken"),
     TELEPORT_TO_EGG("teleport-to-treasure"),
 
-    EGG_FOUND("treasure-found"),
     EGG_ALREADY_FOUND("treasure-already-found"),
     EGG_ALREADY_FOUND_BY_PLAYER("treasure-already-found-by-player"),
     ALL_EGGS_FOUND("all-treasures-found"),

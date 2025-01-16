@@ -15,7 +15,6 @@ treasure-placed: '&aBạn đã &2tạo thành công &amột %PLUGIN_NAME_S% mớ
 treasure-broken: '&aBạn đã &crỡ thành công &amột %PLUGIN_NAME_S%. &7(ID#%ID%)'
 teleport-to-treasure: '&aBạn đã được dịch chuyển đến %PLUGIN_NAME_S% #%ID%.'
 
-treasure-found: '&aBạn đã tìm thấy %PLUGIN_NAME_S%. &7(&e%TREASURES_FOUND%&7/&e%TREASURES_MAX%&7)'
 treasure-already-found: '&cBạn đã tìm thấy %PLUGIN_NAME_S% này rồi.'
 treasure-already-found-by-player: '&c%PLUGIN_NAME_S% này đã được tìm thấy bởi người chơi khác.'
 all-treasures-found: '&cBạn đã tìm thấy tất cả %PLUGIN_NAME_P%.'

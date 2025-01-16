@@ -110,28 +110,27 @@ public class PlayerInteractEventListener implements Listener {
                 extraManager.spawnFireworkRocket(loc.add(0.5, 1.5, 0.5));
             if(placedEggs.getBoolean("OnePlayer") && !eggManager.isMarkedAsFound(collection, id))
                 eggManager.markEggAsFound(collection, id, true);
-            if (Main.getInstance().getPluginConfig().getPlayerFoundOneEggRewards()) {
-                player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
-                if(!placedEggs.contains("PlacedEggs." + id + ".Rewards.")) continue;
-                for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)) {
-                    boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
-                    if (enabled) {
-                        String cmd = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
-                        String displayName = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".display-name");
-                        double chance = placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + commandID + ".chance") / 100;
-                        double random = Main.getInstance().getRandom().nextDouble();
-                        boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
-                        boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
-                        if(random < chance) {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
 
-                            if(sendRarityMessage && (startsWithGive || displayName != null)) {
-                                if (!(displayName == null || displayName.isBlank())) {
-                                    player.sendMessage(HexColor.color(displayName.replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd)))));
-                                    continue;
-                                }
-                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
+            player.playSound(player.getLocation(), soundManager.playEggFoundSound(), soundManager.getSoundVolume(), 1);
+            if(!placedEggs.contains("PlacedEggs." + id + ".Rewards.")) continue;
+            for (String commandID : placedEggs.getConfigurationSection("PlacedEggs." + id + ".Rewards.").getKeys(false)) {
+                boolean enabled = placedEggs.getBoolean("PlacedEggs." + id + ".Rewards." + commandID + ".enabled");
+                if (enabled) {
+                    String cmd = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".command");
+                    String displayName = placedEggs.getString("PlacedEggs." + id + ".Rewards." + commandID + ".display-name");
+                    double chance = placedEggs.getDouble("PlacedEggs." + id + ".Rewards." + commandID + ".chance") / 100;
+                    double random = Main.getInstance().getRandom().nextDouble();
+                    boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
+                    boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
+                    if(random < chance) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+
+                        if(sendRarityMessage && (startsWithGive || displayName != null)) {
+                            if (!(displayName == null || displayName.isBlank())) {
+                                player.sendMessage(HexColor.color(displayName.replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd)))));
+                                continue;
                             }
+                            player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
                         }
                     }
                 }

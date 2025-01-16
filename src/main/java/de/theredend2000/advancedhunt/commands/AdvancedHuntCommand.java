@@ -199,6 +199,10 @@ public class AdvancedHuntCommand implements TabExecutor {
         messageManager.sendMessage(player, MessageKey.EGG_VISIBLE, "%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow()));
     }
 
+    private void handleShow() {
+        eggManager.showAllEggs();
+    }
+
     private void handleReload(Player player) {
         if (!checkPermission(player, Permission.Command.RELOAD)) return;
         Main.getInstance().getPluginConfig().reloadConfig();
@@ -343,23 +347,32 @@ public class AdvancedHuntCommand implements TabExecutor {
     }
 
     private void handleConsoleCommand(CommandSender sender, String[] args) {
-        if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
-            if (args[1].equalsIgnoreCase("all")) {
-                eggManager.resetStatsAll();
-                 messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_RESET);
-                return;
-            }
+        String subCommand = args[0].toLowerCase();
+        switch (subCommand) {
+            case "show":
+                handleShow();
+                break;
+            case "reset":
+                if (args.length == 2) {
+                    if (args[1].equalsIgnoreCase("all")) {
+                        eggManager.resetStatsAll();
+                        messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_RESET);
+                        return;
+                    }
 
-            String name = args[1];
-            if (eggManager.containsPlayer(name)) {
-                for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
-                    eggManager.resetStatsPlayer(name, collections);
-                 messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET, "%PLAYER%", name);
-            } else {
-                 messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
-            }
-        } else {
-            sender.sendMessage(usage());
+                    String name = args[1];
+                    if (eggManager.containsPlayer(name)) {
+                        for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
+                            eggManager.resetStatsPlayer(name, collections);
+                        messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET, "%PLAYER%", name);
+                    } else {
+                        messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
+                    }
+                }
+                break;
+            default:
+                sender.sendMessage(usage());
+                break;
         }
     }
 
