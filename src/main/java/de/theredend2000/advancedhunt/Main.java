@@ -89,7 +89,7 @@ public final class Main extends JavaPlugin {
         plugin = this;
         renameConfigFolder();
         initialisePlugin();
-        connectToDatabase();
+//        connectToDatabase();
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
         if (VersionComparator.isGreaterThan(version, "1.21")) {
