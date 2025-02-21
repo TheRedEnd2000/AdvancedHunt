@@ -50,7 +50,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REFRESH_BUTTON))
                 .build();
 
-        String selectedCollection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection");
+        String selectedCollection = Main.getInstance().getPlayerEggDataManager().getPlayerData(playerMenuUtility.getOwner().getUniqueId()).getString("SelectedSection", "default");
         inventoryContent[45] = new ItemBuilder(XMaterial.PAPER)
                 .setCustomId("leaderboard.collection_selected")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SELECTED_COLLECTION_BUTTON))
