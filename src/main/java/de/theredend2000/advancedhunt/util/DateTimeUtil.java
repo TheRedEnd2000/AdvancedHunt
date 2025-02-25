@@ -18,13 +18,13 @@ public abstract class DateTimeUtil {
 
     public static final String CUSTOM_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    // Neue Funktion: Anzahl der Tage im aktuellen Jahr
+    // New Function: Number of Days in the Current Year
     public static int getDaysInCurrentYear() {
         Calendar calendar = Calendar.getInstance();
         return calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
     }
 
-    // Neue Funktion: Liste aller Tage im aktuellen Jahr als String im "yyyy-MM-dd" Format
+    // New Function: List of all days in the current year as strings in "yyyy-MM-dd" format
     public static List<String> getAllDaysOfYear() {
         List<String> days = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
@@ -40,12 +40,12 @@ public abstract class DateTimeUtil {
     public static ArrayList<String> getDaysOfMonth(int month) {
         ArrayList<String> daysOfMonth = new ArrayList<>();
 
-        // Schleife durch alle Tage des Jahres
+        // Loop through all days of the year
         for (String day : getAllDaysOfYear()) {
-            // Split den Tag nach dem "-" Zeichen (Format: yyyy-MM-dd)
+            // Split the day by the "-" character (Format: yyyy-MM-dd)
             String[] parts = day.split("-");
 
-            // Extrahiere den Monatsteil und überprüfe, ob er mit dem angegebenen Monat übereinstimmt
+            // Extract the month part and check if it matches the specified month
             int monthOfDay = Integer.parseInt(parts[1]);
             if (monthOfDay == month) {
                 daysOfMonth.add(day);  // Füge nur die Tage des ausgewählten Monats hinzu
