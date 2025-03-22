@@ -25,7 +25,6 @@ import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import de.theredend2000.advancedhunt.util.saveinventory.DatetimeUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -39,68 +38,68 @@ import java.util.logging.Level;
 
 public final class Main extends JavaPlugin {
 
-    // Static fields
+    // Static instance and constants
     private static Main plugin;
     public static String PREFIX = "";
     public static boolean setupDefaultCollection;
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     // Configuration
     private PluginConfig pluginConfig;
-
     private DynamicCommandRegistrar commandRegistrar;
 
-    // Managers
+    // Core managers
     private MessageManager messageManager;
     private MenuManager menuMessageManager;
     private CooldownManager cooldownManager;
+    private PermissionManager permissionManager;
+    
+    // Treasure-related managers
     private EggDataManager eggDataManager;
     private EggManager eggManager;
-    private SoundManager soundManager;
-    private ExtraManager extraManager;
     private PlayerEggDataManager playerEggDataManager;
+    private EggHidingManager hidingManager;
+    
+    // Reward managers
     private RequirementsManager requirementsManager;
-    private PermissionManager permissionManager;
     private IndividualPresetDataManager individualPresetDataManager;
     private GlobalPresetDataManager globalPresetDataManager;
     private RarityManager rarityManager;
-    private EggHidingManager eggHidingManager;
-
-    // Utility classes
+    
+    // Utility managers
+    private SoundManager soundManager;
+    private ExtraManager extraManager;
     private DatetimeUtils datetimeUtils;
     private EmbedCreator embedCreator;
     private ProtocolManager protocolManager;
+    private Random random;
 
-    // Collections
+    // Collections for runtime data
     private HashMap<String, Long> refreshCooldown;
     private ArrayList<Player> placePlayers;
     private HashMap<Player, Integer> playerAddCommand;
     private ArrayList<ArmorStand> showedArmorstands;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
-    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
-    private HashMap<Player, Inventory>  lastOpenedInventory = new HashMap<>();
+    private HashMap<Player, Inventory> lastOpenedInventory;
 
-    // MySQL
+    // Database
     private Database database;
-
-    private Random random;
 
     @Override
     public void onEnable() {
         plugin = this;
+        
+        // Plugin initialization
         renameConfigFolder();
         initialisePlugin();
-//        connectToDatabase();
-
-        String version = Bukkit.getBukkitVersion().split("-", 2)[0];
-        if (VersionComparator.isGreaterThan(version, "1.21")) {
-            this.getLogger().warning("The plugin has not been tested on the current version.");
-        }
-
+        checkServerVersion();
         setupAutoUpdating();
 
+        // Check dependencies and proceed with setup
         if (!checkDependencies())
             return;
 
+        // Setup features and systems
         setupManagers();
         registerCommands();
         initListeners();
@@ -117,14 +116,34 @@ public final class Main extends JavaPlugin {
         removeAllArmorStands();
     }
 
-    private void connectToDatabase(){
-        this.database = new Database();
-        try {
-            this.database.initializeDatabase();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Could not initialize database.");
+    private void checkServerVersion() {
+        String version = Bukkit.getBukkitVersion().split("-", 2)[0];
+        if (VersionComparator.isGreaterThan(version, "1.21")) {
+            this.getLogger().warning("The plugin has not been tested on the current version.");
         }
+    }
+
+    private void initialisePlugin() {
+        random = new Random();
+        setupConfigs();
+        setupDefaultCollection = false;
+        PREFIX = HexColor.color(pluginConfig.getPrefix());
+        new Metrics(this, 19495);
+        commandRegistrar = new DynamicCommandRegistrar(this);
+        initialiseCollections();
+    }
+
+    private void setupConfigs() {
+        pluginConfig = PluginConfig.getInstance(plugin);
+    }
+    
+    private void initialiseCollections() {
+        refreshCooldown = new HashMap<>();
+        placePlayers = new ArrayList<>();
+        showedArmorstands = new ArrayList<>();
+        playerAddCommand = new HashMap<>();
+        sortTypeLeaderboard = new HashMap<>();
+        lastOpenedInventory = new HashMap<>();
     }
 
     private void renameConfigFolder() {
@@ -134,18 +153,23 @@ public final class Main extends JavaPlugin {
         if (oldFolder.exists() && !newFolder.exists()) {
             boolean success = oldFolder.renameTo(newFolder);
             if (success) {
-                getLogger().log(Level.INFO, "Folder 'AdvancedHunt' successfully renamed to 'AdvancedHunt'.");
+                getLogger().log(Level.INFO, "Folder 'AdvancedEggHunt' successfully renamed to 'AdvancedHunt'.");
             } else {
-                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedHunt'.");
+                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedEggHunt'.");
             }
         }
     }
 
-    /**
-     * Checks if all required plugin dependencies are present and enabled.
-     *
-     * @return true if all dependencies are present and enabled, false otherwise
-     */
+    private void connectToDatabase() {
+        this.database = new Database();
+        try {
+            this.database.initializeDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            getLogger().log(Level.SEVERE, "Could not initialize database.");
+        }
+    }
+
     private boolean checkDependencies() {
         List<String> missingDependencies = new ArrayList<>();
 
@@ -168,9 +192,6 @@ public final class Main extends JavaPlugin {
         return true;
     }
 
-    /**
-     * Checks for soft dependencies and logs their status.
-     */
     private void checkSoftDependencies() {
         checkSoftDependency("PlaceholderAPI");
         checkSoftDependency("ProtocolLib");
@@ -210,28 +231,28 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    private void initialisePlugin() {
-        random = new Random();
-        setupConfigs();
-        setupDefaultCollection = false;
-        PREFIX = HexColor.color(pluginConfig.getPrefix());
-        new Metrics(this, 19495);
-        commandRegistrar = new DynamicCommandRegistrar(this);
-        initialiseCollections();
-    }
-
-    private void initialiseCollections() {
-        refreshCooldown = new HashMap<>();
-        placePlayers = new ArrayList<>();
-        showedArmorstands = new ArrayList<>();
-        playerAddCommand = new HashMap<>();
-        sortTypeLeaderboard = new HashMap<>();
-    }
-
     private void setupManagers() {
         initManagers();
         datetimeUtils = new DatetimeUtils();
         cooldownManager = new CooldownManager(this);
+    }
+
+    private void initManagers() {
+        individualPresetDataManager = new IndividualPresetDataManager(this);
+        globalPresetDataManager = new GlobalPresetDataManager(this);
+        messageManager = new MessageManager();
+        menuMessageManager = new MenuManager();
+        eggDataManager = new EggDataManager(this);
+        eggManager = new EggManager();
+        soundManager = new SoundManager();
+        extraManager = new ExtraManager();
+        playerEggDataManager = new PlayerEggDataManager();
+        requirementsManager = new RequirementsManager();
+        permissionManager = new PermissionManager();
+        rarityManager = new RarityManager();
+        embedCreator = new EmbedCreator();
+        checkSoftDependencies();
+        hidingManager = new EggHidingManager();
     }
 
     private void registerCommands() {
@@ -244,9 +265,23 @@ public final class Main extends JavaPlugin {
                 .register();
     }
 
+    private void initListeners() {
+        new InventoryClickEventListener();
+        new InventoryCloseEventListener();
+        new BlockPlaceEventListener();
+        new BlockBreakEventListener();
+        new PlayerInteractEventListener();
+        new PlayerInteractItemEvent();
+        new Updater(this);
+        new PlayerChatEventListener();
+        new PlayerConnectionListener();
+        new EntityChangeListener();
+        new EntityDamageEventListener();
+    }
 
     private void setupPlaceholderAPI() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled()) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && 
+            Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled()) {
             messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_DETECTED);
             new PlaceholderExtension().register();
             messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_ENABLED);
@@ -257,6 +292,17 @@ public final class Main extends JavaPlugin {
         getEggManager().convertEggData();
         initData();
         sendCurrentLanguage();
+    }
+
+    private void initData() {
+        List<String> eggCollections = eggDataManager.savedEggCollections();
+        List<UUID> playerCollection = eggDataManager.savedPlayers();
+        playerEggDataManager.initPlayers();
+        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_PLAYERS_LOADED, "%COUNT%", String.valueOf(playerCollection.size()));
+        eggDataManager.initEggs();
+        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_COLLECTIONS_LOADED, "%COUNT%", String.valueOf(eggCollections.size()));
+        for (String collection : eggCollections)
+            eggManager.updateMaxEggs(collection);
     }
 
     private void setupDefaultCollectionIfNeeded() {
@@ -276,53 +322,6 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    private void removeAllArmorStands() {
-        showedArmorstands.forEach(ArmorStand::remove);
-    }
-
-    private void initData(){
-        List<String> eggCollections = eggDataManager.savedEggCollections();
-        List<UUID> playerCollection = eggDataManager.savedPlayers();
-        playerEggDataManager.initPlayers();
-        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_PLAYERS_LOADED, "%COUNT%", String.valueOf(playerCollection.size()));
-        eggDataManager.initEggs();
-        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_COLLECTIONS_LOADED, "%COUNT%", String.valueOf(eggCollections.size()));
-        for(String collection : eggCollections)
-            eggManager.updateMaxEggs(collection);
-    }
-
-    private void initManagers(){
-        individualPresetDataManager = new IndividualPresetDataManager(this);
-        globalPresetDataManager = new GlobalPresetDataManager(this);
-        messageManager = new MessageManager();
-        menuMessageManager = new MenuManager();
-        eggDataManager = new EggDataManager(this);
-        eggManager = new EggManager();
-        soundManager = new SoundManager();
-        extraManager = new ExtraManager();
-        playerEggDataManager = new PlayerEggDataManager();
-        requirementsManager = new RequirementsManager();
-        permissionManager = new PermissionManager();
-        rarityManager = new RarityManager();
-        embedCreator = new EmbedCreator();
-        checkSoftDependencies();
-        eggHidingManager = new EggHidingManager();
-    }
-
-    private void initListeners() {
-        new InventoryClickEventListener();
-        new InventoryCloseEventListener();
-        new BlockPlaceEventListener();
-        new BlockBreakEventListener();
-        new PlayerInteractEventListener();
-        new PlayerInteractItemEvent();
-        new Updater(this);
-        new PlayerChatEventListener();
-        new PlayerConnectionListener();
-        new EntityChangeListener();
-        new EntityDamageEventListener();
-    }
-
     private void setupAutoUpdating() {
         PluginDownloader downloader = new PluginDownloader(plugin);
 
@@ -336,21 +335,21 @@ public final class Main extends JavaPlugin {
             downloader.downloadPlugin("nfGCP9fk", "NBTAPI", "modrinth");
     }
 
-    private void giveAllItemsBack(){
-        for(Player player : Bukkit.getServer().getOnlinePlayers()){
-            if(placePlayers.contains(player)){
-                eggManager.finishEggPlacing(player);
-            }
-        }
-    }
-
     private void sendCurrentLanguage() {
         String lang = pluginConfig.getLanguage();
         messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.LANGUAGE_DETECTED, "%LANG%", lang);
     }
 
-    private void setupConfigs(){
-        pluginConfig = PluginConfig.getInstance(plugin);
+    private void giveAllItemsBack() {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (placePlayers.contains(player)) {
+                eggManager.finishEggPlacing(player);
+            }
+        }
+    }
+
+    private void removeAllArmorStands() {
+        showedArmorstands.forEach(ArmorStand::remove);
     }
 
     public XMaterial getMaterial(String materialString) {
@@ -363,12 +362,10 @@ public final class Main extends JavaPlugin {
         }
     }
 
+    // Static utility methods
+    
     public static Main getInstance() {
         return plugin;
-    }
-
-    public PluginConfig getPluginConfig() {
-        return pluginConfig;
     }
 
     public static String getTexture(String texture) {
@@ -379,9 +376,12 @@ public final class Main extends JavaPlugin {
         return playerMenuUtilityMap.computeIfAbsent(p, PlayerMenuUtility::new);
     }
 
+    // Getters
+    
     public ArrayList<Player> getPlacePlayers() {
         return placePlayers;
     }
+    
     public Map<String, Long> getRefreshCooldown() {
         return refreshCooldown;
     }
@@ -470,8 +470,12 @@ public final class Main extends JavaPlugin {
         return protocolManager != null;
     }
 
-    public EggHidingManager getEggHidingManager() {
-        return eggHidingManager;
+    public EggHidingManager getHidingManager() {
+        return hidingManager;
+    }
+
+    public PluginConfig getPluginConfig() {
+        return pluginConfig;
     }
 
     public Inventory getLastOpenedInventory(Player player) {
