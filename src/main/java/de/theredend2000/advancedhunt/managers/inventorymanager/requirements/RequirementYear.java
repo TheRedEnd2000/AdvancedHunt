@@ -10,11 +10,8 @@ import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-
-import java.util.Random;
 
 public class RequirementYear extends InventoryMenu {
     private MessageManager messageManager;
@@ -55,11 +52,10 @@ public class RequirementYear extends InventoryMenu {
     }
 
     private void menuContent(String collection) {
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         int currentYear = DateTimeUtil.getCurrentYear();
         getInventory().setContents(inventoryContent);
         for(int year = currentYear; year < (currentYear + 28);year++){
-            boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
+            boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Year", String.valueOf(year));
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.BEACON : XMaterial.RED_STAINED_GLASS)
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_YEAR,"%YEAR%", String.valueOf(year)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_YEAR,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%YEAR%", String.valueOf(year),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
@@ -71,16 +67,14 @@ public class RequirementYear extends InventoryMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        Player player  = (Player) event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         int currentYear = DateTimeUtil.getCurrentYear();
         for (int year = currentYear; year < (currentYear + 28); year++) {
             if (String.valueOf(year).equals(ItemHelper.getItemId(event.getCurrentItem()))) {
-                boolean enabled = placedEggs.getBoolean("Requirements.Year." + year);
-                placedEggs.set("Requirements.Year." + year, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection);
+                boolean currentState = plugin.getEggDataManager().isRequirementEnabled(collection, "Year", String.valueOf(year));
+                plugin.getEggDataManager().setRequirementEnabled(collection, "Year", String.valueOf(year), !currentState);
                 menuContent(collection);
                 return;
             }

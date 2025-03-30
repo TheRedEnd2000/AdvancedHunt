@@ -13,11 +13,8 @@ import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-
-import java.util.Random;
 
 public class RequirementMenu extends InventoryMenu {
     private MessageManager messageManager;
@@ -59,8 +56,6 @@ public class RequirementMenu extends InventoryMenu {
     }
 
     private void menuContent(String collection) {
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
-
         getInventory().setItem(10, new ItemBuilder(XMaterial.CLOCK)
                 .setCustomId("requirement_menu.hour")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SELECTION,"%SELECTION%", messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_HOUR)))
@@ -101,7 +96,10 @@ public class RequirementMenu extends InventoryMenu {
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_DEACTIVATE))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_DEACTIVATE))
                 .build());
-        String currentOrder = placedEggs.getString("RequirementsOrder");
+        
+        // Use encapsulated method instead of direct FileConfiguration access
+        String currentOrder = plugin.getEggDataManager().getRequirementsOrder(collection);
+        
         getInventory().setItem(43, new ItemBuilder(XMaterial.REDSTONE_TORCH)
                 .setCustomId("requirement_menu.order")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_ORDER))
@@ -161,11 +159,12 @@ public class RequirementMenu extends InventoryMenu {
                 menuContent(collection);
                 break;
             case "requirement_menu.order":
-                FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
-                String currentOrder = placedEggs.getString("RequirementsOrder");
-                placedEggs.set("RequirementsOrder", currentOrder.equalsIgnoreCase("OR") ? "AND" : "OR");
-                plugin.getEggDataManager().savePlacedEggs(collection);
+                
+                // Use encapsulated methods instead of direct FileConfiguration access
+                String currentOrder = plugin.getEggDataManager().getRequirementsOrder(collection);
+                plugin.getEggDataManager().setRequirementsOrder(collection, currentOrder.equalsIgnoreCase("OR") ? "AND" : "OR");
+                
                 menuContent(collection);
                 break;
         }

@@ -10,12 +10,10 @@ import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class RequirementMonth extends InventoryMenu {
     private MessageManager messageManager;
@@ -56,10 +54,10 @@ public class RequirementMonth extends InventoryMenu {
     }
 
     private void menuContent(String collection) {
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         getInventory().setContents(inventoryContent);
         for(String month : new ArrayList<>(DateTimeUtil.getMonthList())){
-            boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
+            // Use encapsulated method instead of directly accessing FileConfiguration
+            boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Month", month);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.GRASS_BLOCK : XMaterial.RED_STAINED_GLASS)
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_MONTH,"%MONTH%", plugin.getRequirementsManager().getRequirementsTranslation(month)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_MONTH,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%MONTH%", plugin.getRequirementsManager().getRequirementsTranslation(month),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
@@ -74,12 +72,11 @@ public class RequirementMonth extends InventoryMenu {
         Player player  = (Player) event.getWhoClicked();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         for (String month : new ArrayList<>(DateTimeUtil.getMonthList())) {
             if (month.equals(ItemHelper.getItemId(event.getCurrentItem()))) {
-                boolean enabled = placedEggs.getBoolean("Requirements.Month." + month);
-                placedEggs.set("Requirements.Month." + month, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection);
+                // Toggle requirement state via encapsulated method
+                boolean currentState = plugin.getEggDataManager().isRequirementEnabled(collection, "Month", month);
+                plugin.getEggDataManager().setRequirementEnabled(collection, "Month", month, !currentState);
                 menuContent(collection);
                 return;
             }

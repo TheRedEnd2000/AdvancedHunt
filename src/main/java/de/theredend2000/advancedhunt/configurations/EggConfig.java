@@ -174,6 +174,29 @@ public class EggConfig extends MultiFileConfiguration {
     }
 
     /**
+     * Checks if a specific requirement is enabled
+     * @param configName The name of the configuration file
+     * @param requirementType The type of requirement (e.g. Season, Year, Month)
+     * @param key The specific requirement key
+     * @return True if the requirement is enabled, false otherwise
+     */
+    public boolean isRequirementEnabled(String configName, String requirementType, String key) {
+        return getConfig(configName).getBoolean("Requirements." + requirementType + "." + key, false);
+    }
+    
+    /**
+     * Sets the enabled state for a specific requirement
+     * @param configName The name of the configuration file
+     * @param requirementType The type of requirement (e.g. Season, Year, Month)
+     * @param key The specific requirement key
+     * @param enabled Whether the requirement should be enabled
+     */
+    public void setRequirementEnabled(String configName, String requirementType, String key, boolean enabled) {
+        set(configName, "Requirements." + requirementType + "." + key, enabled);
+        saveData(configName);
+    }
+
+    /**
      * Sets the requirements order for the egg collection.
      * @param configName The name of the configuration file.
      * @param order The order to set (e.g., "OR", "AND").

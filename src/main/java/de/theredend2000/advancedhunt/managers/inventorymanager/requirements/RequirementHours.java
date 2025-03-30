@@ -10,11 +10,8 @@ import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-
-import java.util.Random;
 
 public class RequirementHours extends InventoryMenu {
     private MessageManager messageManager;
@@ -55,10 +52,10 @@ public class RequirementHours extends InventoryMenu {
     }
 
     private void menuContent(String collection) {
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         for(int i = 0; i < 24; i++){
             int index = ((9 + 1) + ((i / 7) * 9) + (i % 7));
-            boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
+            // Use encapsulated method instead of directly accessing FileConfiguration
+            boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Hours", String.valueOf(i));
             String hour = String.valueOf(i);
             getInventory().setItem(index, new ItemBuilder(enabled ? XMaterial.CLOCK : XMaterial.RED_STAINED_GLASS)
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_HOUR,"%HOUR%", hour))
@@ -93,12 +90,11 @@ public class RequirementHours extends InventoryMenu {
         Player player  = (Player) event.getWhoClicked();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         for (int i = 0; i < 24; i++) {
             if (String.valueOf(i).equals(ItemHelper.getItemId(event.getCurrentItem()))) {
-                boolean enabled = placedEggs.getBoolean("Requirements.Hours." + i);
-                placedEggs.set("Requirements.Hours." + i, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection);
+                // Toggle requirement state via encapsulated method
+                boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Hours", String.valueOf(i));
+                plugin.getEggDataManager().setRequirementEnabled(collection, "Hours", String.valueOf(i), !enabled);
                 menuContent(collection);
                 return;
             }

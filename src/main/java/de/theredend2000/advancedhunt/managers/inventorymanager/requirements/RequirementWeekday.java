@@ -10,12 +10,10 @@ import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class RequirementWeekday extends InventoryMenu {
     private MessageManager messageManager;
@@ -56,10 +54,10 @@ public class RequirementWeekday extends InventoryMenu {
     }
 
     private void menuContent(String collection) {
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         getInventory().setContents(inventoryContent);
         for(String weekdays : new ArrayList<>(DateTimeUtil.getWeekList())){
-            boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekdays);
+            // Access EggConfig through the EggDataManager instead of getting FileConfiguration directly
+            boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Weekday", weekdays);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.LIME_BED : XMaterial.RED_STAINED_GLASS)
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_WEEKDAY,"%WEEKDAY%", plugin.getRequirementsManager().getRequirementsTranslation(weekdays)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_WEEKDAY,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%WEEKDAY%", plugin.getRequirementsManager().getRequirementsTranslation(weekdays),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
@@ -74,12 +72,11 @@ public class RequirementWeekday extends InventoryMenu {
         Player player  = (Player) event.getWhoClicked();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         for (String weekdays : DateTimeUtil.getWeekList()) {
             if (weekdays.equals(ItemHelper.getItemId(event.getCurrentItem()))) {
-                boolean enabled = placedEggs.getBoolean("Requirements.Weekday." + weekdays);
-                placedEggs.set("Requirements.Weekday." + weekdays, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection);
+                // Toggle requirement state through the EggDataManager
+                boolean currentState = plugin.getEggDataManager().isRequirementEnabled(collection, "Weekday", weekdays);
+                plugin.getEggDataManager().setRequirementEnabled(collection, "Weekday", weekdays, !currentState);
                 menuContent(collection);
                 return;
             }

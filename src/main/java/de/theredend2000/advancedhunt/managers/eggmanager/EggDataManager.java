@@ -40,6 +40,55 @@ public class EggDataManager {
         }
     }
 
+    /**
+     * Checks if a requirement is enabled for a specific collection
+     * @param collection The collection name
+     * @param requirementType The type of requirement (e.g., "Season", "Year", "Month")
+     * @param key The specific key for the requirement
+     * @return True if the requirement is enabled, false otherwise
+     */
+    public boolean isRequirementEnabled(String collection, String requirementType, String key) {
+        return eggConfig.isRequirementEnabled(collection, requirementType, key);
+    }
+
+    /**
+     * Sets the enabled state of a requirement for a specific collection
+     * @param collection The collection name
+     * @param requirementType The type of requirement (e.g., "Season", "Year", "Month")
+     * @param key The specific key for the requirement
+     * @param enabled Whether the requirement should be enabled
+     */
+    public void setRequirementEnabled(String collection, String requirementType, String key, boolean enabled) {
+        eggConfig.setRequirementEnabled(collection, requirementType, key, enabled);
+    }
+
+    /**
+     * Gets the order configuration for requirements (AND/OR)
+     * @param collection The collection name
+     * @return The requirements order string
+     */
+    public String getRequirementsOrder(String collection) {
+        return eggConfig.getRequirementsOrder(collection);
+    }
+
+    /**
+     * Sets the order configuration for requirements
+     * @param collection The collection name
+     * @param order The order to set (AND/OR)
+     */
+    public void setRequirementsOrder(String collection, String order) {
+        eggConfig.setRequirementsOrder(collection, order);
+    }
+
+    /**
+     * Gets the FileConfiguration for a specific collection.
+     * This method should only be used within the EggDataManager class 
+     * and should be phased out as encapsulated methods are implemented.
+     * @param collection The collection name
+     * @return The FileConfiguration for the collection
+     * @deprecated Use specific getter and setter methods instead
+     */
+    @Deprecated
     public FileConfiguration getPlacedEggs(String collection) {
         return eggConfig.getConfig(collection);
     }

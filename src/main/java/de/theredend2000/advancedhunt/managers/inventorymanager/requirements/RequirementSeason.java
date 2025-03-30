@@ -12,12 +12,10 @@ import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class RequirementSeason extends InventoryMenu {
     private MessageManager messageManager;
@@ -58,10 +56,10 @@ public class RequirementSeason extends InventoryMenu {
     }
 
     private void menuContent(String collection) {
-        FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
         getInventory().setContents(inventoryContent);
         for(String season : new ArrayList<>(DateTimeUtil.getSeasonList())){
-            boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
+            // Use encapsulated method instead of direct FileConfiguration access
+            boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Season", season);
             getInventory().addItem(new ItemBuilder(enabled ? XMaterial.OAK_LEAVES : XMaterial.RED_STAINED_GLASS)
                     .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_SEASON,"%SEASON%", plugin.getRequirementsManager().getRequirementsTranslation(season)))
                     .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_SEASON,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%SEASON_INFORMATION%", getSeasonInformation(Seasons.valueOf(season)),"%SEASON%", plugin.getRequirementsManager().getRequirementsTranslation(season),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
@@ -92,12 +90,11 @@ public class RequirementSeason extends InventoryMenu {
         Player player  = (Player) event.getWhoClicked();
 
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
-        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
         for (String season : new ArrayList<>(DateTimeUtil.getSeasonList())) {
             if (season.equals(ItemHelper.getItemId(event.getCurrentItem()))) {
-                boolean enabled = placedEggs.getBoolean("Requirements.Season." + season);
-                placedEggs.set("Requirements.Season." + season, !enabled);
-                plugin.getEggDataManager().savePlacedEggs(collection);
+                // Use encapsulated method instead of direct FileConfiguration access
+                boolean currentState = plugin.getEggDataManager().isRequirementEnabled(collection, "Season", season);
+                plugin.getEggDataManager().setRequirementEnabled(collection, "Season", season, !currentState);
                 menuContent(collection);
                 return;
             }

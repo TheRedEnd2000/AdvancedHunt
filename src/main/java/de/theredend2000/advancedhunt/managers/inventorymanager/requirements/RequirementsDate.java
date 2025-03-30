@@ -11,13 +11,11 @@ import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class RequirementsDate extends PaginatedInventoryMenu {
 
@@ -102,8 +100,8 @@ public class RequirementsDate extends PaginatedInventoryMenu {
                 continue;
             }
 
-            FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-            boolean enabled = placedEggs.getBoolean("Requirements.Date." + keys.get(index));
+            // Use encapsulated method instead of direct FileConfiguration access
+            boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Date", keys.get(index));
             getInventory().setItem(slotIndex, new ItemBuilder(enabled ? XMaterial.NAME_TAG : XMaterial.RED_STAINED_GLASS)
                     .setCustomId(keys.get(index))
                     .withGlow(enabled)
@@ -138,10 +136,9 @@ public class RequirementsDate extends PaginatedInventoryMenu {
                     !ItemHelper.getItemId(event.getCurrentItem()).equals(currentDate)) {
                 continue;
             }
-            FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-            boolean enabled = placedEggs.getBoolean("Requirements.Date." + currentDate);
-            placedEggs.set("Requirements.Date." + currentDate, !enabled);
-            plugin.getEggDataManager().savePlacedEggs(collection);
+            // Use encapsulated method instead of direct FileConfiguration access
+            boolean enabled = plugin.getEggDataManager().isRequirementEnabled(collection, "Date", currentDate);
+            plugin.getEggDataManager().setRequirementEnabled(collection, "Date", currentDate, !enabled);
             open(collection);
         }
 
@@ -219,6 +216,4 @@ public class RequirementsDate extends PaginatedInventoryMenu {
             default: return "Unknown";
         }
     }
-
-
 }
