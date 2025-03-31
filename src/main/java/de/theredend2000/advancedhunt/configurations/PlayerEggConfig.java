@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -87,5 +89,27 @@ public class PlayerEggConfig extends MultiFileConfiguration {
         String configName = uuid.toString();
         FileConfiguration config = getConfig(configName);
         return !config.contains("FoundEggs." + collection + "." + id + ".ResetCooldown") ? System.currentTimeMillis() + 1000000L : config.getLong("FoundEggs." + collection + "." + id + ".ResetCooldown");
+    }
+
+    public boolean hasFoundEggs(UUID uuid) {
+        String configName = uuid.toString();
+        FileConfiguration config = getConfig(configName);
+        return config != null && config.contains("FoundEggs.");
+    }
+
+    public List<String> getPlayerCollections(UUID uuid) {
+        String configName = uuid.toString();
+        FileConfiguration config = getConfig(configName);
+        if(config == null || !config.contains("FoundEggs.")) 
+            return new ArrayList<>();
+        return new ArrayList<>(config.getConfigurationSection("FoundEggs.").getKeys(false));
+    }
+
+    public List<String> getEggIdsForCollection(UUID uuid, String collection) {
+        String configName = uuid.toString();
+        FileConfiguration config = getConfig(configName);
+        if(config == null || !config.contains("FoundEggs." + collection)) 
+            return new ArrayList<>();
+        return new ArrayList<>(config.getConfigurationSection("FoundEggs." + collection).getKeys(false));
     }
 }

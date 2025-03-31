@@ -76,11 +76,10 @@ public class PlayerEggDataManager {
             @Override
             public void run() {
                 for(UUID uuid : plugin.getEggDataManager().savedPlayers()){
-                    FileConfiguration cfg = getPlayerData(uuid);
-                    if(cfg == null) continue;
-                    if(!cfg.contains("FoundEggs.")) continue;
-                    for(String collection : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
-                        for(String eggId : cfg.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
+                    if(!playerEggConfig.hasFoundEggs(uuid)) continue;
+                    
+                    for(String collection : playerEggConfig.getPlayerCollections(uuid)) {
+                        for(String eggId : playerEggConfig.getEggIdsForCollection(uuid, collection)) {
                             if (eggId.equals("Count") || eggId.equals("Name")) continue;
                             if (canReset(uuid, collection, eggId))
                                 plugin.getEggManager().resetStatsPlayerEgg(uuid, collection, eggId);
