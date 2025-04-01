@@ -2,7 +2,7 @@ name: AdvancedHunt
 version: '3.1.2-SNAPSHOT'
 main: de.theredend2000.advancedhunt.Main
 api-version: 1.13
-softdepend: [PlaceholderAPI, NBTAPI, ProtocolLib]
+softdepend: [PlaceholderAPI, NBTAPI, ProtocolLib, ItemsAdder]
 website: https://www.spigotmc.org/resources/advancedtreasurehunt.109085/
 authors: [ TheRedEnd2000, GrafterCrafter ]
 

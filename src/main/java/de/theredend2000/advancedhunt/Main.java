@@ -195,6 +195,7 @@ public final class Main extends JavaPlugin {
     private void checkSoftDependencies() {
         checkSoftDependency("PlaceholderAPI");
         checkSoftDependency("ProtocolLib");
+        checkSoftDependency("ItemsAdder");
     }
 
     private void checkSoftDependency(String pluginName) {
@@ -370,6 +371,10 @@ public final class Main extends JavaPlugin {
 
     public static String getTexture(String texture) {
         return "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv" + texture;
+    }
+
+    public static PlayerMenuUtility dropPlayerMenuUtility(Player p) {
+        return playerMenuUtilityMap.remove(p);
     }
 
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {

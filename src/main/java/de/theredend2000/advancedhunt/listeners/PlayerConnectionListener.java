@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import static de.theredend2000.advancedhunt.Main.getPlayerMenuUtility;
+
 public class PlayerConnectionListener implements Listener {
 
     public PlayerConnectionListener(){
@@ -39,5 +41,7 @@ public class PlayerConnectionListener implements Listener {
             Main.getInstance().getPlacePlayers().remove(player);
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.LEAVE_PLACEMODE));
         }
+
+        Main.dropPlayerMenuUtility(player);
     }
 }
