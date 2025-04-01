@@ -25,7 +25,6 @@ import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import de.theredend2000.advancedhunt.util.saveinventory.DatetimeUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -174,6 +173,7 @@ public final class Main extends JavaPlugin {
     private void checkSoftDependencies() {
         checkSoftDependency("PlaceholderAPI");
         checkSoftDependency("ProtocolLib");
+        checkSoftDependency("ItemsAdder");
     }
 
     private void checkSoftDependency(String pluginName) {
