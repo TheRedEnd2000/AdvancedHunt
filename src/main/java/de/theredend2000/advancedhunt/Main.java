@@ -375,6 +375,10 @@ public final class Main extends JavaPlugin {
         return "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv" + texture;
     }
 
+    public static PlayerMenuUtility dropPlayerMenuUtility(Player p) {
+        return playerMenuUtilityMap.remove(p);
+    }
+
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
         return playerMenuUtilityMap.computeIfAbsent(p, PlayerMenuUtility::new);
     }
