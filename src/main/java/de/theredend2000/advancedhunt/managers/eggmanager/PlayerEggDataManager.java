@@ -90,4 +90,11 @@ public class PlayerEggDataManager {
             }
         }.runTaskTimerAsynchronously(plugin, 20, 20);
     }
+
+    /**
+     * Resets all player data for all players.
+     */
+    public void resetAllPlayerData() {
+        playerEggConfig.resetAllPlayerData();
+    }
 }

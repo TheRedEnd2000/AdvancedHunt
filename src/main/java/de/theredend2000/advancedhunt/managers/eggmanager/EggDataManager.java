@@ -92,5 +92,12 @@ public class EggDataManager {
         }
         return playerUUIDs;
     }
+
+    /**
+     * Resets all egg statistics for all collections.
+     */
+    public void resetAllEggStatistics() {
+        eggConfig.resetAllEggStatistics();
+    }
 }
 

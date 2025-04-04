@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -87,5 +89,50 @@ public class PlayerEggConfig extends MultiFileConfiguration {
         String configName = uuid.toString();
         FileConfiguration config = getConfig(configName);
         return !config.contains("FoundEggs." + collection + "." + id + ".ResetCooldown") ? System.currentTimeMillis() + 1000000L : config.getLong("FoundEggs." + collection + "." + id + ".ResetCooldown");
+    }
+
+    /**
+     * Resets all player data for all players.
+     */
+    public void resetAllPlayerData() {
+        List<UUID> uuids = getSavedPlayerUUIDs();
+        for (UUID uuid : uuids) {
+            resetPlayerData(uuid);
+        }
+    }
+
+    /**
+     * Resets a specific player's data for all collections.
+     * @param uuid The UUID of the player to reset data for.
+     */
+    public void resetPlayerData(UUID uuid) {
+        String configName = uuid.toString();
+        FileConfiguration config = getConfig(configName);
+        config.set("FoundEggs", null);
+        saveConfig(configName);
+    }
+
+    /**
+     * Gets a list of all player UUIDs with saved data.
+     * @return List of player UUIDs.
+     */
+    public List<UUID> getSavedPlayerUUIDs() {
+        List<UUID> playerUUIDs = new ArrayList<>();
+        File playerDataFolder = new File(plugin.getDataFolder(), "playerdata");
+        if (playerDataFolder.exists() && playerDataFolder.isDirectory()) {
+            File[] playerFiles = playerDataFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+            if (playerFiles != null) {
+                for (File playerFile : playerFiles) {
+                    String fileName = playerFile.getName();
+                    try {
+                        UUID playerUUID = UUID.fromString(fileName.substring(0, fileName.length() - 4));
+                        playerUUIDs.add(playerUUID);
+                    } catch (IllegalArgumentException e) {
+                        // Skip files with invalid UUIDs
+                    }
+                }
+            }
+        }
+        return playerUUIDs;
     }
 }

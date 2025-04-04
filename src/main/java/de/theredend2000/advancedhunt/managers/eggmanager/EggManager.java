@@ -440,31 +440,10 @@ public class EggManager {
         markEggAsFound(collection,id,false);
     }
 
-    public void resetStatsAll(){
-        for(UUID uuids : plugin.getEggDataManager().savedPlayers()){
-            for (String collection : plugin.getEggDataManager().savedEggCollections()) {
-                ArrayList<String> eggID = new ArrayList<>();
-
-                FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-                if(playerConfig.getString("FoundEggs." + collection) == null) continue;
-                eggID.addAll(playerConfig.getConfigurationSection("FoundEggs." + collection).getKeys(false));
-                playerConfig.set("FoundEggs." + collection, null);
-                plugin.getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
-
-                FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
-                ConfigurationSection eggsSection = placedEggs.getConfigurationSection("PlacedEggs");
-
-                if (eggsSection != null) {
-                    for (String ids : eggsSection.getKeys(false)) {
-                        if (eggID.contains(ids)) {
-                            placedEggs.set("PlacedEggs." + ids + ".TimesFound", getTimesFound(ids, collection) - 1);
-                            plugin.getEggDataManager().savePlacedEggs(collection);
-                            markEggAsFound(collection,ids,false);
-                        }
-                    }
-                }
-            }
-        }
+    public void resetStatsAll() {
+        // Use the existing instances through the data managers instead of creating new ones
+        plugin.getPlayerEggDataManager().resetAllPlayerData();
+        plugin.getEggDataManager().resetAllEggStatistics();
     }
 
     public boolean containsPlayer(String name) {

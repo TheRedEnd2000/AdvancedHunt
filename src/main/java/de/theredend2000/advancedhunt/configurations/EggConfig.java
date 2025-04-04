@@ -266,4 +266,29 @@ public class EggConfig extends MultiFileConfiguration {
         }
         return collections;
     }
+
+    /**
+     * Resets all egg statistics for all collections.
+     */
+    public void resetAllEggStatistics() {
+        for (String collection : savedEggCollections()) {
+            resetCollectionEggStatistics(collection);
+        }
+    }
+
+    /**
+     * Resets egg statistics for a specific collection.
+     * @param collection The name of the collection to reset statistics for.
+     */
+    public void resetCollectionEggStatistics(String collection) {
+        FileConfiguration config = getConfig(collection);
+        ConfigurationSection placedEggsSection = config.getConfigurationSection("PlacedEggs");
+        if (placedEggsSection != null) {
+            for (String eggId : placedEggsSection.getKeys(false)) {
+                config.set("PlacedEggs." + eggId + ".TimesFound", 0);
+                config.set("PlacedEggs." + eggId + ".markedAsFound", false);
+            }
+        }
+        saveConfig(collection);
+    }
 }
