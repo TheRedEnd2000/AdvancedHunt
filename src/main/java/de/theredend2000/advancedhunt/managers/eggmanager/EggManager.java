@@ -1,6 +1,5 @@
 package de.theredend2000.advancedhunt.managers.eggmanager;
 
-import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.InventoryConfig;
@@ -447,7 +446,7 @@ public class EggManager {
                 ArrayList<String> eggID = new ArrayList<>();
 
                 FileConfiguration playerConfig = plugin.getPlayerEggDataManager().getPlayerData(uuids);
-                if(playerConfig.getString("FoundEggs." + collection) == null) return;
+                if(playerConfig.getString("FoundEggs." + collection) == null) continue;
                 eggID.addAll(playerConfig.getConfigurationSection("FoundEggs." + collection).getKeys(false));
                 playerConfig.set("FoundEggs." + collection, null);
                 plugin.getPlayerEggDataManager().savePlayerData(uuids, playerConfig);
