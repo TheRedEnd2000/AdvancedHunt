@@ -30,6 +30,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class EggManager {
 
@@ -440,10 +441,11 @@ public class EggManager {
         markEggAsFound(collection,id,false);
     }
 
-    public void resetStatsAll() {
-        // Use the existing instances through the data managers instead of creating new ones
-        plugin.getPlayerEggDataManager().resetAllPlayerData();
-        plugin.getEggDataManager().resetAllEggStatistics();
+    public CompletableFuture<Void> resetStatsAll() {
+        return CompletableFuture.runAsync(() -> {
+            plugin.getPlayerEggDataManager().resetAllPlayerData();
+            plugin.getEggDataManager().resetAllEggStatistics();
+        }, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), runnable));
     }
 
     public boolean containsPlayer(String name) {

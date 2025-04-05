@@ -13,7 +13,6 @@ import de.theredend2000.advancedhunt.util.messages.MenuManager;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -300,17 +299,18 @@ public class AdvancedHuntCommand implements TabExecutor {
         messageManager.sendMessage(player, MessageKey.EGGIMPORT_SUCCESS);
     }
 
-    private void handleReset(Player player, String[] args) {
-        if (!checkPermission(player, Permission.Command.RESET)) return;
+    private void handleReset(CommandSender sender, String[] args) {
+        if (!checkPermission(sender, Permission.Command.RESET)) return;
         if (args.length < 2) {
-            player.sendMessage(usage());
+            sender.sendMessage(usage());
             return;
         }
 
         if (args[1].equalsIgnoreCase("all")) {
             if(args.length > 2 && args[2].equalsIgnoreCase("all")) {
-                eggManager.resetStatsAll();
-                messageManager.sendMessage(player, MessageKey.FOUNDEGGS_RESET);
+                eggManager.resetStatsAll().thenAcceptAsync(result -> {
+                    messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_RESET);
+                }, runnable -> Bukkit.getScheduler().runTask(Main.getInstance(), runnable));
                 return;
             }
             String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
@@ -319,9 +319,9 @@ public class AdvancedHuntCommand implements TabExecutor {
                     String name = eggManager.getPlayerNameFromUUID(uuid);
                     eggManager.resetStatsPlayer(name, collection);
                 }
-                player.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7in collection §6" + collection + " §7has been §creset§7!");
+                sender.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7in collection §6" + collection + " §7has been §creset§7!");
             }else
-                player.sendMessage("§cNo collection with name '" + collection + "' found.");
+                sender.sendMessage("§cNo collection with name '" + collection + "' found.");
             return;
         }
 
@@ -331,17 +331,17 @@ public class AdvancedHuntCommand implements TabExecutor {
             if(collection.equalsIgnoreCase("all")){
                 for(String collections : plugin.getEggDataManager().savedEggCollections())
                     eggManager.resetStatsPlayer(name, collections);
-                player.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + name + " §7in all collections has been §creset§7!");
+                sender.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + name + " §7in all collections has been §creset§7!");
                 return;
             }
             if (eggManager.containsPlayer(name)) {
                 if (plugin.getEggDataManager().containsCollection(collection)) {
                     eggManager.resetStatsPlayer(name, collection);
-                    messageManager.sendMessage(player, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", name, "%COLLECTION%", collection);
+                    messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", name, "%COLLECTION%", collection);
                 }else
-                    player.sendMessage("§cNo collection with name " + collection + " found.");
+                    sender.sendMessage("§cNo collection with name " + collection + " found.");
             } else {
-                messageManager.sendMessage(player, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
+                messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
             }
         }
     }
@@ -353,22 +353,7 @@ public class AdvancedHuntCommand implements TabExecutor {
                 handleShow();
                 break;
             case "reset":
-                if (args.length == 2) {
-                    if (args[1].equalsIgnoreCase("all")) {
-                        eggManager.resetStatsAll();
-                        messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_RESET);
-                        return;
-                    }
-
-                    String name = args[1];
-                    if (eggManager.containsPlayer(name)) {
-                        for (String collections : Main.getInstance().getEggDataManager().savedEggCollections())
-                            eggManager.resetStatsPlayer(name, collections);
-                        messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET, "%PLAYER%", name);
-                    } else {
-                        messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
-                    }
-                }
+                handleReset(sender, args);
                 break;
             default:
                 sender.sendMessage(usage());
@@ -376,9 +361,9 @@ public class AdvancedHuntCommand implements TabExecutor {
         }
     }
 
-    private boolean checkPermission(Player player, Permission.Command permission) {
-        if (!plugin.getPermissionManager().checkPermission(player, permission)) {
-            messageManager.sendMessage(player, MessageKey.PERMISSION_ERROR, "%PERMISSION%", permission.toString());
+    private boolean checkPermission(CommandSender sender, Permission.Command permission) {
+        if (!plugin.getPermissionManager().checkPermission(sender, permission)) {
+            messageManager.sendMessage(sender, MessageKey.PERMISSION_ERROR, "%PERMISSION%", permission.toString());
             return false;
         }
         return true;
