@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.bstats.Metrics;
+import de.theredend2000.advancedhunt.commands.AdminCommands;
 import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.listeners.*;
@@ -18,13 +19,13 @@ import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.indivi
 import de.theredend2000.advancedhunt.mysql.Database;
 import de.theredend2000.advancedhunt.placeholderapi.PlaceholderExtension;
 import de.theredend2000.advancedhunt.util.*;
-import de.theredend2000.advancedhunt.util.embed.EmbedCreator;
 import de.theredend2000.advancedhunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedhunt.util.messages.MenuManager;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import de.theredend2000.advancedhunt.util.saveinventory.DatetimeUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -66,12 +67,12 @@ public final class Main extends JavaPlugin {
 
     // Utility classes
     private DatetimeUtils datetimeUtils;
-    private EmbedCreator embedCreator;
     private ProtocolManager protocolManager;
 
     // Collections
     private HashMap<String, Long> refreshCooldown;
     private ArrayList<Player> placePlayers;
+    private ArrayList<UUID> devs;
     private HashMap<Player, Integer> playerAddCommand;
     private ArrayList<ArmorStand> showedArmorstands;
     private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
@@ -88,7 +89,7 @@ public final class Main extends JavaPlugin {
         plugin = this;
         renameConfigFolder();
         initialisePlugin();
-//        connectToDatabase();
+        //connectToDatabase(); //Add if MYSQL works
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
         if (VersionComparator.isGreaterThan(version, "1.21")) {
@@ -107,6 +108,8 @@ public final class Main extends JavaPlugin {
         setupDefaultCollectionIfNeeded();
         finalizeSetup();
         setupPlaceholderAPI();
+
+        initialiseDevs();
     }
 
     @Override
@@ -173,7 +176,6 @@ public final class Main extends JavaPlugin {
     private void checkSoftDependencies() {
         checkSoftDependency("PlaceholderAPI");
         checkSoftDependency("ProtocolLib");
-        checkSoftDependency("ItemsAdder");
     }
 
     private void checkSoftDependency(String pluginName) {
@@ -228,6 +230,12 @@ public final class Main extends JavaPlugin {
         sortTypeLeaderboard = new HashMap<>();
     }
 
+    private void initialiseDevs(){
+        devs = new ArrayList<>();
+        devs.add(UUID.fromString("f51d5137-482f-3cd7-8694-9f4a306b1652"));
+        devs.add(UUID.fromString("f7e365c4-512a-48e9-919d-96e87f1faf76"));
+    }
+
     private void setupManagers() {
         initManagers();
         datetimeUtils = new DatetimeUtils();
@@ -241,6 +249,10 @@ public final class Main extends JavaPlugin {
         commandRegistrar.command(commandName)
                 .aliases(aliases)
                 .tabExecuter(new AdvancedHuntCommand())
+                .register();
+        commandRegistrar.command("ahuntadmin")
+                .aliases()
+                .tabExecuter(new AdminCommands())
                 .register();
     }
 
@@ -304,7 +316,6 @@ public final class Main extends JavaPlugin {
         requirementsManager = new RequirementsManager();
         permissionManager = new PermissionManager();
         rarityManager = new RarityManager();
-        embedCreator = new EmbedCreator();
         checkSoftDependencies();
         eggHidingManager = new EggHidingManager();
     }
@@ -373,10 +384,6 @@ public final class Main extends JavaPlugin {
 
     public static String getTexture(String texture) {
         return "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv" + texture;
-    }
-
-    public static PlayerMenuUtility dropPlayerMenuUtility(Player p) {
-        return playerMenuUtilityMap.remove(p);
     }
 
     public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
@@ -462,10 +469,6 @@ public final class Main extends JavaPlugin {
         return rarityManager;
     }
 
-    public EmbedCreator getEmbedCreator() {
-        return embedCreator;
-    }
-
     public ProtocolManager getProtocolManager() {
         return protocolManager;
     }
@@ -489,5 +492,9 @@ public final class Main extends JavaPlugin {
 
     public Random getRandom() {
         return random;
+    }
+
+    public ArrayList<UUID> getDevs() {
+        return devs;
     }
 }
