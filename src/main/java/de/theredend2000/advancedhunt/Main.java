@@ -205,6 +205,8 @@ public final class Main extends JavaPlugin {
     private void initialiseProtocolLib() {
         if (pluginConfig.isProtocolLibSupportEnabled()) {
             protocolManager = ProtocolLibrary.getProtocolManager();
+            new ItemsAdderBlockPlaceEventListener();
+
             if (protocolManager != null) {
                 getLogger().log(Level.INFO, "ProtocolLib support initialised successfully.");
             } else {
