@@ -23,7 +23,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
     private int numberOfPlayers = 0;
 
     public LeaderboardMenu(PlayerMenuUtility playerMenuUtility) {
-        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + "s leaderboard", (short) 54);
+        super(playerMenuUtility, StringUtils.capitalize(Main.getInstance().getPluginConfig().getPluginNamePlural()) + " leaderboard", (short) 54);
 
         super.addMenuBorder();
         addMenuBorderButtons();

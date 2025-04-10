@@ -1,4 +1,4 @@
-config-version: 3.5
+config-version: 3.6
 
 # Change the language
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali) | zh (Simplified Chinese only messages no menus)
@@ -29,7 +29,7 @@ Download:
 # Remove the '#' and set to true to use
 Experimental:
   # Enable ProtocolLib support (requires ProtocolLib plugin)
-#  ProtocolLibSupport: false
+  ProtocolLibSupport: false
 
 prefix: '&f[&eAdvancedHunt&f] &r'
 

@@ -1,4 +1,4 @@
-config-version: 1.1
+config-version: 1.2
 
 # %PLUGIN_NAME_S% is plugin-name-singular in the config
 # %PLUGIN_NAME_P% is plugin-name-plural in the config
@@ -246,7 +246,7 @@ leaderboard_player:
     - ""
     - "&7%PLUGIN_NAME_P% Found: &3%TREASURES_FOUND%"
     - "&7%PLUGIN_NAME_P% Remaining: &3%TREASURES_REMAINING%"
-    - "&7Max E%PLUGIN_NAME_P%: &3%TREASURES_MAX%"
+    - "&7Max %PLUGIN_NAME_P%: &3%TREASURES_MAX%"
     - ""
     - "%IS_IN_TOP_TEN%"
 
