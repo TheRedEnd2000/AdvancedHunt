@@ -241,7 +241,7 @@ leaderboard_sort:
     - ""
     - "&eNhấp để chuyển đổi"
 leaderboard_player:
-  displayname: "&6&l%PLACE%&6th &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
+  displayname: "&6&l%PLACE%&6 &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
     - "&7%PLUGIN_NAME_P% Đã tìm thấy: &3%TREASURES_FOUND%"
