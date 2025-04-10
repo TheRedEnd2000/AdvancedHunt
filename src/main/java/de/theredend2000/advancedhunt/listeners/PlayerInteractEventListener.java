@@ -51,8 +51,7 @@ public class PlayerInteractEventListener implements Listener {
                 (!action.equals(Action.LEFT_CLICK_BLOCK) ||
                     !Main.getInstance().getPluginConfig().getLeftClickEgg()) ||
                 event.getClickedBlock() == null ||
-                !eggManager.containsEgg(event.getClickedBlock()) ||
-                Main.getInstance().getPlacePlayers().contains(player)) {
+                !eggManager.containsEgg(event.getClickedBlock())) {
             return;
         }
         for (String collection : Main.getInstance().getEggDataManager().savedEggCollections()) {
@@ -66,6 +65,11 @@ public class PlayerInteractEventListener implements Listener {
             if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.OpenRewards) && player.isSneaking()){
                 new IndividualEggRewardsMenu(Main.getPlayerMenuUtility(player)).open(id, collection);
                 event.setCancelled(true);
+                return;
+            }
+            
+            // Check if player is in place mode after the rewards menu check
+            if (Main.getInstance().getPlacePlayers().contains(player)) {
                 return;
             }
 
