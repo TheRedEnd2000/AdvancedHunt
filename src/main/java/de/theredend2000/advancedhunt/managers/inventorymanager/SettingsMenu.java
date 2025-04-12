@@ -14,8 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class SettingsMenu extends InventoryMenu {
     private MessageManager messageManager;
@@ -42,7 +40,7 @@ public class SettingsMenu extends InventoryMenu {
     }
 
     private void menuContent() {
-        getInventory().setItem(12, new ItemBuilder(XMaterial.CLOCK)
+        getInventory().setItem(10, new ItemBuilder(XMaterial.CLOCK)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_UPDATER))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_UPDATER,
                         "%STATUS%", Main.getInstance().getPluginConfig().getUpdater() ? "§a§l✔ Enabled" : "§c§l❌ Disabled"))
@@ -50,14 +48,14 @@ public class SettingsMenu extends InventoryMenu {
                 .withGlow(Main.getInstance().getPluginConfig().getUpdater())
                 .build());
 
-        getInventory().setItem(13, new ItemBuilder(XMaterial.COMMAND_BLOCK)
+        getInventory().setItem(11, new ItemBuilder(XMaterial.COMMAND_BLOCK)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_COMMAND_FEEDBACK))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_COMMAND_FEEDBACK,
                         "%STATUS%", "§c§l❌ Discontinued"))
                 .setCustomId("settings.commandfeedback")
                 .build());
 
-        getInventory().setItem(14, new ItemBuilder(XMaterial.NOTE_BLOCK)
+        getInventory().setItem(12, new ItemBuilder(XMaterial.NOTE_BLOCK)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_SOUND_VOLUME))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_SOUND_VOLUME,
                         "%VOLUME%", "§6" + Main.getInstance().getPluginConfig().getSoundVolume()))
@@ -65,7 +63,7 @@ public class SettingsMenu extends InventoryMenu {
                 .withGlow(true)
                 .build());
 
-        getInventory().setItem(15, new ItemBuilder(XMaterial.COMPASS)
+        getInventory().setItem(13, new ItemBuilder(XMaterial.COMPASS)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_SHOW_COORDINATES))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_SHOW_COORDINATES,
                         "%STATUS%", Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory() ? "§a§l✔ Enabled" : "§c§l❌ Disabled"))
@@ -73,7 +71,7 @@ public class SettingsMenu extends InventoryMenu {
                 .withGlow(Main.getInstance().getPluginConfig().getShowCoordinatesWhenEggFoundInProgressInventory())
                 .build());
 
-        getInventory().setItem(16, new ItemBuilder(XMaterial.ARMOR_STAND)
+        getInventory().setItem(14, new ItemBuilder(XMaterial.ARMOR_STAND)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_ARMORSTAND_GLOW))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_ARMORSTAND_GLOW,
                         "%GLOW_DURATION%", "§6" + Main.getInstance().getPluginConfig().getArmorstandGlow()))
@@ -81,7 +79,7 @@ public class SettingsMenu extends InventoryMenu {
                 .withGlow(true)
                 .build());
 
-        getInventory().setItem(19, new ItemBuilder(XMaterial.OAK_SIGN)
+        getInventory().setItem(15, new ItemBuilder(XMaterial.OAK_SIGN)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_EGG_NEARBY_RADIUS))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_EGG_NEARBY_RADIUS,
                         "%RADIUS%", "§6" + Main.getInstance().getPluginConfig().getShowEggsNearbyMessageRadius()))
@@ -89,7 +87,7 @@ public class SettingsMenu extends InventoryMenu {
                 .withGlow(true)
                 .build());
 
-        getInventory().setItem(20, new ItemBuilder(XMaterial.NAME_TAG)
+        getInventory().setItem(16, new ItemBuilder(XMaterial.NAME_TAG)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_PLUGIN_PREFIX))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_PLUGIN_PREFIX,
                         "%STATUS%", Main.getInstance().getPluginConfig().getPluginPrefixEnabled() ? "§a§l✔ Enabled" : "§c§l❌ Disabled"))
@@ -97,7 +95,7 @@ public class SettingsMenu extends InventoryMenu {
                 .withGlow(Main.getInstance().getPluginConfig().getPluginPrefixEnabled())
                 .build());
 
-        getInventory().setItem(21, new ItemBuilder(XMaterial.FIREWORK_ROCKET)
+        getInventory().setItem(19, new ItemBuilder(XMaterial.FIREWORK_ROCKET)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_FIREWORK))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_FIREWORK,
                         "%STATUS%", Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound() ? "§a§l✔ Enabled" : "§c§l❌ Disabled"))
@@ -105,7 +103,7 @@ public class SettingsMenu extends InventoryMenu {
                 .withGlow(Main.getInstance().getPluginConfig().getShowFireworkAfterEggFound())
                 .build());
 
-        getInventory().setItem(22, new ItemBuilder(XMaterial.CLOCK)
+        getInventory().setItem(20, new ItemBuilder(XMaterial.CLOCK)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_HINT_COOLDOWN))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_HINT_COOLDOWN,
                         "%STATUS%", Main.getInstance().getPluginConfig().getHintApplyCooldownOnFail() ? "§a§l✔ Enabled" : "§c§l❌ Disabled"))
