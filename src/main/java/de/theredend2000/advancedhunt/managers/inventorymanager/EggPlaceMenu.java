@@ -180,16 +180,15 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
 
                     ItemBuilder itemBuilder = new ItemBuilder(XMaterial.PLAYER_HEAD)
-                            .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)))
-                            .setDisplayName("§6Easter Egg")
-                            .setLore("§7Place this egg around the map", "§7that everyone can search and find it.");
+                            .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)));
 
                     if (event.getCurrentItem().getType().equals(XMaterial.PLAYER_HEAD.parseMaterial()))
                         itemBuilder.setItemType(XMaterial.PLAYER_HEAD)
                                 .setSkullOwner(Main.getTexture(Main.getInstance().getPluginConfig().getPlaceEggTexture(id)));
                     else
                         itemBuilder.setItemType(XMaterial.matchXMaterial(event.getCurrentItem().getType()));
-
+                    itemBuilder.setDisplayName("§6Treasure")
+                                .setLore("§7Place this treasure around the map", "§7that everyone can search and find it.");;
                     player.getInventory().addItem(itemBuilder.build());
                 }else if(event.getAction() == InventoryAction.PICKUP_HALF){
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
