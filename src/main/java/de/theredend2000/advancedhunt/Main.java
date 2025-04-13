@@ -4,7 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.bstats.Metrics;
-import de.theredend2000.advancedhunt.commands.AdminCommands;
 import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.listeners.*;
@@ -127,6 +126,10 @@ public final class Main extends JavaPlugin {
             System.out.println("Could not initialize database.");
         }
     }
+
+    /**
+     * Compare Versions to update AdvancedEggHunt to AdvancedHunt
+     **/
 
     private void renameConfigFolder() {
         File oldFolder = new File(getDataFolder().getParentFile(), "AdvancedEggHunt");
@@ -257,7 +260,6 @@ public final class Main extends JavaPlugin {
                 .register();
         commandRegistrar.command("ahuntadmin")
                 .aliases()
-                .tabExecuter(new AdminCommands())
                 .register();
     }
 
