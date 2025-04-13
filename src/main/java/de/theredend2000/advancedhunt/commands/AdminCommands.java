@@ -70,7 +70,7 @@ public class AdminCommands implements TabExecutor {
         String subCommand = args[0].toLowerCase();
         switch (subCommand) {
             case "debug-egg":
-                handleDebugEgg(player,args);
+                handleDebugEgg(player);
                 break;
             case "uuid":
                 TextComponent message = new TextComponent("Click to get UUID in chat.");
@@ -81,10 +81,7 @@ public class AdminCommands implements TabExecutor {
         return false;
     }
 
-    private void handleDebugEgg(Player player, String[] args){
-        if(args.length != 3) return;
-        float v = Float.parseFloat(args[1]);
-        float v1 = Float.parseFloat(args[2]);
+    private void handleDebugEgg(Player player){
         Location location = player.getLocation();
         Location blockCenter = location.getBlock().getLocation().add(0.5, -0.725, 0.5);
         ArmorStand armorStand = (ArmorStand) blockCenter.getWorld().spawnEntity(blockCenter, EntityType.ARMOR_STAND);

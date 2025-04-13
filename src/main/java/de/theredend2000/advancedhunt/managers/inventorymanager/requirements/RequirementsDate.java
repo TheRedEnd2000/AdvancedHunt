@@ -107,8 +107,8 @@ public class RequirementsDate extends PaginatedInventoryMenu {
             getInventory().setItem(slotIndex, new ItemBuilder(enabled ? XMaterial.NAME_TAG : XMaterial.RED_STAINED_GLASS)
                     .setCustomId(keys.get(index))
                     .withGlow(enabled)
-                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_HOUR,"%DATE%", keys.get(index)))
-                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_HOUR,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%HOUR_FORMAT%","%DATE%", keys.get(index),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
+                    .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REQUIREMENTS_DATE,"%DATE%", keys.get(index)))
+                    .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REQUIREMENTS_DATE,"%ADD_REMOVE%",(enabled ? "remove" : "add"),"%DATE%", keys.get(index),"%TO_FROM%",(enabled ? "from" : "to"),"%STATUS%",(enabled ? "§aEnabled" : "§cDisabled")))
                     .build());
         }
     }
