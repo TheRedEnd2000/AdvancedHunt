@@ -8,6 +8,7 @@ import de.theredend2000.advancedhunt.util.enums.Permission;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -44,7 +45,7 @@ public class BlockPlaceEventListener implements Listener {
             player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
             BlockChangingManager changingManager = new BlockChangingManager();
             changingManager.registerListener();
-            Bukkit.getScheduler().runTaskLater(Main.getInstance(),()-> changingManager.sendBlockChangePacket(event.getBlockPlaced(),player),10L);
+            changingManager.sendBlockChangePacket(event.getBlockPlaced().getLocation(),player, event.getBlockPlaced().getType());
         }else
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.PlaceTreasure.toString()));
     }
