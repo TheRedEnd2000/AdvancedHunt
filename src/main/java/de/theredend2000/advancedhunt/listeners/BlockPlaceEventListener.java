@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.listeners;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.SoundManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
+import de.theredend2000.advancedhunt.protocollib.BlockChangingManager;
 import de.theredend2000.advancedhunt.util.enums.Permission;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
@@ -38,8 +39,12 @@ public class BlockPlaceEventListener implements Listener {
 
         if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.PlaceTreasure)){
             String collection = eggManager.getEggCollectionFromPlayerData(player.getUniqueId());
-            eggManager.saveEgg(player, event.getBlockPlaced().getLocation(), collection);
+            event.setCancelled(true);
+            eggManager.saveEgg(player, event.getBlock().getLocation(), collection);
             player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
+            BlockChangingManager changingManager = new BlockChangingManager();
+            changingManager.registerListener();
+            Bukkit.getScheduler().runTaskLater(Main.getInstance(),()-> changingManager.sendBlockChangePacket(event.getBlockPlaced(),player),10L);
         }else
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR).replaceAll("%PERMISSION%", Permission.PlaceTreasure.toString()));
     }
