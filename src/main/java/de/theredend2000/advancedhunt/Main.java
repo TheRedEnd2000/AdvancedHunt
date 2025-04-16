@@ -200,6 +200,9 @@ public final class Main extends JavaPlugin {
             case "ProtocolLib":
                 initialiseProtocolLib();
                 break;
+            case "ItemsAdder":
+                new ItemsAdderBlockPlaceEventListener();
+                break;
             default:
                 getLogger().log(Level.INFO, "No specific initialization needed for " + pluginName);
         }
@@ -208,7 +211,6 @@ public final class Main extends JavaPlugin {
     private void initialiseProtocolLib() {
         if (pluginConfig.isProtocolLibSupportEnabled()) {
             protocolManager = ProtocolLibrary.getProtocolManager();
-            new ItemsAdderBlockPlaceEventListener();
 
             if (protocolManager != null) {
                 getLogger().log(Level.INFO, "ProtocolLib support initialised successfully.");
