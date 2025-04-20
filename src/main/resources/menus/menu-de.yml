@@ -244,7 +244,7 @@ leaderboard_sort:
     - ""
     - "&eKlicke um es zu ändern."
 leaderboard_player:
-  displayname: "&6&l%PLACE%&6 &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
+  displayname: "&6&l%PLACE%.&6 &2&n%PLAYER_NAME% %PLAYER_HIMSELF%"
   lore:
     - ""
     - "&7%PLUGIN_NAME_P% gefunden: &3%TREASURES_FOUND%"
