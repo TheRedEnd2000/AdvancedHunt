@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.configurations;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -86,6 +87,11 @@ public abstract class Configuration {
 
     protected void upgradeConfig(double currentVersion, double targetVersion) {
         YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(configFile);
+          // Preserve Place settings before upgrading
+        ConfigurationSection placeSection = null;
+        if (oldConfig.isConfigurationSection("Place")) {
+            placeSection = oldConfig.getConfigurationSection("Place");
+        }
 
         if (hasTemplate) {
             configFile.delete();
@@ -97,6 +103,15 @@ public abstract class Configuration {
         }
 
         standardUpgrade(oldConfig, config);
+
+        // Restore Place settings after the upgrade
+        if (placeSection != null) {
+            for (String key : placeSection.getKeys(true)) {
+                if (!placeSection.isConfigurationSection(key)) {
+                    config.set("Place." + key, placeSection.get(key));
+                }
+            }
+        }
 
         for (Map.Entry<Double, ConfigUpgrader> entry : getUpgrader().tailMap(currentVersion, false).entrySet()) {
             if (entry.getKey() > targetVersion) break;
