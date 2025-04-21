@@ -116,13 +116,13 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
         if(keys == 0) return 1;
         return (int) Math.ceil((double) keys / getMaxItemsPerPage());
     }
+    MessageManager messageManager = Main.getInstance().getMessageManager();
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
         String selectedCollection = ItemHelper.getItemId(Objects.requireNonNull(event.getCurrentItem()));
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
-        MessageManager messageManager = Main.getInstance().getMessageManager();
 
         ArrayList<String> keys = new ArrayList<>(Main.getInstance().getEggDataManager().savedEggCollections());
         for(String collection : keys){
@@ -132,10 +132,9 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
             }
             switch (event.getAction()) {
                 case PICKUP_ALL:
-                    Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), collection);
+                    selectCollection(collection,player,true);
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                     open();
-                    messageManager.sendMessage(player, MessageKey.COLLECTION_SELECTION, "%SELECTION%", collection);
                     return;
                 case PICKUP_HALF:
                     if (Main.getInstance().getPermissionManager().checkPermission(player, Permission.ChangeCollections)) {
@@ -206,6 +205,11 @@ public class CollectionSelectMenu extends PaginatedInventoryMenu {
                 }
                 break;
         }
+    }
+    public void selectCollection(String collection, Player player, boolean sendMessage){
+        Main.getInstance().getPlayerEggDataManager().savePlayerCollection(player.getUniqueId(), collection);
+        if(sendMessage)
+            messageManager.sendMessage(player, MessageKey.COLLECTION_SELECTION, "%SELECTION%", collection);
     }
 }
 

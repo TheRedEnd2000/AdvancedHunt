@@ -128,6 +128,7 @@ public class CollectionCreator extends InventoryMenu {
                 }
                 if (!Main.getInstance().getEggDataManager().containsSectionFile(name)) {
                     Main.getInstance().getEggDataManager().createEggCollectionFile(name, enabled);
+                    new CollectionSelectMenu(playerMenuUtility).selectCollection(name,player,true);
                     new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
                     playerConfig.set("CollectionEdit", null);
                     Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
