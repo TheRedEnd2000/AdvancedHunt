@@ -6,9 +6,12 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigLocationUtil {
+    private static final Map<String, Location> locationCache = new ConcurrentHashMap<>();
     private Main plugin;
     private Location location;
     private String root;
@@ -32,6 +35,8 @@ public class ConfigLocationUtil {
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
         Main.getInstance().getEggDataManager().savePlacedEggs(collection);
+        // clear cached location
+        locationCache.remove(collection + ":" + root);
     }
 
     public void saveBlockLocation(UUID uuid) {
@@ -43,23 +48,37 @@ public class ConfigLocationUtil {
         config.set(root + ".Date", plugin.getDatetimeUtils().getNowDate());
         config.set(root + ".Time", plugin.getDatetimeUtils().getNowTime());
         plugin.getPlayerEggDataManager().savePlayerData(uuid, config);
+        // clear cached location
+        locationCache.remove(uuid.toString() + ":" + root);
     }
 
     public Location loadLocation(String collection) {
+        String key = collection + ":" + root;
+        Location cached = locationCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
         FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(collection);
         if (config.contains(root)) {
             World world = Bukkit.getWorld(config.getString(root + ".World", ""));
             if (world != null) {
-                double x = config.getInt(root + ".X"),
-                        y = config.getInt(root + ".Y"),
-                        z = config.getInt(root + ".Z");
-                return new Location(world, x, y, z);
+                int x = config.getInt(root + ".X"),
+                    y = config.getInt(root + ".Y"),
+                    z = config.getInt(root + ".Z");
+                Location loc = new Location(world, x, y, z);
+                locationCache.put(key, loc);
+                return loc;
             }
         }
         return null;
     }
 
     public Location loadLocation(UUID uuid) {
+        String key = uuid.toString() + ":" + root;
+        Location cached = locationCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
         FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
         if (!config.contains(root)) {
             return null;
@@ -69,8 +88,10 @@ public class ConfigLocationUtil {
             return null;
         }
         int x = config.getInt(root + ".X"),
-                y = config.getInt(root + ".Y"),
-                z = config.getInt(root + ".Z");
-        return new Location(world, x, y, z);
+            y = config.getInt(root + ".Y"),
+            z = config.getInt(root + ".Z");
+        Location loc = new Location(world, x, y, z);
+        locationCache.put(key, loc);
+        return loc;
     }
 }
