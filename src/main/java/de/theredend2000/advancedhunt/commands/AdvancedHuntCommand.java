@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class AdvancedHuntCommand implements TabExecutor {
@@ -315,11 +316,16 @@ public class AdvancedHuntCommand implements TabExecutor {
             }
             String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
             if (plugin.getEggDataManager().containsCollection(collection)) {
-                for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-                    String name = eggManager.getPlayerNameFromUUID(uuid);
-                    eggManager.resetStatsPlayer(name, collection);
-                }
-                sender.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7in collection §6" + collection + " §7has been §creset§7!");
+                CompletableFuture.runAsync(() -> {
+                        for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
+                            String name = eggManager.getPlayerNameFromUUID(uuid);
+                            eggManager.resetStatsPlayer(name, collection);
+                        }
+                    }, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), runnable)
+                ).thenAccept(result -> {
+                    sender.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7in collection §6" + collection + " §7has been §creset§7!");
+                });
+
             }else
                 sender.sendMessage("§cNo collection with name '" + collection + "' found.");
             return;
@@ -329,9 +335,14 @@ public class AdvancedHuntCommand implements TabExecutor {
         if (args.length == 3) {
             String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
             if(collection.equalsIgnoreCase("all")){
-                for(String collections : plugin.getEggDataManager().savedEggCollections())
-                    eggManager.resetStatsPlayer(name, collections);
-                sender.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + name + " §7in all collections has been §creset§7!");
+                CompletableFuture.runAsync(() -> {
+                        for(String collections : plugin.getEggDataManager().savedEggCollections())
+                            eggManager.resetStatsPlayer(name, collections);
+                            }, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), runnable)
+                ).thenAccept(result -> {
+                    sender.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + name + " §7in all collections has been §creset§7!");
+                });
+
                 return;
             }
             if (eggManager.containsPlayer(name)) {
