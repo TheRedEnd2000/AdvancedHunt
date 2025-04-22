@@ -4,12 +4,14 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
+import de.theredend2000.advancedhunt.protocollib.BlockChangingManager;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.enums.Permission;
 import de.theredend2000.advancedhunt.util.messages.MenuManager;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -65,6 +67,10 @@ public class AdminCommands implements TabExecutor {
             player.sendMessage("You are not");
             return true;
         }
+        if(!player.isOp()){
+            player.sendMessage("You cant use admin commands outside of non testing servers.");
+            return false;
+        }
         if (args.length == 0) return true;
 
         String subCommand = args[0].toLowerCase();
@@ -76,6 +82,14 @@ public class AdminCommands implements TabExecutor {
                 TextComponent message = new TextComponent("Click to get UUID in chat.");
                 message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(player.getUniqueId())));
                 player.spigot().sendMessage(message);
+                break;
+            case "log":
+                plugin.getLogHelper().toggleSendLog();
+                player.sendMessage("Set send log to "+plugin.getLogHelper().getSendLog());
+                break;
+            case "resend":
+                plugin.getBlockChangingManager().resendAllGhostBlocks(player);
+                player.sendMessage("Done!");
                 break;
         }
         return false;
@@ -112,11 +126,7 @@ public class AdminCommands implements TabExecutor {
         List<String> completions = new ArrayList<>();
         switch (args.length) {
             case 1:
-                String[] tabs = {""};
-                for (String permission : tabs) {
-                    if (plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permission)))
-                        completions.add(permission);
-                }
+
                 break;
             case 2:
 

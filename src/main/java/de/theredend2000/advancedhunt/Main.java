@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.bstats.Metrics;
+import de.theredend2000.advancedhunt.commands.AdminCommands;
 import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.listeners.*;
@@ -17,6 +18,7 @@ import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
 import de.theredend2000.advancedhunt.mysql.Database;
 import de.theredend2000.advancedhunt.placeholderapi.PlaceholderExtension;
+import de.theredend2000.advancedhunt.protocollib.BlockChangingManager;
 import de.theredend2000.advancedhunt.util.*;
 import de.theredend2000.advancedhunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedhunt.util.messages.MenuManager;
@@ -62,10 +64,12 @@ public final class Main extends JavaPlugin {
     private GlobalPresetDataManager globalPresetDataManager;
     private RarityManager rarityManager;
     private EggHidingManager eggHidingManager;
+    private BlockChangingManager blockChangingManager;
 
     // Utility classes
     private DatetimeUtils datetimeUtils;
     private ProtocolManager protocolManager;
+    private LogHelper logHelper;
 
     // Collections
     private HashMap<String, Long> refreshCooldown;
@@ -247,6 +251,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void setupManagers() {
+        logHelper = new LogHelper();
         initManagers();
         datetimeUtils = new DatetimeUtils();
         cooldownManager = new CooldownManager(this);
@@ -262,6 +267,7 @@ public final class Main extends JavaPlugin {
                 .register();
         commandRegistrar.command("ahuntadmin")
                 .aliases()
+                .tabExecuter(new AdminCommands())
                 .register();
     }
 
@@ -327,6 +333,7 @@ public final class Main extends JavaPlugin {
         rarityManager = new RarityManager();
         checkSoftDependencies();
         eggHidingManager = new EggHidingManager();
+        blockChangingManager = new BlockChangingManager();
     }
 
     private void initListeners() {
@@ -505,5 +512,13 @@ public final class Main extends JavaPlugin {
 
     public ArrayList<UUID> getDevs() {
         return devs;
+    }
+
+    public LogHelper getLogHelper() {
+        return logHelper;
+    }
+
+    public BlockChangingManager getBlockChangingManager() {
+        return blockChangingManager;
     }
 }
