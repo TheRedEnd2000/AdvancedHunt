@@ -43,7 +43,6 @@ public class BlockPlaceEventListener implements Listener {
 
         if(Main.getInstance().getPermissionManager().checkPermission(player, Permission.PlaceTreasure)) {
             String collection = eggManager.getEggCollectionFromPlayerData(player.getUniqueId());
-            event.setCancelled(true);
             eggManager.saveEgg(player, event.getBlock().getLocation(), collection);
             player.playSound(player.getLocation(), soundManager.playEggPlaceSound(), soundManager.getSoundVolume(), 1);
 
@@ -58,7 +57,10 @@ public class BlockPlaceEventListener implements Listener {
                     player,
                     placedBlock,
                     itemMeta
-            );*/ //Take out for release
+            );
+            event.setCancelled(true);
+            */ //Take out for release
+
         } else {
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR)
                     .replaceAll("%PERMISSION%", Permission.PlaceTreasure.toString()));
