@@ -195,7 +195,7 @@ public class BlockChangingManager extends PacketAdapter implements Listener {
         }
     }
 
-    @Override
+   /* @Override
     public void onPacketSending(PacketEvent event) {
         UUID playerUUID = event.getPlayer().getUniqueId();
         String worldName = event.getPlayer().getWorld().getName();
@@ -220,7 +220,7 @@ public class BlockChangingManager extends PacketAdapter implements Listener {
             //Check Block stuff
             event.setCancelled(true);
         }
-    }
+    }*/
 
     /**
      * Creates a ghost block by copying all properties from the placed block.

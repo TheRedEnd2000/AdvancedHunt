@@ -53,12 +53,12 @@ public class BlockPlaceEventListener implements Listener {
             ItemMeta itemMeta = itemInHand.getItemMeta();
 
             // Use the new method that preserves all block properties
-            Main.getInstance().getBlockChangingManager().sendBlockChangePacket(
+            /*Main.getInstance().getBlockChangingManager().sendBlockChangePacket(
                     placedBlock.getLocation(),
                     player,
                     placedBlock,
                     itemMeta
-            );
+            );*/ //Take out for release
         } else {
             player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.PERMISSION_ERROR)
                     .replaceAll("%PERMISSION%", Permission.PlaceTreasure.toString()));

@@ -9,6 +9,7 @@ import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -72,7 +73,7 @@ public class ItemBuilder {
 
     public ItemBuilder setOwner(String name) {
         if (itemMeta instanceof SkullMeta) {
-            ((SkullMeta) itemMeta).setOwner(name);
+            ((SkullMeta) itemMeta).setOwningPlayer(Bukkit.getOfflinePlayer(name));
         }
         return this;
     }

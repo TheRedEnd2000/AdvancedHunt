@@ -333,7 +333,7 @@ public final class Main extends JavaPlugin {
         rarityManager = new RarityManager();
         checkSoftDependencies();
         eggHidingManager = new EggHidingManager();
-        blockChangingManager = new BlockChangingManager();
+        //blockChangingManager = new BlockChangingManager(); //Take it out for release
     }
 
     private void initListeners() {

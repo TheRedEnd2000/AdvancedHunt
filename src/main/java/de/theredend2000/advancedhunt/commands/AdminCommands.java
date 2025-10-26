@@ -88,7 +88,7 @@ public class AdminCommands implements TabExecutor {
                 player.sendMessage("Set send log to "+plugin.getLogHelper().getSendLog());
                 break;
             case "resend":
-                plugin.getBlockChangingManager().resendAllGhostBlocks(player);
+                //plugin.getBlockChangingManager().resendAllGhostBlocks(player); removed for update
                 player.sendMessage("Done!");
                 break;
         }
