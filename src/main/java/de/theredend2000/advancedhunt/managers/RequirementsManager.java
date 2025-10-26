@@ -7,6 +7,9 @@ import de.theredend2000.advancedhunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedhunt.util.enums.Requirements;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -167,7 +170,87 @@ public class RequirementsManager {
             return matches.values().stream().anyMatch(Boolean::booleanValue);
         }
     }
-    
+
+    /**
+     * Gibt eine detaillierte Analyse zurück, warum die Collection nicht zugänglich ist.
+     *
+     * @param collection Die Collection
+     * @param current "AND" oder "OR"
+     * @return Liste von Strings mit Beschreibung, warum es nicht geht (inkl. erlaubter Werte)
+     */
+    public List<TextComponent> getUnmetRequirementsDetailed(String collection, String current) {
+        List<TextComponent> result = new ArrayList<>();
+        FileConfiguration placedEggs = plugin.getEggDataManager().getPlacedEggs(collection);
+
+        boolean requireAll = convertCurrentOrder(current);
+        CurrentTimeValues timeValues = getCurrentTimeValues();
+
+        // Key -> [CurrentValue, Matches?]
+        Map<String, Boolean> matches = new LinkedHashMap<>();
+        Map<String, String> currentValues = new LinkedHashMap<>();
+        currentValues.put("Hours", timeValues.hour);
+        currentValues.put("Date", timeValues.date);
+        currentValues.put("Weekday", timeValues.weekday);
+        currentValues.put("Month", timeValues.month);
+        currentValues.put("Year", timeValues.year);
+        currentValues.put("Season", timeValues.season);
+
+        // Überprüfen und speichern
+        for (Map.Entry<String, String> entry : currentValues.entrySet()) {
+            String key = entry.getKey();
+            String currentVal = entry.getValue();
+            boolean ok = checkMatch(placedEggs, key, currentVal);
+            matches.put(key, ok);
+        }
+
+        // Wenn bei AND einer false ist → alle false melden
+        // Bei OR → nur wenn keiner true ist
+        boolean allOk = requireAll ? matches.values().stream().allMatch(Boolean::booleanValue)
+                : matches.values().stream().anyMatch(Boolean::booleanValue);
+
+        if (allOk) return result; // alles in Ordnung
+
+        // Fehlende Requirements mit erlaubten Werten
+        for (Map.Entry<String, Boolean> entry : matches.entrySet()) {
+            if (!entry.getValue()) {
+                String key = entry.getKey();
+                String currentVal = currentValues.get(key);
+                String path = REQUIREMENTS_PATH + key;
+                List<String> allowed = new ArrayList<>();
+
+                if (placedEggs.contains(path)) {
+                    for (String k : placedEggs.getConfigurationSection(path).getKeys(false)) {
+                        if (placedEggs.getBoolean(path + "." + k)) {
+                            allowed.add(k);
+                        }
+                    }
+                }
+
+                String name = getRequirementDisplayName(key);
+
+                TextComponent line = new TextComponent("§8• §c" + name + " §8(hover)");
+                line.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new ComponentBuilder("§7Current: \n§e" + currentVal +"\n\n§7Allowed: \n§a" + String.join(", ", allowed)).create()));
+                result.add(line);
+            }
+        }
+
+        return result;
+    }
+
+    private String getRequirementDisplayName(String key) {
+        switch (key) {
+            case "Hours": return messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_HOUR);
+            case "Date": return messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_DATE);
+            case "Weekday": return messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_WEEKDAY);
+            case "Month": return messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_MONTH);
+            case "Year": return messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_YEAR);
+            case "Season": return messageManager.getMessage(MessageKey.REQUIREMENTS_NAME_SEASON);
+            default: return key;
+        }
+    }
+
+
     /**
      * Helper class to store current time values
      */

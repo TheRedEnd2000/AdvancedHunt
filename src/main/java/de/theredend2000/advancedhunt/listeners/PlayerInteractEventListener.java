@@ -12,6 +12,7 @@ import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteItemNBT;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,6 +25,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -92,7 +94,13 @@ public class PlayerInteractEventListener implements Listener {
             }
 
             if(!Main.getInstance().getRequirementsManager().canBeAccessed(collection,placedEggs.getString("RequirementsOrder"))){
+                List<TextComponent> unmet = Main.getInstance().getRequirementsManager().getUnmetRequirementsDetailed(collection, placedEggs.getString("RequirementsOrder"));
                 player.sendMessage(messageManager.getMessage(MessageKey.EGG_NOT_ACCESSED));
+                if (!unmet.isEmpty()) {
+                    for (TextComponent line : unmet) {
+                        player.spigot().sendMessage(line);
+                    }
+                }
                 player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
                 return;
             }
