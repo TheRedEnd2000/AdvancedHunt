@@ -34,7 +34,11 @@ public class PlayerEggDataManager {
     }
 
     public FileConfiguration getPlayerData(UUID uuid) {
-        return playerEggConfig.getConfig(uuid.toString());
+        return getPlayerData(uuid.toString());
+    }
+
+    public FileConfiguration getPlayerData(String uuid) {
+        return playerEggConfig.getConfig(uuid);
     }
 
     public void savePlayerData(UUID uuid, FileConfiguration config) {

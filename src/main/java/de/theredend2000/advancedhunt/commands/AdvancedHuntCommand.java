@@ -308,18 +308,17 @@ public class AdvancedHuntCommand implements TabExecutor {
         }
 
         if (args[1].equalsIgnoreCase("all")) {
-            if(args.length > 2 && args[2].equalsIgnoreCase("all")) {
+            if(args.length > 2 && args[2].equalsIgnoreCase("all")) { //reset all all
                 eggManager.resetStatsAll().thenAcceptAsync(result -> {
                     messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_RESET);
                 }, runnable -> Bukkit.getScheduler().runTask(Main.getInstance(), runnable));
                 return;
             }
             String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-            if (plugin.getEggDataManager().containsCollection(collection)) {
+            if (plugin.getEggDataManager().containsCollection(collection)) { //reset all collection
                 CompletableFuture.runAsync(() -> {
                         for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-                            String name = eggManager.getPlayerNameFromUUID(uuid);
-                            eggManager.resetStatsPlayer(name, collection);
+                            eggManager.resetStatsPlayer(uuid, collection);
                         }
                     }, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), runnable)
                 ).thenAccept(result -> {
@@ -331,28 +330,28 @@ public class AdvancedHuntCommand implements TabExecutor {
             return;
         }
 
-        String name = args[1];
+        String playerArg = args[1];
         if (args.length == 3) {
-            String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-            if(collection.equalsIgnoreCase("all")){
+            String collectionArg = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+            if(collectionArg.equalsIgnoreCase("all")){ //reset player all
                 CompletableFuture.runAsync(() -> {
-                        for(String collections : plugin.getEggDataManager().savedEggCollections())
-                            eggManager.resetStatsPlayer(name, collections);
+                        for(String collection : plugin.getEggDataManager().savedEggCollections())
+                            eggManager.resetStatsPlayer(Bukkit.getOfflinePlayer(playerArg).getUniqueId(), collection);
                             }, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), runnable)
                 ).thenAccept(result -> {
-                    sender.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + name + " §7in all collections has been §creset§7!");
+                    sender.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + playerArg + " §7in all collections has been §creset§7!");
                 });
 
                 return;
             }
-            if (eggManager.containsPlayer(name)) {
-                if (plugin.getEggDataManager().containsCollection(collection)) {
-                    eggManager.resetStatsPlayer(name, collection);
-                    messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", name, "%COLLECTION%", collection);
+            if (eggManager.containsPlayer(playerArg)) { //reset player collection
+                if (plugin.getEggDataManager().containsCollection(collectionArg)) {
+                    eggManager.resetStatsPlayer(Bukkit.getOfflinePlayer(playerArg).getUniqueId(), collectionArg);
+                    messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", playerArg, "%COLLECTION%", collectionArg);
                 }else
-                    sender.sendMessage("§cNo collection with name " + collection + " found.");
+                    sender.sendMessage("§cNo collectionArg with name " + collectionArg + " found.");
             } else {
-                messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", name);
+                messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", playerArg);
             }
         }
     }
