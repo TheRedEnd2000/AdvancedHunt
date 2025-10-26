@@ -84,7 +84,7 @@ public class PlayerInteractEventListener implements Listener {
             FileConfiguration placedEggs = Main.getInstance().getEggDataManager().getPlacedEggs(collection);
             if(!placedEggs.getBoolean("Enabled")){
                 player.sendMessage(messageManager.getMessage(MessageKey.COLLECTION_DISABLED));
-                player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
+                player.playSound(player.getLocation(), soundManager.playErrorSound(), soundManager.getSoundVolume(), 1);
                 return;
             }
             if (eggManager.hasFound(player, id, collection)) {
@@ -101,7 +101,7 @@ public class PlayerInteractEventListener implements Listener {
                         player.spigot().sendMessage(line);
                     }
                 }
-                player.playSound(player.getLocation(), soundManager.playEggAlreadyFoundSound(), soundManager.getSoundVolume(), 1);
+                player.playSound(player.getLocation(), soundManager.playErrorSound(), soundManager.getSoundVolume(), 1);
                 return;
             }
             if(eggManager.isMarkedAsFound(collection, id)){

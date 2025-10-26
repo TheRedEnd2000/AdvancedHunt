@@ -3,7 +3,6 @@ package de.theredend2000.advancedhunt.listeners;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.SoundManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedhunt.protocollib.BlockChangingManager;
 import de.theredend2000.advancedhunt.util.enums.Permission;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;

@@ -51,6 +51,7 @@ public class BlockChangingManager extends PacketAdapter implements Listener {
     private boolean sending = false;
     private final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
     private final Map<UUID, Map<String, GhostBlockData>> ghostBlocks = new HashMap<>();
+    private static final Map<UUID, Map<String, String>> ghostBlockTextures = new HashMap<>();
 
     public static class GhostBlockData {
         public final String worldName;
@@ -254,71 +255,26 @@ public class BlockChangingManager extends PacketAdapter implements Listener {
             protocolManager.sendServerPacket(player, blockPacket);
 
             // Handle player head textures separately with a tile entity packet
+// Handle player head textures separately with a tile entity packet
             if (itemMeta instanceof SkullMeta && material == Material.PLAYER_HEAD) {
                 ItemStack item = new ItemStack(material);
                 item.setItemMeta(itemMeta);
                 String texture = Main.getTexture(ItemHelper.getSkullTexture(item));
                 logHelper.sendLogMessage("Added texture value to head: " + texture);
 
-                // Create and send the tile entity packet to set the texture
+                // Create and send tile entity packet for the skull
                 PacketContainer tileEntityPacket = protocolManager.createPacket(PacketType.Play.Server.TILE_ENTITY_DATA);
-
-                // Set the block position
                 tileEntityPacket.getBlockPositionModifier().write(0, blockPosition);
 
-                // Check if the packet uses TileEntityType enum in newer versions
-                try {
-                    // For newer versions - use reflection to get the proper enum
-                    Class<?> tileEntityTypeClass = Class.forName("net.minecraft.world.level.block.entity.TileEntityTypes");
-                    // The actual class path might vary by MC version - adjust if needed
-
-                    Object skullType = null;
-                    for (Field field : tileEntityTypeClass.getDeclaredFields()) {
-                        if (field.getName().equals("SKULL") || field.getName().equals("HEAD")) {
-                            field.setAccessible(true);
-                            skullType = field.get(null);
-                            break;
-                        }
-                    }
-
-                    if (skullType != null) {
-                        tileEntityPacket.getModifier().write(1, skullType);
-                    } else {
-                        // Fallback - try to use the action integer but check array length first
-                        if (tileEntityPacket.getIntegers().size() > 0) {
-                            tileEntityPacket.getIntegers().write(0, 5); // Updated skull type value
-                        } else {
-                            logHelper.sendLogMessage("§cWarning: Could not set skull type in packet");
-                        }
-                    }
-                } catch (Exception e) {
-                    // Alternative approach - get the correct indexes by inspecting the packet
-                    logHelper.sendLogMessage("§cError setting tile entity type: " + e.getMessage());
-
-                    // Debug the packet structure to find correct fields
-                    logHelper.sendLogMessage("§ePacket structure: " + tileEntityPacket.getStructures());
-
-                    // Try using a different modifier if integers array is empty
-                    try {
-                        // Some versions use byte for the action type instead of integer
-                        tileEntityPacket.getBytes().write(0, (byte)5);
-                    } catch (Exception e2) {
-                        logHelper.sendLogMessage("§cCould not set tile entity type: " + e2.getMessage());
-                    }
-                }
-
-                // Create NBT data for the skull texture
+                // Create NBT data with the texture
                 NbtCompound nbt = NbtFactory.ofCompound("");
-                nbt.put("id", "minecraft:skull"); // Add the id field which might be required
+                nbt.put("id", "minecraft:skull");
+                nbt.put("SkullType", (byte)3);
 
-                // Set the skull type to player
-                nbt.put("SkullType", (byte) 3);
-
+                // Set the texture data
                 NbtCompound skullOwner = NbtFactory.ofCompound("SkullOwner");
-                String uuidString = UUID.randomUUID().toString();
-                skullOwner.put("Id", uuidString);
+                skullOwner.put("Id", UUID.randomUUID().toString());
 
-                // Create texture properties
                 NbtCompound properties = NbtFactory.ofCompound("Properties");
                 NbtList textures = NbtFactory.ofList("textures");
                 NbtCompound textureValue = NbtFactory.ofCompound("");
@@ -327,24 +283,49 @@ public class BlockChangingManager extends PacketAdapter implements Listener {
                 properties.put("textures", textures);
                 skullOwner.put("Properties", properties);
 
-                // Add SkullOwner to main compound
                 nbt.put("SkullOwner", skullOwner);
 
                 // Write NBT data to packet
                 tileEntityPacket.getNbtModifier().write(0, nbt);
 
                 // Send the tile entity packet
-                protocolManager.sendServerPacket(player, tileEntityPacket);
+                //protocolManager.sendServerPacket(player, tileEntityPacket);
+
+                // Create a static map to store textures if you don't have one already
+                if (!ghostBlockTextures.containsKey(player.getUniqueId())) {
+                    ghostBlockTextures.put(player.getUniqueId(), new HashMap<>());
+                    logHelper.sendLogMessage("Added "+player.getName()+" to texture list");
+                }
+
+                // Store the texture with a key based on the location
+                String blockKey = location.getWorld().getName() + "," +
+                        location.getBlockX() + "," +
+                        location.getBlockY() + "," +
+                        location.getBlockZ();
+                ghostBlockTextures.get(player.getUniqueId()).put(blockKey, texture);
+
                 logHelper.sendLogMessage("§aApplied skull texture to ghost block");
             }
 
-            // Register the ghost block with its blockdata
+// Register the ghost block with its blockdata (this stays the same)
             registerGhostBlock(player.getUniqueId(), location, material, blockData);
             logHelper.sendLogMessage("§aCreated Ghostblock " + material.name() + " with data: " + blockData.getAsString());
         } catch (Exception e) {
             logHelper.sendLogMessage("§cError while creating a Ghost Block!");
             e.printStackTrace();
         }
+    }
+
+    String getGhostBlockTexture(UUID playerUUID, Location location) {
+        String blockKey = location.getWorld().getName() + "," +
+                location.getBlockX() + "," +
+                location.getBlockY() + "," +
+                location.getBlockZ();
+        if (ghostBlockTextures.containsKey(playerUUID) &&
+                ghostBlockTextures.get(playerUUID).containsKey(blockKey)) {
+            return ghostBlockTextures.get(playerUUID).get(blockKey);
+        }
+        return null;
     }
 
     // -------------------- EVENT LISTENERS --------------------

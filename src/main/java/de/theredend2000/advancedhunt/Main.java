@@ -246,8 +246,8 @@ public final class Main extends JavaPlugin {
 
     private void initialiseDevs(){
         devs = new ArrayList<>();
-        devs.add(UUID.fromString("f51d5137-482f-3cd7-8694-9f4a306b1652"));
-        devs.add(UUID.fromString("f7e365c4-512a-48e9-919d-96e87f1faf76"));
+        devs.add(UUID.fromString("f745f6c0-73e8-4169-8ab1-19510415be67")); //Red
+        devs.add(UUID.fromString("f7e365c4-512a-48e9-919d-96e87f1faf76")); //Graf
     }
 
     private void setupManagers() {
