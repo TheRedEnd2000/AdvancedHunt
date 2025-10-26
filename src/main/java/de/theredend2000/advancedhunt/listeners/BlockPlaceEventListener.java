@@ -29,6 +29,7 @@ public class BlockPlaceEventListener implements Listener {
     @EventHandler
     public void onPlaceEggEvent(BlockPlaceEvent event) {
         // Skip if ItemsAdder is enabled as its event will handle custom blocks
+        // LOOK INTO BlockPlaced and Block
         if (itemsAdderEnabled && event.getBlock().getType() == Material.AIR) {
             return;
         }
