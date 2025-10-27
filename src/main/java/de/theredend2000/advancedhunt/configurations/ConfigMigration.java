@@ -1,6 +1,5 @@
 package de.theredend2000.advancedhunt.configurations;
 
-import de.theredend2000.advancedhunt.Main;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ public class ConfigMigration {
                 } else if (value instanceof List) {
                     value = applyReplacementsToList((List<?>) value, valueReplacements);
                 }
+
                 if (!hasTemplate || newConfig.contains(newKey)) {
                     newConfig.set(newKey, value);
                 }

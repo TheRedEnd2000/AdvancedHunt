@@ -8,8 +8,6 @@ import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,7 +27,6 @@ public class BlockPlaceEventListener implements Listener {
     @EventHandler
     public void onPlaceEggEvent(BlockPlaceEvent event) {
         // Skip if ItemsAdder is enabled as its event will handle custom blocks
-        // LOOK INTO BlockPlaced and Block
         if (itemsAdderEnabled && event.getBlock().getType() == Material.AIR) {
             return;
         }
