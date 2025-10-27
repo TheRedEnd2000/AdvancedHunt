@@ -182,7 +182,7 @@ public class EggManager {
         for(String collection : plugin.getEggDataManager().savedEggCollections()) {
             if (!plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.")) continue;
             for (String key : plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.").getKeys(false)) {
-                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
+                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key);
                 if (location.loadLocation(collection) != null) {
                     var eggLocation = location.loadLocation(collection);
                     if (block.getX() == eggLocation.getBlockX() && block.getY() == eggLocation.getBlockY() && block.getZ() == eggLocation.getBlockZ()) {
@@ -197,7 +197,7 @@ public class EggManager {
     public String getEggID(Block block, String collection){
         for (String key : plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.").getKeys(false)) {
             if(!plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.")) continue;
-            ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
+            ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key);
             if (location.loadLocation(collection) != null) {
                 if (block.getX() == location.loadLocation(collection).getBlockX() && block.getY() == location.loadLocation(collection).getBlockY() && block.getZ() == location.loadLocation(collection).getBlockZ()) {
                     return key;
@@ -211,7 +211,7 @@ public class EggManager {
         for(String collection : plugin.getEggDataManager().savedEggCollections()) {
             if (!plugin.getEggDataManager().getPlacedEggs(collection).contains("PlacedEggs.")) continue;
             for (String key : plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.").getKeys(false)) {
-                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
+                ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key);
                 if (location.loadLocation(collection) != null) {
                     if (block.getX() == location.loadLocation(collection).getBlockX() && block.getY() == location.loadLocation(collection).getBlockY() && block.getZ() == location.loadLocation(collection).getBlockZ()) {
                         return collection;
@@ -223,7 +223,7 @@ public class EggManager {
     }
 
     public Location getEggLocation(String eggID, String collection){
-        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + eggID + ".");
+        ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + eggID);
         return location.loadLocation(collection);
     }
 
