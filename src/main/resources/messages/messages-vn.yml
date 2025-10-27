@@ -1,4 +1,4 @@
-config-version: 2.7
+config-version: 2.8
 
 # %PLUGIN_NAME_S% là tên của plugin ở dạng số ít trong cấu hình
 # %PLUGIN_NAME_P% là tên của plugin ở dạng số nhiều trong cấu hình

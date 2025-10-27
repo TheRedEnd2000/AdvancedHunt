@@ -94,7 +94,7 @@ public final class Main extends JavaPlugin {
         //connectToDatabase(); //Add if MYSQL works
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
-        if (VersionComparator.isGreaterThan(version, "1.21")) {
+        if (VersionComparator.isGreaterThan(version, "1.21.10")) {
             this.getLogger().warning("The plugin has not been tested on the current version.");
         }
 
