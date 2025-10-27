@@ -4,7 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.bstats.Metrics;
-import de.theredend2000.advancedhunt.commands.AdminCommands;
 import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.listeners.*;
@@ -265,10 +264,10 @@ public final class Main extends JavaPlugin {
                 .aliases(aliases)
                 .tabExecuter(new AdvancedHuntCommand())
                 .register();
-        commandRegistrar.command("ahuntadmin")
-                .aliases()
-                .tabExecuter(new AdminCommands())
-                .register();
+//        commandRegistrar.command("ahuntadmin")
+//                .aliases()
+//                .tabExecuter(new AdminCommands())
+//                .register();
     }
 
 
