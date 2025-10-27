@@ -57,7 +57,6 @@ permissions:
       AdvancedHunt.command.reload: true
       AdvancedHunt.command.reset: true
       AdvancedHunt.command.settings: true
-      AdvancedHunt.command.commands: true
       AdvancedHunt.command.place: true
       AdvancedHunt.command.show: true
       AdvancedHunt.command.list: true
