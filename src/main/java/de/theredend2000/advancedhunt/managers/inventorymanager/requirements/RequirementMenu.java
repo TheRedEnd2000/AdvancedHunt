@@ -12,6 +12,7 @@ import de.theredend2000.advancedhunt.util.enums.Requirements;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -117,7 +118,7 @@ public class RequirementMenu extends InventoryMenu {
         String collection = ChatColor.stripColor(event.getInventory().getItem(4).getItemMeta().getDisplayName());
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "requirement_menu.close":
-                player.closeInventory();
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "requirement_menu.back":

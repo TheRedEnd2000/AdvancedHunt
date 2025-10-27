@@ -10,6 +10,7 @@ import de.theredend2000.advancedhunt.util.ItemHelper;
 import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -114,7 +115,7 @@ public class ResetMenu extends InventoryMenu {
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "reset.close":
-                player.closeInventory();
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "reset.back":

@@ -12,6 +12,7 @@ import de.theredend2000.advancedhunt.util.enums.LeaderboardSortTypes;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -235,7 +236,7 @@ public class LeaderboardMenu extends PaginatedInventoryMenu implements IInventor
                 }
                 break;
             case "leaderboard.close":
-                player.closeInventory();
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "leaderboard.refresh":

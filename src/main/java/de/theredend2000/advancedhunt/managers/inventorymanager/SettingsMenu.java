@@ -12,6 +12,7 @@ import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -168,7 +169,7 @@ public class SettingsMenu extends PaginatedInventoryMenu implements IInventoryMe
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "settings.close":
-                player.closeInventory();
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "settings.updater":

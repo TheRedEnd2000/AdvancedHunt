@@ -11,6 +11,7 @@ import de.theredend2000.advancedhunt.util.enums.Seasons;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -105,10 +106,12 @@ public class RequirementSeason extends InventoryMenu {
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "requirement_season.close":
-                player.closeInventory();
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
+                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "requirement_season.back":
                 new RequirementMenu(Main.getPlayerMenuUtility(player)).open(collection);
+                player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
         }
     }

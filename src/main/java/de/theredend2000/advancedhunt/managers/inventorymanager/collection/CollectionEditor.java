@@ -14,6 +14,7 @@ import de.theredend2000.advancedhunt.util.enums.DeletionTypes;
 import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -135,7 +136,7 @@ public class CollectionEditor extends InventoryMenu {
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "collection_editor.close":
-                player.closeInventory();
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "collection_editor.back":

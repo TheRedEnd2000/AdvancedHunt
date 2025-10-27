@@ -207,7 +207,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "egg_place.close":
-                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L); //maybe 2L works
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "egg_place.refresh":

@@ -272,7 +272,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "rewards_global_rewards.close":
-                player.closeInventory();
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "rewards_global_rewards.previous_page":
