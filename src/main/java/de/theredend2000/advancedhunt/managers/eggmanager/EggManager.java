@@ -184,7 +184,8 @@ public class EggManager {
             for (String key : plugin.getEggDataManager().getPlacedEggs(collection).getConfigurationSection("PlacedEggs.").getKeys(false)) {
                 ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + key + ".");
                 if (location.loadLocation(collection) != null) {
-                    if (block.getX() == location.loadLocation(collection).getBlockX() && block.getY() == location.loadLocation(collection).getBlockY() && block.getZ() == location.loadLocation(collection).getBlockZ()) {
+                    var eggLocation = location.loadLocation(collection);
+                    if (block.getX() == eggLocation.getBlockX() && block.getY() == eggLocation.getBlockY() && block.getZ() == eggLocation.getBlockZ()) {
                         return true;
                     }
                 }
