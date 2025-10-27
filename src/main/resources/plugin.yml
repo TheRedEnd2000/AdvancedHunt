@@ -14,8 +14,6 @@ permissions:
     description: "Shows and allows for updating of config settings"
   AdvancedHunt.command.reload:
     description: "Reload plugin"
-  AdvancedHunt.command.commands:
-    description: "Reward commands that are ran when a player finds a treasure"
   AdvancedHunt.command.place:
     description: "Allow a player to enter and exit treasure placing mode"
   AdvancedHunt.command.import:
