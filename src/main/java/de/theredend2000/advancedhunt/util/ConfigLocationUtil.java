@@ -37,7 +37,6 @@ public class ConfigLocationUtil {
         Main.getInstance().getEggDataManager().savePlacedEggs(collection);
         // clear cached location
         locationCache.put(collection + ":" + root, location);
-        Main.getInstance().getLogger().info("ConfigLocationUtil: cache updated for " + collection + ":" + root);
     }
 
     public void saveBlockLocation(UUID uuid) {
@@ -51,14 +50,12 @@ public class ConfigLocationUtil {
         plugin.getPlayerEggDataManager().savePlayerData(uuid, config);
         // clear cached location
         locationCache.put(uuid.toString() + ":" + root, location);
-        Main.getInstance().getLogger().info("ConfigLocationUtil: cache updated for " + uuid + ":" + root);
     }
 
     public Location loadLocation(String collection) {
         String key = collection + ":" + root;
         Location cached = locationCache.get(key);
         if (cached != null) {
-            Main.getInstance().getLogger().fine("ConfigLocationUtil: cache hit for " + key);
             return cached;
         }
         FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(collection);
@@ -72,7 +69,6 @@ public class ConfigLocationUtil {
 
         Location loc = new Location(world, x, y, z);
         locationCache.put(key, loc);
-        Main.getInstance().getLogger().fine("ConfigLocationUtil: cache miss -> loaded and cached " + key);
         return loc;
     }
 
@@ -80,7 +76,6 @@ public class ConfigLocationUtil {
         String key = uuid.toString() + ":" + root;
         Location cached = locationCache.get(key);
         if (cached != null) {
-            Main.getInstance().getLogger().fine("ConfigLocationUtil: cache hit for " + key);
             return cached;
         }
         FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
@@ -93,7 +88,6 @@ public class ConfigLocationUtil {
             z = config.getInt(root + ".Z");
         Location loc = new Location(world, x, y, z);
         locationCache.put(key, loc);
-        Main.getInstance().getLogger().fine("ConfigLocationUtil: cache miss -> loaded and cached " + key);
         return loc;
     }
 }
