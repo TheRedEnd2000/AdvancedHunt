@@ -134,7 +134,7 @@ public class HintMenu extends InventoryMenu {
             }
             if (Main.getInstance().getEggManager().checkFoundAll(player, collection)) continue;
             int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, collection);
-            ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number + ".");
+            ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number);
             if (location.loadLocation(collection) != null) {
                 int random = Main.getInstance().getRandom().nextInt(2);
                 return Main.getInstance().getMessageManager().getMessage(MessageKey.EGG_HINT).replaceAll("%X%", random == 1 ? String.valueOf(location.loadLocation(collection).getBlockX()) : "§k1").replaceAll("%Y%", String.valueOf(location.loadLocation(collection).getBlockY())).replaceAll("%Z%", random == 0 ? String.valueOf(location.loadLocation(collection).getBlockZ()) : "§k1");
