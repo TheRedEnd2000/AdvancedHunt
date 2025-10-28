@@ -60,7 +60,7 @@ public class SettingsMenu extends PaginatedInventoryMenu implements IInventoryMe
         keys.add(new ItemBuilder(XMaterial.NOTE_BLOCK)
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.SETTINGS_SOUND_VOLUME))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.SETTINGS_SOUND_VOLUME,
-                        "%VOLUME%", "§6" + Main.getInstance().getPluginConfig().getSoundVolume()))
+                        "%VOLUME%", "§6" + Main.getInstance().getPluginConfig().getSoundVolume()+"%"))
                 .setCustomId("settings.soundvolume")
                 .withGlow(true)
                 .build());
@@ -183,23 +183,24 @@ public class SettingsMenu extends PaginatedInventoryMenu implements IInventoryMe
                 break;
             case "settings.soundvolume":
                 int currentVolume = Main.getInstance().getPluginConfig().getSoundVolume();
-                if (event.getAction() == InventoryAction.PICKUP_ALL) {
-                    if (currentVolume == 15) {
-                        player.sendMessage(messageManager.getMessage(MessageKey.SOUND_VOLUME));
-                        return;
-                    }
-                    Main.getInstance().getPluginConfig().setSoundVolume(currentVolume + 1);
+                int change = 1;
 
-                } else if (event.getAction() == InventoryAction.PICKUP_HALF) {
-                    if (currentVolume == 0) {
-                        player.sendMessage(messageManager.getMessage(MessageKey.SOUND_VOLUME));
-                        return;
-                    }
-                    Main.getInstance().getPluginConfig().setSoundVolume(currentVolume - 1);
+                if (event.isShiftClick())
+                    change = 10;
+                
+                if (event.isLeftClick()) {
+                    int newVolume = Math.min(100, currentVolume + change);
+                    Main.getInstance().getPluginConfig().setSoundVolume(newVolume);
+
+                } else if (event.isRightClick()) {
+                    int newVolume = Math.max(0, currentVolume - change);
+                    Main.getInstance().getPluginConfig().setSoundVolume(newVolume);
                 }
+
                 Main.getInstance().getPluginConfig().saveData();
                 this.open();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
+
                 break;
             case "settings.armorstandglow":
                 int currentTime = Main.getInstance().getPluginConfig().getArmorstandGlow();

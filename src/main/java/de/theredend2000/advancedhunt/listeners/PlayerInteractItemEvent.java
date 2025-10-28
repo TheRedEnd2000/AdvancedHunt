@@ -56,11 +56,4 @@ public class PlayerInteractItemEvent implements Listener {
         }
         new EggPlaceMenu(Main.getPlayerMenuUtility(player)).open();
     }
-    @EventHandler
-    public void closeMenu(InventoryCloseEvent event) {
-        /*Bukkit.broadcastMessage("closed");
-        Player player = (Player) event.getPlayer();
-        Bukkit.broadcastMessage("closed 2");
-        Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 4L);*/
-    }
 }

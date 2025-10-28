@@ -618,8 +618,7 @@ settings_sound_volume:
   displayname: "&3Âm lượng âm thanh"
   lore:
     - ""
-    - "&7Thay đổi âm lượng của tất cả âm thanh trong plugin"
-    - "&7Nếu âm lượng bằng 0 thì sẽ không có âm thanh nào phát ra."
+    - "&7Thay đổi âm lượng của tất cả âm thanh trong plugin."
     - ""
     - "&7Hiện tại: %VOLUME%"
     - "&eNHẤP CHUỘT TRÁI để tăng một đơn vị."

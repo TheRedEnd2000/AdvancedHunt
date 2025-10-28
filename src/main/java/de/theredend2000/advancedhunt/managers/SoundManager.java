@@ -29,7 +29,7 @@ public class SoundManager {
     public Sound playInventoryFailedSound() {
         return Main.getInstance().getPluginConfig().getInventoryClickFailed();
     }
-    public int getSoundVolume(){
-        return Main.getInstance().getPluginConfig().getSoundVolume();
+    public float getSoundVolume(){
+        return (Main.getInstance().getPluginConfig().getSoundVolume() / 100f);
     }
 }

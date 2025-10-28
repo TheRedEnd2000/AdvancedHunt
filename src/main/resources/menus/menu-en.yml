@@ -1,4 +1,4 @@
-config-version: 1.2
+config-version: 1.3
 
 # %PLUGIN_NAME_S% is plugin-name-singular in the config
 # %PLUGIN_NAME_P% is plugin-name-plural in the config
@@ -621,12 +621,13 @@ settings_sound_volume:
   displayname: "&3Sound volume"
   lore:
     - ""
-    - "&7Change the volume of all sound of the plugin"
-    - "&7If volume equals 0 no sound will be played."
+    - "&7Change the volume of all sound of the plugin."
     - ""
     - "&7Currently: %VOLUME%"
-    - "&eLEFT-CLICK to add one."
-    - "&eRIGHT-CLICK to remove one."
+    - "&eLEFT-CLICK for +1%."
+    - "&eRIGHT-CLICK for -1%."
+    - "&eSHIFT + LEFT-CLICK for +10%."
+    - "&eSHIFT + RIGHT-CLICK for -10%."
 settings_show_coordinates:
   displayname: "&3Show coordinates when found"
   lore:

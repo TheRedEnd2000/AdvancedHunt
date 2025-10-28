@@ -621,8 +621,7 @@ settings_sound_volume:
   displayname: "&3Volume sonore"
   lore:
     - ""
-    - "&7Modifier le volume de tous les sons du plugin"
-    - "&7Si le volume est égal à 0, aucun son ne sera joué."
+    - "&7Modifier le volume de tous les sons du plugin."
     - ""
     - "&7Actuellement: %VOLUME%"
     - "&eCLIQUE-GAUCHE pour en ajouter un."
