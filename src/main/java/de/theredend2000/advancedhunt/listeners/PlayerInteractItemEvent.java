@@ -55,12 +55,6 @@ public class PlayerInteractItemEvent implements Listener {
             return;
         }
         new EggPlaceMenu(Main.getPlayerMenuUtility(player)).open();
-            /*Configs headsConfig = CustomHeads.getHeadsConfig();
-                Inventory menu = CustomHeads.getLooks().getCreatedMenus().get(headsConfig.get().getString("mainMenu"));
-                if (menu == null) {
-                    return;
-                }
-                player.openInventory(cloneInventory(menu, CustomHeads.getLooks().getCreatedMenuTitles().get(headsConfig.get().getString("mainMenu")), player));*/
     }
     @EventHandler
     public void closeMenu(InventoryCloseEvent event) {
