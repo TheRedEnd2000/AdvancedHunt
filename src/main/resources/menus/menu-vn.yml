@@ -1,4 +1,4 @@
-config-version: 1.2
+config-version: 1.3
 
 # %PLUGIN_NAME_S% là tên của plugin ở dạng số ít trong cấu hình
 # %PLUGIN_NAME_P% là tên của plugin ở dạng số nhiều trong cấu hình
@@ -621,8 +621,10 @@ settings_sound_volume:
     - "&7Thay đổi âm lượng của tất cả âm thanh trong plugin."
     - ""
     - "&7Hiện tại: %VOLUME%"
-    - "&eNHẤP CHUỘT TRÁI để tăng một đơn vị."
-    - "&eNHẤP CHUỘT PHẢI để giảm một đơn vị."
+    - "&eCHUỘT-TRÁI cho +1%."
+    - "&eCHUỘT-PHẢI cho -1%."
+    - "&eSHIFT + CHUỘT-TRÁI cho +10%."
+    - "&eSHIFT + CHUỘT-PHẢI cho -10%."
 settings_show_coordinates:
   displayname: "&3Hiển thị tọa độ khi tìm thấy"
   lore:
