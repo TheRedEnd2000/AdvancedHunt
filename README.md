@@ -40,7 +40,7 @@
 
 AdvancedHunt uses [bStats](https://bstats.org/) for anonymous usage tracking to help improve the plugin.
 
-[![bStats](https://bstats.org/signatures/bukkit/advancedegghunt.svg)](https://bstats.org/plugin/bukkit/AdvancedEggHunt/19495)
+[![bStats](https://bstats.org/signatures/bukkit/advancedhunt.svg)](https://bstats.org/plugin/bukkit/AdvancedHunt/19495)
 
 ## 🤝 Contributing
 
