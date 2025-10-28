@@ -70,7 +70,7 @@ collection_editor_requirements:
   lore:
     - "%REQUIREMENTS%" # Les traductions des exigences peuvent être modifiées dans les fichiers de messages.
 collection_editor_reset:
-  displayname: "&3Réinitialiser &e&l(BETA)"
+  displayname: "&3Réinitialiser"
   lore:
     - ""
     - "&cRéinitialise après:"

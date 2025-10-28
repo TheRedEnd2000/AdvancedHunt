@@ -70,7 +70,7 @@ collection_editor_requirements:
   lore:
     - "%REQUIREMENTS%" # The requirements translations can be changed in the messages files.
 collection_editor_reset:
-  displayname: "&3Zurücksetzen &e&l(BETA)"
+  displayname: "&3Zurücksetzen"
   lore:
     - ""
     - "&cSetzt sich zurück nach:"

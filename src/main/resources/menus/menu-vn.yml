@@ -70,7 +70,7 @@ collection_editor_requirements:
   lore:
     - "%REQUIREMENTS%" # Các yêu cầu có thể được thay đổi trong tệp tin tin nhắn.
 collection_editor_reset:
-  displayname: "&3Đặt lại &e&l(BETA)"
+  displayname: "&3Đặt lại"
   lore:
     - ""
     - "&cĐặt lại sau:"

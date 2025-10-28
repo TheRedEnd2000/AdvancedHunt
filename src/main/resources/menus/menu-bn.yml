@@ -70,7 +70,7 @@ collection_editor_requirements:
   lore:
     - "%REQUIREMENTS%" # Proyojoniyota er onubad guli barta file gulite poriborton kora jabe.
 collection_editor_reset:
-  displayname: "&3Reset korun &e&l(BETA)"
+  displayname: "&3Reset korun"
   lore:
     - ""
     - "&cPore reset hobe:"
