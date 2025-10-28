@@ -143,13 +143,6 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
     public void handleMenu(InventoryClickEvent event) {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
-        if (event.getClickedInventory() == getInventory()) {
-            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                event.setCancelled(true);
-                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 4L);
-            }
-        }
-
 
         if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) {
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
@@ -230,7 +223,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
-                Bukkit.getScheduler().runTask(Main.getInstance(), this::open);
+                this.open();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "egg_place.collection_selected":
