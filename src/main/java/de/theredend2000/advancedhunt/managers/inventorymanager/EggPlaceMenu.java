@@ -18,9 +18,11 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -135,10 +137,19 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
         return (int) Math.ceil((double) keys.size() / getMaxItemsPerPage());
     }
 
+
+
     @Override
     public void handleMenu(InventoryClickEvent event) {
         SoundManager soundManager = Main.getInstance().getSoundManager();
         Player player = (Player) event.getWhoClicked();
+        if (event.getClickedInventory() == getInventory()) {
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                event.setCancelled(true);
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 4L);
+            }
+        }
+
 
         if(super.playerMenuUtility.getOwner().getInventory().equals(event.getClickedInventory())) {
             Set<String> keys = Main.getInstance().getPluginConfig().getPlaceEggIds();
@@ -207,7 +218,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
 
         switch (ItemHelper.getItemId(event.getCurrentItem())) {
             case "egg_place.close":
-                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::closeInventory,3L);
+                player.closeInventory();
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "egg_place.refresh":
@@ -219,7 +230,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
-                open();
+                Bukkit.getScheduler().runTask(Main.getInstance(), this::open);
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "egg_place.collection_selected":
@@ -262,5 +273,6 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
         getInventory().setContents(inventoryContent);
         setMenuItems();
     }
+
 }
 
