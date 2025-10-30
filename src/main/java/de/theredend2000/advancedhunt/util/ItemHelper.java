@@ -1,7 +1,6 @@
 package de.theredend2000.advancedhunt.util;
 
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.*;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
@@ -102,18 +101,57 @@ public class ItemHelper {
 
         if (VersionComparator.isGreaterThanOrEqual(version, "1.20.5")) {
             NBTCompound nbtCompound = (NBTCompound) NBT.itemStackToNBT(itemStack);
+
             String components = "";
             if (nbtCompound.hasTag("components")) {
                 NBTCompound componentsNBT = nbtCompound.getCompound("components");
                 if (componentsNBT != null && !componentsNBT.getKeys().isEmpty()) {
-                    String componentsStr = componentsNBT.toString();
-                    if (componentsStr.startsWith("{") && componentsStr.endsWith("}")) {
-                        componentsStr = componentsStr.substring(1, componentsStr.length() - 1);
+                    StringBuilder componentBuilder = new StringBuilder();
+
+                    for (String key : componentsNBT.getKeys()) {
+                        if (componentBuilder.length() > 0) {
+                            componentBuilder.append(",");
+                        }
+
+                        componentBuilder.append(key).append("=");
+
+                        NBTType type = componentsNBT.getType(key);
+
+                        if (type == NBTType.NBTTagCompound) {
+                            NBTCompound compound = componentsNBT.getCompound(key);
+                            if (key.contains("custom_name")) {
+                                String json = convertNBTToJSON(compound);
+                                componentBuilder.append("'").append(json).append("'");
+                            } else {
+                                componentBuilder.append(compound.toString());
+                            }
+                        } else if (type == NBTType.NBTTagList) {
+                            NBTCompoundList list = componentsNBT.getCompoundList(key);
+                            if (key.contains("lore")) {
+                                componentBuilder.append("[");
+                                for (int i = 0; i < list.size(); i++) {
+                                    if (i > 0) componentBuilder.append(",");
+                                    String json = convertNBTToJSON(list.get(i));
+                                    componentBuilder.append("'").append(json).append("'");
+                                }
+                                componentBuilder.append("]");
+                            } else {
+                                componentBuilder.append(list.toString());
+                            }
+                        } else if (type == NBTType.NBTTagString) {
+                            String strValue = componentsNBT.getString(key);
+                            componentBuilder.append("'").append(strValue.replace("'", "\\'")).append("'");
+                        } else if (type == NBTType.NBTTagInt) {
+                            componentBuilder.append(componentsNBT.getInteger(key));
+                        } else {
+                            Object value = componentsNBT.getString(key);
+                            if (value != null && !value.toString().isEmpty()) {
+                                componentBuilder.append(value);
+                            }
+                        }
                     }
 
-                    componentsStr = componentsStr.replaceAll("\"([^\"]+)\"\\s*:\\s*(?=[{\\[])", "$1=");
-
-                    components = "[" + componentsStr + "]";
+                    components = "[" + componentBuilder.toString() + "]";
                 }
             }
 
@@ -128,6 +166,35 @@ public class ItemHelper {
                     itemNBT,
                     itemStack.getAmount());
         }
+    }
+
+    private static String convertNBTToJSON(NBTCompound compound) {
+        StringBuilder json = new StringBuilder("{");
+        boolean first = true;
+
+        for (String key : compound.getKeys()) {
+            if (!first) json.append(",");
+            first = false;
+
+            json.append("\"").append(key).append("\":");
+
+            NBTType type = compound.getType(key);
+            if (type == NBTType.NBTTagString) {
+                json.append("\"").append(compound.getString(key)).append("\"");
+            } else if (type == NBTType.NBTTagByte) {
+                byte b = compound.getByte(key);
+                json.append(b == 1 ? "true" : "false");
+            } else if (type == NBTType.NBTTagInt) {
+                json.append(compound.getInteger(key));
+            } else if (type == NBTType.NBTTagCompound) {
+                json.append(convertNBTToJSON(compound.getCompound(key)));
+            } else {
+                json.append(compound.getString(key));
+            }
+        }
+
+        json.append("}");
+        return json.toString();
     }
 
     public static ItemStack getItemStackFromBlock(Block block) {
