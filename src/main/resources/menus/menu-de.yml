@@ -383,7 +383,7 @@ rewards_global_information:
     - "&7Du kannst die Commands als Voreinstellung"
     - "&7um sie in andere Sammlungen zu laden."
 rewards_global_reward:
-  displayname: "&b&lBelo &7#%REWARD_ID%"
+  displayname: "&b&lBelohnung &7#%REWARD_ID%"
   lore:
     - ""
     - "&9Information:"
