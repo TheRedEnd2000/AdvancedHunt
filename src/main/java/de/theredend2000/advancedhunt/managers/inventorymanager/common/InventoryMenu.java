@@ -23,7 +23,6 @@ public abstract class InventoryMenu implements IInventoryMenu {
     private final String inventoryName;
     protected final short slots;
     protected ItemStack[] inventoryContent;
-    private boolean markAsClosed;
 
     public InventoryMenu(PlayerMenuUtility playerMenuUtility, String inventoryName, short slots) {
         this(playerMenuUtility, inventoryName, slots, XMaterial.GRAY_STAINED_GLASS_PANE);
@@ -35,7 +34,7 @@ public abstract class InventoryMenu implements IInventoryMenu {
         this.slots = slots % 9 == 0? slots : (short) (slots - (slots % 9));
         this.inventoryContent = new ItemStack[this.slots];
         this.inventoryName = inventoryName;
-        this.markAsClosed = false;
+
 
         this.FILLER_GLASS = new ItemBuilder(fillerMaterial)
                 .setDisplayName(" ")
@@ -85,11 +84,4 @@ public abstract class InventoryMenu implements IInventoryMenu {
         return inventory;
     }
 
-    public void setMarkAsClosed(boolean markAsClosed) {
-        this.markAsClosed = markAsClosed;
-    }
-
-    public boolean isMarkAsClosed() {
-        return markAsClosed;
-    }
 }

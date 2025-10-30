@@ -42,12 +42,16 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
         addMenuBorderButtons();
     }
 
-    public void open() {
+    public void open(){
         Main.getInstance().setLastOpenedInventory(getInventory(), playerMenuUtility.getOwner());
         getInventory().setContents(inventoryContent);
         setMenuItems();
-
-        playerMenuUtility.getOwner().openInventory(getInventory());
+        Player player = playerMenuUtility.getOwner();
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+            if (player.isOnline()) {
+                player.openInventory(getInventory());
+            }
+        }, 2L);
     }
 
     public void addMenuBorderButtons() {
@@ -223,11 +227,7 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
-                Bukkit.broadcastMessage("in me "+isMarkAsClosed());
-                if(!isMarkAsClosed())
-                    this.open();
-                else
-                    player.sendMessage("§cThe inventory was closed while reopening it please try again.");
+                this.open();
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "egg_place.collection_selected":

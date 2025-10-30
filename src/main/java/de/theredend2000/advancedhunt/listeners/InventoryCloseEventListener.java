@@ -28,8 +28,6 @@ public class InventoryCloseEventListener implements Listener {
 
         InventoryHolder holder = event.getInventory().getHolder();
         if (holder instanceof IInventoryMenu) {
-            InventoryMenu menu = (InventoryMenu) holder;
-            Bukkit.broadcastMessage(String.valueOf(menu.isMarkAsClosed()));
             Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 4L);
         }
 
