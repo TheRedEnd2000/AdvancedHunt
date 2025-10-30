@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.util;
 
 import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
@@ -97,13 +98,36 @@ public class ItemHelper {
     }
 
     public static String convertItemIntoCommand(ItemStack itemStack){
-        String itemNBT = NBT.get(itemStack, Object::toString);
-
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
+
         if (VersionComparator.isGreaterThanOrEqual(version, "1.20.5")) {
-            return null;
+            NBTCompound nbtCompound = (NBTCompound) NBT.itemStackToNBT(itemStack);
+            String components = "";
+            if (nbtCompound.hasTag("components")) {
+                NBTCompound componentsNBT = nbtCompound.getCompound("components");
+                if (componentsNBT != null && !componentsNBT.getKeys().isEmpty()) {
+                    String componentsStr = componentsNBT.toString();
+                    if (componentsStr.startsWith("{") && componentsStr.endsWith("}")) {
+                        componentsStr = componentsStr.substring(1, componentsStr.length() - 1);
+                    }
+
+                    componentsStr = componentsStr.replaceAll("\"([^\"]+)\"\\s*:\\s*(?=[{\\[])", "$1=");
+
+                    components = "[" + componentsStr + "]";
+                }
+            }
+
+            return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}",
+                    itemStack.getType().name().toLowerCase(),
+                    components.isEmpty() ? "" : components,
+                    itemStack.getAmount());
+        } else {
+            String itemNBT = NBT.get(itemStack, Object::toString);
+            return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}",
+                    itemStack.getType().name().toLowerCase(),
+                    itemNBT,
+                    itemStack.getAmount());
         }
-        return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}", itemStack.getType().name().toLowerCase(), itemNBT, itemStack.getAmount());
     }
 
     public static ItemStack getItemStackFromBlock(Block block) {
