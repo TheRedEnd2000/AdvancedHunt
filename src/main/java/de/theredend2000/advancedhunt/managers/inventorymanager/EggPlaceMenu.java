@@ -223,7 +223,11 @@ public class EggPlaceMenu extends PaginatedInventoryMenu implements IInventoryMe
                     }
                 }
                 Main.getInstance().getRefreshCooldown().put(player.getName(), System.currentTimeMillis() + (3 * 1000));
-                this.open();
+                Bukkit.broadcastMessage("in me "+isMarkAsClosed());
+                if(!isMarkAsClosed())
+                    this.open();
+                else
+                    player.sendMessage("§cThe inventory was closed while reopening it please try again.");
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 break;
             case "egg_place.collection_selected":
