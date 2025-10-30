@@ -351,9 +351,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 new IndividualPresetsMenu(super.playerMenuUtility).open(id, collection);
                 break;
             case "rewards_individual_rewards.switch_global":
-                if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Global")) {
-                    new GlobalEggRewardsMenu(super.playerMenuUtility).open(id, collection);
-                }
+                new GlobalEggRewardsMenu(super.playerMenuUtility).open(id, collection);
                 break;
         }
     }
