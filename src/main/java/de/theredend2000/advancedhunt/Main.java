@@ -520,4 +520,8 @@ public final class Main extends JavaPlugin {
     public BlockChangingManager getBlockChangingManager() {
         return blockChangingManager;
     }
+
+    public Database getDatabase() {
+        return database;
+    }
 }

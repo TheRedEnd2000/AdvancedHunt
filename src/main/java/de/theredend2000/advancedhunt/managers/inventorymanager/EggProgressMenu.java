@@ -98,9 +98,9 @@ public class EggProgressMenu extends PaginatedInventoryMenu implements IInventor
             String x = placedEggs.getString("PlacedEggs." + keys.get(index) + ".X");
             String y = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Y");
             String z = placedEggs.getString("PlacedEggs." + keys.get(index) + ".Z");
-            boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner(), keys.get(index), collection);
-            String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
-            String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId().toString(), keys.get(index), collection);
+            boolean hasFound = Main.getInstance().getEggManager().hasFound(playerMenuUtility.getOwner().getUniqueId(), keys.get(index), collection);
+            String date = Main.getInstance().getEggManager().getEggDateCollected(playerMenuUtility.getOwner().getUniqueId(), keys.get(index), collection);
+            String time = Main.getInstance().getEggManager().getEggTimeCollected(playerMenuUtility.getOwner().getUniqueId(), keys.get(index), collection);
             ItemStack item = Main.getInstance().getEggManager().getBlockMaterialOfEgg(keys.get(index), collection);
             boolean isSkull = XMaterial.matchXMaterial(item.getType()) == XMaterial.PLAYER_HEAD || XMaterial.matchXMaterial(item.getType()) == XMaterial.PLAYER_WALL_HEAD;
             String texture = Main.getInstance().getEggManager().getHeadTextureValue(keys.get(index), collection);

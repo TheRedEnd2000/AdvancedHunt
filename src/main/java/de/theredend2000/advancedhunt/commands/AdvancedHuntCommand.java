@@ -255,7 +255,7 @@ public class AdvancedHuntCommand implements TabExecutor {
 
         for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
             counter++;
-            if (!eggManager.checkFoundAll(player, collections) && eggManager.getMaxEggs(collections) >= 1) {
+            if (!eggManager.checkFoundAll(player.getUniqueId(), collections) && eggManager.getMaxEggs(collections) >= 1) {
                 if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !plugin.getPermissionManager().checkPermission(player, Permission.IgnoreCooldown)) {
                     long current = System.currentTimeMillis();
                     long release = Main.getInstance().getCooldownManager().getCooldown(player);
