@@ -52,8 +52,7 @@ public class EggManager {
 
         eggNotFoundParticle = Main.getInstance().getPluginConfig().getEggNotFoundParticle();
         eggFoundParticle = Main.getInstance().getPluginConfig().getEggFoundParticle();
-        boolean useMYSQL = false;
-        if(useMYSQL){
+        if(plugin.getMySQLConfig().isEnabled()){
             dataStorage = new EggManagerSQL();
         }else
             dataStorage = new EggManagerYAML();

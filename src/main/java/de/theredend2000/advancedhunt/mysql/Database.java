@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.mysql;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.configurations.MySQLConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,15 +18,19 @@ public class Database {
     private String database;
     private String user;
     private String password;
+    private MySQLConfig mySQLConfig;
+    private boolean isEnabled;
 
     public Database(){
         this.plugin = Main.getInstance();
+        this.mySQLConfig = plugin.getMySQLConfig();
+        this.isEnabled = mySQLConfig.isEnabled();
 
-        this.host = "127.0.0.1";
-        this.port = 3306;
-        this.database = "mcserver";
-        this.user = "root";
-        this.password = "";
+        this.host = mySQLConfig.getHost();
+        this.port = mySQLConfig.getPort();
+        this.database = mySQLConfig.getDatabase();
+        this.user = mySQLConfig.getUser();
+        this.password = mySQLConfig.getPassword();
     }
 
     public Connection getConnection(){
@@ -34,7 +39,7 @@ public class Database {
             return connection;
         }
 
-        String url = "jdbc:mysql://"+host+"/"+database;
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&autoReconnect=true";
 
         Connection connection = null;
         try {
@@ -53,7 +58,16 @@ public class Database {
     public void initializeDatabase() throws SQLException {
         Statement statement = getConnection().createStatement();
 
-        // Player Eggs
+        // Collection
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS collections (" +
+                        "id VARCHAR(255) PRIMARY KEY, " +
+                        "max_eggs INT DEFAULT 0, " +
+                        "requirements_order VARCHAR(4) DEFAULT OR, " +
+                        "enabled BOOLEAN DEFAULT TRUE)"
+        );
+
+        // Player
         statement.execute(
                 "CREATE TABLE IF NOT EXISTS player_eggs (" +
                         "uuid VARCHAR(36) NOT NULL, " +
@@ -91,14 +105,6 @@ public class Database {
                         "marked_as_found BOOLEAN DEFAULT FALSE, " +
                         "placed_date DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                         "PRIMARY KEY (collection, egg_id))"
-        );
-
-        // Collections
-        statement.execute(
-                "CREATE TABLE IF NOT EXISTS egg_collections (" +
-                        "name VARCHAR(255) PRIMARY KEY, " +
-                        "max_eggs INT DEFAULT 0, " +
-                        "enabled BOOLEAN DEFAULT TRUE)"
         );
 
         statement.close();
@@ -174,4 +180,8 @@ public class Database {
         statement.close();
 
     }*/
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
 }

@@ -1,4 +1,9 @@
+config-version: 1.0 # do not change this!
+
+
+# If enabled, all the data is stored in your MySQL database
 enabled: false
+
 
 mysql:
   host: localhost

@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.bstats.Metrics;
 import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
+import de.theredend2000.advancedhunt.configurations.MySQLConfig;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.listeners.*;
 import de.theredend2000.advancedhunt.managers.*;
@@ -45,6 +46,7 @@ public final class Main extends JavaPlugin {
 
     // Configuration
     private PluginConfig pluginConfig;
+    private MySQLConfig mySQLConfig;
 
     private DynamicCommandRegistrar commandRegistrar;
 
@@ -90,7 +92,7 @@ public final class Main extends JavaPlugin {
         plugin = this;
         renameConfigFolder();
         initialisePlugin();
-        //connectToDatabase(); //Add if MYSQL works
+        connectToDatabase(); //Add if MYSQL works
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
         if (VersionComparator.isGreaterThan(version, "1.21.10")) {
@@ -121,13 +123,16 @@ public final class Main extends JavaPlugin {
     }
 
     private void connectToDatabase(){
-        this.database = new Database();
-        try {
-            this.database.initializeDatabase();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Could not initialize database.");
-        }
+        if(mySQLConfig.isEnabled()) {
+            System.out.println("MySQL enabled. Trying to connect to database.");
+            try {
+                this.database.initializeDatabase();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Could not initialize database.");
+            }
+        }else
+            System.out.println("MySQL disabled. Skipping connecting to database.");
     }
 
     /**
@@ -377,6 +382,8 @@ public final class Main extends JavaPlugin {
 
     private void setupConfigs(){
         pluginConfig = PluginConfig.getInstance(plugin);
+        mySQLConfig = MySQLConfig.getInstance(plugin);
+        this.database = new Database();
     }
 
     public XMaterial getMaterial(String materialString) {
@@ -523,5 +530,9 @@ public final class Main extends JavaPlugin {
 
     public Database getDatabase() {
         return database;
+    }
+
+    public MySQLConfig getMySQLConfig() {
+        return mySQLConfig;
     }
 }
