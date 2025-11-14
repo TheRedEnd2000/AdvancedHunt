@@ -399,7 +399,7 @@ public class RequirementsManager {
         
         return placedEggs.getInt(RESET_PATH + "Year") * SECONDS_PER_YEAR +
                placedEggs.getInt(RESET_PATH + "Month") * SECONDS_PER_MONTH +
-               placedEggs.getInt(RESET_PATH + "Date") * SECONDS_PER_DAY +
+               placedEggs.getInt(RESET_PATH + "Day") * SECONDS_PER_DAY +
                placedEggs.getInt(RESET_PATH + "Hour") * SECONDS_PER_HOUR +
                placedEggs.getInt(RESET_PATH + "Minute") * SECONDS_PER_MINUTE +
                placedEggs.getInt(RESET_PATH + "Second");
