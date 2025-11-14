@@ -100,20 +100,26 @@ public class CollectionCreator extends InventoryMenu {
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new AnvilGUI.Builder()
                         .onClose(stateSnapshot -> {
-                            if (!stateSnapshot.getText().isEmpty()) {
-                                name = stateSnapshot.getText();
-                                Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
-                                menuContent();
-                                open();
-                            }
+                            player.closeInventory();
                         })
                         .onClick((slot, stateSnapshot) -> {
-                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                            if (slot == AnvilGUI.Slot.OUTPUT) {
+                                name = stateSnapshot.getText();
+                                Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
+
+                                menuContent();
+                                open();
+
+                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                            }
+
+                            return Collections.emptyList();
                         })
                         .text("Enter collection name")
                         .title("Collection name")
                         .plugin(Main.getInstance())
                         .open(player);
+
                 break;
             case "collection_creator.status":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
