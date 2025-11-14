@@ -109,7 +109,7 @@ public class IndividualPresetDataManager {
 
     public void createPresetFile(String preset) {
         if (!containsPreset(preset)) {
-            presetConfig.set(preset,"dummy","Contact support if exists!");
+            presetConfig.set(preset,"Commands","Contact support if exists!");
             presetConfig.saveConfig(preset);
         }
     }
