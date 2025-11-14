@@ -79,7 +79,7 @@ preset-not-delete-default: '&cDu kannst die Standard ladende Voreinstellung nich
 preset-loading-no: '&cEine Voreinstellung wird bereits geladen.'
 preset-loading-success: '&aDie Voreinstellung &6%PRESET%&a wurde erfolgreich in alle %PLUGIN_NAME_P% geladen.'
 preset-loading-progress: '&bLade Voreinstellung... (%COUNT%/%MAX%)'
-preset-is-default-1: '&2Dieses Voreinstellung is als standard ausgewählt.'
+preset-is-default-1: '&2Dieses Voreinstellung is als Standard ausgewählt.'
 preset-is-default-2: '&2Es wird jedes mal geladen, wenn eine %PLUGIN_NAME_S% erstellt wird.'
 
 setting-commandfeedback: '&aCommand Feedback wurde &4eingestellt. &aEntweder man benutzt nun dem Command "/gamerule sendCommandFeedback false" oder entfernt die Berechtigung "minecraft.admin.command_feedback".'
