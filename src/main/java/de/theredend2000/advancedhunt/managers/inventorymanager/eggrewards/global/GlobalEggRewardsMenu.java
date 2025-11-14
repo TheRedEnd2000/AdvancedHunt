@@ -324,7 +324,6 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                                 if (!presetDataManager.containsPreset(preset)) {
                                     presetDataManager.createPresetFile(stateSnapshot.getText());
                                     presetDataManager.loadCommandsIntoPreset(preset, collection);
-                                    presetDataManager.addDefaultRewardCommands(preset);
                                     menuContent(collection);
                                     open(id, collection);
                                     messageManager.sendMessage(player, MessageKey.PRESET_SAVED, "%PRESET%", preset);

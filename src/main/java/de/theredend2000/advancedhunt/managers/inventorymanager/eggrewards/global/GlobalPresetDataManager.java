@@ -76,12 +76,9 @@ public class GlobalPresetDataManager {
 
     public void createPresetFile(String preset) {
         if (!containsPreset(preset)) {
-            presetConfig.addDefaultRewardCommands(preset);
+            presetConfig.set(preset,"dummy","Contact support if exists!");
+            presetConfig.saveConfig(preset);
         }
-    }
-
-    public void addDefaultRewardCommands(String preset) {
-        presetConfig.addDefaultRewardCommands(preset);
     }
 
     public Map<String, Object> getPresets(String preset) {

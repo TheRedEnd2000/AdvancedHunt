@@ -41,7 +41,7 @@ public class Database {
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&autoReconnect=true";
 
-        Connection connection = null;
+        Connection connection;
         try {
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
