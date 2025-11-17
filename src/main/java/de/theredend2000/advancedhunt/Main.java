@@ -13,6 +13,7 @@ import de.theredend2000.advancedhunt.managers.eggmanager.EggDataManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggHidingManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.PlayerEggDataManager;
+import de.theredend2000.advancedhunt.mysql.yamldata.PlayerEggDataManagerYAML;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;

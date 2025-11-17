@@ -2,6 +2,12 @@ package de.theredend2000.advancedhunt.managers.eggmanager;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.PlayerEggConfig;
+import de.theredend2000.advancedhunt.data.EggDataStorage;
+import de.theredend2000.advancedhunt.data.PlayerEggDataStorage;
+import de.theredend2000.advancedhunt.mysql.sqldata.EggManagerSQL;
+import de.theredend2000.advancedhunt.mysql.sqldata.PlayerEggDataManagerSQL;
+import de.theredend2000.advancedhunt.mysql.yamldata.EggManagerYAML;
+import de.theredend2000.advancedhunt.mysql.yamldata.PlayerEggDataManagerYAML;
 import de.theredend2000.advancedhunt.util.enums.DeletionTypes;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -13,52 +19,56 @@ import java.util.UUID;
 public class PlayerEggDataManager {
     private Main plugin;
     private PlayerEggConfig playerEggConfig;
+    private PlayerEggDataStorage dataStorage;
 
     public PlayerEggDataManager() {
         plugin = Main.getInstance();
         playerEggConfig = new PlayerEggConfig(plugin);
+
+        if(plugin.getMySQLConfig().isEnabled()){
+            dataStorage = new PlayerEggDataManagerSQL();
+        }else
+            dataStorage = new PlayerEggDataManagerYAML();
     }
 
     public void reload() {
-        playerEggConfig = new PlayerEggConfig(plugin);
+        dataStorage.reload();
     }
 
     public void unloadPlayerData(UUID uuid) {
-        playerEggConfig.unloadConfig(uuid.toString());
+        dataStorage.unloadPlayerData(uuid);
     }
 
     public void initPlayers() {
-        List<UUID> savedPlayers = new ArrayList<>(plugin.getEggDataManager().savedPlayers());
-        for(UUID uuid : savedPlayers)
-            playerEggConfig.getConfig(uuid.toString());
+        dataStorage.initPlayers();
     }
 
     public FileConfiguration getPlayerData(UUID uuid) {
-        return getPlayerData(uuid.toString());
+        return dataStorage.getPlayerData(uuid);
     }
 
     public FileConfiguration getPlayerData(String uuid) {
-        return playerEggConfig.getConfig(uuid);
+        return dataStorage.getPlayerData(uuid);
     }
 
     public void savePlayerData(UUID uuid, FileConfiguration config) {
-        playerEggConfig.saveConfig(uuid.toString());
+        dataStorage.savePlayerData(uuid,config);
     }
 
     public void savePlayerCollection(UUID uuid, String collection) {
-        playerEggConfig.savePlayerCollection(uuid, collection);
+        dataStorage.savePlayerCollection(uuid,collection);
     }
 
     public void createPlayerFile(UUID uuid) {
-        playerEggConfig.createPlayerFile(uuid);
+        dataStorage.createPlayerFile(uuid);
     }
 
     public void setDeletionType(DeletionTypes deletionType, UUID uuid) {
-        playerEggConfig.setDeletionType(deletionType, uuid);
+        dataStorage.setDeletionType(deletionType,uuid);
     }
 
     public DeletionTypes getDeletionType(UUID uuid) {
-        return playerEggConfig.getDeletionType(uuid);
+        return dataStorage.getDeletionType(uuid);
     }
 
     public void setResetTimer(UUID uuid, String collection, String id) {
@@ -66,39 +76,21 @@ public class PlayerEggDataManager {
     }
 
     public long getResetTimer(UUID uuid, String collection, String id) {
-        return playerEggConfig.getResetTimer(uuid, collection, id);
+        return dataStorage.getResetTimer(uuid,collection,id);
     }
 
     public boolean canReset(UUID uuid, String collection, String id) {
-        long current = System.currentTimeMillis();
-        long millis = this.getResetTimer(uuid, collection, id);
-        return current > millis;
+        return dataStorage.canReset(uuid,collection,id);
     }
 
     public void checkReset(){
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for(UUID uuid : plugin.getEggDataManager().savedPlayers()){
-                    FileConfiguration cfg = getPlayerData(uuid);
-                    if(cfg == null) continue;
-                    if(!cfg.contains("FoundEggs.")) continue;
-                    for(String collection : cfg.getConfigurationSection("FoundEggs.").getKeys(false)) {
-                        for(String eggId : cfg.getConfigurationSection("FoundEggs." + collection).getKeys(false)) {
-                            if (eggId.equals("Count") || eggId.equals("Name")) continue;
-                            if (canReset(uuid, collection, eggId))
-                                plugin.getEggManager().resetStatsPlayerEgg(uuid, collection, eggId);
-                        }
-                    }
-                }
-            }
-        }.runTaskTimerAsynchronously(plugin, 20, 20);
+        dataStorage.checkReset();
     }
 
     /**
      * Resets all player data for all players.
      */
     public void resetAllPlayerData() {
-        playerEggConfig.resetAllPlayerData();
+        dataStorage.resetAllPlayerData();
     }
 }

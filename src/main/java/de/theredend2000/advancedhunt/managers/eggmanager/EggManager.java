@@ -42,16 +42,11 @@ public class EggManager {
     private EggDataStorage dataStorage;
 
     private MessageManager messageManager;
-    private Particle eggNotFoundParticle;
-    private Particle eggFoundParticle;
-    private BukkitTask spawnEggParticleTask;
 
     public EggManager(){
         this.plugin = Main.getInstance();
         messageManager = Main.getInstance().getMessageManager();
 
-        eggNotFoundParticle = Main.getInstance().getPluginConfig().getEggNotFoundParticle();
-        eggFoundParticle = Main.getInstance().getPluginConfig().getEggFoundParticle();
         if(plugin.getMySQLConfig().isEnabled()){
             dataStorage = new EggManagerSQL();
         }else
