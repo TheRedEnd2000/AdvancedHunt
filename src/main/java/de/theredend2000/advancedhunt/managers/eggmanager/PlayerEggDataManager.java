@@ -72,7 +72,7 @@ public class PlayerEggDataManager {
     }
 
     public void setResetTimer(UUID uuid, String collection, String id) {
-        playerEggConfig.setResetTimer(uuid, collection, id);
+        dataStorage.setResetTimer(uuid, collection, id);
     }
 
     public long getResetTimer(UUID uuid, String collection, String id) {

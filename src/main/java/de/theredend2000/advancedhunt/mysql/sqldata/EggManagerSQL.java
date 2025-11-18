@@ -3,15 +3,27 @@ package de.theredend2000.advancedhunt.mysql.sqldata;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.data.EggDataStorage;
 import de.theredend2000.advancedhunt.mysql.Database;
+import de.theredend2000.advancedhunt.util.ConfigLocationUtil;
+import de.theredend2000.advancedhunt.util.messages.MessageKey;
+import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class EggManagerSQL implements EggDataStorage {
@@ -20,9 +32,18 @@ public class EggManagerSQL implements EggDataStorage {
 
     private Database database;
 
+    private Particle eggNotFoundParticle;
+    private Particle eggFoundParticle;
+    private BukkitTask spawnEggParticleTask;
+    private MessageManager messageManager;
+
     public EggManagerSQL(){
         this.plugin = Main.getInstance();
         this.database = plugin.getDatabase();
+        this.messageManager = plugin.getMessageManager();
+
+        this.eggNotFoundParticle = Main.getInstance().getPluginConfig().getEggNotFoundParticle();
+        this.eggFoundParticle = Main.getInstance().getPluginConfig().getEggFoundParticle();
     }
 
 
@@ -62,7 +83,7 @@ public class EggManagerSQL implements EggDataStorage {
         """;
             PreparedStatement st = database.getConnection().prepareStatement(sql);
             st.setString(1, collection);
-            st.setString(2, String.valueOf(nextIndex));
+            st.setInt(2, nextIndex);
             st.setString(3, location.getWorld().getName());
             st.setInt(4, location.getBlockX());
             st.setInt(5, location.getBlockY());
@@ -119,7 +140,7 @@ public class EggManagerSQL implements EggDataStorage {
             // 3. Player-Einträge löschen
             String sqlFound = """
         DELETE FROM player_found_eggs
-        WHERE collection_id = ? AND egg_index = ?
+        WHERE collection_id = ? AND egg_id = ?
         """;
             PreparedStatement stFound = database.getConnection().prepareStatement(sqlFound);
             stFound.setString(1, collection);
@@ -280,7 +301,7 @@ public class EggManagerSQL implements EggDataStorage {
         try {
             String sql = """
             INSERT INTO player_found_eggs
-            (uuid, collection_id, egg_index, world, x, y, z, date, time)
+            (uuid, collection_id, egg_id, world, x, y, z, date, time)
             VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())
             ON DUPLICATE KEY UPDATE date = CURDATE(), time = CURTIME()
         """;
@@ -340,21 +361,33 @@ public class EggManagerSQL implements EggDataStorage {
         if (uuid == null || id == null || collection == null) return false;
 
         try {
-            String sql = "SELECT 1 FROM player_found_eggs WHERE uuid = ? AND collection_id = ? AND egg_index = ? LIMIT 1";
-            PreparedStatement st = database.getConnection().prepareStatement(sql);
+            PreparedStatement st = database.getConnection().prepareStatement("""
+            SELECT 1 
+            FROM player_found_eggs
+            WHERE uuid = ? 
+              AND collection_id = ?
+              AND egg_id = ?
+            LIMIT 1
+        """);
+
             st.setString(1, uuid.toString());
             st.setString(2, collection);
             st.setInt(3, Integer.parseInt(id));
+
             ResultSet rs = st.executeQuery();
-            boolean found = rs.next();
+            boolean exists = rs.next();
+
             rs.close();
             st.close();
-            return found;
+
+            return exists;
+
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
+
 
 
     @Override
@@ -433,14 +466,178 @@ public class EggManagerSQL implements EggDataStorage {
     }
 
     @Override
-    public boolean isMarkedAsFound(String collection, String eggID) {
-        return false;
+    public void spawnEggParticle() {
+
+        if (spawnEggParticleTask != null)
+            spawnEggParticleTask.cancel();
+
+        if (!Main.getInstance().getPluginConfig().getParticleEnabled()) {
+            return;
+        }
+
+        spawnEggParticleTask = new BukkitRunnable() {
+            double time = 0;
+
+            @Override
+            public void run() {
+                List<String> collections = new ArrayList<>();
+
+                try {
+                    PreparedStatement st = database.getConnection().prepareStatement(
+                            "SELECT collection_id FROM collections WHERE enabled = 1"
+                    );
+                    ResultSet rs = st.executeQuery();
+                    while (rs.next()) collections.add(rs.getString("collection_id"));
+                    rs.close();
+                    st.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+
+                if (time > 3.0) time = 0;
+                else time += 0.025;
+
+                for (String collection : collections) {
+
+                    try {
+                        PreparedStatement stEggs = database.getConnection().prepareStatement("""
+                        SELECT egg_id, world, x, y, z
+                        FROM placed_eggs 
+                        WHERE collection_id = ?
+                    """);
+                        stEggs.setString(1, collection);
+                        ResultSet rsEggs = stEggs.executeQuery();
+
+                        while (rsEggs.next()) {
+
+                            String eggId = rsEggs.getString("egg_id");
+                            String world = rsEggs.getString("world");
+                            int x = rsEggs.getInt("x");
+                            int y = rsEggs.getInt("y");
+                            int z = rsEggs.getInt("z");
+
+                            World w = Bukkit.getWorld(world);
+                            if (w == null) continue;
+
+                            Location startLocation = new Location(w, x, y, z);
+
+                            for (Entity entity : w.getNearbyEntities(startLocation, 10, 10, 10)) {
+                                if (!(entity instanceof Player)) continue;
+                                Player player = (Player) entity;
+                                if (isMarkedAsFound(collection, eggId)) continue;
+                                spawnParticlesForPlayer(player, startLocation, time, collection, eggId);
+                            }
+                            sendNearbyEggActionbar(startLocation, collection, eggId);
+
+                        }
+
+                        rsEggs.close();
+                        stEggs.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.runTaskTimer(Main.getInstance(), 0, 15);
     }
 
     @Override
-    public void spawnEggParticle() {
+    public boolean isMarkedAsFound(String collection, String eggId) {
+        try {
+            PreparedStatement st = database.getConnection().prepareStatement("""
+            SELECT 1 
+            FROM player_found_eggs
+            WHERE collection_id = ? AND egg_id = ?
+            LIMIT 1
+        """);
+            st.setString(1, collection);
+            st.setInt(2, Integer.parseInt(eggId));
 
+            ResultSet rs = st.executeQuery();
+            boolean found = rs.next();
+
+            rs.close();
+            st.close();
+
+            return found;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
+
+
+    private void spawnParticlesForPlayer(Player player, Location start, double time, String collection, String eggId) {
+
+        if (time > 2.0) {
+            double startX = start.getX() - 1;
+            double startY = start.getY();
+            double startZ = start.getZ() + 1;
+
+            player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, startY, startZ, 0);
+            player.spawnParticle(getParticle(player, eggId, collection), (startX + 2), startY, (startZ - 3) + time, 0);
+            player.spawnParticle(getParticle(player, eggId, collection), (startX + 2), (startY + 3) - time, startZ, 0);
+
+            return;
+        }
+
+        if (time > 1.0) {
+
+            double startX = start.getX();
+            double startY = start.getY();
+            double startZ = start.getZ() - 1;
+
+            player.spawnParticle(getParticle(player, eggId, collection), (startX - 1) + time, startY, (startZ + 1), 0);
+            player.spawnParticle(getParticle(player, eggId, collection), startX, startY, startZ + time, 0);
+            player.spawnParticle(getParticle(player, eggId, collection), startX, (startY + 2) - time, (startZ + 2), 0);
+            player.spawnParticle(getParticle(player, eggId, collection), (startX + 1), (startY + 2) - time, (startZ + 1), 0);
+
+            return;
+        }
+
+        double startX = start.getX();
+        double startY = start.getY() + 1.0;
+        double startZ = start.getZ();
+
+        player.spawnParticle(getParticle(player, eggId, collection), startX + time, startY, startZ, 0);
+        player.spawnParticle(getParticle(player, eggId, collection), startX, startY - time, startZ, 0);
+        player.spawnParticle(getParticle(player, eggId, collection), startX, startY, startZ + time, 0);
+    }
+
+
+    private void sendNearbyEggActionbar(Location start, String collection, String eggId) {
+
+        int radius = Main.getInstance().getPluginConfig().getShowEggsNearbyMessageRadius();
+
+        for (Entity e : start.getWorld().getNearbyEntities(start, radius, radius, radius)) {
+            if (!(e instanceof Player)) continue;
+            Player p = (Player) e;
+
+            if (!isMarkedAsFound(collection, eggId)) {
+                p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                        new TextComponent(messageManager.getMessage(MessageKey.EGG_NEARBY)));
+            }
+        }
+    }
+
+
+
+    public Particle getParticle(Player p, String key, String collection){
+
+        //TODO DO that found particle is sent
+        if(hasFound(p.getUniqueId(), key, collection)){
+            Bukkit.broadcastMessage("no "+key);
+            return eggNotFoundParticle;
+        }else {
+            Bukkit.broadcastMessage("yes "+key);
+            return eggFoundParticle;
+        }
+    }
+
 
     @Override
     public void resetStatsPlayer(UUID uuid, String collection) {

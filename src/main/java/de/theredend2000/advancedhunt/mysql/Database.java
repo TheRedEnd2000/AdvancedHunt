@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.mysql;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.MySQLConfig;
+import org.bukkit.Bukkit;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,6 +47,7 @@ public class Database {
             connection = DriverManager.getConnection(url, user, password);
             System.out.println("Connected to database.");
         } catch (SQLException e) {
+            this.isEnabled = false;
             throw new RuntimeException(e);
         }
 
@@ -117,7 +119,7 @@ public class Database {
                         "id INT AUTO_INCREMENT PRIMARY KEY, " +
                         "collection_id VARCHAR(255) NOT NULL, " +
                         "egg_id VARCHAR(255) NOT NULL, " +
-                        "reward_index INT, " +
+                        "reward_id INT, " +
                         "command TEXT, " +
                         "enabled BOOLEAN DEFAULT TRUE, " +
                         "chance DOUBLE DEFAULT 100, " +
@@ -131,7 +133,7 @@ public class Database {
                 "CREATE TABLE IF NOT EXISTS global_rewards (" +
                         "id INT AUTO_INCREMENT PRIMARY KEY, " +
                         "collection_id VARCHAR(255) NOT NULL, " +
-                        "reward_index INT, " +
+                        "reward_id INT, " +
                         "command TEXT, " +
                         "enabled BOOLEAN DEFAULT TRUE, " +
                         "chance DOUBLE DEFAULT 100, " +

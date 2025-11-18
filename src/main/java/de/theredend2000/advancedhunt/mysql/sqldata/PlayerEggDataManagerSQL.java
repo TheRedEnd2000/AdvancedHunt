@@ -26,18 +26,17 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
 
     @Override
     public void reload() {
-        // optional: reconnect logic könnte hier stehen
         plugin.getDatabase().getConnection();
     }
 
     @Override
     public void unloadPlayerData(UUID uuid) {
-        // SQL speichert zentral in DB — kein lokales Unload nötig
+        // Not need for MySQL
     }
 
     @Override
     public void initPlayers() {
-        // optional: pre-load players if required (currently no-op)
+        // Not need for MySQL
     }
 
     // ------------------------------------------------------------
@@ -75,7 +74,7 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
             // GET FOUND EGGS FROM SQL and compute counts & name
             // ----------------------------------------------------
             try (PreparedStatement stEggs = getConn().prepareStatement(
-                    "SELECT collection_id, egg_index, world, x, y, z, date, time FROM player_found_eggs WHERE uuid = ?"
+                    "SELECT collection_id, egg_id, world, x, y, z, date, time FROM player_found_eggs WHERE uuid = ?"
             )) {
                 stEggs.setString(1, uuid);
                 ResultSet eggRS = stEggs.executeQuery();
@@ -84,9 +83,9 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
                 Map<String, Integer> counts = new HashMap<>();
                 while (eggRS.next()) {
                     String collection = eggRS.getString("collection_id");
-                    int eggIndex = eggRS.getInt("egg_index");
+                    int eggId = eggRS.getInt("egg_id");
 
-                    String base = "FoundEggs." + collection + "." + eggIndex;
+                    String base = "FoundEggs." + collection + "." + eggId;
 
                     config.set(base + ".World", eggRS.getString("world"));
                     config.set(base + ".X", eggRS.getInt("x"));
@@ -142,8 +141,8 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
             st.setString(1, uuid.toString());
             st.setString(2, Bukkit.getOfflinePlayer(uuid).getName());
             st.setString(3, config.getString("DeletionType", "Everything"));
-            st.setString(4, config.getString("SelectedSection", null));
-            st.setString(5, config.getString("config-version", "1.1"));
+            st.setString(4, config.getString("SelectedSection", "default"));
+            st.setString(5, config.getString("config-version", "1.1")); // REPLACE WITH CURRENT VERSION MANAGER
             st.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -173,8 +172,6 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
     // ------------------------------------------------------------
     @Override
     public void createPlayerFile(UUID uuid) {
-        // Beim Erstellen: uuid, player_name, deletion_type und selected_section setzen.
-        // Falls der Datensatz schon existiert, wird nur der player_name aktualisiert.
         final String sql = "INSERT INTO player_data (uuid, player_name, deletion_type, selected_section) " +
                 "VALUES (?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE player_name = VALUES(player_name)";
@@ -183,8 +180,8 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
             st.setString(1, uuid.toString());
             st.setString(2, Bukkit.getOfflinePlayer(uuid).getName());
             // Default-Werte analog zur YAML-Variante:
-            st.setString(3, DeletionTypes.Noting.name()); // falls dein enum anders heißt, anpassen
-            st.setString(4, "default");                   // Standard-Collection
+            st.setString(3, DeletionTypes.Noting.name());
+            st.setString(4, "default");
             st.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -232,7 +229,7 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
     @Override
     public void setResetTimer(UUID uuid, String collection, String id) {
         try (PreparedStatement st = getConn().prepareStatement(
-                "UPDATE player_found_eggs SET date = ?, time = ? WHERE uuid = ? AND collection_id = ? AND egg_index = ?"
+                "UPDATE player_found_eggs SET date = ?, time = ? WHERE uuid = ? AND collection_id = ? AND egg_id = ?"
         )) {
             st.setString(1, DateTimeUtil.getCurrentDateString());
             st.setString(2, DateTimeUtil.getCurrentDateTimeString());
@@ -248,7 +245,7 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
     @Override
     public long getResetTimer(UUID uuid, String collection, String id) {
         try (PreparedStatement st = getConn().prepareStatement(
-                "SELECT date, time FROM player_found_eggs WHERE uuid = ? AND collection_id = ? AND egg_index = ?"
+                "SELECT date, time FROM player_found_eggs WHERE uuid = ? AND collection_id = ? AND egg_id = ?"
         )) {
             st.setString(1, uuid.toString());
             st.setString(2, collection);
@@ -277,7 +274,7 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
 
     @Override
     public void savePlayerData(UUID uuid, YamlConfiguration config) {
-
+        // Not need for MySQL
     }
 
     // ------------------------------------------------------------
@@ -292,21 +289,21 @@ public class PlayerEggDataManagerSQL implements PlayerEggDataStorage {
                 try {
                     // iterate through all entries in player_found_eggs
                     try (PreparedStatement st = getConn().prepareStatement(
-                            "SELECT uuid, collection_id, egg_index FROM player_found_eggs"
+                            "SELECT uuid, collection_id, egg_id FROM player_found_eggs"
                     )) {
                         ResultSet rs = st.executeQuery();
                         while (rs.next()) {
                             String uuidStr = rs.getString("uuid");
                             String collection = rs.getString("collection_id");
-                            int eggIndex = rs.getInt("egg_index");
+                            int eggId = rs.getInt("egg_id");
                             UUID uuid;
                             try {
                                 uuid = UUID.fromString(uuidStr);
                             } catch (IllegalArgumentException ex) {
                                 continue;
                             }
-                            if (canReset(uuid, collection, String.valueOf(eggIndex))) {
-                                plugin.getEggManager().resetStatsPlayerEgg(uuid, collection, String.valueOf(eggIndex));
+                            if (canReset(uuid, collection, String.valueOf(eggId))) {
+                                plugin.getEggManager().resetStatsPlayerEgg(uuid, collection, String.valueOf(eggId));
                             }
                         }
                         rs.close();
