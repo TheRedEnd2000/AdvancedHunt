@@ -358,17 +358,18 @@ public class EggManagerSQL implements EggDataStorage {
 
     @Override
     public boolean hasFound(UUID uuid, String id, String collection) {
+
         if (uuid == null || id == null || collection == null) return false;
 
         try {
             PreparedStatement st = database.getConnection().prepareStatement("""
-            SELECT 1 
-            FROM player_found_eggs
-            WHERE uuid = ? 
-              AND collection_id = ?
-              AND egg_id = ?
-            LIMIT 1
-        """);
+                SELECT 1 
+                FROM player_found_eggs
+                WHERE uuid = ? 
+                  AND collection_id = ?
+                  AND egg_id = ?
+                LIMIT 1
+            """);
 
             st.setString(1, uuid.toString());
             st.setString(2, collection);
@@ -387,6 +388,7 @@ public class EggManagerSQL implements EggDataStorage {
             return false;
         }
     }
+
 
 
 
@@ -462,8 +464,19 @@ public class EggManagerSQL implements EggDataStorage {
 
     @Override
     public void markEggAsFound(String collection, String eggID, boolean marked) {
-
+        if (collection == null || eggID == null) return;
+        try (PreparedStatement st = database.getConnection().prepareStatement(
+                "UPDATE placed_eggs SET marked_as_found = ? WHERE collection_id = ? AND egg_id = ?"
+        )) {
+            st.setBoolean(1, marked);
+            st.setString(2, collection);
+            st.setString(3, eggID);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     public void spawnEggParticle() {
@@ -546,29 +559,23 @@ public class EggManagerSQL implements EggDataStorage {
 
     @Override
     public boolean isMarkedAsFound(String collection, String eggId) {
-        try {
-            PreparedStatement st = database.getConnection().prepareStatement("""
-            SELECT 1 
-            FROM player_found_eggs
-            WHERE collection_id = ? AND egg_id = ?
-            LIMIT 1
-        """);
+        if (collection == null || eggId == null) return false;
+        try (PreparedStatement st = database.getConnection().prepareStatement(
+                "SELECT marked_as_found FROM placed_eggs WHERE collection_id = ? AND egg_id = ? LIMIT 1"
+        )) {
             st.setString(1, collection);
-            st.setInt(2, Integer.parseInt(eggId));
-
-            ResultSet rs = st.executeQuery();
-            boolean found = rs.next();
-
-            rs.close();
-            st.close();
-
-            return found;
-
+            st.setString(2, eggId);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean("marked_as_found");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 
 
     private void spawnParticlesForPlayer(Player player, Location start, double time, String collection, String eggId) {
@@ -627,13 +634,9 @@ public class EggManagerSQL implements EggDataStorage {
 
 
     public Particle getParticle(Player p, String key, String collection){
-
-        //TODO DO that found particle is sent
         if(hasFound(p.getUniqueId(), key, collection)){
-            Bukkit.broadcastMessage("no "+key);
             return eggNotFoundParticle;
         }else {
-            Bukkit.broadcastMessage("yes "+key);
             return eggFoundParticle;
         }
     }
