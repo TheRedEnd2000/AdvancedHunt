@@ -390,7 +390,7 @@ public final class Main extends JavaPlugin {
     public XMaterial getMaterial(String materialString) {
         try {
             return Optional.ofNullable(XMaterial.valueOf(materialString))
-                    .orElse(XMaterial.BARRIER);
+                    .orElse(XMaterial.STONE);
         } catch (Exception ex) {
             messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.MATERIAL_ERROR_CONSOLE, "%ERROR%", ex.getMessage());
             return XMaterial.STONE;
