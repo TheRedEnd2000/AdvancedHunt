@@ -1,6 +1,8 @@
 package de.theredend2000.advancedhunt.util;
 
-import de.tr7zw.nbtapi.*;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTType;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
@@ -100,7 +102,8 @@ public class ItemHelper {
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
 
         if (VersionComparator.isGreaterThanOrEqual(version, "1.20.5")) {
-            NBTCompound nbtCompound = (NBTCompound) NBT.itemStackToNBT(itemStack);
+            return null;
+            /*NBTCompound nbtCompound = (NBTCompound) NBT.itemStackToNBT(itemStack);
 
             String components = "";
             if (nbtCompound.hasTag("components")) {
@@ -158,7 +161,7 @@ public class ItemHelper {
             return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}",
                     itemStack.getType().name().toLowerCase(),
                     components.isEmpty() ? "" : components,
-                    itemStack.getAmount());
+                    itemStack.getAmount());*/
         } else {
             String itemNBT = NBT.get(itemStack, Object::toString);
             return MessageFormat.format("minecraft:give %PLAYER% {0}{1} {2}",
