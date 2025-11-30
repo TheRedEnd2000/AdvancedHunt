@@ -317,28 +317,30 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     break;
                 }
                 new AnvilGUI.Builder()
-                        .onClose(stateSnapshot -> {
-                            if (!stateSnapshot.getText().isEmpty()) {
-                                GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
-                                String preset = stateSnapshot.getText();
-                                if (!presetDataManager.containsPreset(preset)) {
-                                    presetDataManager.createPresetFile(stateSnapshot.getText());
-                                    presetDataManager.loadCommandsIntoPreset(preset, collection);
-                                    menuContent(collection);
-                                    open(id, collection);
-                                    messageManager.sendMessage(player, MessageKey.PRESET_SAVED, "%PRESET%", preset);
-                                } else {
-                                    messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
-                                }
+                    .onClose(stateSnapshot -> {
+                        player.closeInventory();
+                    })
+                    .onClick((slot, stateSnapshot) -> {
+                        if (!stateSnapshot.getText().isEmpty()) {
+                            GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
+                            String preset = stateSnapshot.getText();
+                            if (!presetDataManager.containsPreset(preset)) {
+                                presetDataManager.createPresetFile(stateSnapshot.getText());
+                                presetDataManager.loadCommandsIntoPreset(preset, collection);
+                                menuContent(collection);
+                                open(id, collection);
+                                messageManager.sendMessage(player, MessageKey.PRESET_SAVED, "%PRESET%", preset);
+                            } else {
+                                messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
                             }
-                        })
-                        .onClick((slot, stateSnapshot) -> {
-                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                        })
-                        .text("enter name")
-                        .title("Preset name")
-                        .plugin(Main.getInstance())
-                        .open(player);
+                        }
+
+                        return Collections.emptyList();
+                    })
+                    .text("enter name")
+                    .title("Preset name")
+                    .plugin(Main.getInstance())
+                    .open(player);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "rewards_global_rewards.preset_load":

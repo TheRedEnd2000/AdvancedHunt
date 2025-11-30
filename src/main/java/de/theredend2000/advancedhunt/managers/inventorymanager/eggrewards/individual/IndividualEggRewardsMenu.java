@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalEggRewardsMenu;
+import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemHelper;
 import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
@@ -324,6 +325,9 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 }
                 new AnvilGUI.Builder()
                         .onClose(stateSnapshot -> {
+                            player.closeInventory();
+                        })
+                        .onClick((slot, stateSnapshot) -> {
                             if (!stateSnapshot.getText().isEmpty()) {
                                 IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
                                 String preset = stateSnapshot.getText();
@@ -337,9 +341,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                                     messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
                                 }
                             }
-                        })
-                        .onClick((slot, stateSnapshot) -> {
-                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
+
+                            return Collections.emptyList();
                         })
                         .text("enter name")
                         .title("Preset name")
