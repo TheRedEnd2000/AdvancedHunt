@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.configurations;
 
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.TreeMap;
 
 
@@ -39,7 +40,8 @@ public class MySQLConfig extends Configuration {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean("enabled");
+        //return getConfig().getBoolean("enabled");
+        return false;
     }
 
     public String getHost() {

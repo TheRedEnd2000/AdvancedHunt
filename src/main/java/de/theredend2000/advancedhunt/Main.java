@@ -13,7 +13,6 @@ import de.theredend2000.advancedhunt.managers.eggmanager.EggDataManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggHidingManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedhunt.managers.eggmanager.PlayerEggDataManager;
-import de.theredend2000.advancedhunt.mysql.yamldata.PlayerEggDataManagerYAML;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.RarityManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
@@ -93,7 +92,7 @@ public final class Main extends JavaPlugin {
         plugin = this;
         renameConfigFolder();
         initialisePlugin();
-        connectToDatabase(); //Add if MYSQL works
+        //connectToDatabase(); //Add if MYSQL works
 
         String version = Bukkit.getBukkitVersion().split("-", 2)[0];
         if (VersionComparator.isGreaterThan(version, "1.21.10")) {
