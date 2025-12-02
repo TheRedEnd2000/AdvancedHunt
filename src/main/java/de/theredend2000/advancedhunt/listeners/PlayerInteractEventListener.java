@@ -141,12 +141,12 @@ public class PlayerInteractEventListener implements Listener {
                         boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
 
                         if (cmd != null) {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                         }
 
                         if (message != null && !message.isBlank()) {
                             String finalMessage = message.replaceAll("%PLAYER%", player.getName())
-                                    .replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection)))
+                                    .replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection)))
                                     .replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection)))
                                     .replaceAll("%PREFIX%", Main.PREFIX)
                                     .replaceAll("&", "§");
@@ -182,12 +182,12 @@ public class PlayerInteractEventListener implements Listener {
                             boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
 
                             if (cmd != null) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                             }
 
                             if (message != null && !message.isBlank()) {
                                 String finalMessage = message.replaceAll("%PLAYER%", player.getName())
-                                        .replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection)))
+                                        .replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection)))
                                         .replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection)))
                                         .replaceAll("%PREFIX%", Main.PREFIX)
                                         .replaceAll("&", "§");
