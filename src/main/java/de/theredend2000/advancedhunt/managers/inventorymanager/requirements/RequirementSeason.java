@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class RequirementSeason extends InventoryMenu {
     private MessageManager messageManager;
@@ -45,7 +44,8 @@ public class RequirementSeason extends InventoryMenu {
                 .setDisplayName("§6" + collection)
                 .setSkullOwner(Main.getInstance().getEggManager().getRandomEggTexture(Main.getInstance().getRandom().nextInt(7)))
                 .build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+        inventoryContent[49] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("ODZlNjcyZjFkNWZjOTA2NmFjYWJmZWZjZTVmZTVkNTUwZGU4MjQ3ZWMyOTQ0YzI5MjU4YTY3ZTU1NjZkNWIwYiJ9fX0="))
                 .setCustomId("requirement_season.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))

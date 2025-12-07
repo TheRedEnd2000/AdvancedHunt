@@ -1,27 +1,26 @@
 package de.theredend2000.advancedhunt.util;
 
 public class VersionComparator {
+    private static final String SNAPSHOT_TOKEN = "SNAPSHOT";
+
     public static int compare(String version1, String version2) {
-        // Split versions into parts
-        String[] parts1 = version1.split("[-.]");
-        String[] parts2 = version2.split("[-.]");
+        if (version1 == null || version2 == null) {
+            throw new IllegalArgumentException("Version values must not be null");
+        }
 
-        int length = Math.max(parts1.length, parts2.length);
+        // Split versions into parts using both dash and dot as separators
+        String[] firstVersionParts = version1.split("[-.]");
+        String[] secondVersionParts = version2.split("[-.]");
 
-        for (int i = 0; i < length; i++) {
-            String v1 = i < parts1.length ? parts1[i] : "0";
-            String v2 = i < parts2.length ? parts2[i] : "0";
+        int maxLength = Math.max(firstVersionParts.length, secondVersionParts.length);
 
-            // Try to parse as integers
-            try {
-                int i1 = Integer.parseInt(v1);
-                int i2 = Integer.parseInt(v2);
-                if (i1 < i2) return -1;
-                if (i1 > i2) return 1;
-            } catch (NumberFormatException e) {
-                // If parsing fails, compare as strings
-                int result = v1.compareTo(v2);
-                if (result != 0) return result;
+        for (int partIndex = 0; partIndex < maxLength; partIndex++) {
+            String firstPart = getVersionPart(firstVersionParts, partIndex);
+            String secondPart = getVersionPart(secondVersionParts, partIndex);
+
+            int comparisonResult = compareVersionParts(firstPart, secondPart);
+            if (comparisonResult != 0) {
+                return comparisonResult;
             }
         }
 
@@ -46,5 +45,70 @@ public class VersionComparator {
 
     public static boolean isEqual(String version1, String version2) {
         return compare(version1, version2) == 0;
+    }
+
+    /**
+     * Gets the version part at the specified index, returning "0" if the index is out of bounds.
+     */
+    private static String getVersionPart(String[] versionParts, int index) {
+        if (index >= versionParts.length) {
+            return "0";
+        }
+        String part = versionParts[index].trim();
+        return part.isEmpty() ? "0" : part;
+    }
+
+    /**
+     * Compares two version parts, handling SNAPSHOT tokens and numeric/string comparisons.
+     * SNAPSHOT versions are considered less than release versions.
+     */
+    private static int compareVersionParts(String firstPart, String secondPart) {
+        boolean firstIsSnapshot = isSnapshotToken(firstPart);
+        boolean secondIsSnapshot = isSnapshotToken(secondPart);
+
+        // Handle SNAPSHOT tokens
+        if (firstIsSnapshot || secondIsSnapshot) {
+            if (firstIsSnapshot && secondIsSnapshot) {
+                return 0; // Both are snapshots, considered equal
+            }
+            return firstIsSnapshot ? -1 : 1; // SNAPSHOT < release
+        }
+
+        // Try to compare as integers
+        Integer firstNumber = tryParseInteger(firstPart);
+        Integer secondNumber = tryParseInteger(secondPart);
+
+        if (firstNumber != null && secondNumber != null) {
+            return Integer.compare(firstNumber, secondNumber);
+        }
+
+        // If one is numeric and the other is not, numeric is considered greater
+        if (firstNumber != null) {
+            return 1;
+        }
+        if (secondNumber != null) {
+            return -1;
+        }
+
+        // Both are non-numeric strings, compare lexicographically
+        return firstPart.compareToIgnoreCase(secondPart);
+    }
+
+    /**
+     * Attempts to parse a string as an integer, returning null if parsing fails.
+     */
+    private static Integer tryParseInteger(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Checks if the given part represents a SNAPSHOT token.
+     */
+    private static boolean isSnapshotToken(String part) {
+        return SNAPSHOT_TOKEN.equalsIgnoreCase(part);
     }
 }

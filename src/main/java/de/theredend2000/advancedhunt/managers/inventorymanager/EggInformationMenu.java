@@ -41,7 +41,8 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
     }
 
     public void addMenuBorderButtons(){
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+        inventoryContent[49] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("ODZlNjcyZjFkNWZjOTA2NmFjYWJmZWZjZTVmZTVkNTUwZGU4MjQ3ZWMyOTQ0YzI5MjU4YTY3ZTU1NjZkNWIwYiJ9fX0="))
                 .setCustomId("egg_info.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
@@ -96,9 +97,9 @@ public class EggInformationMenu extends PaginatedInventoryMenu implements IInven
                 if(index >= keys.size()) break;
                 if (keys.get(index) != null){
                     String maxEggs = String.valueOf(Main.getInstance().getEggManager().getMaxEggs(collection));
-                    String date = Main.getInstance().getEggManager().getEggDateCollected(uuid.get(index), eggId, collection);
-                    String time = Main.getInstance().getEggManager().getEggTimeCollected(uuid.get(index), eggId, collection);
-                    String eggsFound = Main.getInstance().getPlayerEggDataManager().getPlayerData(UUID.fromString(uuid.get(index))).getString("FoundEggs." + collection + ".Count");
+                    String date = Main.getInstance().getEggManager().getEggDateCollected(UUID.fromString(uuid.get(index)), eggId, collection);
+                    String time = Main.getInstance().getEggManager().getEggTimeCollected(UUID.fromString(uuid.get(index)), eggId, collection);
+                    String eggsFound = String.valueOf(Main.getInstance().getEggManager().getEggsFound(UUID.fromString(uuid.get(index)),collection));
                     getInventory().addItem(new ItemBuilder(XMaterial.PLAYER_HEAD)
                             .setOwner(keys.get(index))
                             .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.INFORMATION_PLAYER,"%PLAYER_NAME%", keys.get(index),"%PLAYER_UUID%", uuid.get(index)))

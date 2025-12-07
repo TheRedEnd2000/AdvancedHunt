@@ -1,6 +1,8 @@
 package de.theredend2000.advancedhunt.mysql;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.configurations.MySQLConfig;
+import org.bukkit.Bukkit;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,116 +19,159 @@ public class Database {
     private String database;
     private String user;
     private String password;
+    private MySQLConfig mySQLConfig;
+    private boolean isEnabled;
 
-    public Database(){
+    public Database() {
         this.plugin = Main.getInstance();
+        this.mySQLConfig = plugin.getMySQLConfig();
+        this.isEnabled = mySQLConfig.isEnabled();
 
-        this.host = "127.0.0.1";
-        this.port = 3306;
-        this.database = "mcserver";
-        this.user = "root";
-        this.password = "";
+        this.host = mySQLConfig.getHost();
+        this.port = mySQLConfig.getPort();
+        this.database = mySQLConfig.getDatabase();
+        this.user = mySQLConfig.getUser();
+        this.password = mySQLConfig.getPassword();
     }
 
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
 
-        if(connection != null){
+        if (connection != null) {
             return connection;
         }
 
-        String url = "jdbc:mysql://"+host+"/"+database;
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database +
+                "?useSSL=false&autoReconnect=true&characterEncoding=utf8";
 
-        Connection connection = DriverManager.getConnection(url, user, password);
-
-        this.connection = connection;
-
-        System.out.println("Connected to database.");
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+            System.out.println("Connected to database.");
+        } catch (SQLException e) {
+            this.isEnabled = false;
+            throw new RuntimeException(e);
+        }
 
         return connection;
     }
 
     public void initializeDatabase() throws SQLException {
-
         Statement statement = getConnection().createStatement();
 
-        //Create the player_stats table
-        String sql = "CREATE TABLE IF NOT EXISTS player_data (uuid VARCHAR(36) primary key, deletionType VARCHAR(255), selectedSection VARCHAR(255))";
-        //(hello (count int, name String))
+        //------------------------------------------------------------
+        // 1) COLLECTIONS (BASIS)
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS collections (" +
+                        "collection_id VARCHAR(255) PRIMARY KEY, " +
+                        "max_eggs INT DEFAULT 0, " +
+                        "requirements_order VARCHAR(4) DEFAULT 'OR', " +
+                        "enabled BOOLEAN DEFAULT TRUE)"
+        );
 
-        statement.execute(sql);
+        //------------------------------------------------------------
+        // 2) COLLECTION REQUIREMENTS
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS collection_requirements (" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                        "collection_id VARCHAR(255) NOT NULL, " +
+                        "type VARCHAR(50) NOT NULL, " +          // Hours, Month, Year, Weekday...
+                        "requirement_key VARCHAR(255) NOT NULL, " +
+                        "value BOOLEAN DEFAULT TRUE, " +
+                        "FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE)"
+        );
+
+        //------------------------------------------------------------
+        // 3) COLLECTION RESET
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS collection_reset (" +
+                        "collection_id VARCHAR(255) PRIMARY KEY, " +
+                        "reset_year INT, " +
+                        "reset_month INT, " +
+                        "reset_day INT, " +
+                        "reset_hour INT, " +
+                        "reset_minute INT, " +
+                        "reset_second INT, " +
+                        "FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE)"
+        );
+
+        //------------------------------------------------------------
+        // 4) PLACED EGGS (ALLE GESETZTEN EIER)
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS placed_eggs (" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                        "collection_id VARCHAR(255) NOT NULL, " +
+                        "egg_id VARCHAR(255) NOT NULL, " +
+                        "world VARCHAR(255), " +
+                        "x INT, y INT, z INT, " +
+                        "date VARCHAR(20), " +
+                        "time VARCHAR(20), " +
+                        "FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE)"
+        );
+
+        //------------------------------------------------------------
+        // 5) EGG REWARDS (REWARDS PRO EI)
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS egg_rewards (" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                        "collection_id VARCHAR(255) NOT NULL, " +
+                        "egg_id VARCHAR(255) NOT NULL, " +
+                        "reward_id INT, " +
+                        "command TEXT, " +
+                        "enabled BOOLEAN DEFAULT TRUE, " +
+                        "chance DOUBLE DEFAULT 100, " +
+                        "FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE)"
+        );
+
+        //------------------------------------------------------------
+        // 6) GLOBAL REWARDS (FÜR DIE GESAMTE COLLECTION)
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS global_rewards (" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                        "collection_id VARCHAR(255) NOT NULL, " +
+                        "reward_id INT, " +
+                        "command TEXT, " +
+                        "enabled BOOLEAN DEFAULT TRUE, " +
+                        "chance DOUBLE DEFAULT 100, " +
+                        "FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE)"
+        );
+
+        //------------------------------------------------------------
+        // 7) PLAYER DATA (YML → SQL ERSETZT)
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS player_data (" +
+                        "uuid VARCHAR(36) PRIMARY KEY, " +
+                        "player_name VARCHAR(255), " +
+                        "deletion_type VARCHAR(50) DEFAULT 'Everything', " +
+                        "selected_section VARCHAR(255), " +
+                        "config_version VARCHAR(10) DEFAULT '1.1')"
+        );
+
+        //------------------------------------------------------------
+        // 8) PLAYER FOUND EGGS ("FoundEggs" aus deiner YML)
+        //------------------------------------------------------------
+        statement.execute(
+                "CREATE TABLE IF NOT EXISTS player_found_eggs (" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                        "uuid VARCHAR(36) NOT NULL, " +
+                        "collection_id VARCHAR(255) NOT NULL, " +
+                        "egg_id INT NOT NULL, " +
+                        "world VARCHAR(255), " +
+                        "x INT, y INT, z INT, " +
+                        "date VARCHAR(20), " +
+                        "time VARCHAR(20), " +
+                        "FOREIGN KEY (uuid) REFERENCES player_data(uuid) ON DELETE CASCADE)"
+        );
 
         statement.close();
-
     }
 
-    //Stuff from other plugin to maybe change up
-
-    /*public PlayerStats findPlayerStatsByUUID(String uuid) throws SQLException {
-
-        PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM player_stats WHERE uuid = ?");
-        statement.setString(1, uuid);
-
-        ResultSet resultSet = statement.executeQuery();
-
-        PlayerStats playerStats;
-
-        if(resultSet.next()){
-
-            playerStats = new PlayerStats(resultSet.getString("uuid"), resultSet.getInt("deaths"), resultSet.getInt("kills"), resultSet.getLong("blocks_broken"), resultSet.getDouble("balance"), resultSet.getDate("last_login"), resultSet.getDate("last_logout"));
-
-            statement.close();
-
-            return playerStats;
-        }
-
-        statement.close();
-
-        return null;
+    public boolean isEnabled() {
+        return isEnabled;
     }
-
-    public void createPlayerStats(PlayerStats playerStats) throws SQLException {
-
-        PreparedStatement statement = getConnection()
-                .prepareStatement("INSERT INTO player_stats(uuid, deaths, kills, blocks_broken, balance, last_login, last_logout) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        statement.setString(1, playerStats.getPlayerUUID());
-        statement.setInt(2, playerStats.getDeaths());
-        statement.setInt(3, playerStats.getKills());
-        statement.setLong(4, playerStats.getBlocksBroken());
-        statement.setDouble(5, playerStats.getBalance());
-        statement.setDate(6, new Date(playerStats.getLastLogin().getTime()));
-        statement.setDate(7, new Date(playerStats.getLastLogout().getTime()));
-
-        statement.executeUpdate();
-
-        statement.close();
-
-    }
-
-    public void updatePlayerStats(PlayerStats playerStats) throws SQLException {
-
-        PreparedStatement statement = getConnection().prepareStatement("UPDATE player_stats SET deaths = ?, kills = ?, blocks_broken = ?, balance = ?, last_login = ?, last_logout = ? WHERE uuid = ?");
-        statement.setInt(1, playerStats.getDeaths());
-        statement.setInt(2, playerStats.getKills());
-        statement.setLong(3, playerStats.getBlocksBroken());
-        statement.setDouble(4, playerStats.getBalance());
-        statement.setDate(5, new Date(playerStats.getLastLogin().getTime()));
-        statement.setDate(6, new Date(playerStats.getLastLogout().getTime()));
-        statement.setString(7, playerStats.getPlayerUUID());
-
-        statement.executeUpdate();
-
-        statement.close();
-
-    }
-
-    public void deletePlayerStats(PlayerStats playerStats) throws SQLException {
-
-        PreparedStatement statement = getConnection().prepareStatement("DELETE FROM player_stats WHERE uuid = ?");
-        statement.setString(1, playerStats.getPlayerUUID());
-
-        statement.executeUpdate();
-
-        statement.close();
-
-    }*/
 }

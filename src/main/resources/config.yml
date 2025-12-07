@@ -1,4 +1,4 @@
-config-version: 3.7
+config-version: 3.8 # already updated for next version (3.1.4)
 
 # Change the language
 # Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali) | zh (Simplified Chinese only messages no menus)
@@ -35,8 +35,8 @@ prefix: '&f[&eAdvancedHunt&f] &r'
 
 Settings:
 
-  # The sound volume for all sounds
-  SoundVolume: 3
+  # The sound volume for all sounds (in percentage)
+  SoundVolume: 100
 
   # If a message should be sent if the plugin has a newer version
   Updater: true

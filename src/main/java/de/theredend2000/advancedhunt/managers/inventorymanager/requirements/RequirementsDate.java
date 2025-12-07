@@ -18,7 +18,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class RequirementsDate extends PaginatedInventoryMenu {
 
@@ -53,7 +52,8 @@ public class RequirementsDate extends PaginatedInventoryMenu {
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.BACK_BUTTON))
                 .setSkullOwner(Main.getTexture("ODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0="))
                 .build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+        inventoryContent[49] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("ODZlNjcyZjFkNWZjOTA2NmFjYWJmZWZjZTVmZTVkNTUwZGU4MjQ3ZWMyOTQ0YzI5MjU4YTY3ZTU1NjZkNWIwYiJ9fX0="))
                 .setCustomId("date.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))

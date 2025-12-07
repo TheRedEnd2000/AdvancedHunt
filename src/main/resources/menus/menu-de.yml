@@ -1,4 +1,4 @@
-config-version: 1.2
+config-version: 1.3
 
 # %PLUGIN_NAME_S% ist plugin-name-singular in der config
 # %PLUGIN_NAME_P% ist plugin-name-plural in der config
@@ -70,7 +70,7 @@ collection_editor_requirements:
   lore:
     - "%REQUIREMENTS%" # The requirements translations can be changed in the messages files.
 collection_editor_reset:
-  displayname: "&3Zurücksetzen &e&l(BETA)"
+  displayname: "&3Zurücksetzen"
   lore:
     - ""
     - "&cSetzt sich zurück nach:"
@@ -383,7 +383,7 @@ rewards_global_information:
     - "&7Du kannst die Commands als Voreinstellung"
     - "&7um sie in andere Sammlungen zu laden."
 rewards_global_reward:
-  displayname: "&b&lBelo &7#%REWARD_ID%"
+  displayname: "&b&lBelohnung &7#%REWARD_ID%"
   lore:
     - ""
     - "&9Information:"
@@ -624,11 +624,12 @@ settings_sound_volume:
   lore:
     - ""
     - "&7Ändere wie laut alle sounds des plugins sind."
-    - "&7Wenn der Wert 0 ist wird kein Ton gespielt."
     - ""
     - "&7Aktuelle Lautstärke: %VOLUME%"
-    - "&eLINKS-KLICK um eins hinzuzufügen."
-    - "&eRECHTS-KLICK um eins zu entfernen."
+    - "&eLEFT-CLICK für +1%."
+    - "&eRIGHT-CLICK für -1%."
+    - "&eSHIFT + LEFT-CLICK für +10%."
+    - "&eSHIFT + RIGHT-CLICK für -10%."
 settings_show_coordinates:
   displayname: "&3Zeige Koordinaten wenn gefunden"
   lore:

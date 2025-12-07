@@ -49,13 +49,13 @@ public class PlaceholderExtension extends PlaceholderExpansion {
         if (params.equalsIgnoreCase("found_treasures")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
-            return String.valueOf(eggManager.getEggsFound(player, collection));
+            return String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection));
         }
 
         if (params.equalsIgnoreCase("remaining_treasures")) {
             String collection = Main.getInstance().getEggManager().getEggCollectionFromPlayerData(player.getUniqueId());
             if(collection == null) return String.valueOf(Main.getInstance().getPluginConfig().getPlaceholderAPICollection());
-            return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player, collection));
+            return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player.getUniqueId(), collection));
         }
 
         if (params.matches("player_name_\\d+")) {
@@ -82,7 +82,7 @@ public class PlaceholderExtension extends PlaceholderExpansion {
 
         if (params.matches("remaining_treasures_.*")) {
             String collection = extractStringFromPlaceholder(params, 2);
-            return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player, collection));
+            return String.valueOf(eggManager.getMaxEggs(collection) - eggManager.getEggsFound(player.getUniqueId(), collection));
         }
 
         if (params.matches("max_treasures_.*")) {
@@ -92,7 +92,7 @@ public class PlaceholderExtension extends PlaceholderExpansion {
 
         if (params.matches("found_treasures_.*")) {
             String collection = extractStringFromPlaceholder(params, 2);
-            return String.valueOf(eggManager.getEggsFound(player, collection));
+            return String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection));
         }
 
         return null;

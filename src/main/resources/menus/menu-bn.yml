@@ -70,7 +70,7 @@ collection_editor_requirements:
   lore:
     - "%REQUIREMENTS%" # Proyojoniyota er onubad guli barta file gulite poriborton kora jabe.
 collection_editor_reset:
-  displayname: "&3Reset korun &e&l(BETA)"
+  displayname: "&3Reset korun"
   lore:
     - ""
     - "&cPore reset hobe:"
@@ -621,8 +621,7 @@ settings_sound_volume:
   displayname: "&3Shobdo matra"
   lore:
     - ""
-    - "&7Poriborton korun shobdomatra ei plugin er sokol awaj er"
-    - "&7Jodi shobdomatra 0 er shoman hoi tahole kono awaj i bajbe nah."
+    - "&7Poriborton korun shobdomatra ei plugin er sokol awaj er."
     - ""
     - "&7Choloman: %VOLUME%"
     - "&eLEFT-CLICK korun ekti jukto korte."

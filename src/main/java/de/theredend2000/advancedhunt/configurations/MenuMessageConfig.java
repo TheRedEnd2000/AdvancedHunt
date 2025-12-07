@@ -23,6 +23,11 @@ public class MenuMessageConfig extends Configuration {
 
     @Override
     public void registerUpgrader() {
+        upgraders.put(1.3, (oldConfig, newConfig) -> {
+            newConfig.set("settings_sound_volume.lore", newConfig.getDefaults().getStringList("settings_sound_volume.lore"));
+            newConfig.set("collection_editor_reset.displayname", newConfig.getDefaults().getString("collection_editor_reset.displayname"));
+            newConfig.set("rewards_global_reward.displayname", newConfig.getDefaults().getString("rewards_global_reward.displayname"));
+        });
         upgraders.put(1.1, (oldConfig, newConfig) -> {
             List<ConfigMigration.ReplacementEntry> keyReplacements = Arrays.asList(
                     new ConfigMigration.ReplacementEntry("egg", "treasure", false, true)

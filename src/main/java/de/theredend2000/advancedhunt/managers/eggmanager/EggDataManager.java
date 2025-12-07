@@ -2,12 +2,18 @@ package de.theredend2000.advancedhunt.managers.eggmanager;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.EggConfig;
+import de.theredend2000.advancedhunt.mysql.Database;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class EggDataManager {
 
@@ -25,6 +31,32 @@ public class EggDataManager {
         if(eggConfig.savedEggCollections().size() < 1) {
             eggConfig.createEggCollectionFile("default", true);
             Main.setupDefaultCollection = true;
+        }
+        if (plugin.getMySQLConfig().isEnabled()) {
+            try {
+                Database db = plugin.getDatabase();
+                PreparedStatement check = db.getConnection()
+                        .prepareStatement("SELECT 1 FROM collections WHERE collection_id = ?");
+                check.setString(1, "default");
+                ResultSet rs = check.executeQuery();
+
+                // Wenn die Collection noch nicht existiert, anlegen
+                if (!rs.next()) {
+                    PreparedStatement insert = db.getConnection()
+                            .prepareStatement("INSERT INTO collections (collection_id, max_eggs, enabled) VALUES (?, ?, ?)");
+                    insert.setString(1, "default");
+                    insert.setInt(2, 0);          // default max_eggs
+                    insert.setBoolean(3, true);   // enabled
+                    insert.executeUpdate();
+                    insert.close();
+                }
+                Bukkit.getConsoleSender().sendMessage("§aCreated!");
+
+                rs.close();
+                check.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

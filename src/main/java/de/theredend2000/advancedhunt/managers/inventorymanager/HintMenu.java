@@ -132,8 +132,8 @@ public class HintMenu extends InventoryMenu {
             if (!Main.getInstance().getEggManager().containsPlayer(player.getName())) {
                 continue;
             }
-            if (Main.getInstance().getEggManager().checkFoundAll(player, collection)) continue;
-            int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player, collection);
+            if (Main.getInstance().getEggManager().checkFoundAll(player.getUniqueId(), collection)) continue;
+            int number = Main.getInstance().getEggManager().getRandomNotFoundEgg(player.getUniqueId(), collection);
             ConfigLocationUtil location = new ConfigLocationUtil(plugin, "PlacedEggs." + number);
             if (location.loadLocation(collection) != null) {
                 int random = Main.getInstance().getRandom().nextInt(2);

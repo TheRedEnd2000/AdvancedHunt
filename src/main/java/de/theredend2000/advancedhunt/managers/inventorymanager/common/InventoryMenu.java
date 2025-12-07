@@ -7,7 +7,9 @@ import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
 import de.theredend2000.advancedhunt.util.messages.MenuManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +35,7 @@ public abstract class InventoryMenu implements IInventoryMenu {
         this.inventoryContent = new ItemStack[this.slots];
         this.inventoryName = inventoryName;
 
+
         this.FILLER_GLASS = new ItemBuilder(fillerMaterial)
                 .setDisplayName(" ")
                 .build();
@@ -55,8 +58,18 @@ public abstract class InventoryMenu implements IInventoryMenu {
     @Override
     public void handleMenu(InventoryClickEvent event) {
         ItemStack itemStack = event.getCurrentItem();
+        Player player = (Player) event.getWhoClicked();
         if (itemStack instanceof InventoryButton) {
-            ((InventoryButton)itemStack).onClick(event.getClick(), (Player)event.getWhoClicked());
+            ((InventoryButton)itemStack).onClick(event.getClick(), player);
+        }
+        player.sendMessage("clicked2");
+        if (event.getClickedInventory() == getInventory()) {
+            player.sendMessage("clicked");
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                event.setCancelled(true);
+                player.sendMessage("cancel");
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 4L);
+            }
         }
     }
 
@@ -70,4 +83,5 @@ public abstract class InventoryMenu implements IInventoryMenu {
 
         return inventory;
     }
+
 }

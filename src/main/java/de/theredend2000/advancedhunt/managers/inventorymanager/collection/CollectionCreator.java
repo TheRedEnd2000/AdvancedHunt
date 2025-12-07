@@ -38,7 +38,8 @@ public class CollectionCreator extends InventoryMenu {
     }
 
     private void addMenuBorderButtons() {
-        inventoryContent[40] = new ItemBuilder(XMaterial.BARRIER)
+        inventoryContent[40] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("ODZlNjcyZjFkNWZjOTA2NmFjYWJmZWZjZTVmZTVkNTUwZGU4MjQ3ZWMyOTQ0YzI5MjU4YTY3ZTU1NjZkNWIwYiJ9fX0="))
                 .setCustomId("collection_creator.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
@@ -100,20 +101,26 @@ public class CollectionCreator extends InventoryMenu {
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
                 new AnvilGUI.Builder()
                         .onClose(stateSnapshot -> {
-                            if (!stateSnapshot.getText().isEmpty()) {
-                                name = stateSnapshot.getText();
-                                Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
-                                menuContent();
-                                open();
-                            }
+                            player.closeInventory();
                         })
                         .onClick((slot, stateSnapshot) -> {
-                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                            if (slot == AnvilGUI.Slot.OUTPUT) {
+                                name = stateSnapshot.getText();
+                                Main.getInstance().getPlayerEggDataManager().savePlayerData(player.getUniqueId(), playerConfig);
+
+                                menuContent();
+                                open();
+
+                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                            }
+
+                            return Collections.emptyList();
                         })
                         .text("Enter collection name")
                         .title("Collection name")
                         .plugin(Main.getInstance())
                         .open(player);
+
                 break;
             case "collection_creator.status":
                 player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);

@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
 import de.theredend2000.advancedhunt.managers.inventorymanager.common.PaginatedInventoryMenu;
 import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalEggRewardsMenu;
+import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemHelper;
 import de.theredend2000.advancedhunt.util.PlayerMenuUtility;
@@ -18,7 +19,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -69,7 +69,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_INDIVIDUAL_NEW_REWARD))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_INDIVIDUAL_NEW_REWARD))
                 .build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+        inventoryContent[49] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("ODZlNjcyZjFkNWZjOTA2NmFjYWJmZWZjZTVmZTVkNTUwZGU4MjQ3ZWMyOTQ0YzI5MjU4YTY3ZTU1NjZkNWIwYiJ9fX0="))
                 .setCustomId("rewards_individual_rewards.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
@@ -91,11 +92,13 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
         getInventory().setContents(inventoryContent);
 
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("rewards_individual_rewards.previous_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("rewards_individual_rewards.next_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
@@ -268,7 +271,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                         break;
                     case DROP_ONE_SLOT:
                         EggManager eggManager = plugin.getEggManager();
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Objects.requireNonNull(placedEggs.getString("PlacedEggs." + id + ".Rewards."+commandID+".command")).replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Objects.requireNonNull(placedEggs.getString("PlacedEggs." + id + ".Rewards."+commandID+".command")).replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                         break;
                 }
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
@@ -322,6 +325,9 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 }
                 new AnvilGUI.Builder()
                         .onClose(stateSnapshot -> {
+                            player.closeInventory();
+                        })
+                        .onClick((slot, stateSnapshot) -> {
                             if (!stateSnapshot.getText().isEmpty()) {
                                 IndividualPresetDataManager presetDataManager = Main.getInstance().getIndividualPresetDataManager();
                                 String preset = stateSnapshot.getText();
@@ -335,9 +341,8 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                                     messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
                                 }
                             }
-                        })
-                        .onClick((slot, stateSnapshot) -> {
-                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
+
+                            return Collections.emptyList();
                         })
                         .text("enter name")
                         .title("Preset name")
@@ -349,9 +354,7 @@ public class IndividualEggRewardsMenu extends PaginatedInventoryMenu {
                 new IndividualPresetsMenu(super.playerMenuUtility).open(id, collection);
                 break;
             case "rewards_individual_rewards.switch_global":
-                if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Global")) {
-                    new GlobalEggRewardsMenu(super.playerMenuUtility).open(id, collection);
-                }
+                new GlobalEggRewardsMenu(super.playerMenuUtility).open(id, collection);
                 break;
         }
     }

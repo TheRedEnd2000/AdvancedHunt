@@ -18,7 +18,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -69,7 +68,8 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.REWARDS_GLOBAL_NEW_REWARD))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.REWARDS_GLOBAL_NEW_REWARD))
                 .build();
-        inventoryContent[49] = new ItemBuilder(XMaterial.BARRIER)
+        inventoryContent[49] = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullOwner(Main.getTexture("ODZlNjcyZjFkNWZjOTA2NmFjYWJmZWZjZTVmZTVkNTUwZGU4MjQ3ZWMyOTQ0YzI5MjU4YTY3ZTU1NjZkNWIwYiJ9fX0="))
                 .setCustomId("rewards_global_rewards.close")
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.CLOSE_BUTTON))
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.CLOSE_BUTTON))
@@ -91,11 +91,13 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
         getInventory().setContents(inventoryContent);
 
         getInventory().setItem(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("rewards_global_rewards.previous_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.PREVIOUS_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.PREVIOUS_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("ZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"))
                 .build());
         getInventory().setItem(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setCustomId("rewards_global_rewards.next_page")
                 .setLore(menuMessageManager.getMenuItemLore(MenuMessageKey.NEXT_PAGE_BUTTON,"%CURRENT_PAGE%", String.valueOf(page + 1),"%MAX_PAGES%", String.valueOf(getMaxPages())))
                 .setDisplayName(menuMessageManager.getMenuItemName(MenuMessageKey.NEXT_PAGE_BUTTON))
                 .setSkullOwner(Main.getTexture("NDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ=="))
@@ -262,7 +264,7 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                         break;
                     case DROP_ONE_SLOT:
                         EggManager eggManager = plugin.getEggManager();
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Objects.requireNonNull(placedEggs.getString("GlobalRewards." + commandID + ".command")).replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player, collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Objects.requireNonNull(placedEggs.getString("GlobalRewards." + commandID + ".command")).replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
                         break;
                 }
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
@@ -315,38 +317,37 @@ public class GlobalEggRewardsMenu extends PaginatedInventoryMenu {
                     break;
                 }
                 new AnvilGUI.Builder()
-                        .onClose(stateSnapshot -> {
-                            if (!stateSnapshot.getText().isEmpty()) {
-                                GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
-                                String preset = stateSnapshot.getText();
-                                if (!presetDataManager.containsPreset(preset)) {
-                                    presetDataManager.createPresetFile(stateSnapshot.getText());
-                                    presetDataManager.loadCommandsIntoPreset(preset, collection);
-                                    presetDataManager.addDefaultRewardCommands(preset);
-                                    menuContent(collection);
-                                    open(id, collection);
-                                    messageManager.sendMessage(player, MessageKey.PRESET_SAVED, "%PRESET%", preset);
-                                } else {
-                                    messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
-                                }
+                    .onClose(stateSnapshot -> {
+                        player.closeInventory();
+                    })
+                    .onClick((slot, stateSnapshot) -> {
+                        if (!stateSnapshot.getText().isEmpty()) {
+                            GlobalPresetDataManager presetDataManager = plugin.getGlobalPresetDataManager();
+                            String preset = stateSnapshot.getText();
+                            if (!presetDataManager.containsPreset(preset)) {
+                                presetDataManager.createPresetFile(stateSnapshot.getText());
+                                presetDataManager.loadCommandsIntoPreset(preset, collection);
+                                menuContent(collection);
+                                open(id, collection);
+                                messageManager.sendMessage(player, MessageKey.PRESET_SAVED, "%PRESET%", preset);
+                            } else {
+                                messageManager.sendMessage(player, MessageKey.PRESET_ALREADY_EXISTS, "%PRESET%", preset);
                             }
-                        })
-                        .onClick((slot, stateSnapshot) -> {
-                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                        })
-                        .text("enter name")
-                        .title("Preset name")
-                        .plugin(Main.getInstance())
-                        .open(player);
+                        }
+
+                        return Collections.emptyList();
+                    })
+                    .text("enter name")
+                    .title("Preset name")
+                    .plugin(Main.getInstance())
+                    .open(player);
                 player.playSound(player.getLocation(), Main.getInstance().getSoundManager().playInventorySuccessSound(), Main.getInstance().getSoundManager().getSoundVolume(), 1);
                 break;
             case "rewards_global_rewards.preset_load":
                 new GlobalPresetsMenu(super.playerMenuUtility).open(id, collection);
                 break;
             case "rewards_global_rewards.switch_individual":
-                if (ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Switch to Individual")) {
-                    new IndividualEggRewardsMenu(super.playerMenuUtility).open(id, collection);
-                }
+                new IndividualEggRewardsMenu(super.playerMenuUtility).open(id, collection);
                 break;
         }
     }
