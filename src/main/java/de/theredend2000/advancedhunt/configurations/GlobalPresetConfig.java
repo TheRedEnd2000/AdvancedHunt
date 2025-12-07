@@ -151,7 +151,8 @@ public class GlobalPresetConfig extends MultiFileConfiguration {
      * @param preset The name of the preset.
      */
     public void addDefaultRewardCommands(String preset) {
-        set(preset, "Commands.0.command", "tellraw %PLAYER% \"%PREFIX%&6You found all "+Main.getInstance().getPluginConfig().getPluginNamePlural()+"!\"");
+        set(preset, "Commands.0.command", "minecraft:give %PLAYER% gold_ingot");
+        set(preset, "Commands.0.message", "%PREFIX%&aYou found all "+Main.getInstance().getPluginConfig().getPluginNamePlural()+"!");
         set(preset, "Commands.0.enabled", true);
         set(preset, "Commands.0.chance", 100);
         set(preset, "Commands.1.command", "minecraft:give %PLAYER% diamond");
