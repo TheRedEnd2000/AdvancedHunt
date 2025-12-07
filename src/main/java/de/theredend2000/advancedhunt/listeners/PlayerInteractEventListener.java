@@ -134,31 +134,35 @@ public class PlayerInteractEventListener implements Listener {
                     double random = Main.getInstance().getRandom().nextDouble();
 
                     if(random < chance) {
-                        String cmd = placedEggs.getString(path + ".command");
-                        String message = placedEggs.getString(path + ".message");
-                        String displayName = placedEggs.getString(path + ".display-name");
-                        boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
-                        boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
+                        String cmdPath = path + ".command";
+                        String cmd = placedEggs.getString(cmdPath);
 
-                        if (cmd != null) {
+                        if (placedEggs.contains(cmdPath) && cmd != null) {
+                            String displayName = placedEggs.getString(path + ".display-name");
+                            boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
+                            boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
+
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+
+                            if(sendRarityMessage && (startsWithGive || displayName != null)) {
+                                if (!(displayName == null || displayName.isBlank())) {
+                                    player.sendMessage(HexColor.color(displayName.replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd)))));
+                                    continue;
+                                }
+                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
+                            }
                         }
 
-                        if (message != null && !message.isBlank()) {
+                        String messagePath = path + ".message";
+                        String message = placedEggs.getString(messagePath);
+
+                        if (placedEggs.contains(messagePath) && message != null) {
                             String finalMessage = message.replaceAll("%PLAYER%", player.getName())
                                     .replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection)))
                                     .replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection)))
                                     .replaceAll("%PREFIX%", Main.PREFIX)
                                     .replaceAll("&", "§");
                             player.sendMessage(HexColor.color(finalMessage));
-                        }
-
-                        if(sendRarityMessage && (startsWithGive || displayName != null)) {
-                            if (!(displayName == null || displayName.isBlank())) {
-                                player.sendMessage(HexColor.color(displayName.replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd)))));
-                                continue;
-                            }
-                            player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
                         }
                     }
                 }
@@ -175,31 +179,35 @@ public class PlayerInteractEventListener implements Listener {
                         double random = Main.getInstance().getRandom().nextDouble();
 
                         if(random < chance) {
-                            String cmd = placedEggs.getString(path + ".command");
-                            String message = placedEggs.getString(path + ".message");
-                            String displayName = placedEggs.getString(path + ".display-name");
-                            boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
-                            boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
+                            String cmdPath = path + ".command";
+                            String cmd = placedEggs.getString(cmdPath);
 
-                            if (cmd != null) {
+                            if (placedEggs.contains(cmdPath) && cmd != null) {
+                                String displayName = placedEggs.getString(path + ".display-name");
+                                boolean startsWithGive = cmd.toLowerCase().startsWith("give") || cmd.toLowerCase().startsWith("minecraft:give");
+                                boolean sendRarityMessage = Main.getInstance().getPluginConfig().sendRarityMessage();
+
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("%PLAYER%", player.getName()).replaceAll("&", "§").replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection))).replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection))).replaceAll("%PREFIX%", Main.PREFIX));
+
+                                if(sendRarityMessage && (startsWithGive || displayName != null)) {
+                                    if (!(displayName == null || displayName.isBlank())) {
+                                        player.sendMessage(HexColor.color(displayName.replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd)))));
+                                        continue;
+                                    }
+                                    player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
+                                }
                             }
 
-                            if (message != null && !message.isBlank()) {
+                            String messagePath = path + ".message";
+                            String message = placedEggs.getString(messagePath);
+
+                            if (placedEggs.contains(messagePath) && message != null) {
                                 String finalMessage = message.replaceAll("%PLAYER%", player.getName())
                                         .replaceAll("%TREASURES_FOUND%", String.valueOf(eggManager.getEggsFound(player.getUniqueId(), collection)))
                                         .replaceAll("%TREASURES_MAX%", String.valueOf(eggManager.getMaxEggs(collection)))
                                         .replaceAll("%PREFIX%", Main.PREFIX)
                                         .replaceAll("&", "§");
                                 player.sendMessage(HexColor.color(finalMessage));
-                            }
-
-                            if(sendRarityMessage && (startsWithGive || displayName != null)) {
-                                if (!(displayName == null || displayName.isBlank())) {
-                                    player.sendMessage(HexColor.color(displayName.replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd)))));
-                                    continue;
-                                }
-                                player.sendMessage(messageManager.getMessage(MessageKey.RARITY_MESSAGE).replaceAll("%RARITY%", Main.getInstance().getRarityManager().getRarity(chance*100)).replaceAll("%ITEM%", getItemName(cmd).getType().name()).replaceAll("%COUNT%", String.valueOf(getItemCount(cmd))));
                             }
                         }
                     }
