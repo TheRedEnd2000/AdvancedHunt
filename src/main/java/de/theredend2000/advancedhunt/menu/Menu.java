@@ -68,7 +68,7 @@ public abstract class Menu implements InventoryHolder {
                 ? new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.close")).build()
                 : new ItemBuilder(Material.ARROW).setDisplayName(plugin.getMessageManager().getMessage("gui.common.back","%menu%", previousMenu.getMenuName())).build();
 
-        addButton(49, closeOrBack, (e) -> {
+        addButton(getSlots() - 5, closeOrBack, (e) -> {
             if (previousMenu == null) {
                 e.getWhoClicked().closeInventory();
             } else {
