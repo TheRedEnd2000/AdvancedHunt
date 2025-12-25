@@ -908,6 +908,17 @@ gui:
           - ""
           - "&eClick to browse presets"
     date_range:
+      manual:
+        name: "&dManual Date Range Input"
+        lore:
+          - "&7Enter a custom date range"
+          - "&7Format: YYYY-MM-DD:YYYY-MM-DD"
+          - "&7Example: 2025-12-24:2025-12-31"
+          - "&7Use &f* &7for always active"
+          - ""
+          - "&eClick to type manually"
+        prompt: "%prefix%&aEnter date range (YYYY-MM-DD:YYYY-MM-DD or * for always):"
+        success: "%prefix%&aDate range updated successfully!"
       editor:
         title: "Edit Date Range"
         current:
