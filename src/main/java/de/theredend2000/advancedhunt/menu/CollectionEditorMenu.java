@@ -68,7 +68,7 @@ public class CollectionEditorMenu extends PagedMenu {
                                     "%cron%", cron
                                 ).toArray(new String[0]))
                                 .build(), (e) -> {
-                            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
+                            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).setPreviousMenu(this).open();
                         });
                     });
                 }

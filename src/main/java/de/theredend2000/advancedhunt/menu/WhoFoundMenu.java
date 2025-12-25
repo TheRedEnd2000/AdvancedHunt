@@ -136,7 +136,7 @@ public class WhoFoundMenu extends PagedMenu {
 
         // Build with lore
         ItemBuilder builder = new ItemBuilder(head)
-                .setSkullOwner(playerName)
+                .setSkullOwner(playerUuid)
                 .setDisplayName(plugin.getMessageManager().getMessage(
                 "gui.who_found.player_entry.name", false,
                 "%player%", playerName));
