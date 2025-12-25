@@ -1,13 +1,13 @@
-package de.theredend2000.advancedHunt.placeholder;
+package de.theredend2000.advancedhunt.placeholder;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.managers.CollectionManager;
-import de.theredend2000.advancedHunt.managers.LeaderboardManager;
-import de.theredend2000.advancedHunt.managers.PlayerManager;
-import de.theredend2000.advancedHunt.managers.TreasureManager;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.model.PlayerData;
-import de.theredend2000.advancedHunt.model.Treasure;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.managers.CollectionManager;
+import de.theredend2000.advancedhunt.managers.LeaderboardManager;
+import de.theredend2000.advancedhunt.managers.PlayerManager;
+import de.theredend2000.advancedhunt.managers.TreasureManager;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.Treasure;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

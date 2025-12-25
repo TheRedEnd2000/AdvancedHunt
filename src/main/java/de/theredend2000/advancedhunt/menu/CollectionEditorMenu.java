@@ -1,7 +1,7 @@
-package de.theredend2000.advancedHunt.menu;
+package de.theredend2000.advancedhunt.menu;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

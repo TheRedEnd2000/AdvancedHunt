@@ -1,9 +1,9 @@
-package de.theredend2000.advancedHunt.listeners;
+package de.theredend2000.advancedhunt.listeners;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.managers.PlaceModeManager;
-import de.theredend2000.advancedHunt.managers.TreasureManager;
-import de.theredend2000.advancedHunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.managers.PlaceModeManager;
+import de.theredend2000.advancedhunt.managers.TreasureManager;
+import de.theredend2000.advancedhunt.model.TreasureCore;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -1,8 +1,8 @@
-package de.theredend2000.advancedHunt.menu.minigame;
+package de.theredend2000.advancedhunt.menu.minigame;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

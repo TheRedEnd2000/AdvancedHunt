@@ -1,4 +1,4 @@
-package de.theredend2000.advancedHunt.model;
+package de.theredend2000.advancedhunt.model;
 
 import java.util.List;
 

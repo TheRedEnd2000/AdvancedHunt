@@ -1,6 +1,6 @@
-package de.theredend2000.advancedHunt.model;
+package de.theredend2000.advancedhunt.model;
 
-import de.theredend2000.advancedHunt.Main;
+import de.theredend2000.advancedhunt.Main;
 
 import java.util.ArrayList;
 import java.util.List;

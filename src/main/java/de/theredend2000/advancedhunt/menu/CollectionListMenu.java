@@ -1,11 +1,11 @@
-package de.theredend2000.advancedHunt.menu;
+package de.theredend2000.advancedhunt.menu;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.model.Treasure;
-import de.theredend2000.advancedHunt.model.TreasureCore;
-import de.theredend2000.advancedHunt.util.HeadHelper;
-import de.theredend2000.advancedHunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.util.HeadHelper;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

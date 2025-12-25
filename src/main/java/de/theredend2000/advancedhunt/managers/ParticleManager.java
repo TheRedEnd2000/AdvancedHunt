@@ -1,10 +1,10 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.model.PlayerData;
-import de.theredend2000.advancedHunt.model.TreasureCore;
-import de.theredend2000.advancedHunt.util.ParticleUtils;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.util.ParticleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

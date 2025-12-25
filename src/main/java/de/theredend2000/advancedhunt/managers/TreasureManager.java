@@ -1,10 +1,10 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import de.theredend2000.advancedHunt.data.DataRepository;
-import de.theredend2000.advancedHunt.model.Treasure;
-import de.theredend2000.advancedHunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureCore;
 import org.bukkit.Location;
 
 import java.util.*;

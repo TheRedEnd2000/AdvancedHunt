@@ -1,10 +1,10 @@
-package de.theredend2000.advancedHunt.util.updater;
+package de.theredend2000.advancedhunt.util.updater;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.util.VersionComparator;
-import de.theredend2000.advancedHunt.util.updater.source.BukkitSource;
-import de.theredend2000.advancedHunt.util.updater.source.ModrinthSource;
-import de.theredend2000.advancedHunt.util.updater.source.SpigotSource;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.util.VersionComparator;
+import de.theredend2000.advancedhunt.util.updater.source.BukkitSource;
+import de.theredend2000.advancedhunt.util.updater.source.ModrinthSource;
+import de.theredend2000.advancedhunt.util.updater.source.SpigotSource;
 import org.bukkit.Bukkit;
 
 import java.io.File;

@@ -1,11 +1,11 @@
-package de.theredend2000.advancedHunt.menu;
+package de.theredend2000.advancedhunt.menu;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.model.ActRule;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.util.ActFormatParser;
-import de.theredend2000.advancedHunt.util.CronUtils;
-import de.theredend2000.advancedHunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.model.ActRule;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.util.ActFormatParser;
+import de.theredend2000.advancedhunt.util.CronUtils;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -139,7 +139,7 @@ public class ActRuleEditorMenu extends Menu {
                     "%description%", cronReadable
                 ).toArray(new String[0]))
                 .build(), (e) -> {
-            new de.theredend2000.advancedHunt.menu.cron.CronEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+            new de.theredend2000.advancedhunt.menu.cron.CronEditorMenu(playerMenuUtility, plugin, collection, rule).open();
         });
 
         // Apply Preset Button

@@ -1,13 +1,13 @@
-package de.theredend2000.advancedHunt.data;
+package de.theredend2000.advancedhunt.data;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.model.PlayerData;
-import de.theredend2000.advancedHunt.model.Reward;
-import de.theredend2000.advancedHunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.Reward;
+import de.theredend2000.advancedhunt.model.Treasure;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -203,15 +203,15 @@ public class SqlRepository implements DataRepository {
     /**
      * Helper method to load ACT rules for a collection
      */
-    private List<de.theredend2000.advancedHunt.model.ActRule> loadActRules(Connection conn, UUID collectionId) throws SQLException {
-        List<de.theredend2000.advancedHunt.model.ActRule> rules = new ArrayList<>();
+    private List<de.theredend2000.advancedhunt.model.ActRule> loadActRules(Connection conn, UUID collectionId) throws SQLException {
+        List<de.theredend2000.advancedhunt.model.ActRule> rules = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_act_rules WHERE collection_id = ? ORDER BY priority")) {
             ps.setString(1, collectionId.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 UUID ruleId = UUID.fromString(rs.getString("id"));
                 String name = rs.getString("name");
-                de.theredend2000.advancedHunt.model.ActRule rule = new de.theredend2000.advancedHunt.model.ActRule(ruleId, collectionId, name);
+                de.theredend2000.advancedhunt.model.ActRule rule = new de.theredend2000.advancedhunt.model.ActRule(ruleId, collectionId, name);
                 rule.setDateRange(rs.getString("date_range"));
                 rule.setDuration(rs.getString("duration"));
                 rule.setCronExpression(rs.getString("cron_expression"));
@@ -408,7 +408,7 @@ public class SqlRepository implements DataRepository {
                     c.setCompletionRewards(rewards);
                     
                     // Load ACT rules for this collection
-                    List<de.theredend2000.advancedHunt.model.ActRule> actRules = loadActRules(conn, id);
+                    List<de.theredend2000.advancedhunt.model.ActRule> actRules = loadActRules(conn, id);
                     c.setActRules(actRules);
                     
                     collections.add(c);
@@ -442,7 +442,7 @@ public class SqlRepository implements DataRepository {
                 }
                 
                 // Save ACT rules
-                for (de.theredend2000.advancedHunt.model.ActRule rule : collection.getActRules()) {
+                for (de.theredend2000.advancedhunt.model.ActRule rule : collection.getActRules()) {
                     try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setString(1, rule.getId().toString());
                         ps.setString(2, rule.getCollectionId().toString());

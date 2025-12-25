@@ -1,10 +1,10 @@
-package de.theredend2000.advancedHunt.util.updater.source;
+package de.theredend2000.advancedhunt.util.updater.source;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.theredend2000.advancedHunt.util.updater.UpdateSource;
+import de.theredend2000.advancedhunt.util.updater.UpdateSource;
 import org.bukkit.Bukkit;
 
 import java.io.File;

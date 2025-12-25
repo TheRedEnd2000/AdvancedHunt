@@ -1,11 +1,11 @@
-package de.theredend2000.advancedHunt.listeners;
+package de.theredend2000.advancedhunt.listeners;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.managers.PlaceModeManager;
-import de.theredend2000.advancedHunt.managers.TreasureManager;
-import de.theredend2000.advancedHunt.model.Treasure;
-import de.theredend2000.advancedHunt.util.BlockUtils;
-import de.theredend2000.advancedHunt.util.ItemsAdderAdapter;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.managers.PlaceModeManager;
+import de.theredend2000.advancedhunt.managers.TreasureManager;
+import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.util.BlockUtils;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import org.bukkit.block.Block;

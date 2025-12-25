@@ -1,4 +1,4 @@
-package de.theredend2000.advancedHunt.util;
+package de.theredend2000.advancedhunt.util;
 
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;

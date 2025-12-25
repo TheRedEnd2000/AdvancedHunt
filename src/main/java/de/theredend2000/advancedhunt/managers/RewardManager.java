@@ -1,9 +1,9 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.model.Reward;
-import de.theredend2000.advancedHunt.model.RewardType;
-import de.theredend2000.advancedHunt.util.ItemSerializer;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.model.Reward;
+import de.theredend2000.advancedhunt.model.RewardType;
+import de.theredend2000.advancedhunt.util.ItemSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

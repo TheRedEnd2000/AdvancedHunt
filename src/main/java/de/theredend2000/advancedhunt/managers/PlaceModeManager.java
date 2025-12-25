@@ -1,6 +1,6 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
-import de.theredend2000.advancedHunt.model.Collection;
+import de.theredend2000.advancedhunt.model.Collection;
 import org.bukkit.entity.Player;
 
 import java.util.Map;

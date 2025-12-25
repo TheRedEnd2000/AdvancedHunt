@@ -1,4 +1,4 @@
-package de.theredend2000.advancedHunt.util;
+package de.theredend2000.advancedhunt.util;
 
 import com.cronutils.model.Cron;
 import com.cronutils.model.time.ExecutionTime;

@@ -1,8 +1,8 @@
-package de.theredend2000.advancedHunt.data;
+package de.theredend2000.advancedhunt.data;
 
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.model.PlayerData;
-import de.theredend2000.advancedHunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.Treasure;
 
 import java.util.List;
 import java.util.Map;

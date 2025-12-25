@@ -1,7 +1,7 @@
-package de.theredend2000.advancedHunt.data;
+package de.theredend2000.advancedhunt.data;
 
-import de.theredend2000.advancedHunt.model.*;
-import de.theredend2000.advancedHunt.model.Collection;
+import de.theredend2000.advancedhunt.model.*;
+import de.theredend2000.advancedhunt.model.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -416,12 +416,12 @@ public class YamlRepository implements DataRepository {
                             
                             // Load ACT rules
                             List<Map<?, ?>> rulesList = config.getMapList("act-rules");
-                            List<de.theredend2000.advancedHunt.model.ActRule> actRules = new ArrayList<>();
+                            List<de.theredend2000.advancedhunt.model.ActRule> actRules = new ArrayList<>();
                             for (Map<?, ?> ruleMap : rulesList) {
                                 try {
                                     UUID ruleId = UUID.fromString((String) ruleMap.get("id"));
                                     String ruleName = (String) ruleMap.get("name");
-                                    de.theredend2000.advancedHunt.model.ActRule rule = new de.theredend2000.advancedHunt.model.ActRule(ruleId, id, ruleName);
+                                    de.theredend2000.advancedhunt.model.ActRule rule = new de.theredend2000.advancedhunt.model.ActRule(ruleId, id, ruleName);
                                     rule.setDateRange((String) ruleMap.get("date-range"));
                                     rule.setDuration((String) ruleMap.get("duration"));
                                     rule.setCronExpression((String) ruleMap.get("cron"));
@@ -470,7 +470,7 @@ public class YamlRepository implements DataRepository {
             
             // Save ACT rules
             List<Map<String, Object>> rulesList = new ArrayList<>();
-            for (de.theredend2000.advancedHunt.model.ActRule rule : collection.getActRules()) {
+            for (de.theredend2000.advancedhunt.model.ActRule rule : collection.getActRules()) {
                 Map<String, Object> ruleMap = new HashMap<>();
                 ruleMap.put("id", rule.getId().toString());
                 ruleMap.put("name", rule.getName());

@@ -1,4 +1,4 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
@@ -6,9 +6,9 @@ import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import de.theredend2000.advancedHunt.model.ActRule;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.util.ActFormatParser;
+import de.theredend2000.advancedhunt.model.ActRule;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.util.ActFormatParser;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.ZonedDateTime;

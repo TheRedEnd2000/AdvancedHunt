@@ -1,7 +1,7 @@
-package de.theredend2000.advancedHunt.menu.minigame;
+package de.theredend2000.advancedhunt.menu.minigame;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.menu.Menu;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.Menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
