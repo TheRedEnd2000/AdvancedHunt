@@ -1,0 +1,669 @@
+package de.theredend2000.advancedHunt.menu;
+
+import de.theredend2000.advancedHunt.Main;
+import de.theredend2000.advancedHunt.model.Reward;
+import de.theredend2000.advancedHunt.model.RewardHolder;
+import de.theredend2000.advancedHunt.model.RewardType;
+import de.theredend2000.advancedHunt.util.ItemBuilder;
+import de.theredend2000.advancedHunt.util.ItemSerializer;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * A GUI menu that displays the rewards configured for a RewardHolder (Treasure or Collection).
+ * Supports pagination for holders with many rewards.
+ */
+public class RewardsMenu extends PagedMenu {
+
+    private enum QuickActionMode {
+        DELETE,
+        GET_INSTANCE
+    }
+
+    private QuickActionMode quickActionMode = QuickActionMode.DELETE;
+
+    private final RewardHolder holder;
+    private final List<Reward> rewards;
+    private final boolean editMode;
+    private String titleKey = "gui.rewards.title";
+    
+    // Optional context for switching between treasure and collection rewards
+    private RewardHolder alternateHolder;
+    private String alternateTitleKey;
+
+    /**
+     * Creates a reward menu with automatic edit mode based on permissions.
+     */
+    public RewardsMenu(Player player, Main plugin, RewardHolder holder) {
+        this(player, plugin, holder, player.hasPermission("advancedhunt.admin"));
+    }
+
+    /**
+     * Creates a reward menu with explicit edit mode control.
+     */
+    public RewardsMenu(Player player, Main plugin, RewardHolder holder, boolean editMode) {
+        super(player, plugin);
+        this.holder = holder;
+        this.editMode = editMode;
+        // Create mutable copy for editing
+        this.rewards = holder.getRewards() != null ? new ArrayList<>(holder.getRewards()) : new ArrayList<>();
+        this.maxItemsPerPage = 28; // 4 rows × 7 columns
+    }
+
+    public RewardsMenu setTitleKey(String titleKey) {
+        this.titleKey = titleKey;
+        return this;
+    }
+    
+    /**
+     * Sets an alternate holder and title for switching contexts.
+     * For example, allows switching between treasure and collection rewards.
+     */
+    public RewardsMenu setAlternateContext(RewardHolder alternateHolder, String alternateTitleKey) {
+        this.alternateHolder = alternateHolder;
+        this.alternateTitleKey = alternateTitleKey;
+        return this;
+    }
+
+    @Override
+    public String getMenuName() {
+        String title = plugin.getMessageManager().getMessage(titleKey, false);
+        if (getTotalPages() > 1) {
+            title += " " + plugin.getMessageManager().getMessage("gui.rewards.page_indicator", false,
+                "%page%", String.valueOf(page + 1),
+                "%total%", String.valueOf(getTotalPages()));
+        }
+        return title;
+    }
+
+    @Override
+    public int getSlots() {
+        return 54; // 6 rows for PagedMenu layout
+    }
+
+    @Override
+    public void handleMenu(InventoryClickEvent e) {
+        // All click handling is done via buttons
+    }
+
+    @Override
+    public void setMenuItems() {
+        // Reset index for this page
+        index = 0;
+        
+        if (rewards.isEmpty()) {
+            // Show "no rewards" indicator in center
+            addMenuBorder();
+            ItemStack noRewards = new ItemBuilder(Material.BARRIER)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.no_rewards.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.no_rewards.lore", false))
+                .build();
+            addStaticItem(22, noRewards);
+        } else {
+            // Calculate pagination
+            int startIndex = page * maxItemsPerPage;
+            int endIndex = Math.min(startIndex + maxItemsPerPage, rewards.size());
+            
+            this.hasNextPage = endIndex < rewards.size();
+            
+            // Display rewards for current page
+            for (int i = startIndex; i < endIndex; i++) {
+                Reward reward = rewards.get(i);
+                final int rewardIndex = i;
+                ItemStack displayItem = createRewardDisplay(reward, i + 1);
+                
+                if (editMode) {
+                    addPagedItem(index++, displayItem, e -> handleRewardClick(e, rewardIndex));
+                } else {
+                    addPagedItem(index++, displayItem, null);
+                }
+            }
+            
+            addMenuBorder();
+        }
+    }
+    
+    /**
+     * Returns the total number of pages needed to display all rewards.
+     */
+    private int getTotalPages() {
+        if (rewards.isEmpty()) return 1;
+        return (int) Math.ceil((double) rewards.size() / maxItemsPerPage);
+    }
+    
+    /**
+     * Override to fix the next page check - uses actual reward count instead of index.
+     */
+    @Override
+    public void addMenuBorder() {
+        super.addMenuBorder();
+
+        // Edit mode controls
+        if (editMode) {
+            // Add Item Reward button
+            addButton(45, new ItemBuilder(Material.CHEST)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_item.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_item.lore", false))
+                .build(), e -> openAddItemRewardMenu());
+            
+            // Add Command Reward button
+            addButton(46, new ItemBuilder(Material.COMMAND_BLOCK)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_command.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_command.lore", false))
+                .build(), e -> promptAddCommandReward());
+            
+            // Add Chat Message Reward button
+            addButton(47, new ItemBuilder(Material.WRITABLE_BOOK)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_chat_message.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_chat_message.lore", false))
+                .build(), e -> promptAddChatMessageReward());
+            
+            // Add Broadcast Message Reward button
+            addButton(51, new ItemBuilder(Material.BELL)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_broadcast_message.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_broadcast_message.lore", false))
+                .build(), e -> promptAddBroadcastMessageReward());
+
+            // Quick action mode toggle
+            QuickActionMode mode = getQuickActionMode();
+            addButton(52, new ItemBuilder(Material.LEVER)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.quick_mode.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.quick_mode.lore", false,
+                    "%mode%", getQuickActionModeDisplay(mode),
+                    "%action%", getQuickActionActionDisplay(mode)))
+                .build(), e -> {
+                    setQuickActionMode(getNextQuickActionMode(getQuickActionMode()));
+                    updateQuickActionDisplay();
+                });
+            
+            // Info/Help button (only if no alternate context)
+            if (alternateHolder == null) {
+                addButton(53, new ItemBuilder(Material.BOOK)
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.edit_info.name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.edit_info.lore", false))
+                    .build(), null);
+            }
+        }
+        
+        // Switch context button (treasure <-> collection)
+        if (alternateHolder != null) {
+            Material icon = titleKey.contains("collection") ? Material.ENDER_CHEST : Material.CHEST;
+            String switchKey = titleKey.contains("collection") ? "gui.rewards.switch_to_treasure" : "gui.rewards.switch_to_collection";
+            
+            addButton(53, new ItemBuilder(icon)
+                .setDisplayName(plugin.getMessageManager().getMessage(switchKey + ".name", false))
+                .setLore(plugin.getMessageManager().getMessageList(switchKey + ".lore", false))
+                .build(), e -> {
+                    // Switch to the alternate context
+                    RewardsMenu newMenu = new RewardsMenu(playerMenuUtility, plugin, alternateHolder, editMode)
+                        .setTitleKey(alternateTitleKey)
+                        .setAlternateContext(holder, titleKey);
+                    newMenu.open();
+                });
+        }
+
+    }
+
+    /**
+     * Creates a display ItemStack for a reward, showing its type, value, and chance.
+     */
+    private ItemStack createRewardDisplay(Reward reward, int rewardNumber) {
+        String chanceLore = plugin.getMessageManager().getMessage("gui.rewards.chance_lore", false,
+            "%chance%", formatChance(reward.getChance()));
+        
+        if (reward.getType() == RewardType.ITEM) {
+            return createItemRewardDisplay(reward, chanceLore, rewardNumber);
+        } else if (reward.getType() == RewardType.COMMAND) {
+            return createCommandRewardDisplay(reward, chanceLore, rewardNumber);
+        } else if (reward.getType() == RewardType.CHAT_MESSAGE) {
+            return createChatMessageRewardDisplay(reward, chanceLore, rewardNumber);
+        } else {
+            return createBroadcastMessageRewardDisplay(reward, chanceLore, rewardNumber);
+        }
+    }
+
+    /**
+     * Creates display for an ITEM type reward - shows the actual item with chance in lore.
+     */
+    private ItemStack createItemRewardDisplay(Reward reward, String chanceLore, int rewardNumber) {
+        ItemStack item = ItemSerializer.deserialize(reward.getValue());
+        
+        if (item == null || item.getType() == Material.AIR) {
+            // Fallback for invalid item data
+            return new ItemBuilder(Material.BARRIER)
+                .setDisplayName(ChatColor.RED + "Invalid Item")
+                .setLore(
+                    ChatColor.GRAY + "This item could not be loaded",
+                    "",
+                    chanceLore
+                )
+                .build();
+        }
+        
+        // Clone the item and append chance to lore
+        ItemBuilder builder = new ItemBuilder(item.clone());
+        
+        // Get existing lore or create new
+        List<String> lore = new ArrayList<>();
+        if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
+            lore.addAll(item.getItemMeta().getLore());
+        }
+        
+        // Add separator and chance info
+        lore.add("");
+        lore.add(ChatColor.DARK_GRAY + "─────────────");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.reward_number", false,
+            "%number%", String.valueOf(rewardNumber)));
+        lore.add(chanceLore);
+        if (item.getAmount() > 1) {
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.amount_lore", false,
+                "%amount%", String.valueOf(item.getAmount())));
+        }
+        
+        if (editMode) {
+            lore.add("");
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
+        }
+        
+        return builder.setLore(lore).build();
+    }
+
+    /**
+     * Creates display for a COMMAND type reward - shows a command block with command info.
+     */
+    private ItemStack createCommandRewardDisplay(Reward reward, String chanceLore, int rewardNumber) {
+        String command = reward.getValue();
+        
+        // Truncate long commands for display
+        String displayCommand = command.length() > 40 
+            ? command.substring(0, 37) + "..." 
+            : command;
+        
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.command_label", false));
+        lore.add(ChatColor.WHITE + "/" + displayCommand);
+        
+        // Show full command if truncated
+        if (command.length() > 40) {
+            lore.add("");
+            lore.add(ChatColor.DARK_GRAY + "(Command truncated)");
+        }
+        
+        lore.add("");
+        lore.add(ChatColor.DARK_GRAY + "─────────────");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.reward_number", false,
+            "%number%", String.valueOf(rewardNumber)));
+        lore.add(chanceLore);
+        
+        if (editMode) {
+            lore.add("");
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
+        }
+        
+        return new ItemBuilder(Material.COMMAND_BLOCK)
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.command_name", false))
+            .setLore(lore)
+            .build();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Reward editing methods
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Handles clicking on a reward in edit mode.
+     * Opens the action menu for Bedrock compatibility.
+     */
+    private void handleRewardClick(InventoryClickEvent e, int rewardIndex) {
+        if (!editMode || rewardIndex >= rewards.size()) return;
+
+        ClickType clickType = e.getClick();
+        if (clickType == ClickType.RIGHT || clickType == ClickType.SHIFT_RIGHT) {
+            e.setCancelled(true);
+
+            Reward reward = rewards.get(rewardIndex);
+            QuickActionMode mode = getQuickActionMode();
+
+            if (mode == QuickActionMode.DELETE) {
+                deleteReward(rewardIndex);
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_deleted"));
+
+                // Clamp page after deletion (e.g., deleting last item on last page)
+                int totalPages = getTotalPages();
+                if (page > totalPages - 1) {
+                    page = Math.max(0, totalPages - 1);
+                }
+                open();
+                return;
+            }
+
+            if (mode == QuickActionMode.GET_INSTANCE) {
+                giveRewardInstance(reward);
+                return;
+            }
+        }
+        
+        Reward reward = rewards.get(rewardIndex);
+        new RewardActionMenu(playerMenuUtility, plugin, this, reward, rewardIndex).open();
+    }
+
+    private QuickActionMode getQuickActionMode() {
+        return quickActionMode;
+    }
+
+    private void setQuickActionMode(QuickActionMode mode) {
+        this.quickActionMode = mode;
+    }
+
+    private QuickActionMode getNextQuickActionMode(QuickActionMode current) {
+        if (current == QuickActionMode.DELETE) return QuickActionMode.GET_INSTANCE;
+        return QuickActionMode.DELETE;
+    }
+
+    private String getQuickActionModeDisplay(QuickActionMode mode) {
+        if (mode == QuickActionMode.GET_INSTANCE) {
+            return plugin.getMessageManager().getMessage("gui.rewards.quick_mode.mode_get_instance", false);
+        }
+        return plugin.getMessageManager().getMessage("gui.rewards.quick_mode.mode_delete", false);
+    }
+
+    private String getQuickActionActionDisplay(QuickActionMode mode) {
+        if (mode == QuickActionMode.GET_INSTANCE) {
+            return plugin.getMessageManager().getMessage("gui.rewards.quick_action.get_instance", false);
+        }
+        return plugin.getMessageManager().getMessage("gui.rewards.quick_action.delete", false);
+    }
+
+    /**
+     * Updates the quick action toggle icon and all reward item lores in-place
+     * without recreating the entire menu. This is a performance optimization.
+     * Only updates icons if the mode has actually changed.
+     */
+    private void updateQuickActionDisplay() {
+        QuickActionMode mode = getQuickActionMode();
+        
+        // Update the lever icon at slot 47
+        ItemStack leverIcon = new ItemBuilder(Material.LEVER)
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.quick_mode.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.quick_mode.lore", false,
+                "%mode%", getQuickActionModeDisplay(mode),
+                "%action%", getQuickActionActionDisplay(mode)))
+            .build();
+        updateSlot(52, leverIcon);
+        
+        // Update all reward items' lores to reflect the new action
+        int startIndex = page * maxItemsPerPage;
+        int endIndex = Math.min(startIndex + maxItemsPerPage, rewards.size());
+        
+        for (int i = startIndex; i < endIndex; i++) {
+            Reward reward = rewards.get(i);
+            int displayIndex = i - startIndex;
+            int slot = getSlotForPagedIndex(displayIndex);
+            
+            ItemStack updatedDisplay = createRewardDisplay(reward, i + 1);
+            updateSlot(slot, updatedDisplay);
+        }
+    }
+
+    private void giveRewardInstance(Reward reward) {
+        if (reward.getType() == RewardType.ITEM) {
+            ItemStack item = ItemSerializer.deserialize(reward.getValue());
+            if (item == null || item.getType() == Material.AIR) {
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.instance_invalid"));
+                return;
+            }
+
+            ItemStack toGive = item.clone();
+            Map<Integer, ItemStack> leftover = playerMenuUtility.getInventory().addItem(toGive);
+            if (!leftover.isEmpty()) {
+                leftover.values().forEach(stack -> playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), stack));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.instance_dropped"));
+            } else {
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.instance_given"));
+            }
+            return;
+        }
+
+        // COMMAND, CHAT_MESSAGE, and CHAT_MESSAGE_BROADCAST rewards don't have a physical instance; show the configured value.
+        if (reward.getType() == RewardType.COMMAND) {
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
+                "gui.rewards.command_preview",
+                "%command%", reward.getValue()
+            ));
+        } else if (reward.getType() == RewardType.CHAT_MESSAGE) {
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
+                "gui.rewards.chat_message_preview",
+                "%message%", reward.getValue()
+            ));
+        } else if (reward.getType() == RewardType.CHAT_MESSAGE_BROADCAST) {
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
+                "gui.rewards.broadcast_message_preview",
+                "%message%", reward.getValue()
+            ));
+        }
+    }
+
+    /**
+     * Creates display for a CHAT_MESSAGE_BROADCAST type reward - shows a bell with message info.
+     */
+    private ItemStack createBroadcastMessageRewardDisplay(Reward reward, String chanceLore, int rewardNumber) {
+        String message = reward.getValue();
+        
+        // Truncate long messages for display
+        String displayMessage = message.length() > 40 
+            ? message.substring(0, 37) + "..." 
+            : message;
+        
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.broadcast_message_label", false));
+        lore.add(ChatColor.WHITE + displayMessage);
+        
+        // Show full message if truncated
+        if (message.length() > 40) {
+            lore.add("");
+            lore.add(ChatColor.DARK_GRAY + "(Message truncated)");
+        }
+        
+        lore.add("");
+        lore.add(ChatColor.DARK_GRAY + "─────────────");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.reward_number", false,
+            "%number%", String.valueOf(rewardNumber)));
+        lore.add(chanceLore);
+        
+        if (editMode) {
+            lore.add("");
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
+        }
+        
+        return new ItemBuilder(Material.BELL)
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.broadcast_message_name", false))
+            .setLore(lore)
+            .build();
+    }
+
+    /**
+     * Prompts for chat message input to add a chat message reward.
+     * Defaults to 100% chance since chat messages are typically always shown.
+     */
+    private void promptAddChatMessageReward() {
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chat_message"));
+        plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
+            if (message == null || message.isEmpty()) {
+                open();
+                return;
+            }
+            
+            // Default to 100% chance for chat messages
+            addReward(new Reward(RewardType.CHAT_MESSAGE, 100.0, message));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+            open();
+        });
+    }
+
+    /**
+     * Prompts for broadcast message input to add a broadcast message reward.
+     * Defaults to 100% chance since broadcast messages are typically always shown.
+     */
+    private void promptAddBroadcastMessageReward() {
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_broadcast_message"));
+        plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
+            if (message == null || message.isEmpty()) {
+                open();
+                return;
+            }
+            
+            // Default to 100% chance for broadcast messages
+            addReward(new Reward(RewardType.CHAT_MESSAGE_BROADCAST, 100.0, message));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+            open();
+        });
+    }
+
+    /**
+     * Opens the menu to add an item reward.
+     */
+    private void openAddItemRewardMenu() {
+        new AddItemRewardMenu(playerMenuUtility, plugin, this).open();
+    }
+
+    /**
+     * Creates display for a CHAT_MESSAGE type reward - shows a book with message info.
+     */
+    private ItemStack createChatMessageRewardDisplay(Reward reward, String chanceLore, int rewardNumber) {
+        String message = reward.getValue();
+        
+        // Truncate long messages for display
+        String displayMessage = message.length() > 40 
+            ? message.substring(0, 37) + "..." 
+            : message;
+        
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.chat_message_label", false));
+        lore.add(ChatColor.WHITE + displayMessage);
+        
+        // Show full message if truncated
+        if (message.length() > 40) {
+            lore.add("");
+            lore.add(ChatColor.DARK_GRAY + "(Message truncated)");
+        }
+        
+        lore.add("");
+        lore.add(ChatColor.DARK_GRAY + "─────────────");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.reward_number", false,
+            "%number%", String.valueOf(rewardNumber)));
+        lore.add(chanceLore);
+        
+        if (editMode) {
+            lore.add("");
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
+        }
+        
+        return new ItemBuilder(Material.WRITABLE_BOOK)
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.chat_message_name", false))
+            .setLore(lore)
+            .build();
+    }
+
+    /**
+     * Prompts for command input to add a command reward.
+     */
+    private void promptAddCommandReward() {
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_command"));
+        plugin.getChatInputListener().requestInput(playerMenuUtility, command -> {
+            if (command == null || command.isEmpty()) {
+                open();
+                return;
+            }
+
+            if (plugin.getRewardManager().isCommandBlacklisted(command)) {
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.command_blacklisted"));
+                open();
+                return;
+            }
+            
+            // Now ask for chance
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chance"));
+            plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
+                try {
+                    double chance = Double.parseDouble(chanceStr);
+                    if (chance < 0 || chance > 100) {
+                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                        open();
+                        return;
+                    }
+                    
+                    addReward(new Reward(RewardType.COMMAND, chance, command));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+                    open();
+                } catch (NumberFormatException ex) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                    open();
+                }
+            });
+        });
+    }
+
+    /**
+     * Updates the chance of a reward at the specified index.
+     * Called from RewardActionMenu.
+     */
+    public void updateRewardChance(int rewardIndex, double newChance) {
+        if (rewardIndex < 0 || rewardIndex >= rewards.size()) return;
+        
+        Reward oldReward = rewards.get(rewardIndex);
+        Reward newReward = new Reward(oldReward.getType(), newChance, oldReward.getValue());
+        rewards.set(rewardIndex, newReward);
+        saveRewards();
+    }
+
+    /**
+     * Deletes a reward at the specified index.
+     * Public for access from RewardActionMenu.
+     */
+    public void deleteReward(int rewardIndex) {
+        if (rewardIndex < 0 || rewardIndex >= rewards.size()) return;
+        
+        rewards.remove(rewardIndex);
+        saveRewards();
+    }
+
+    /**
+     * Adds a new reward and saves to the holder.
+     */
+    public void addReward(Reward reward) {
+        rewards.add(reward);
+        saveRewards();
+    }
+
+    /**
+     * Saves the current rewards list to the holder.
+     */
+    private void saveRewards() {
+        holder.saveRewards(new ArrayList<>(rewards));
+    }
+
+    /**
+     * Formats the chance value for display (removes unnecessary decimals).
+     */
+    private String formatChance(double chance) {
+        if (chance == (int) chance) {
+            return String.valueOf((int) chance);
+        }
+        return String.format("%.1f", chance);
+    }
+}

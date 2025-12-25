@@ -1,0 +1,99 @@
+package de.theredend2000.advancedHunt.menu;
+
+import de.theredend2000.advancedHunt.Main;
+import de.theredend2000.advancedHunt.util.ItemBuilder;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.function.Consumer;
+
+public abstract class PagedMenu extends Menu {
+
+    protected int page = 0;
+    protected int maxItemsPerPage = 28;
+    protected int index = 0;
+    protected boolean hasNextPage = false;
+
+    public PagedMenu(Player playerMenuUtility, Main plugin) {
+        super(playerMenuUtility, plugin);
+    }
+
+    public void addMenuBorder() {
+        addButton(48, new ItemBuilder(Material.ARROW)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.previous_page"))
+                .build(), (e) -> {
+            if (page == 0) {
+                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.first_page"));
+            } else {
+                page = page - 1;
+                open();
+            }
+        });
+
+        ItemStack closeOrBack = previousMenu == null 
+            ? new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.close")).build()
+            : new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.back")).build();
+
+        addButton(49, closeOrBack, (e) -> {
+            if (previousMenu == null) {
+                e.getWhoClicked().closeInventory();
+            } else {
+                openPreviousMenu();
+            }
+        });
+
+        addButton(50, new ItemBuilder(Material.ARROW)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.next_page"))
+                .build(), (e) -> {
+            if (hasNextPage) {
+                page = page + 1;
+                open();
+            } else {
+                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.last_page"));
+            }
+        });
+
+        for (int i = 0; i < 10; i++) {
+            if (inventory.getItem(i) == null) {
+                addStaticItem(i, super.FILLER_GLASS);
+            }
+        }
+
+        addStaticItem(17, super.FILLER_GLASS);
+        addStaticItem(18, super.FILLER_GLASS);
+        addStaticItem(26, super.FILLER_GLASS);
+        addStaticItem(27, super.FILLER_GLASS);
+        addStaticItem(35, super.FILLER_GLASS);
+        addStaticItem(36, super.FILLER_GLASS);
+
+        for (int i = 44; i < 54; i++) {
+            if (inventory.getItem(i) == null) {
+                addStaticItem(i, super.FILLER_GLASS);
+            }
+        }
+    }
+
+    public int getMaxItemsPerPage() {
+        return maxItemsPerPage;
+    }
+
+    /**
+     * Calculates the actual inventory slot for a paged item based on its display index.
+     * PagedMenu uses slots 10-16, 19-25, 28-34, 37-43 (4 rows × 7 columns).
+     * 
+     * @param displayIndex The index of the item in the current page (0-based)
+     * @return The actual slot number in the inventory
+     */
+    protected int getSlotForPagedIndex(int displayIndex) {
+        int row = displayIndex / 7;
+        int col = displayIndex % 7;
+        return 10 + (row * 9) + col;
+    }
+
+    public void addPagedItem(int index, ItemStack item, Consumer<InventoryClickEvent> action) {
+        int slot = getSlotForPagedIndex(index);
+        addButton(slot, item, action);
+    }
+}

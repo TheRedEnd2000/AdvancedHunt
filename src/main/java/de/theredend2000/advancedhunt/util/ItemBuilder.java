@@ -1,15 +1,11 @@
-package de.theredend2000.advancedhunt.util;
+package de.theredend2000.advancedHunt.util;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.util.messages.MenuManager;
-import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -17,170 +13,164 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public class ItemBuilder {
-    private ItemMeta itemMeta;
-    private ItemStack itemStack;
 
-    public ItemBuilder() {
-    }
-
-    public ItemBuilder(XMaterial mat) {
-        this(mat.parseItem());
-    }
-
-    public ItemBuilder(ItemStack itemStack) {
-        this.itemStack = itemStack;
-        this.itemMeta = itemStack.getItemMeta();
-    }
+    private ItemStack item;
+    private ItemMeta meta;
+    private String customId;
+    private String skullTexture;
 
     public ItemBuilder(Material material) {
-        this(new ItemStack(material));
+        this.item = new ItemStack(material);
+        this.meta = item.getItemMeta();
     }
 
-    public ItemBuilder setFromMenuMessageKey(MenuMessageKey key) {
-        MenuManager menuManager = Main.getInstance().getMenuManager();
-        String displayName = menuManager.getMenuItemName(key);
-        List<String> lore = menuManager.getMenuItemLore(key);
-
-        if (!displayName.isEmpty()) {
-            setDisplayName(displayName);
+    public ItemBuilder(ItemStack item) {
+        this.item = item.clone();
+        this.meta = this.item.getItemMeta();
+        try {
+            NBT.get(this.item, nbt -> {
+                if (nbt.hasTag("custom_id")) {
+                    this.customId = nbt.getString("custom_id");
+                }
+            });
+        } catch (Exception ignored) {
         }
-        if (!lore.isEmpty()) {
-            setLore(lore);
+    }
+
+    public ItemBuilder(XMaterial material) {
+        this.item = material.parseItem();
+        if (this.item == null) {
+            this.item = new ItemStack(Material.STONE); // Fallback
         }
-        return this;
+        this.meta = this.item.getItemMeta();
     }
 
-    public ItemBuilder setItemType(XMaterial mat) {
-        setItemType(mat.parseItem());
-        return this;
-    }
-
-    public ItemBuilder setItemType(ItemStack itemStack) {
-        this.itemStack = itemStack;
-        this.itemMeta = itemStack.getItemMeta();
+    public ItemBuilder setAmount(int amount) {
+        item.setAmount(amount);
         return this;
     }
 
     public ItemBuilder setDisplayName(String name) {
-        itemMeta.setDisplayName(name);
-        return this;
-    }
-
-    public ItemBuilder setOwner(String name) {
-        if (itemMeta instanceof SkullMeta) {
-            ((SkullMeta) itemMeta).setOwningPlayer(Bukkit.getOfflinePlayer(name));
-        }
-        return this;
-    }
-
-    public ItemBuilder withGlow(boolean glow) {
-        if (glow) {
-            itemMeta.addEnchant(Enchantment.LURE, 1, true);
-            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }
+        meta.setDisplayName(name);
         return this;
     }
 
     public ItemBuilder setLore(String... lore) {
-        return setLore(Arrays.asList(lore));
+        meta.setLore(Arrays.asList(lore));
+        return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
-        itemMeta.setLore(lore);
+        meta.setLore(lore);
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean unbreakable) {
-        itemMeta.setUnbreakable(unbreakable);
-        return this;
-    }
-
-    public ItemBuilder addItemFlags(ItemFlag... flags) {
-        itemMeta.addItemFlags(flags);
-        return this;
-    }
-
-    public ItemBuilder removeItemFlags(ItemFlag... flags) {
-        itemMeta.removeItemFlags(flags);
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "ItemBuilder{" +
-                "itemMeta=" + itemMeta +
-                ", itemStack=" + itemStack +
-                '}';
-    }
-
-    public ItemStack build() {
-        if (itemStack == null) {
-            throw new NullPointerException("ItemStack cannot be null");
+    public ItemBuilder addLoreLine(String line) {
+        List<String> lore = meta.getLore();
+        if (lore == null) {
+            lore = new ArrayList<>();
         }
-
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-    }
-
-    public ItemBuilder setCustomId(String id) {
-        itemStack = ItemHelper.setCustomId(build(), id);
-        itemMeta = itemStack.getItemMeta();
-        return this;
-    }
-
-    public ItemBuilder setSkullOwner(String texture) {
-        itemStack = build();
-        if(itemStack.getType() != XMaterial.PLAYER_HEAD.parseMaterial() && itemStack.getType() != XMaterial.PLAYER_WALL_HEAD.parseMaterial()) return this;
-
-        String version = Bukkit.getBukkitVersion().split("-", 2)[0];
-
-        if (VersionComparator.isGreaterThanOrEqual(version, "1.20.5")) {
-            NBT.modifyComponents(itemStack, nbt -> {
-                ReadWriteNBT profileNbt = nbt.getOrCreateCompound("minecraft:profile");
-                profileNbt.setUUID("id", UUID.randomUUID());
-                ReadWriteNBT propertiesNbt = profileNbt.getCompoundList("properties").addCompound();
-                propertiesNbt.setString("name", "textures");
-                propertiesNbt.setString("value", texture);
-            });
-        } else {
-            NBT.modify(itemStack, nbt -> {
-                ReadWriteNBT skullOwnerCompound = nbt.getOrCreateCompound("SkullOwner");
-                skullOwnerCompound.setUUID("Id", UUID.randomUUID());
-                skullOwnerCompound.getOrCreateCompound("Properties")
-                        .getCompoundList("textures")
-                        .addCompound()
-                        .setString("Value", texture);
-            });
-        }
-
-        itemMeta = itemStack.getItemMeta();
-        return this;
-    }
-
-    public ItemBuilder setColor(Color color) {
-        if (itemMeta instanceof LeatherArmorMeta) {
-            ((LeatherArmorMeta) itemMeta).setColor(color);
-        }
+        lore.add(line);
+        meta.setLore(lore);
         return this;
     }
 
     public ItemBuilder addEnchant(Enchantment enchantment, int level) {
-        itemMeta.addEnchant(enchantment, level, true);
+        meta.addEnchant(enchantment, level, true);
         return this;
     }
 
-    public ItemBuilder removeEnchant(Enchantment enchantment) {
-        itemMeta.removeEnchant(enchantment);
+    public ItemBuilder addItemFlags(ItemFlag... flags) {
+        meta.addItemFlags(flags);
         return this;
     }
 
-    public ItemBuilder setAmount(int amount) {
-        itemStack.setAmount(amount);
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
+        meta.setUnbreakable(unbreakable);
         return this;
+    }
+
+    public ItemBuilder setCustomModelData(int data) {
+        meta.setCustomModelData(data);
+        return this;
+    }
+
+    public ItemBuilder setSkullOwner(String owner) {
+        if (meta instanceof SkullMeta) {
+            ((SkullMeta) meta).setOwner(owner);
+        }
+        return this;
+    }
+    
+    public ItemBuilder setLeatherColor(Color color) {
+        if (meta instanceof LeatherArmorMeta) {
+            ((LeatherArmorMeta) meta).setColor(color);
+        }
+        return this;
+    }
+
+    public ItemBuilder setCustomId(String id) {
+        this.customId = id;
+        return this;
+    }
+
+    public boolean hasCustomId() {
+        return customId != null;
+    }
+
+    public String getCustomId() {
+        return customId;
+    }
+
+    public ItemBuilder setSkullTexture(String texture) {
+        this.skullTexture = texture;
+        return this;
+    }
+
+    public ItemStack build() {
+        item.setItemMeta(meta);
+        if (customId != null || skullTexture != null) {
+            try {
+                String version = Bukkit.getBukkitVersion().split("-")[0];
+                VersionComparator comparator = new VersionComparator();
+                if (comparator.isGreaterThanOrEqual(version, "1.20.5")) {
+                    if (skullTexture != null) {
+                        NBT.modifyComponents(item, nbt -> {
+                            ReadWriteNBT profile = nbt.getOrCreateCompound("minecraft:profile");
+                            profile.setUUID("id", UUID.randomUUID());
+                            ReadWriteNBT properties = profile.getCompoundList("properties").addCompound();
+                            properties.setString("name", "textures");
+                            properties.setString("value", skullTexture);
+                        });
+                    }
+                    if (customId != null) {
+                        NBT.modify(item, nbt -> {
+                            nbt.setString("custom_id", customId);
+                        });
+                    }
+                } else {
+                    NBT.modify(item, nbt -> {
+                        if (customId != null) {
+                            nbt.setString("custom_id", customId);
+                        }
+                        if (skullTexture != null) {
+                            ReadWriteNBT skullOwner = nbt.getOrCreateCompound("SkullOwner");
+                            skullOwner.setUUID("Id", UUID.randomUUID());
+                            ReadWriteNBT properties = skullOwner.getOrCreateCompound("Properties");
+                            ReadWriteNBT textures = properties.getCompoundList("textures").addCompound();
+                            textures.setString("Value", skullTexture);
+                        }
+                    });
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return item;
     }
 }

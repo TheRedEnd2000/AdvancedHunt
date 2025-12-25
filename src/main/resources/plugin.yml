@@ -1,82 +1,59 @@
 name: AdvancedHunt
-version: '3.1.4-SNAPSHOT'
-main: de.theredend2000.advancedhunt.Main
-api-version: 1.13
-depend: [NBTAPI]
-softdepend: [PlaceholderAPI, ProtocolLib, ItemsAdder]
-website: https://www.spigotmc.org/resources/advancedtreasurehunt.109085/
-authors: [ TheRedEnd2000, GrafterCrafter ]
+version: '4.0.0-SNAPSHOT'
+main: de.theredend2000.advancedHunt.Main
+api-version: '1.21'
+authors: [ GrafterCrafter ]
 
 permissions:
-  AdvancedHunt.command.reset:
-    description: "Resets all plugin data"
-  AdvancedHunt.command.settings:
-    description: "Shows and allows for updating of config settings"
-  AdvancedHunt.command.reload:
-    description: "Reload plugin"
-  AdvancedHunt.command.place:
-    description: "Allow a player to enter and exit treasure placing mode"
-  AdvancedHunt.command.import:
-    description: "Import a player head that is help in the main hand"
-  AdvancedHunt.command.show:
-    description: "Show the location of nearby placed treasures using glowing armor stands"
-  AdvancedHunt.command.list:
-    description: "List all placed treasures for the selected collection"
-
-  AdvancedHunt.command.help:
-    description: "Show a list of possible commands with short descriptions"
-  AdvancedHunt.command.collection:
-    description: "Change selected collection"
-  AdvancedHunt.command.progress:
-    description: "Shows the progress for treasures found"
-  AdvancedHunt.command.leaderboard:
-    description: "Shows the leaderboard for the treasure hunt"
-  AdvancedHunt.command.hint:
-    description: "Shows a hint in the form of coordinates of a nearby treasure that the player has not found yet"
-
-
-  AdvancedHunt.BreakTreasure:
-    description: ""
-  AdvancedHunt.PlaceTreasure:
-    description: ""
-  AdvancedHunt.IgnoreCooldown:
-    description: ""
-  AdvancedHunt.ChangeCollections:
-    description: ""
-  AdvancedHunt.CreateCollection:
-    description: ""
-  AdvancedHunt.OpenRewards:
-    description: ""
-  AdvancedHunt.FindTreasures:
-    description: ""
-
-  AdvancedHunt.group.admin:
-    description: "Contains all essential admin permissions"
+  advancedhunt.help:
+    description: Allows access to the help command
+    default: true
+  advancedhunt.list:
+    description: Allows listing collections
+    default: true
+  advancedhunt.leaderboard:
+    description: Allows viewing the leaderboard
+    default: true
+  advancedhunt.progress:
+    description: Allows viewing collection progress
+    default: true
+  advancedhunt.admin:
+    description: Grants all administrative permissions
     default: op
     children:
-      AdvancedHunt.command.reload: true
-      AdvancedHunt.command.reset: true
-      AdvancedHunt.command.settings: true
-      AdvancedHunt.command.place: true
-      AdvancedHunt.command.show: true
-      AdvancedHunt.command.list: true
-      AdvancedHunt.command.import: true
-
-      AdvancedHunt.BreakTreasure: true
-      AdvancedHunt.PlaceTreasure: true
-      AdvancedHunt.ChangeCollections: true
-      AdvancedHunt.CreateCollection: true
-      AdvancedHunt.OpenRewards: true
-
-      AdvancedHunt.group.default: true
-
-  AdvancedHunt.group.default:
-    description: "Contains all essential default permissions"
-    default: true
-    children:
-      AdvancedHunt.command.help: true
-      AdvancedHunt.command.collection: true
-      AdvancedHunt.command.progress: true
-      AdvancedHunt.command.leaderboard: true
-      AdvancedHunt.command.hint: true
-      AdvancedHunt.FindTreasures: true
+      advancedhunt.admin.reload: true
+      advancedhunt.admin.editor: true
+      advancedhunt.admin.collection.rename: true
+      advancedhunt.admin.collection.create: true
+      advancedhunt.admin.place: true
+      advancedhunt.admin.reset: true
+      advancedhunt.admin.teleport: true
+      advancedhunt.admin.view_finders: true
+      advancedhunt.admin.rewards: true
+  advancedhunt.admin.rewards:
+    description: Allows viewing and editing treasure rewards
+    default: op
+  advancedhunt.admin.reload:
+    description: Allows reloading the plugin
+    default: op
+  advancedhunt.admin.editor:
+    description: Allows opening the collection editor
+    default: op
+  advancedhunt.admin.collection.rename:
+    description: Allows renaming collections
+    default: op
+  advancedhunt.admin.collection.create:
+    description: Allows creating collections
+    default: op
+  advancedhunt.admin.place:
+    description: Allows entering place mode
+    default: op
+  advancedhunt.admin.reset:
+    description: Allows resetting player data
+    default: op
+  advancedhunt.admin.teleport:
+    description: Allows teleporting to treasures
+    default: op
+  advancedhunt.admin.view_finders:
+    description: Allows viewing who found a treasure
+    default: op
