@@ -1,4 +1,4 @@
-package de.theredend2000.advancedHunt.util.updater;
+package de.theredend2000.advancedhunt.util.updater;
 
 import java.io.File;
 import java.util.concurrent.CompletableFuture;

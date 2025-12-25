@@ -1,6 +1,6 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
-import de.theredend2000.advancedHunt.Main;
+import de.theredend2000.advancedhunt.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

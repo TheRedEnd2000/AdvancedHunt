@@ -1,9 +1,9 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
-import de.theredend2000.advancedHunt.data.DataRepository;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.model.PlayerData;
-import de.theredend2000.advancedHunt.model.Treasure;
+import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.Treasure;
 
 import java.util.ArrayList;
 import java.util.List;

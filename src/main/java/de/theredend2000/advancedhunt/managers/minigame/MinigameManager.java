@@ -1,8 +1,8 @@
-package de.theredend2000.advancedHunt.managers.minigame;
+package de.theredend2000.advancedhunt.managers.minigame;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.menu.minigame.MemoryMinigameMenu;
-import de.theredend2000.advancedHunt.menu.minigame.ReactionMinigameMenu;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.minigame.MemoryMinigameMenu;
+import de.theredend2000.advancedhunt.menu.minigame.ReactionMinigameMenu;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

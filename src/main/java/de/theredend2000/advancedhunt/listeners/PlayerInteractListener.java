@@ -1,15 +1,15 @@
-package de.theredend2000.advancedHunt.listeners;
+package de.theredend2000.advancedhunt.listeners;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.managers.CollectionManager;
-import de.theredend2000.advancedHunt.managers.PlayerManager;
-import de.theredend2000.advancedHunt.managers.RewardManager;
-import de.theredend2000.advancedHunt.managers.TreasureManager;
-import de.theredend2000.advancedHunt.menu.RewardsMenu;
-import de.theredend2000.advancedHunt.model.CollectionRewardHolder;
-import de.theredend2000.advancedHunt.model.PlayerData;
-import de.theredend2000.advancedHunt.model.TreasureCore;
-import de.theredend2000.advancedHunt.model.TreasureRewardHolder;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.managers.CollectionManager;
+import de.theredend2000.advancedhunt.managers.PlayerManager;
+import de.theredend2000.advancedhunt.managers.RewardManager;
+import de.theredend2000.advancedhunt.managers.TreasureManager;
+import de.theredend2000.advancedhunt.menu.RewardsMenu;
+import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

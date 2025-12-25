@@ -1,4 +1,4 @@
-package de.theredend2000.advancedHunt.managers.minigame;
+package de.theredend2000.advancedhunt.managers.minigame;
 
 public enum MinigameType {
     REACTION,

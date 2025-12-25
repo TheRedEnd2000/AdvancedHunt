@@ -1,6 +1,6 @@
-package de.theredend2000.advancedHunt.util.updater.source;
+package de.theredend2000.advancedhunt.util.updater.source;
 
-import de.theredend2000.advancedHunt.util.updater.UpdateSource;
+import de.theredend2000.advancedhunt.util.updater.UpdateSource;
 import org.bukkit.Bukkit;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

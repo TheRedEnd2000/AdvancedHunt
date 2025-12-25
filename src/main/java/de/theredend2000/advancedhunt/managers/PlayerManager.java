@@ -1,9 +1,9 @@
-package de.theredend2000.advancedHunt.managers;
+package de.theredend2000.advancedhunt.managers;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import de.theredend2000.advancedHunt.data.DataRepository;
-import de.theredend2000.advancedHunt.model.PlayerData;
+import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.model.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

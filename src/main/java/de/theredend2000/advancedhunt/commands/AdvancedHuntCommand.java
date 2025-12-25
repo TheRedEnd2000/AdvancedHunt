@@ -1,11 +1,11 @@
-package de.theredend2000.advancedHunt.commands;
+package de.theredend2000.advancedhunt.commands;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.managers.minigame.MinigameType;
-import de.theredend2000.advancedHunt.menu.*;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.model.Treasure;
-import de.theredend2000.advancedHunt.model.TreasureRewardHolder;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.managers.minigame.MinigameType;
+import de.theredend2000.advancedhunt.menu.*;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;

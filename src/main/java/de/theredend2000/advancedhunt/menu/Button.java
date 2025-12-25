@@ -1,4 +1,4 @@
-package de.theredend2000.advancedHunt.menu;
+package de.theredend2000.advancedhunt.menu;
 
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

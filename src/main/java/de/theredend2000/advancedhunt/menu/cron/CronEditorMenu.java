@@ -1,14 +1,14 @@
-package de.theredend2000.advancedHunt.menu.cron;
+package de.theredend2000.advancedhunt.menu.cron;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.menu.ActRuleEditorMenu;
-import de.theredend2000.advancedHunt.menu.CollectionSettingsMenu;
-import de.theredend2000.advancedHunt.menu.Menu;
-import de.theredend2000.advancedHunt.model.ActRule;
-import de.theredend2000.advancedHunt.model.Collection;
-import de.theredend2000.advancedHunt.util.CronUtils;
-import de.theredend2000.advancedHunt.util.ItemBuilder;
-import de.theredend2000.advancedHunt.util.ValidationUtil;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.ActRuleEditorMenu;
+import de.theredend2000.advancedhunt.menu.CollectionSettingsMenu;
+import de.theredend2000.advancedhunt.menu.Menu;
+import de.theredend2000.advancedhunt.model.ActRule;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.util.CronUtils;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.ValidationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

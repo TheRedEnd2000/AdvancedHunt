@@ -1,7 +1,7 @@
-package de.theredend2000.advancedHunt.listeners;
+package de.theredend2000.advancedhunt.listeners;
 
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.menu.Menu;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

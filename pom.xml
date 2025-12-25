@@ -59,27 +59,27 @@
                             <relocations>
                                 <relocation>
                                     <pattern>org.incendo.cloud</pattern>
-                                    <shadedPattern>de.theredend2000.advancedHunt.lib.cloud</shadedPattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.cloud</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>de.theredend2000.advancedHunt.lib.hikari</shadedPattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.github.benmanes.caffeine</pattern>
-                                    <shadedPattern>de.theredend2000.advancedHunt.lib.caffeine</shadedPattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.caffeine</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.cryptomorin.xseries</pattern>
-                                    <shadedPattern>de.theredend2000.advancedHunt.lib.xseries</shadedPattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.xseries</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.cronutils</pattern>
-                                    <shadedPattern>de.theredend2000.advancedHunt.lib.cronutils</shadedPattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.cronutils</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
-                                    <shadedPattern>de.theredend2000.advancedHunt.lib.bstats</shadedPattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

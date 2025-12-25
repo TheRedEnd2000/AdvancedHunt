@@ -1,14 +1,14 @@
-package de.theredend2000.advancedHunt;
+package de.theredend2000.advancedhunt;
 
-import de.theredend2000.advancedHunt.commands.AdvancedHuntCommand;
-import de.theredend2000.advancedHunt.data.DataRepository;
-import de.theredend2000.advancedHunt.data.SqlRepository;
-import de.theredend2000.advancedHunt.data.YamlRepository;
-import de.theredend2000.advancedHunt.listeners.*;
-import de.theredend2000.advancedHunt.managers.*;
-import de.theredend2000.advancedHunt.managers.minigame.MinigameManager;
-import de.theredend2000.advancedHunt.placeholder.AdvancedHuntExpansion;
-import de.theredend2000.advancedHunt.util.updater.PluginUpdater;
+import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
+import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.data.SqlRepository;
+import de.theredend2000.advancedhunt.data.YamlRepository;
+import de.theredend2000.advancedhunt.listeners.*;
+import de.theredend2000.advancedhunt.managers.*;
+import de.theredend2000.advancedhunt.managers.minigame.MinigameManager;
+import de.theredend2000.advancedhunt.placeholder.AdvancedHuntExpansion;
+import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

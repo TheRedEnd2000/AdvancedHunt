@@ -1,12 +1,12 @@
-package de.theredend2000.advancedHunt.menu;
+package de.theredend2000.advancedhunt.menu;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedHunt.Main;
-import de.theredend2000.advancedHunt.model.PlayerData;
-import de.theredend2000.advancedHunt.model.Treasure;
-import de.theredend2000.advancedHunt.model.TreasureCore;
-import de.theredend2000.advancedHunt.util.HeadHelper;
-import de.theredend2000.advancedHunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.util.HeadHelper;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

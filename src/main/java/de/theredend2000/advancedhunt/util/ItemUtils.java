@@ -1,7 +1,7 @@
-package de.theredend2000.advancedHunt.util;
+package de.theredend2000.advancedhunt.util;
 
 import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedHunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.Treasure;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.inventory.ItemStack;
