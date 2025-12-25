@@ -35,8 +35,7 @@ public class CronPresetMenu extends PagedMenu {
             new CronPreset("first_monday_month", "0 0 0 ? * MON#1 *", Material.ENCHANTED_BOOK),
             new CronPreset("new_year", "0 0 0 1 1 ? *", Material.EXPERIENCE_BOTTLE),
             new CronPreset("christmas", "0 0 0 25 12 ? *", Material.PLAYER_HEAD),
-            new CronPreset("quarterly", "0 0 0 1 1,4,7,10 ? *", Material.COMPASS),
-            new CronPreset("daily_2026", "0 0 0 * * ? 2026", Material.TOTEM_OF_UNDYING)
+            new CronPreset("quarterly", "0 0 0 1 1,4,7,10 ? *", Material.COMPASS)
     );
 
     // Constructor for Collection context
