@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ActFormatParser;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -89,6 +90,18 @@ public class ActRulesMenu extends PagedMenu {
                             ).toArray(new String[0]))
                             .build(), (e) -> {
                         if (e.isLeftClick()) {
+                            //Delete Rule
+                            if(e.isShiftClick()){
+                                collection.removeActRule(rule.getId());
+                                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+                                    plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_rules.rule_deleted",
+                                                "%name%", rule.getName()));
+                                        refresh();
+                                    });
+                                });
+                                return;
+                            }
                             // Edit rule
                             new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
                         } else if (e.isRightClick()) {
@@ -96,16 +109,6 @@ public class ActRulesMenu extends PagedMenu {
                             rule.setEnabled(!rule.isEnabled());
                             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                                 plugin.getServer().getScheduler().runTask(plugin, () -> {
-                                    refresh();
-                                });
-                            });
-                        } else if (e.isShiftClick() && e.isLeftClick()) {
-                            // Delete rule
-                            collection.removeActRule(rule.getId());
-                            plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                                plugin.getServer().getScheduler().runTask(plugin, () -> {
-                                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_rules.rule_deleted", 
-                                        "%name%", rule.getName()));
                                     refresh();
                                 });
                             });
