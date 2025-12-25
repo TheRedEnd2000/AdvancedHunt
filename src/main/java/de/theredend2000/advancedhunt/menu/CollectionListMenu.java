@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -89,6 +90,7 @@ public class CollectionListMenu extends PagedMenu {
                     ItemStack leaderboardButton = new ItemBuilder(Material.GOLDEN_HELMET)
                             .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.view_button.name", false))
                             .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.view_button.lore", false))
+                            .addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
                             .build();
                     
                     addButton(8, leaderboardButton, e -> {
