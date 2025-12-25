@@ -7,7 +7,9 @@ import de.theredend2000.advancedhunt.util.ActFormatParser;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +36,7 @@ public class ActRulesMenu extends PagedMenu {
     }
 
     @Override
-    public void handleMenu(org.bukkit.event.inventory.InventoryClickEvent e) {
+    public void handleMenu(InventoryClickEvent e) {
         // All click handling is done via buttons
     }
 
@@ -71,7 +73,7 @@ public class ActRulesMenu extends PagedMenu {
                     // Show next trigger if available
                     String nextTrigger = "§7N/A";
                     if (scheduleOpt.isPresent() && rule.isEnabled()) {
-                        scheduleOpt.get().getNextTrigger(java.time.ZonedDateTime.now()).ifPresent(next -> {
+                        scheduleOpt.get().getNextTrigger(ZonedDateTime.now()).ifPresent(next -> {
                             // This will be set in the actual implementation
                         });
                     }

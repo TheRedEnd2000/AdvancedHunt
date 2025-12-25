@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.menu;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.cron.CronEditorMenu;
 import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ActFormatParser;
@@ -9,9 +10,11 @@ import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Hub menu for ACT rule editing.
@@ -39,7 +42,7 @@ public class ActRuleEditorMenu extends Menu {
     }
 
     @Override
-    public void handleMenu(org.bukkit.event.inventory.InventoryClickEvent e) {
+    public void handleMenu(InventoryClickEvent e) {
         // All click handling is done via buttons
     }
 
@@ -139,7 +142,7 @@ public class ActRuleEditorMenu extends Menu {
                     "%description%", cronReadable
                 ).toArray(new String[0]))
                 .build(), (e) -> {
-            new de.theredend2000.advancedhunt.menu.cron.CronEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+            new CronEditorMenu(playerMenuUtility, plugin, collection, rule).open();
         });
 
         // Apply Preset Button
@@ -165,7 +168,7 @@ public class ActRuleEditorMenu extends Menu {
             }
             
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
-                java.util.Optional<ActFormatParser.ActSchedule> parsed = ActFormatParser.parse(input);
+                Optional<ActFormatParser.ActSchedule> parsed = ActFormatParser.parse(input);
                 if (parsed.isPresent()) {
                     ActFormatParser.ActSchedule schedule = parsed.get();
                     rule.setDateRange(schedule.getDateRange());

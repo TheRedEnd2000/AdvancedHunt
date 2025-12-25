@@ -416,12 +416,12 @@ public class YamlRepository implements DataRepository {
                             
                             // Load ACT rules
                             List<Map<?, ?>> rulesList = config.getMapList("act-rules");
-                            List<de.theredend2000.advancedhunt.model.ActRule> actRules = new ArrayList<>();
+                            List<ActRule> actRules = new ArrayList<>();
                             for (Map<?, ?> ruleMap : rulesList) {
                                 try {
                                     UUID ruleId = UUID.fromString((String) ruleMap.get("id"));
                                     String ruleName = (String) ruleMap.get("name");
-                                    de.theredend2000.advancedhunt.model.ActRule rule = new de.theredend2000.advancedhunt.model.ActRule(ruleId, id, ruleName);
+                                    ActRule rule = new ActRule(ruleId, id, ruleName);
                                     rule.setDateRange((String) ruleMap.get("date-range"));
                                     rule.setDuration((String) ruleMap.get("duration"));
                                     rule.setCronExpression((String) ruleMap.get("cron"));
@@ -470,7 +470,7 @@ public class YamlRepository implements DataRepository {
             
             // Save ACT rules
             List<Map<String, Object>> rulesList = new ArrayList<>();
-            for (de.theredend2000.advancedhunt.model.ActRule rule : collection.getActRules()) {
+            for (ActRule rule : collection.getActRules()) {
                 Map<String, Object> ruleMap = new HashMap<>();
                 ruleMap.put("id", rule.getId().toString());
                 ruleMap.put("name", rule.getName());
