@@ -99,6 +99,27 @@ gui:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"
     page_indicator: "&7(%page%/%total%)"
+    open_reward_option_menu:
+      title: "&8Reward Options"
+      name: "&6+ Add Reward"
+      lore:
+        - ""
+        - "&7Choose the type of reward"
+        - "&7you want to add:"
+        - ""
+        - "&e► Item Reward"
+        - "&f  Give a physical item"
+        - ""
+        - "&e► Command Reward"
+        - "&f  Execute a server command"
+        - ""
+        - "&e► Chat Message"
+        - "&f  Send a message to the player"
+        - ""
+        - "&e► Broadcast Message"
+        - "&f  Send a message to all players"
+        - ""
+        - "&aClick to open options"
     switch_to_collection:
       name: "&eView Collection Rewards"
       lore:
@@ -1219,8 +1240,8 @@ gui:
       applied: "%prefix%&aACT rule updated successfully!"
 
 minigame:
-  success: "&aMinigame completed successfully!"
-  failed: "&cMinigame failed."
+  success: "%prefix%&aMinigame completed successfully!"
+  failed: "%prefix%&cMinigame failed."
   reaction:
     timeout: "%prefix%&cYou took too long! Game over."
     wrong_click: "%prefix%&cWrong block! Game over."

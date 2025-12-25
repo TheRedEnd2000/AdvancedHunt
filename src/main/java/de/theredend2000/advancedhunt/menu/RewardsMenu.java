@@ -150,8 +150,8 @@ public class RewardsMenu extends PagedMenu {
         if (editMode) {
             // Add Reward submenu opener
             addButton(45, new ItemBuilder(Material.HOPPER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_add_menu.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_add_menu.lore", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_reward_option_menu.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_reward_option_menu.lore", false))
                 .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
 
             // Quick action mode toggle
@@ -474,51 +474,6 @@ public class RewardsMenu extends PagedMenu {
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.broadcast_message_name", false))
             .setLore(lore)
             .build();
-    }
-
-    /**
-     * Prompts for chat message input to add a chat message reward.
-     * Defaults to 100% chance since chat messages are typically always shown.
-     */
-    public void promptAddChatMessageReward() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chat_message"));
-        plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
-            if (message == null || message.isEmpty()) {
-                open();
-                return;
-            }
-            
-            // Default to 100% chance for chat messages
-            addReward(new Reward(RewardType.CHAT_MESSAGE, 100.0, message));
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
-            open();
-        });
-    }
-
-    /**
-     * Prompts for broadcast message input to add a broadcast message reward.
-     * Defaults to 100% chance since broadcast messages are typically always shown.
-     */
-    public void promptAddBroadcastMessageReward() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_broadcast_message"));
-        plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
-            if (message == null || message.isEmpty()) {
-                open();
-                return;
-            }
-            
-            // Default to 100% chance for broadcast messages
-            addReward(new Reward(RewardType.CHAT_MESSAGE_BROADCAST, 100.0, message));
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
-            open();
-        });
-    }
-
-    /**
-     * Opens the menu to add an item reward.
-     */
-    public void openAddItemRewardMenu() {
-        new AddItemRewardMenu(playerMenuUtility, plugin, this).open();
     }
 
     /**
