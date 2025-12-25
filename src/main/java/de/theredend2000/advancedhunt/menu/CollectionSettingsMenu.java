@@ -71,7 +71,7 @@ public class CollectionSettingsMenu extends Menu {
             collection.setEnabled(!collection.isEnabled());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
+                    refresh();
                 });
             });
         });
@@ -99,7 +99,7 @@ public class CollectionSettingsMenu extends Menu {
             collection.setSinglePlayerFind(!collection.isSinglePlayerFind());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
+                    refresh();
                 });
             });
         });
@@ -143,9 +143,9 @@ public class CollectionSettingsMenu extends Menu {
                     });
                 },
                 (cancelEvent) -> {
-                    new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
+                    playerMenuUtility.closeInventory();
                 }
-            ).open();
+            ).setPreviousMenu(this).open();
         }, "advancedhunt.admin.collection.delete");
     }
 

@@ -98,6 +98,15 @@ public class AdvancedHuntCommand {
         );
 
         commandManager.command(
+                commandManager.commandBuilder("advancedhunt", "ah")
+                        .literal("collection")
+                        .literal("edit")
+                        .required("name", StringParser.stringParser(), collectionsSuggestions)
+                        .permission("advancedhunt.admin.collection.edit")
+                        .handler(context -> editCollection(context.sender(), context.get("name")))
+        );
+
+        commandManager.command(
             commandManager.commandBuilder("advancedhunt", "ah")
                 .literal("reload")
                 .permission("advancedhunt.admin.reload")
@@ -332,6 +341,18 @@ public class AdvancedHuntCommand {
             }
             
             new ProgressMenu(player, collection.getId(), collection.getName(), plugin).open();
+        } else {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
+        }
+    }
+
+    public void editCollection(CommandSender sender, String name) {
+        if(!(sender instanceof Player)) return;
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(name);
+        if (collectionOpt.isPresent()) {
+            Collection collection = collectionOpt.get();
+
+            new CollectionSettingsMenu((Player) sender, plugin, collection).open();
         } else {
             sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
         }
