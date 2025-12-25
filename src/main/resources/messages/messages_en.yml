@@ -67,9 +67,7 @@ gui:
   common:
     first_page: "%prefix%&cYou are already on the first page."
     last_page: "%prefix%&cYou are on the last page."
-    back: "&cBack"
-    back_arrow: "&7« Back"
-    back_to: "&7« Back to %menu%"
+    back: "&7« Back to %menu%"
     close: "&cClose"
     previous_page: "&aPrevious Page"
     next_page: "&aNext Page"
@@ -535,6 +533,22 @@ gui:
         none: "&7No schedule set"
         invalid: "&c&l⚠ Invalid expression"
     preset:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⏰ Quick Presets"
+          - ""
+          - "&7Pre-configured scheduling templates"
+          - "&7for common reset intervals."
+          - ""
+          - "&e► Daily &7- Every day at 00:00"
+          - "&e► Weekly &7- Every Monday at 00:00"
+          - "&e► Monthly &7- 1st of each month"
+          - "&e► Yearly &7- January 1st"
+          - "&e► More... &7- Additional options"
+          - ""
+          - "&a✓ &7Safe and easy to use"
+          - "&8Perfect for beginners!"
       daily:
         name: "&eDaily Reset"
         lore:
@@ -695,6 +709,22 @@ gui:
             - ""
             - "&aClick to apply"
     custom:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⚙ Advanced Options"
+          - ""
+          - "&7For users who need precise control"
+          - "&7over their scheduling configuration."
+          - ""
+          - "&e► Field Builder"
+          - "&f  Configure each time field individually"
+          - ""
+          - "&e► Manual Input"
+          - "&f  Write cron expressions directly"
+          - ""
+          - "&c⚠ &7Requires cron syntax knowledge"
+          - "&8Use presets if you're unsure!"
       builder:
         name: "&dAdvanced Builder"
         lore:

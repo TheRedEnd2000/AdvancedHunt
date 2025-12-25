@@ -120,15 +120,6 @@ public class ActDateRangeMenu extends Menu {
                 }
             });
         });
-
-        // Back Button
-        addButton(49, new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back_to", false, "%menu%", "Rule Editor"))
-                .build(), (e) -> {
-            if (previousMenu != null) {
-                previousMenu.open();
-            }
-        });
     }
 
     private void applyDateRange(String dateRange) {

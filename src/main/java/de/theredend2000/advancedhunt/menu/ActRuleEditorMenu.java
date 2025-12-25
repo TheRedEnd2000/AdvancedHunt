@@ -120,7 +120,7 @@ public class ActRuleEditorMenu extends Menu {
                     "%description%", dateRangeReadable
                 ).toArray(new String[0]))
                 .build(), (e) -> {
-            new ActDateRangeMenu(playerMenuUtility, plugin, collection, rule, this).open();
+            new ActDateRangeMenu(playerMenuUtility, plugin, collection, rule, this).setPreviousMenu(this).open();
         });
 
         // Duration Editor
@@ -131,7 +131,7 @@ public class ActRuleEditorMenu extends Menu {
                     "%description%", durationReadable
                 ).toArray(new String[0]))
                 .build(), (e) -> {
-            new ActDurationMenu(playerMenuUtility, plugin, collection, rule, this).open();
+            new ActDurationMenu(playerMenuUtility, plugin, collection, rule, this).setPreviousMenu(this).open();
         });
 
         // Cron Editor
@@ -142,7 +142,7 @@ public class ActRuleEditorMenu extends Menu {
                     "%description%", cronReadable
                 ).toArray(new String[0]))
                 .build(), (e) -> {
-            new CronEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+            new CronEditorMenu(playerMenuUtility, plugin, collection, rule).setPreviousMenu(this).open();
         });
 
         // Apply Preset Button
@@ -250,11 +250,5 @@ public class ActRuleEditorMenu extends Menu {
             });
         });
 
-        // Back Button
-        addButton(49, new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back_arrow", false))
-                .build(), (e) -> {
-            new ActRulesMenu(playerMenuUtility, plugin, collection).open();
-        });
     }
 }

@@ -72,7 +72,7 @@ public class TreasureActionMenu extends Menu {
 
         // Back Button
         ItemStack backItem = new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back_arrow", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back", false))
                 .build();
 
         addButton(15, backItem, e -> {

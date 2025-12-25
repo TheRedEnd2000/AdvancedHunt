@@ -43,6 +43,7 @@ public abstract class Menu implements InventoryHolder {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
         this.buttons = new Button[getSlots()];
         this.setMenuItems();
+        this.addCloseOrBack();
         playerMenuUtility.openInventory(inventory);
     }
 
@@ -60,6 +61,20 @@ public abstract class Menu implements InventoryHolder {
 
     public void addButton(int slot, ItemStack item, Consumer<InventoryClickEvent> action) {
         setButton(slot, new Button(item, action));
+    }
+
+    public void addCloseOrBack(){
+        ItemStack closeOrBack = previousMenu == null
+                ? new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.close")).build()
+                : new ItemBuilder(Material.ARROW).setDisplayName(plugin.getMessageManager().getMessage("gui.common.back","%menu%", previousMenu.getMenuName())).build();
+
+        addButton(49, closeOrBack, (e) -> {
+            if (previousMenu == null) {
+                e.getWhoClicked().closeInventory();
+            } else {
+                openPreviousMenu();
+            }
+        });
     }
 
     /**
@@ -139,7 +154,8 @@ public abstract class Menu implements InventoryHolder {
     public void refresh() {
         inventory.clear();
         this.buttons = new Button[getSlots()];
-        setMenuItems();
+        this.setMenuItems();
+        this.addCloseOrBack();
     }
 
     /**
@@ -157,8 +173,9 @@ public abstract class Menu implements InventoryHolder {
         }
     }
 
-    public void setPreviousMenu(Menu previousMenu) {
+    public Menu setPreviousMenu(Menu previousMenu) {
         this.previousMenu = previousMenu;
+        return this;
     }
 
     public void openPreviousMenu() {
