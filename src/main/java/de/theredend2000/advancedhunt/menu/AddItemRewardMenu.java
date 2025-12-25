@@ -19,12 +19,14 @@ import org.bukkit.inventory.ItemStack;
 public class AddItemRewardMenu extends Menu {
 
     private final RewardsMenu parentMenu;
+    private final Menu lastMenu;
     private static final int ITEM_SLOT = 22; // Center slot
     private boolean confirmed = false;
 
-    public AddItemRewardMenu(Player player, Main plugin, RewardsMenu parentMenu) {
+    public AddItemRewardMenu(Player player, Main plugin, RewardsMenu parentMenu, Menu lastMenu) {
         super(player, plugin);
         this.parentMenu = parentMenu;
+        this.lastMenu = lastMenu;
     }
 
     @Override
@@ -116,7 +118,7 @@ public class AddItemRewardMenu extends Menu {
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
                     // Return item to player
                     giveItemBack(item);
-                    parentMenu.open();
+                    lastMenu.open();
                     return;
                 }
                 
@@ -132,7 +134,7 @@ public class AddItemRewardMenu extends Menu {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
                 // Return item to player
                 giveItemBack(item);
-                parentMenu.open();
+                lastMenu.open();
             }
         });
     }
@@ -148,8 +150,8 @@ public class AddItemRewardMenu extends Menu {
         if (item != null && item.getType() != Material.AIR) {
             giveItemBack(item);
         }
-        
-        parentMenu.open();
+
+        lastMenu.open();
     }
 
     /**
@@ -176,7 +178,7 @@ public class AddItemRewardMenu extends Menu {
             }
             
             // Reopen parent menu after a tick (to avoid issues with close event)
-            Bukkit.getScheduler().runTaskLater(plugin, () -> parentMenu.open(), 1L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> lastMenu.open(), 1L);
         }
     }
 }
