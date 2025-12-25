@@ -49,13 +49,14 @@ public class AddItemRewardMenu extends Menu {
         }
         
         // Allow shift-clicking from player inventory
-        if (slot >= 45 && e.isShiftClick()) {
+        if (slot >= getSlots() && e.isShiftClick()) {
             e.setCancelled(false);
         }
     }
 
     @Override
-    public void addCloseOrBack() {}
+    public void addCloseOrBack() {
+    }
 
     @Override
     public void setMenuItems() {
