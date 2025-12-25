@@ -5,9 +5,9 @@ import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ActFormatParser;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.time.ZonedDateTime;
@@ -20,10 +20,23 @@ import java.util.Optional;
 public class ActRulesMenu extends PagedMenu {
 
     private final Collection collection;
+    private boolean processing = false;
 
     public ActRulesMenu(Player player, Main plugin, Collection collection) {
         super(player, plugin);
         this.collection = collection;
+    }
+
+    @Override
+    public void open() {
+        processing = false;
+        super.open();
+    }
+
+    @Override
+    public void refresh() {
+        processing = false;
+        super.refresh();
     }
 
     @Override
@@ -39,6 +52,12 @@ public class ActRulesMenu extends PagedMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         // All click handling is done via buttons
+    }
+
+    @Override
+    public void performClick(InventoryClickEvent event) {
+        if (processing) return;
+        super.performClick(event);
     }
 
     @Override
@@ -74,9 +93,10 @@ public class ActRulesMenu extends PagedMenu {
                     // Show next trigger if available
                     String nextTrigger = "§7N/A";
                     if (scheduleOpt.isPresent() && rule.isEnabled()) {
-                        scheduleOpt.get().getNextTrigger(ZonedDateTime.now()).ifPresent(next -> {
-                            // This will be set in the actual implementation
-                        });
+                        Optional<ZonedDateTime> nextOpt = scheduleOpt.get().getNextTrigger(ZonedDateTime.now());
+                        if (nextOpt.isPresent()) {
+                            nextTrigger = "§f" + plugin.getMessageManager().formatDateTime(nextOpt.get());
+                        }
                     }
 
                     addPagedItem(finalI, new ItemBuilder(material)
@@ -86,31 +106,43 @@ public class ActRulesMenu extends PagedMenu {
                                 "%status%", status,
                                 "%date_range%", dateRange,
                                 "%duration%", duration,
-                                "%cron%", cron
+                                "%cron%", cron,
+                                "%next_trigger%", nextTrigger
                             ).toArray(new String[0]))
                             .build(), (e) -> {
-                        if (e.isLeftClick()) {
+                        if (e.getClick() == ClickType.SHIFT_LEFT) {
+                            processing = true;
                             //Delete Rule
-                            if(e.isShiftClick()){
-                                collection.removeActRule(rule.getId());
-                                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                                    plugin.getServer().getScheduler().runTask(plugin, () -> {
-                                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_rules.rule_deleted",
-                                                "%name%", rule.getName()));
-                                        refresh();
-                                    });
+                            collection.removeActRule(rule.getId());
+                            plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+                                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_rules.rule_deleted",
+                                            "%name%", rule.getName()));
+                                    refresh();
+                                    processing = false;
                                 });
-                                return;
-                            }
+                            }).exceptionally(ex -> {
+                                processing = false;
+                                return null;
+                            });
+                            return;
+                        }
+                        
+                        if (e.isLeftClick()) {
                             // Edit rule
                             new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).setPreviousMenu(this).open();
                         } else if (e.isRightClick()) {
+                            processing = true;
                             // Toggle enabled
                             rule.setEnabled(!rule.isEnabled());
                             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                                 plugin.getServer().getScheduler().runTask(plugin, () -> {
                                     refresh();
+                                    processing = false;
                                 });
+                            }).exceptionally(ex -> {
+                                processing = false;
+                                return null;
                             });
                         }
                     });
@@ -119,19 +151,22 @@ public class ActRulesMenu extends PagedMenu {
         }
 
         // Add New Rule Button
-        //TODO FIX HERE
         addButton(52, new ItemBuilder(Material.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rules.add_rule.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act_rules.add_rule.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
+            processing = true;
             // Create new rule with default name
             ActRule newRule = new ActRule(collection.getId(), "New Rule");
             collection.addActRule(newRule);
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
-                    // Open GUI editor immediately
                     new ActRuleEditorMenu(playerMenuUtility, plugin, collection, newRule).setPreviousMenu(this).open();
+                    processing = false;
                 });
+            }).exceptionally(ex -> {
+                processing = false;
+                return null;
             });
         });
     }
