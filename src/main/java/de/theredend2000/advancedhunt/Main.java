@@ -1,523 +1,217 @@
-package de.theredend2000.advancedhunt;
+package de.theredend2000.advancedHunt;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedhunt.bstats.Metrics;
-import de.theredend2000.advancedhunt.commands.AdvancedHuntCommand;
-import de.theredend2000.advancedhunt.configurations.PluginConfig;
-import de.theredend2000.advancedhunt.listeners.*;
-import de.theredend2000.advancedhunt.managers.*;
-import de.theredend2000.advancedhunt.managers.eggmanager.EggDataManager;
-import de.theredend2000.advancedhunt.managers.eggmanager.EggHidingManager;
-import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedhunt.managers.eggmanager.PlayerEggDataManager;
-import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.RarityManager;
-import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.global.GlobalPresetDataManager;
-import de.theredend2000.advancedhunt.managers.inventorymanager.eggrewards.individual.IndividualPresetDataManager;
-import de.theredend2000.advancedhunt.mysql.Database;
-import de.theredend2000.advancedhunt.placeholderapi.PlaceholderExtension;
-import de.theredend2000.advancedhunt.protocollib.BlockChangingManager;
-import de.theredend2000.advancedhunt.util.*;
-import de.theredend2000.advancedhunt.util.enums.LeaderboardSortTypes;
-import de.theredend2000.advancedhunt.util.messages.MenuManager;
-import de.theredend2000.advancedhunt.util.messages.MessageKey;
-import de.theredend2000.advancedhunt.util.messages.MessageManager;
-import de.theredend2000.advancedhunt.util.saveinventory.DatetimeUtils;
+import de.theredend2000.advancedHunt.commands.AdvancedHuntCommand;
+import de.theredend2000.advancedHunt.data.DataRepository;
+import de.theredend2000.advancedHunt.data.SqlRepository;
+import de.theredend2000.advancedHunt.data.YamlRepository;
+import de.theredend2000.advancedHunt.listeners.*;
+import de.theredend2000.advancedHunt.managers.*;
+import de.theredend2000.advancedHunt.managers.minigame.MinigameManager;
+import de.theredend2000.advancedHunt.placeholder.AdvancedHuntExpansion;
+import de.theredend2000.advancedHunt.util.updater.PluginUpdater;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Main extends JavaPlugin {
 
-    // Static fields
-    private static Main plugin;
-    public static String PREFIX = "";
-    public static boolean setupDefaultCollection;
-
-    // Configuration
-    private PluginConfig pluginConfig;
-
-    private DynamicCommandRegistrar commandRegistrar;
-
-    // Managers
+    private LegacyPaperCommandManager<CommandSender> commandManager;
+    private DataRepository dataRepository;
+    private TreasureManager treasureManager;
+    private PlayerManager playerManager;
+    private LeaderboardManager leaderboardManager;
+    private CollectionManager collectionManager;
+    private RewardManager rewardManager;
+    private PlaceModeManager placeModeManager;
+    private ParticleManager particleManager;
     private MessageManager messageManager;
-    private MenuManager menuMessageManager;
-    private CooldownManager cooldownManager;
-    private EggDataManager eggDataManager;
-    private EggManager eggManager;
-    private SoundManager soundManager;
-    private ExtraManager extraManager;
-    private PlayerEggDataManager playerEggDataManager;
-    private RequirementsManager requirementsManager;
-    private PermissionManager permissionManager;
-    private IndividualPresetDataManager individualPresetDataManager;
-    private GlobalPresetDataManager globalPresetDataManager;
-    private RarityManager rarityManager;
-    private EggHidingManager eggHidingManager;
-    private BlockChangingManager blockChangingManager;
-
-    // Utility classes
-    private DatetimeUtils datetimeUtils;
-    private ProtocolManager protocolManager;
-    private LogHelper logHelper;
-
-    // Collections
-    private HashMap<String, Long> refreshCooldown;
-    private ArrayList<Player> placePlayers;
-    private ArrayList<UUID> devs;
-    private HashMap<Player, Integer> playerAddCommand;
-    private ArrayList<ArmorStand> showedArmorstands;
-    private HashMap<Player, LeaderboardSortTypes> sortTypeLeaderboard;
-    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
-    private HashMap<Player, Inventory>  lastOpenedInventory = new HashMap<>();
-
-    // MySQL
-    private Database database;
-
-    private Random random;
+    private PluginUpdater pluginUpdater;
+    private ChatInputListener chatInputListener;
+    private MinigameManager minigameManager;
 
     @Override
     public void onEnable() {
-        plugin = this;
-        renameConfigFolder();
-        initialisePlugin();
-        //connectToDatabase(); //Add if MYSQL works
+        saveDefaultConfig();
 
-        String version = Bukkit.getBukkitVersion().split("-", 2)[0];
-        if (VersionComparator.isGreaterThan(version, "1.21.10")) {
-            this.getLogger().warning("The plugin has not been tested on the current version.");
+        // Initialize Message Manager
+        messageManager = new MessageManager(this);
+
+        // Initialize Data Repository
+        String storageType = getConfig().getString("storage.type", "YAML");
+        if (storageType.equalsIgnoreCase("MYSQL")) {
+            dataRepository = new SqlRepository(
+                    this,
+                    getConfig().getString("storage.host"),
+                    getConfig().getInt("storage.port"),
+                    getConfig().getString("storage.database"),
+                    getConfig().getString("storage.username"),
+                    getConfig().getString("storage.password"),
+                    false
+            );
+        } else if (storageType.equalsIgnoreCase("SQLITE")) {
+            dataRepository = new SqlRepository(this, null, 0, null, null, null, true);
+        } else {
+            dataRepository = new YamlRepository(this);
+        }
+        dataRepository.init();
+        
+        // Start periodic index flush for YAML backend (every 60 seconds)
+        if (dataRepository instanceof YamlRepository) {
+            ((YamlRepository) dataRepository).startPeriodicFlush(60);
         }
 
-        setupAutoUpdating();
+        // Initialize Managers
+        rewardManager = new RewardManager(this);
+        treasureManager = new TreasureManager(dataRepository);
+        treasureManager.loadTreasures();
 
-        if (!checkDependencies())
-            return;
+        playerManager = new PlayerManager(this, dataRepository);
+        leaderboardManager = new LeaderboardManager(this, dataRepository);
+        collectionManager = new CollectionManager(this, dataRepository, treasureManager, playerManager, rewardManager);
+        placeModeManager = new PlaceModeManager();
+        minigameManager = new MinigameManager(this);
+        particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
+        particleManager.start();
 
-        setupManagers();
-        registerCommands();
-        initListeners();
-        initialiseData();
-        setupDefaultCollectionIfNeeded();
-        finalizeSetup();
-        setupPlaceholderAPI();
+        // Register Listeners
+        getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlaceModeListener(this), this);
+        getServer().getPluginManager().registerEvents(new TreasureProtectListener(this), this);
+        getServer().getPluginManager().registerEvents(new MenuListener(this), this);
+        chatInputListener = new ChatInputListener(this);
+        getServer().getPluginManager().registerEvents(chatInputListener, this);
 
-        initialiseDevs();
+        // Register Placeholders
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new AdvancedHuntExpansion(this).register();
+        }
+
+        // Initialize Commands
+        setupCommands();
+
+        // Initialize bStats
+        if (!getConfig().getBoolean("dev-mode")) {
+            int pluginId = 19495;
+            new Metrics(this, pluginId);
+        }
+
+        // Initialize Updater
+        if (getConfig().getBoolean("updater.enabled", true)) {
+            pluginUpdater = new PluginUpdater(this);
+            
+            // Track Main Plugin
+            Map<String, String> mainIds = new HashMap<>();
+            if (getConfig().isConfigurationSection("updater.sources")) {
+                ConfigurationSection sources = getConfig().getConfigurationSection("updater.sources");
+                for (String key : sources.getKeys(false)) {
+                    mainIds.put(key, sources.getString(key));
+                }
+            }
+            pluginUpdater.trackPlugin(getDescription().getName(), getDescription().getVersion(), mainIds);
+
+            // Track Dependencies
+            if (getConfig().isConfigurationSection("updater.dependencies")) {
+                ConfigurationSection deps = getConfig().getConfigurationSection("updater.dependencies");
+                for (String depName : deps.getKeys(false)) {
+                    if (deps.getBoolean(depName + ".enabled")) {
+                        Map<String, String> depIds = new HashMap<>();
+                        if (deps.isConfigurationSection(depName + ".sources")) {
+                            ConfigurationSection depSources = deps.getConfigurationSection(depName + ".sources");
+                            for (String key : depSources.getKeys(false)) {
+                                depIds.put(key, depSources.getString(key));
+                            }
+                        }
+                        
+                        Plugin dep = Bukkit.getPluginManager().getPlugin(depName);
+                        String currentVersion = (dep != null) ? dep.getDescription().getVersion() : "0.0.0";
+                        
+                        pluginUpdater.trackPlugin(depName, currentVersion, depIds);
+                    }
+                }
+            }
+
+            // Check for updates asynchronously
+            getServer().getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
+        }
+    }
+
+    private void setupCommands() {
+        ExecutionCoordinator<CommandSender> executionCoordinator = ExecutionCoordinator.simpleCoordinator();
+
+        commandManager = LegacyPaperCommandManager.createNative(
+                this,
+                executionCoordinator
+        );
+
+        if (!getConfig().getBoolean("dev-mode") && commandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+            commandManager.registerBrigadier();
+        } else if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+            commandManager.registerAsynchronousCompletions();
+        }
+
+        new AdvancedHuntCommand(this).register(commandManager);
     }
 
     @Override
     public void onDisable() {
-        commandRegistrar.unregisterCommands();
-        giveAllItemsBack();
-        removeAllArmorStands();
-    }
-
-    private void connectToDatabase(){
-        this.database = new Database();
-        try {
-            this.database.initializeDatabase();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Could not initialize database.");
+        if (particleManager != null) {
+            particleManager.stop();
+        }
+        if (dataRepository != null) {
+            dataRepository.shutdown();
         }
     }
 
-    /**
-     * Compare Versions to update AdvancedEggHunt to AdvancedHunt
-     **/
-
-    private void renameConfigFolder() {
-        File oldFolder = new File(getDataFolder().getParentFile(), "AdvancedEggHunt");
-        File newFolder = new File(getDataFolder().getParentFile(), "AdvancedHunt");
-
-        if (oldFolder.exists() && !newFolder.exists()) {
-            boolean success = oldFolder.renameTo(newFolder);
-            if (success) {
-                getLogger().log(Level.INFO, "Folder 'AdvancedHunt' successfully renamed to 'AdvancedHunt'.");
-            } else {
-                getLogger().log(Level.SEVERE, "There was an error renaming 'AdvancedHunt'.");
-            }
-        }
+    public TreasureManager getTreasureManager() {
+        return treasureManager;
     }
 
-    /**
-     * Checks if all required plugin dependencies are present and enabled.
-     *
-     * @return true if all dependencies are present and enabled, false otherwise
-     */
-    private boolean checkDependencies() {
-        List<String> missingDependencies = new ArrayList<>();
-
-        // List of required plugin names
-        String[] requiredPlugins = {"NBTAPI"};
-
-        for (String pluginName : requiredPlugins) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
-            if (plugin == null || !plugin.isEnabled()) {
-                missingDependencies.add(pluginName);
-            }
-        }
-
-        if (!missingDependencies.isEmpty()) {
-            getLogger().log(Level.SEVERE, "Missing required dependencies: " + String.join(", ", missingDependencies));
-            plugin.setEnabled(false);
-            return false;
-        }
-
-        return true;
+    public PlayerManager getPlayerManager() {
+        return playerManager;
     }
 
-    /**
-     * Checks for soft dependencies and logs their status.
-     */
-    private void checkSoftDependencies() {
-        checkSoftDependency("PlaceholderAPI");
-        checkSoftDependency("ProtocolLib");
+    public LeaderboardManager getLeaderboardManager() {
+        return leaderboardManager;
     }
 
-    public static PlayerMenuUtility dropPlayerMenuUtility(Player p) {
-        return playerMenuUtilityMap.remove(p);
+    public CollectionManager getCollectionManager() {
+        return collectionManager;
     }
 
-    private void checkSoftDependency(String pluginName) {
-        Plugin dependency = Bukkit.getPluginManager().getPlugin(pluginName);
-        if (dependency != null && dependency.isEnabled()) {
-            getLogger().log(Level.INFO, "Detected soft dependency: " + pluginName);
-            initialiseSoftDependency(pluginName);
-        } else {
-            getLogger().log(Level.WARNING, "Soft dependency not found or not enabled: " + pluginName);
-            getLogger().log(Level.WARNING, "Some features related to " + pluginName + " may be unavailable.");
-        }
+    public RewardManager getRewardManager() {
+        return rewardManager;
     }
 
-    private void initialiseSoftDependency(String pluginName) {
-        switch (pluginName) {
-            case "ProtocolLib":
-                initialiseProtocolLib();
-                break;
-            case "ItemsAdder":
-                new ItemsAdderBlockPlaceEventListener();
-                break;
-            default:
-                getLogger().log(Level.INFO, "No specific initialization needed for " + pluginName);
-        }
+    public PlaceModeManager getPlaceModeManager() {
+        return placeModeManager;
     }
 
-    private void initialiseProtocolLib() {
-        if (pluginConfig.isProtocolLibSupportEnabled()) {
-            protocolManager = ProtocolLibrary.getProtocolManager();
-
-            if (protocolManager != null) {
-                getLogger().log(Level.INFO, "ProtocolLib support initialised successfully.");
-            } else {
-                getLogger().log(Level.WARNING, "Failed to initialize ProtocolLib support.");
-            }
-        } else {
-            getLogger().log(Level.INFO, "ProtocolLib support is disabled in the config.");
-        }
-    }
-
-    private void initialisePlugin() {
-        random = new Random();
-        setupConfigs();
-        setupDefaultCollection = false;
-        PREFIX = HexColor.color(pluginConfig.getPrefix());
-        new Metrics(this, 19495);
-        commandRegistrar = new DynamicCommandRegistrar(this);
-        initialiseCollections();
-    }
-
-    private void initialiseCollections() {
-        refreshCooldown = new HashMap<>();
-        placePlayers = new ArrayList<>();
-        showedArmorstands = new ArrayList<>();
-        playerAddCommand = new HashMap<>();
-        sortTypeLeaderboard = new HashMap<>();
-    }
-
-    private void initialiseDevs(){
-        devs = new ArrayList<>();
-        devs.add(UUID.fromString("f745f6c0-73e8-4169-8ab1-19510415be67")); //Red
-        devs.add(UUID.fromString("f7e365c4-512a-48e9-919d-96e87f1faf76")); //Graf
-    }
-
-    private void setupManagers() {
-        logHelper = new LogHelper();
-        initManagers();
-        datetimeUtils = new DatetimeUtils();
-        cooldownManager = new CooldownManager(this);
-    }
-
-    private void registerCommands() {
-        String commandName = plugin.getPluginConfig().getCommandFirstEntry();
-        List<String> aliases = plugin.getPluginConfig().getCommandAlias();
-
-        commandRegistrar.command(commandName)
-                .aliases(aliases)
-                .tabExecuter(new AdvancedHuntCommand())
-                .register();
-//        commandRegistrar.command("ahuntadmin")
-//                .aliases()
-//                .tabExecuter(new AdminCommands())
-//                .register();
-    }
-
-
-    private void setupPlaceholderAPI() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled()) {
-            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_DETECTED);
-            new PlaceholderExtension().register();
-            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.PLACEHOLDERAPI_ENABLED);
-        }
-    }
-
-    private void initialiseData() {
-        getEggManager().convertEggData();
-        initData();
-        sendCurrentLanguage();
-    }
-
-    private void setupDefaultCollectionIfNeeded() {
-        if (setupDefaultCollection) {
-            getRequirementsManager().changeActivity("default", true);
-            getRequirementsManager().resetReset("default");
-            getGlobalPresetDataManager().loadPresetIntoCollectionCommands(getPluginConfig().getDefaultGlobalLoadingPreset(), "default");
-        }
-    }
-
-    private void finalizeSetup() {
-        playerEggDataManager.checkReset();
-        eggManager.spawnEggParticle();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            getPlayerEggDataManager().createPlayerFile(player.getUniqueId());
-        }
-    }
-
-    private void removeAllArmorStands() {
-        showedArmorstands.forEach(ArmorStand::remove);
-    }
-
-    private void initData(){
-        List<String> eggCollections = eggDataManager.savedEggCollections();
-        List<UUID> playerCollection = eggDataManager.savedPlayers();
-        playerEggDataManager.initPlayers();
-        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_PLAYERS_LOADED, "%COUNT%", String.valueOf(playerCollection.size()));
-        eggDataManager.initEggs();
-        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.INIT_DATA_COLLECTIONS_LOADED, "%COUNT%", String.valueOf(eggCollections.size()));
-        for(String collection : eggCollections)
-            eggManager.updateMaxEggs(collection);
-    }
-
-    private void initManagers(){
-        individualPresetDataManager = new IndividualPresetDataManager(this);
-        globalPresetDataManager = new GlobalPresetDataManager(this);
-        messageManager = new MessageManager();
-        menuMessageManager = new MenuManager();
-        eggDataManager = new EggDataManager(this);
-        eggManager = new EggManager();
-        soundManager = new SoundManager();
-        extraManager = new ExtraManager();
-        playerEggDataManager = new PlayerEggDataManager();
-        requirementsManager = new RequirementsManager();
-        permissionManager = new PermissionManager();
-        rarityManager = new RarityManager();
-        checkSoftDependencies();
-        eggHidingManager = new EggHidingManager();
-        //blockChangingManager = new BlockChangingManager(); //Take it out for release
-    }
-
-    private void initListeners() {
-        new InventoryClickEventListener();
-        new InventoryCloseEventListener();
-        new BlockPlaceEventListener();
-        new BlockBreakEventListener();
-        new PlayerInteractEventListener();
-        new PlayerInteractItemEvent();
-        new Updater(this);
-        new PlayerChatEventListener();
-        new PlayerConnectionListener();
-        new EntityChangeListener();
-        new EntityDamageEventListener();
-    }
-
-    private void setupAutoUpdating() {
-        PluginDownloader downloader = new PluginDownloader(plugin);
-
-        if (plugin.getPluginConfig().getAutoDownloadAdvancedHunt())
-            downloader.downloadPlugin("109085", "AdvancedHunt", "spigot");
-        if (plugin.getPluginConfig().getAutoDownloadPlaceholderAPI())
-            downloader.downloadPlugin("6245", "PlaceholderAPI", "spigot");
-        if (plugin.getPluginConfig().getAutoDownloadProtocolLib())
-            downloader.downloadPlugin("1997", "ProtocolLib", "spigot");
-        if (plugin.getPluginConfig().getAutoDownloadNBTAPI())
-            downloader.downloadPlugin("nfGCP9fk", "NBTAPI", "modrinth");
-    }
-
-    private void giveAllItemsBack(){
-        for(Player player : Bukkit.getServer().getOnlinePlayers()){
-            if(placePlayers.contains(player)){
-                eggManager.finishEggPlacing(player);
-            }
-        }
-    }
-
-    private void sendCurrentLanguage() {
-        String lang = pluginConfig.getLanguage();
-        messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.LANGUAGE_DETECTED, "%LANG%", lang);
-    }
-
-    private void setupConfigs(){
-        pluginConfig = PluginConfig.getInstance(plugin);
-    }
-
-    public XMaterial getMaterial(String materialString) {
-        try {
-            return Optional.ofNullable(XMaterial.valueOf(materialString))
-                    .orElse(XMaterial.BARRIER);
-        } catch (Exception ex) {
-            messageManager.sendMessage(Bukkit.getConsoleSender(), MessageKey.MATERIAL_ERROR_CONSOLE, "%ERROR%", ex.getMessage());
-            return XMaterial.STONE;
-        }
-    }
-
-    public static Main getInstance() {
-        return plugin;
-    }
-
-    public PluginConfig getPluginConfig() {
-        return pluginConfig;
-    }
-
-    public static String getTexture(String texture) {
-        return "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv" + texture;
-    }
-
-    public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
-        return playerMenuUtilityMap.computeIfAbsent(p, PlayerMenuUtility::new);
-    }
-
-    public ArrayList<Player> getPlacePlayers() {
-        return placePlayers;
-    }
-    public Map<String, Long> getRefreshCooldown() {
-        return refreshCooldown;
-    }
-
-    public DatetimeUtils getDatetimeUtils() {
-        return datetimeUtils;
-    }
-
-    public ArrayList<ArmorStand> getShowedArmorstands() {
-        return showedArmorstands;
-    }
-
-    public HashMap<Player, Integer> getPlayerAddCommand() {
-        return playerAddCommand;
-    }
-
-    public HashMap<Player, LeaderboardSortTypes> getSortTypeLeaderboard() {
-        return sortTypeLeaderboard;
-    }
-
-    public CooldownManager getCooldownManager() {
-        return cooldownManager;
-    }
-
-    public EggDataManager getEggDataManager() {
-        return eggDataManager;
-    }
-
-    public EggManager getEggManager() {
-        return eggManager;
-    }
-
-    public ExtraManager getExtraManager() {
-        return extraManager;
-    }
-
-    public SoundManager getSoundManager() {
-        return soundManager;
-    }
-
-    public PlayerEggDataManager getPlayerEggDataManager() {
-        return playerEggDataManager;
-    }
-
-    public static HashMap<Player, PlayerMenuUtility> getPlayerMenuUtilityMap() {
-        return playerMenuUtilityMap;
-    }
-
-    public RequirementsManager getRequirementsManager() {
-        return requirementsManager;
+    public ParticleManager getParticleManager() {
+        return particleManager;
     }
 
     public MessageManager getMessageManager() {
         return messageManager;
     }
 
-    public MenuManager getMenuManager() {
-        return menuMessageManager;
+    public DataRepository getDataRepository() {
+        return dataRepository;
     }
 
-    public PermissionManager getPermissionManager() {
-        return permissionManager;
+    public ChatInputListener getChatInputListener() {
+        return chatInputListener;
     }
 
-    public IndividualPresetDataManager getIndividualPresetDataManager() {
-        return individualPresetDataManager;
-    }
-
-    public GlobalPresetDataManager getGlobalPresetDataManager() {
-        return globalPresetDataManager;
-    }
-
-    public RarityManager getRarityManager() {
-        return rarityManager;
-    }
-
-    public ProtocolManager getProtocolManager() {
-        return protocolManager;
-    }
-
-    public boolean isProtocolLibEnabled() {
-        return protocolManager != null;
-    }
-
-    public EggHidingManager getEggHidingManager() {
-        return eggHidingManager;
-    }
-
-    public Inventory getLastOpenedInventory(Player player) {
-        return lastOpenedInventory.get(player);
-    }
-
-    public void setLastOpenedInventory(Inventory lastOpenedInventory, Player player) {
-        this.lastOpenedInventory.remove(player);
-        this.lastOpenedInventory.put(player, lastOpenedInventory);
-    }
-
-    public Random getRandom() {
-        return random;
-    }
-
-    public ArrayList<UUID> getDevs() {
-        return devs;
-    }
-
-    public LogHelper getLogHelper() {
-        return logHelper;
-    }
-
-    public BlockChangingManager getBlockChangingManager() {
-        return blockChangingManager;
+    public MinigameManager getMinigameManager() {
+        return minigameManager;
     }
 }

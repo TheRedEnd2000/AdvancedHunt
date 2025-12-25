@@ -1,381 +1,454 @@
-package de.theredend2000.advancedhunt.commands;
+package de.theredend2000.advancedHunt.commands;
 
-import com.cryptomorin.xseries.XMaterial;
-import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.configurations.PluginConfig;
-import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedhunt.managers.inventorymanager.*;
-import de.theredend2000.advancedhunt.util.HexColor;
-import de.theredend2000.advancedhunt.util.ItemBuilder;
-import de.theredend2000.advancedhunt.util.ItemHelper;
-import de.theredend2000.advancedhunt.util.enums.Permission;
-import de.theredend2000.advancedhunt.util.messages.MenuManager;
-import de.theredend2000.advancedhunt.util.messages.MessageKey;
-import de.theredend2000.advancedhunt.util.messages.MessageManager;
+import de.theredend2000.advancedHunt.Main;
+import de.theredend2000.advancedHunt.managers.minigame.MinigameType;
+import de.theredend2000.advancedHunt.menu.*;
+import de.theredend2000.advancedHunt.model.Collection;
+import de.theredend2000.advancedHunt.model.Treasure;
+import de.theredend2000.advancedHunt.model.TreasureRewardHolder;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.incendo.cloud.component.CommandComponent;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
+import org.incendo.cloud.parser.standard.StringParser;
+import org.incendo.cloud.suggestion.Suggestion;
+import org.incendo.cloud.suggestion.SuggestionProvider;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class AdvancedHuntCommand implements TabExecutor {
-    private MessageManager messageManager;
-    private MenuManager menuManager;
-    private Main plugin;
-    private EggManager eggManager;
+public class AdvancedHuntCommand {
 
-    private static volatile AdvancedHuntCommand instance;
+    private final Main plugin;
 
-    public AdvancedHuntCommand() {
-        messageManager = Main.getInstance().getMessageManager();
-        menuManager = Main.getInstance().getMenuManager();
-        plugin = Main.getInstance();
-        eggManager = Main.getInstance().getEggManager();
+    public AdvancedHuntCommand(Main plugin) {
+        this.plugin = plugin;
     }
 
-    public static AdvancedHuntCommand getInstance() {
-        if (instance == null) {
-            synchronized (PluginConfig.class) {
-                if (instance == null) {
-                    instance = new AdvancedHuntCommand();
-                }
-            }
-        }
-        return instance;
-    }
+    public void register(final LegacyPaperCommandManager<CommandSender> commandManager) {
+        final SuggestionProvider<CommandSender> collectionsSuggestions = (context, input) -> CompletableFuture.completedFuture(
+            plugin.getCollectionManager().getAllCollectionNames().stream()
+                .map(Suggestion::suggestion)
+                .collect(Collectors.toList())
+        );
 
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        return handleTabComplete(sender, args);
-    }
+        final CommandComponent.Builder<CommandSender, String> collectionArgument = CommandComponent.<CommandSender, String>builder()
+            .name("collection")
+            .parser(StringParser.stringParser())
+            .suggestionProvider(collectionsSuggestions);
 
-    public List<String> handleTabComplete(CommandSender sender, String[] args) {
-        List<String> completions = new ArrayList<>();
-        switch (args.length) {
-            case 1:
-                String[] tabs = {"place", "reload", "reset", "list", "help", "settings", "progress", "show", "leaderboard", "hint", "collection", "import"};
-                for (String permission : tabs) {
-                    if (plugin.getPermissionManager().checkPermission(sender, Permission.Command.getEnum(permission)))
-                        completions.add(permission);
-                }
-                break;
-            case 2:
-                if (args[0].equalsIgnoreCase("reset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.RESET)) {
-                    completions.add("all");
-                    for (UUID uuid : Main.getInstance().getEggDataManager().savedPlayers()) {
-                        String playerData = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs.");
-                        if (playerData == null) {
-                            continue;
-                        }
-                        for (String eggId : Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getConfigurationSection("FoundEggs.").getKeys(false)) {
-                            String playerName = Main.getInstance().getPlayerEggDataManager().getPlayerData(uuid).getString("FoundEggs." + eggId + ".Name");
-                            if (playerName != null && !completions.contains(playerName))
-                                completions.add(playerName);
-                        }
-                    }
-                }
-                break;
-            case 3:
-                if (args[0].equalsIgnoreCase("reset") && plugin.getPermissionManager().checkPermission(sender, Permission.Command.RESET)) {
-                    completions.add("all");
-                    completions.addAll(plugin.getEggDataManager().savedEggCollections());
-                }
-                break;
-        }
-        return filterArguments(completions, args);
-    }
+        final SuggestionProvider<CommandSender> minigameSuggestions = (context, input) -> CompletableFuture.completedFuture(
+            Arrays.stream(MinigameType.values())
+                .map(Enum::name)
+                .map(Suggestion::suggestion)
+                .collect(Collectors.toList())
+        );
 
-    private List<String> filterArguments(List<String> arguments, String[] args) {
-        if (arguments == null || arguments.isEmpty())
-            return Collections.emptyList();
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("help")
+                .permission("advancedhunt.help")
+                .handler(context -> help(context.sender()))
+        );
 
-        String lastArg = args[args.length - 1].toLowerCase();
-        return arguments.stream()
-                .filter(arg -> arg.toLowerCase().startsWith(lastArg))
-                .collect(Collectors.toList());
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("rewards")
+                .permission("advancedhunt.admin.rewards")
+                .handler(context -> rewards(context.sender()))
+        );
 
-    private String usage() {
-        return messageManager.getMessage(MessageKey.COMMAND_NOT_FOUND);
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("collection")
+                .permission("advancedhunt.admin.editor")
+                .handler(context -> editor(context.sender()))
+        );
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            handleConsoleCommand(sender, args);
-            return true;
-        }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("collection")
+                .literal("rename")
+                .required("oldName", StringParser.stringParser(), collectionsSuggestions)
+                .required("newName", StringParser.stringParser())
+                .permission("advancedhunt.admin.collection.rename")
+                .handler(context -> renameCollection(
+                    context.sender(),
+                    context.get("oldName"),
+                    context.get("newName")
+                ))
+        );
 
-        Player player = (Player) sender;
-        if (args.length == 0) {
-            player.sendMessage(usage());
-            return true;
-        }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("collection")
+                .literal("create")
+                .required("name", StringParser.stringParser())
+                .permission("advancedhunt.admin.collection.create")
+                .handler(context -> createCollection(context.sender(), context.get("name")))
+        );
 
-        String subCommand = args[0].toLowerCase();
-        switch (subCommand) {
-            case "place":
-                handlePlace(player);
-                break;
-            case "list":
-                handleList(player);
-                break;
-            case "show":
-                handleShow(player);
-                break;
-            case "reload":
-                handleReload(player);
-                break;
-            case "help":
-                handleHelp(player);
-                break;
-            case "settings":
-                handleSettings(player);
-                break;
-            case "collection":
-                handleCollection(player);
-                break;
-            case "progress":
-                handleProgress(player);
-                break;
-            case "leaderboard":
-                handleLeaderboard(player);
-                break;
-            case "hint":
-                handleHint(player);
-                break;
-            case "import":
-                handleImport(player);
-                break;
-            case "reset":
-                handleReset(player, args);
-                break;
-            default:
-                player.sendMessage(usage());
-        }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("reload")
+                .permission("advancedhunt.admin.reload")
+                .handler(context -> reload(context.sender()))
+        );
 
-        return true;
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("list")
+                .permission("advancedhunt.list")
+                .handler(context -> list(context.sender(), null))
+        );
 
-    private void handlePlace(Player player) {
-        if (!checkPermission(player, Permission.Command.PLACE)) return;
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("list")
+                .required(collectionArgument)
+                .permission("advancedhunt.list")
+                .handler(context -> list(context.sender(), context.get("collection")))
+        );
 
-        if (Main.getInstance().getPlacePlayers().contains(player)) {
-            eggManager.finishEggPlacing(player);
-            Main.getInstance().getPlacePlayers().remove(player);
-            messageManager.sendMessage(player, MessageKey.LEAVE_PLACEMODE);
-        } else {
-            eggManager.startEggPlacing(player);
-            Main.getInstance().getPlacePlayers().add(player);
-            messageManager.sendMessage(player, MessageKey.ENTER_PLACEMODE);
-            player.getInventory().setItem(4, new ItemBuilder(XMaterial.NETHER_STAR)
-                    .setDisplayName("§6§lEggs Types §7(Right-Click)")
-                    .setCustomId("egghunt.eggs")
-                    .build());
-            player.getInventory().setItem(8, new ItemBuilder(XMaterial.PLAYER_HEAD)
-                    .setSkullOwner(Main.getTexture("YTkyZTMxZmZiNTljOTBhYjA4ZmM5ZGMxZmUyNjgwMjAzNWEzYTQ3YzQyZmVlNjM0MjNiY2RiNDI2MmVjYjliNiJ9fX0="))
-                    .setDisplayName("§2§lFinish setup §7(Drop)")
-                    .setLore("§7Drop to finish the setup", "§7or type §e/"+plugin.getPluginConfig().getCommandFirstEntry()+" place §7again.")
-                    .setCustomId("egghunt.finish")
-                    .build());
-        }
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("leaderboard")
+                .required(collectionArgument)
+                .permission("advancedhunt.leaderboard")
+                .handler(context -> leaderboard(context.sender(), context.get("collection")))
+        );
 
-    private void handleList(Player player) {
-        if (!checkPermission(player, Permission.Command.LIST)) return;
-        new EggListMenu(Main.getPlayerMenuUtility(player)).open();
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("progress")
+                .required(collectionArgument)
+                .permission("advancedhunt.progress")
+                .handler(context -> progress(context.sender(), context.get("collection")))
+        );
 
-    private void handleShow(Player player) {
-        if (!checkPermission(player, Permission.Command.SHOW)) return;
-        eggManager.showAllEggs();
-        messageManager.sendMessage(player, MessageKey.EGG_SHOW_WARNING);
-        messageManager.sendMessage(player, MessageKey.EGG_VISIBLE, "%TIME_VISIBLE%", String.valueOf(Main.getInstance().getPluginConfig().getArmorstandGlow()));
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("place")
+                .required(collectionArgument)
+                .permission("advancedhunt.admin.place")
+                .handler(context -> placeMode(context.sender(), context.get("collection")))
+        );
 
-    private void handleShow() {
-        eggManager.showAllEggs();
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("reset")
+                .literal("all")
+                .permission("advancedhunt.admin.reset")
+                .handler(context -> resetAll(context.sender()))
+        );
 
-    private void handleReload(Player player) {
-        if (!checkPermission(player, Permission.Command.RELOAD)) return;
-        Main.getInstance().getPluginConfig().reloadConfig();
-        messageManager.reloadMessages();
-        menuManager.reloadMessages();
-        eggManager.spawnEggParticle();
-        Main.getInstance().getPlayerEggDataManager().reload();
-        Main.getInstance().getEggDataManager().reload();
-        Main.getInstance().getGlobalPresetDataManager().reload();
-        Main.getInstance().getIndividualPresetDataManager().reload();
-        Main.PREFIX = HexColor.color(plugin.getPluginConfig().getPrefix());
-        messageManager.sendMessage(player, MessageKey.RELOAD_CONFIG);
-    }
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("reset")
+                .literal("collection")
+                .required(collectionArgument)
+                .permission("advancedhunt.admin.reset")
+                .handler(context -> resetCollection(context.sender(), context.get("collection")))
+        );
 
-    private void handleHelp(Player player) {
-        if (!checkPermission(player, Permission.Command.HELP)) return;
-        messageManager.sendMessage(player, MessageKey.HELP_MESSAGE,
-                "%NAME%", Main.getInstance().getDescription().getName(),
-                "%VERSION%", Main.getInstance().getDescription().getVersion(),
-                "%SERVER_VERSION%", Bukkit.getBukkitVersion().split("-")[0],
-                "%AUTHOR%", "XMC-PLUGINS"
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("reset")
+                .literal("player")
+                .required("player", StringParser.stringParser())
+                .permission("advancedhunt.admin.reset")
+                .handler(context -> resetPlayer(context.sender(), context.get("player")))
+        );
+
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("reset")
+                .literal("player")
+                .required("player", StringParser.stringParser())
+                .required(collectionArgument)
+                .permission("advancedhunt.admin.reset")
+                .handler(context -> resetPlayerCollection(
+                    context.sender(),
+                    context.get("player"),
+                    context.get("collection")
+                ))
+        );
+
+        commandManager.command(
+            commandManager.commandBuilder("advancedhunt", "ah")
+                .literal("minigame")
+                .required("type", StringParser.stringParser(), minigameSuggestions)
+                .permission("advancedhunt.minigame")
+                .handler(context -> minigame(context.sender(), context.get("type")))
         );
     }
 
-    private void handleSettings(Player player) {
-        if (!checkPermission(player, Permission.Command.SETTINGS)) return;
-        new SettingsMenu(Main.getPlayerMenuUtility(player)).open();
+    public void help(CommandSender sender) {
+        sender.sendMessage(plugin.getMessageManager().getMessageList("command.help").toArray(new String[0]));
     }
 
-    private void handleCollection(Player player) {
-        if (!checkPermission(player, Permission.Command.COLLECTION)) return;
-        Main.getInstance().setLastOpenedInventory(null, player);
-        new CollectionSelectMenu(Main.getPlayerMenuUtility(player)).open();
+    public void rewards(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
+            return;
+        }
+        
+        // Get the block the player is looking at
+        Block targetBlock = player.getTargetBlockExact(5);
+        if (targetBlock == null) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.rewards.no_block"));
+            return;
+        }
+        
+        // Check if it's a treasure
+        Treasure treasure = plugin.getTreasureManager().getTreasureAt(targetBlock.getLocation());
+        if (treasure == null) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.rewards.not_treasure"));
+            return;
+        }
+        
+        // Open the rewards menu
+        new RewardsMenu(player, plugin, new TreasureRewardHolder(plugin, treasure)).open();
     }
 
-    private void handleProgress(Player player) {
-        if (!checkPermission(player, Permission.Command.PROGRESS)) return;
-        new EggProgressMenu(Main.getPlayerMenuUtility(player)).open();
+    public void editor(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
+            return;
+        }
+        new CollectionEditorMenu((Player) sender, plugin).open();
     }
 
-    private void handleLeaderboard(Player player) {
-        if (!checkPermission(player, Permission.Command.LEADERBOARD)) return;
-        new LeaderboardMenu(Main.getPlayerMenuUtility(player)).open();
+    public void reload(CommandSender sender) {
+        plugin.reloadConfig();
+        plugin.getMessageManager().reloadMessages();
+        plugin.getParticleManager().reload();
+        sender.sendMessage(plugin.getMessageManager().getMessage("command.reload.success"));
     }
 
-    private void handleHint(Player player) {
-        if (!checkPermission(player, Permission.Command.HINT)) return;
-        int counter = 0;
-        int max = Main.getInstance().getEggDataManager().savedEggCollections().size();
+    public void list(CommandSender sender, String collectionName) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.list.header"));
+            for (String collection : plugin.getCollectionManager().getAllCollectionNames()) {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.list.format", "%collection%", collection));
+            }
+            return;
+        }
+        Player player = (Player) sender;
 
-        for (String collections : Main.getInstance().getEggDataManager().savedEggCollections()) {
-            counter++;
-            if (!eggManager.checkFoundAll(player, collections) && eggManager.getMaxEggs(collections) >= 1) {
-                if (!Main.getInstance().getCooldownManager().isAllowReward(player) && !plugin.getPermissionManager().checkPermission(player, Permission.IgnoreCooldown)) {
-                    long current = System.currentTimeMillis();
-                    long release = Main.getInstance().getCooldownManager().getCooldown(player);
-                    long millis = release - current;
-                    player.sendMessage(Main.getInstance().getCooldownManager().getRemainingTime(millis));
-                    return;
+        if (collectionName == null) {
+            UUID selectedId = plugin.getPlaceModeManager().getCollectionId(player);
+            if (selectedId != null) {
+                new CollectionListMenu(player, selectedId, plugin).open();
+            } else {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.list.header"));
+                for (Collection collection : plugin.getCollectionManager().getAllCollections()) {
+                    boolean isAvailable = plugin.getCollectionManager().isCollectionAvailable(collection);
+                    String availabilityStatus = isAvailable ? 
+                        plugin.getMessageManager().getMessage("collection.available", false) :
+                        plugin.getMessageManager().getMessage("collection.not_available", false);
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.list.format", 
+                        "%collection%", collection.getName() + " " + availabilityStatus));
                 }
-                new HintMenu(Main.getPlayerMenuUtility(player)).open();
-                return;
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.list.hint"));
+            }
+        } else {
+            Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+            if (collectionOpt.isPresent()) {
+                new CollectionListMenu(player, collectionOpt.get().getId(), plugin).open();
             } else {
-                if (counter == max)
-                    messageManager.sendMessage(player, MessageKey.ALL_EGGS_FOUND);
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
             }
         }
     }
 
-    private void handleImport(Player player) {
-        if (!checkPermission(player, Permission.Command.IMPORT)) return;
-        ItemStack item = player.getInventory().getItemInMainHand();
-        if (!(item.getItemMeta() instanceof SkullMeta)) {
-            messageManager.sendMessage(player, MessageKey.EGGIMPORT_HAND);
+    public void leaderboard(CommandSender sender, String collectionName) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
             return;
         }
 
-        String textureUrl = ItemHelper.getSkullTexture(item);
-
-        if (textureUrl == null) {
-            messageManager.sendMessage(player, MessageKey.EGGIMPORT_FAILED_PROFILE);
-            return;
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+        if (collectionOpt.isPresent()) {
+            new LeaderboardMenu(player, plugin, collectionOpt.get(), null).open();
+        } else {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
         }
-
-        for (String key : Main.getInstance().getPluginConfig().getPlaceEggIds()) {
-            if (Objects.equals(Main.getInstance().getPluginConfig().getPlaceEggTexture(key), textureUrl)) {
-                messageManager.sendMessage(player, MessageKey.BLOCK_LISTED);
-                return;
-            }
-        }
-
-        String base64Texture = textureUrl;
-        Main.getInstance().getPluginConfig().setPlaceEggPlayerHead(base64Texture);
-        Main.getInstance().getPluginConfig().saveData();
-        messageManager.sendMessage(player, MessageKey.EGGIMPORT_SUCCESS);
     }
 
-    private void handleReset(CommandSender sender, String[] args) {
-        if (!checkPermission(sender, Permission.Command.RESET)) return;
-        if (args.length < 2) {
-            sender.sendMessage(usage());
+    public void progress(CommandSender sender, String collectionName) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
             return;
         }
 
-        if (args[1].equalsIgnoreCase("all")) {
-            if(args.length > 2 && args[2].equalsIgnoreCase("all")) { //reset all all
-                eggManager.resetStatsAll().thenAcceptAsync(result -> {
-                    messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_RESET);
-                }, runnable -> Bukkit.getScheduler().runTask(Main.getInstance(), runnable));
-                return;
-            }
-            String collection = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-            if (plugin.getEggDataManager().containsCollection(collection)) { //reset all collection
-                CompletableFuture.runAsync(() -> {
-                        for (UUID uuid : plugin.getEggDataManager().savedPlayers()) {
-                            eggManager.resetStatsPlayer(uuid, collection);
-                        }
-                    }, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), runnable)
-                ).thenAccept(result -> {
-                    sender.sendMessage("§7All §e"+plugin.getPluginConfig().getPluginNamePlural()+" §7in collection §6" + collection + " §7has been §creset§7!");
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+        if (collectionOpt.isPresent()) {
+            Collection collection = collectionOpt.get();
+            
+            // Warn if collection is not currently available
+            if (!plugin.getCollectionManager().isCollectionAvailable(collection)) {
+                player.sendMessage(plugin.getMessageManager().getMessage("collection.unavailable", 
+                    "%collection%", collection.getName()));
+                plugin.getCollectionManager().getNextActivation(collection).ifPresent(nextTime -> {
+                    String timeStr = plugin.getMessageManager().formatDateTime(nextTime);
+                    player.sendMessage(plugin.getMessageManager().getMessage("collection.available_at",
+                        "%time%", timeStr));
                 });
-
-            }else
-                sender.sendMessage("§cNo collection with name '" + collection + "' found.");
-            return;
+            }
+            
+            new ProgressMenu(player, collection.getId(), collection.getName(), plugin).open();
+        } else {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
         }
+    }
 
-        String playerArg = args[1];
-        if (args.length == 3) {
-            String collectionArg = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-            if(collectionArg.equalsIgnoreCase("all")){ //reset player all
-                CompletableFuture.runAsync(() -> {
-                        for(String collection : plugin.getEggDataManager().savedEggCollections())
-                            eggManager.resetStatsPlayer(Bukkit.getOfflinePlayer(playerArg).getUniqueId(), collection);
-                            }, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), runnable)
-                ).thenAccept(result -> {
-                    sender.sendMessage("§7All §e" + plugin.getPluginConfig().getPluginNamePlural()+" §7of §a" + playerArg + " §7in all collections has been §creset§7!");
-                });
-
-                return;
-            }
-            if (eggManager.containsPlayer(playerArg)) { //reset player collection
-                if (plugin.getEggDataManager().containsCollection(collectionArg)) {
-                    eggManager.resetStatsPlayer(Bukkit.getOfflinePlayer(playerArg).getUniqueId(), collectionArg);
-                    messageManager.sendMessage(sender, MessageKey.FOUNDEGGS_PLAYER_RESET_COLLECTION, "%PLAYER%", playerArg, "%COLLECTION%", collectionArg);
-                }else
-                    sender.sendMessage("§cNo collectionArg with name " + collectionArg + " found.");
+    public void renameCollection(CommandSender sender, String oldName, String newName) {
+        plugin.getCollectionManager().renameCollection(oldName, newName).thenAccept(success -> {
+            if (success) {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.rename.success", "%old_name%", oldName, "%new_name%", newName));
             } else {
-                messageManager.sendMessage(sender, MessageKey.PLAYER_NOT_FOUND, "%PLAYER%", playerArg);
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.rename.failed"));
             }
-        }
+        });
     }
 
-    private void handleConsoleCommand(CommandSender sender, String[] args) {
-        String subCommand = args[0].toLowerCase();
-        switch (subCommand) {
-            case "show":
-                handleShow();
-                break;
-            case "reset":
-                handleReset(sender, args);
-                break;
-            default:
-                sender.sendMessage(usage());
-                break;
-        }
+    public void createCollection(CommandSender sender, String name) {
+        plugin.getCollectionManager().createCollection(name).thenAccept(success -> {
+            if (success) {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.create.success", "%name%", name));
+            } else {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.create.failed"));
+            }
+        });
     }
 
-    private boolean checkPermission(CommandSender sender, Permission.Command permission) {
-        if (!plugin.getPermissionManager().checkPermission(sender, permission)) {
-            messageManager.sendMessage(sender, MessageKey.PERMISSION_ERROR, "%PERMISSION%", permission.toString());
-            return false;
+    public void placeMode(CommandSender sender, String collectionName) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
+            return;
         }
-        return true;
+        Player player = (Player) sender;
+        
+        if (plugin.getPlaceModeManager().isInPlaceMode(player)) {
+            plugin.getPlaceModeManager().removePlaceMode(player);
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.disabled"));
+            return;
+        }
+
+        plugin.getCollectionManager().getCollectionByName(collectionName).ifPresentOrElse(collection -> {
+            plugin.getPlaceModeManager().setPlaceMode(player, collection);
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.enabled", "%collection%", collection.getName()));
+        }, () -> {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
+        });
+    }
+
+    public void resetAll(CommandSender sender) {
+        plugin.getDataRepository().resetAllProgress().thenAccept(count -> {
+            plugin.getParticleManager().clearAllGlobalCache();
+            
+            // Invalidate cache for all online players
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                plugin.getPlayerManager().invalidate(p.getUniqueId());
+            }
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.all_success", 
+                "%count%", String.valueOf(count)));
+        });
+    }
+
+    public void resetCollection(CommandSender sender, String collectionName) {
+        plugin.getCollectionManager().getCollectionByName(collectionName).ifPresentOrElse(collection -> {
+            plugin.getDataRepository().resetCollectionProgress(collection.getId()).thenAccept(count -> {
+                // Clear the particle manager cache for this collection
+                plugin.getParticleManager().clearGlobalCache(collection.getId());
+                
+                // Invalidate cache for all online players
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    plugin.getPlayerManager().invalidate(p.getUniqueId());
+                }
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.collection_success",
+                    "%collection%", collection.getName(),
+                    "%count%", String.valueOf(count)));
+            });
+        }, () -> {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
+        });
+    }
+
+    public void resetPlayer(CommandSender sender, String playerName) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_not_found"));
+            return;
+        }
+
+        plugin.getDataRepository().resetPlayerProgress(offlinePlayer.getUniqueId()).thenAccept(count -> {
+            plugin.getParticleManager().clearAllGlobalCache();
+            
+            plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_success",
+                "%player%", playerName,
+                "%count%", String.valueOf(count)));
+        });
+    }
+
+    public void resetPlayerCollection(CommandSender sender, 
+                                     String playerName,
+                                     String collectionName) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_not_found"));
+            return;
+        }
+
+        plugin.getCollectionManager().getCollectionByName(collectionName).ifPresentOrElse(collection -> {
+            plugin.getDataRepository().resetPlayerCollectionProgress(
+                offlinePlayer.getUniqueId(), 
+                collection.getId()
+            ).thenAccept(count -> {
+                if (collection.isSinglePlayerFind()) {
+                    plugin.getParticleManager().clearGlobalCache(collection.getId());
+                }
+                
+                plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_collection_success",
+                    "%player%", playerName,
+                    "%collection%", collection.getName(),
+                    "%count%", String.valueOf(count)));
+            });
+        }, () -> {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
+        });
+    }
+
+    public void minigame(CommandSender sender, String typeName) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
+            return;
+        }
+
+        MinigameType type;
+        try {
+            type = MinigameType.valueOf(typeName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("§cInvalid minigame type. Available: REACTION, MEMORY");
+            return;
+        }
+
+        plugin.getMinigameManager().startMinigame(player, type, (success) -> {
+            if (success) {
+                player.sendMessage("§aMinigame completed successfully!");
+            } else {
+                player.sendMessage("§cMinigame failed.");
+            }
+        });
     }
 }

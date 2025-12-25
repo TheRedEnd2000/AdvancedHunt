@@ -1,204 +1,122 @@
-config-version: 3.7
+storage:
+  type: SQLITE # Options: SQLITE, MYSQL, YAML
+  host: localhost
+  port: 3306
+  database: advancedhunt
+  username: root
+  password: password
 
-# Change the language
-# Available: en (English) | de (German) | fr (France) | vn (Vietnamese) | bn (Bangla, Bengali) | zh (Simplified Chinese only messages no menus)
-messages-lang: en
+dev-mode: false
 
-# Change the plugin name or the main purpose
-plugin-name-singular: "treasure"
-plugin-name-plural: "treasures"
-# The first command listed here is going to be the main command
-# IMPORTANT: COMMANDS WILL ONLY APPLY IF THE SERVER RESTARTS; A PLUGIN RELOAD WILL NOW CHANGE THIS!
-commands:
-  - "treasurehunt"
-  - "treasures"
-  - "advancedhunt"
-  - "aeh"
-  - "easter"
+language: en
 
-#Auto download
-Download:
-  # Will be downloaded if a new plugin version is out
-  AdvancedHunt: true
-  # Will download for the plugin to work (This should not be disabled)
-  NBT-API: false
-#  ProtocolLib: false
-  PlaceholderAPI: false
+command:
+  name: advancedhunt|ah
 
-# Experimental feature toggles
-# Remove the '#' and set to true to use
-Experimental:
-  # Enable ProtocolLib support (requires ProtocolLib plugin)
-  ProtocolLibSupport: false
+rewards:
+  # Commands matching these regex patterns will be blocked from being added or executed.
+  # Use ^ to match the start and $ to match the end of the command.
+  # Matches are case-insensitive.
+  command-blacklist:
+    - "^([^:]+:)?execute\\b"
+    - "^([^:]+:)?op\\b"
+    - "^([^:]+:)?deop\\b"
+    - "^([^:]+:)?kill\\b"
+    - "^([^:]+:)?summon\\b"
+    - "^([^:]+:)?setblock\\b"
+    - "^([^:]+:)?fill\\b"
+    - "^([^:]+:)?reload\\b"
+    - "^([^:]+:)?rl\\b"
+    - "^([^:]+:)?stop\\b"
+    - "^([^:]+:)?restart\\b"
+    - "^([^:]+:)?ban\\b"
+    - "^([^:]+:)?ban-ip\\b"
+    - "^([^:]+:)?pardon\\b"
+    - "^([^:]+:)?pardon-ip\\b"
+    - "^([^:]+:)?pex\\b"
+    - "^([^:]+:)?lp\\b"
+    - "^([^:]+:)?luckperms\\b"
+    - "^([^:]+:)?perm\\b"
+    - "^([^:]+:)?perms\\b"
+    - "^([^:]+:)?permission\\b"
+    - "^([^:]+:)?permissions\\b"
+  # If true, blacklisted commands will also be blocked from executing.
+  # If false, they will only be blocked when an admin tries to add them via the GUI.
+  block-execution: true
 
-prefix: '&f[&eAdvancedHunt&f] &r'
-
-Settings:
-
-  # The sound volume for all sounds
-  SoundVolume: 3
-
-  # If a message should be sent if the plugin has a newer version
-  Updater: true
-
-  # Shows the coordinates in the progress inventory of the player
-  ShowCoordinatesWhenEggFoundInProgressInventory: false
-
-  # If a firework should spawn after clicking a treasure
-  ShowFireworkAfterEggFound: true
-
-  # How long the armor stands are visible after typing /%PLUGIN_COMMAND% show
-  ArmorstandGlow: 10
-
-  # In witch radius the player gets a message that he is near a treasure
-  ShowEggsNearbyMessageRadius: 10
-
-  # If the plugin prefix should show up
-  PluginPrefixEnabled: true
-
-  # If left-clicking a treasure works
-  LeftClickEgg: false
-
-  # If right-clicking a treasure works
-  RightClickEgg: true
-
-  # How many panes a player has to click before getting their reward
-  HintCount: 25
-
-  # How long the cooldown on the hint inventory is ( in seconds )
-  HintCooldownSeconds: 1800
-
-  # How long the update in the hint inventory is ( in ticks )
-  HintUpdateTime: 20
-
-  # If the cooldown should be applied to the hint command on a failed attempt
-  HintApplyCooldownOnFail: true
-
-Presets:
-  # Name of the preset that loads after placing a new treasure
-  DefaultIndividualPresetLoad: default
-
-  # Name of the preset that loads after creating a new collection
-  DefaultGlobalPresetLoad: default
-
-
-Sounds:
-  PlayerFindEggSound: ENTITY_PLAYER_LEVELUP
-  EggAlreadyFoundSound: ENTITY_VILLAGER_NO
-  AllEggsFoundSound: ENTITY_ENDER_DRAGON_DEATH
-  EggBreakSound: BLOCK_NOTE_BLOCK_BASS
-  EggPlaceSound: BLOCK_NOTE_BLOCK_BELL
-  ErrorSound: BLOCK_NOTE_BLOCK_BASEDRUM
-  InventoryClickSuccess: BLOCK_NOTE_BLOCK_CHIME
-  InventoryClickFailed: BLOCK_NOTE_BLOCK_HAT
-
-
-# Rarity's display how rare the item is that you found
-# It will show up when you find an item
-# Smallest number: 0.0000001
-send-rarity-messages: true
-Rarity:
-  common:
-    display: '&fCOMMON'
-    min: 50
-    max: 100
-  uncommon:
-    display: '&aUNCOMMON'
-    min: 10
-    max: 50
-  rare:
-    display: '&9RARE'
-    min: 1
-    max: 10
-  epic:
-    display: '&5EPIC'
-    min: 0.1
-    max: 1
-  legendary:
-    display: '&6LEGENDARY'
-    min: 0.005
-    max: 0.1
-  mythic:
-    display: '&dMYTHIC'
-    min: 0.0000001 #0.0000001
-    max: 0.005
-
-Particle:
+particle-settings:
   enabled: true
-  type:
-    EggFound: CRIT
-    EggNotFound: VILLAGER_HAPPY
+  view-distance: 32
+  # Particles for treasures not found by the current player
+  not-found:
+    enabled: true
+    particle: CRIT
+    count: 3
+    speed: 0.01
+    offset:
+      x: 0.3
+      y: 0.3
+      z: 0.3
+  # Particles for treasures already found by the current player
+  found-by-player:
+    enabled: true
+    particle: HAPPY_VILLAGER
+    count: 2
+    speed: 0.03
+    offset:
+      x: 0.3
+      y: 0.2
+      z: 0.3
+  # Particles for treasures found by another player in single-player-find collections
+  found-by-others:
+    enabled: false # Disabled by default for performance
+    particle: WAX_OFF
+    count: 2
+    speed: 0.3
+    offset:
+      x: 0.3
+      y: 0.2
+      z: 0.3
 
-# Change the messages that show up when no data for this placeholder is available
-PlaceholderAPI:
-  # Replacement for collection is null
-  collection: 'N/A'
-  # Replacement if the player name is null
-  name: 'N/A'
-  # Replacement if the count is null
-  count: '-1'
+leaderboard:
+  # Maximum number of entries to display in the GUI leaderboard (per collection)
+  display-limit: 100
+  # How often to refresh the leaderboard cache in seconds (default: 300 = 5 minutes)
+  cache-refresh-interval: 300
 
+minigames:
+  # Global setting to enable/disable minigames entirely
+  enabled: true
 
-# Add commands that cant be executed by the plugin
-BlacklistedCommands:
-  - op
-  - minecraft:op
-  - kill
-  - minecraft:kill
-  - summon
-  - minecraft:summon
-  - stop
-  - minecraft:stop
-  - restart
-  - minecraft:restart
-  - execute
-  - minecraft:execute
-  - setblock
-  - minecraft:setblock
-  - fill
-  - minecraft:fill
-  - reload
-  - minecraft:reload
-  - rl
-  - minecraft:rl
-  - luckperms:lp
-  - lp
-  - luckperms:perm
-  - perm
-  - luckperms:permission
-  - permission
-  - luckperms:permissions
-  - permissions
-  - luckperms:perms
-  - perms
+  # Settings for the Reaction (Hint) minigame
+  reaction:
+    enabled: true
+    # Number of correct clicks required to win
+    required-clicks: 5
+    # Time in ticks (20 ticks = 1 second) before the target moves and counts as a miss
+    update-time: 20
+    # Apply cooldown if the player fails?
+    apply-cooldown-on-fail: true
 
+  # Settings for the Memory (Simon) minigame
+  memory:
+    enabled: true
+    # Number of rounds to complete to win
+    rounds: 5
+    # Time in ticks to show each color during the sequence display
+    display-time: 20
 
-Place:
-  # You can only use textures if the type is a player head
-  0:
-    type: PLAYER_HEAD
-    texture: 'ZWNlZGRjMjNmOWQ5NmJhYWEwZDJkN2I5ZWMxODBjZDdiZWE1NDQ3ZDM5YzQyNWNhOWU0NGQ4ODA4ZWExMWVhMCJ9fX0='
-  1:
-    type: PLAYER_HEAD
-    texture: 'ODYyMWE1MjY5ODY5ODQ3NTMxMDE1NjYzMDBhMzU2YjVmMzBkNjk3NWExZWZlNjI5YWJmMjY5NDc2NWQ5NmNjIn19fQ=='
-  2:
-    type: PLAYER_HEAD
-    texture: 'NmUzMmE3ZGU3YTY3MmNjNjhmYTdhMjcyYmFhNmE4OWViZDQ0MGMzMmRjZjQ0ZTc3MDU3MDY4OTg5MDQyZjdjNiJ9fX0='
-  3:
-    type: PLAYER_HEAD
-    texture: 'NmI3NDQ2NTUwZjBmOTU3NmI3MzE3MjhiNWNiZWIyYmNlYTI1ZmQxYTU1NjBhMTdiMjM1N2U2MTZmYmM2NTYyMSJ9fX0='
-  4:
-    type: PLAYER_HEAD
-    texture: 'ZmU2ZmFiMDkxZTQ5NmMwOTY5MTA0ODBkYTBkODVlZTkxOWJjNDlhYTMxNzc1Y2FkYmJmNTA1ZWY0MTFiNWY5NCJ9fX0='
-  5:
-    type: PLAYER_HEAD
-    texture: 'ODUzMWNjMjY5YzhlNDcwNmU4OTJmOGEwZmIzNTFiMTA5MDE1NmIzZjYyNjFkODE2MzVkMDdhY2FkYmU2Y2UwZSJ9fX0='
-  6:
-    type: PLAYER_HEAD
-    texture: 'YTZhNjA1MWY3ZjZmNDM5ZDhmMjE0YzIzNGU4ZTJjNDc3NjMwMDUyNDMyZTQyNjA3ZjA0MDRiODQwYjUzY2VhYiJ9fX0='
-  7:
-    type: PLAYER_HEAD
-    texture: 'MjEzYjJlMjhlMDM3MTAwNzM5MTMwYjJlYjkwZWY0OTFjNmMzZGZmNWRlNTYxNWQyZjZkZmQxZTQ2YzljMmY3YyJ9fX0='
-  8:
-    type: PLAYER_HEAD
-    texture: 'NTIzZDkyMmJlMGJhZTA1ZDBlN2I4OGU2NDljMTlmZTNiMmRhZTQzNjM5ZGRkMDljYjcxZTI4M2JmMDM0ZjY4OSJ9fX0='
+updater:
+  enabled: true
+  sources:
+    Modrinth: ""
+    SpigotMC: ""
+    Bukkit: ""
+  dependencies: {}
+    # Example:
+    # PlaceholderAPI:
+    #   enabled: true
+    #   sources:
+    #     SpigotMC: "6245"
+
+config-version: 1
