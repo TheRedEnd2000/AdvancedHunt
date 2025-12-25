@@ -115,13 +115,17 @@ public class CollectionListMenu extends PagedMenu {
             Treasure fullTreasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
             if (fullTreasure != null) {
                 String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
+                Bukkit.broadcastMessage("Texture: "+texture);
                 if (texture != null) {
                     builder.setSkullTexture(texture);
                 }
             }
         }
 
+        int playerFoundSize = plugin.getDataRepository().getPlayersWhoFound(treasureCore.getId()).join().size();
         builder.setDisplayName(ChatColor.GOLD + "Treasure #" + (index + 1));
+        builder.addLoreLine(ChatColor.GRAY+"Player size found: "+playerFoundSize);
+        builder.addLoreLine("");
         builder.addLoreLine(ChatColor.GRAY + "Location:");
         builder.addLoreLine(ChatColor.GRAY + "X: " + treasureCore.getLocation().getBlockX());
         builder.addLoreLine(ChatColor.GRAY + "Y: " + treasureCore.getLocation().getBlockY());
