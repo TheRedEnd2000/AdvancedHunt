@@ -493,9 +493,9 @@ public class AdvancedHuntCommand {
 
         plugin.getMinigameManager().startMinigame(player, type, (success) -> {
             if (success) {
-                player.sendMessage("§aMinigame completed successfully!");
+                player.sendMessage(plugin.getMessageManager().getMessage("minigame.success"));
             } else {
-                player.sendMessage("§cMinigame failed.");
+                player.sendMessage(plugin.getMessageManager().getMessage("minigame.failed"));
             }
         });
     }

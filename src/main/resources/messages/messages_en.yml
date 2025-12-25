@@ -507,15 +507,6 @@ gui:
         - "&7Current: %status%"
         - ""
         - "&eClick to toggle"
-    priority:
-      name: "&ePriority"
-      lore:
-        - "&7Current: &f%priority%"
-        - ""
-        - "&7Higher priority rules are"
-        - "&7checked first (for display)"
-        - ""
-        - "&eClick to change"
     delete:
       name: "&cDelete Rule"
       lore:
@@ -699,14 +690,6 @@ gui:
             - "&7Seasonal resets"
             - "&7Runs at 00:00 on the 1st"
             - "&7of Jan, Apr, Jul, and Oct"
-            - ""
-            - "&aClick to apply"
-        daily_2026:
-          name: "Daily in 2026 Only"
-          lore:
-            - "&7Time-limited event"
-            - "&7Runs daily at 00:00"
-            - "&7Only during year 2026"
             - ""
             - "&aClick to apply"
     custom:
@@ -1223,6 +1206,8 @@ gui:
       applied: "%prefix%&aACT rule updated successfully!"
 
 minigame:
+  success: "&aMinigame completed successfully!"
+  failed: "&cMinigame failed."
   reaction:
     timeout: "%prefix%&cYou took too long! Game over."
     wrong_click: "%prefix%&cWrong block! Game over."

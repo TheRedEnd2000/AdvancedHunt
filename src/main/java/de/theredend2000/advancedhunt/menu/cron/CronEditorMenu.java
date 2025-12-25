@@ -196,7 +196,7 @@ public class CronEditorMenu extends Menu {
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.success.applied"));
-                reopenMenu();
+                refresh();
             });
         });
     }

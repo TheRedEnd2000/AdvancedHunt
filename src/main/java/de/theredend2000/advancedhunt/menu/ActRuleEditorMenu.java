@@ -105,7 +105,7 @@ public class ActRuleEditorMenu extends Menu {
                 rule.setName(input);
                 plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+                        this.open();
                     });
                 });
             });
@@ -179,13 +179,13 @@ public class ActRuleEditorMenu extends Menu {
                     plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.success.applied"));
-                            new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+                            this.open();
                         });
                     });
                 } else {
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_format.error.invalid_format"));
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+                        this.open();
                     });
                 }
             });
@@ -208,31 +208,8 @@ public class ActRuleEditorMenu extends Menu {
             rule.setEnabled(!rule.isEnabled());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+                    refresh();
                 });
-            });
-        });
-
-        // Priority
-        addButton(40, new ItemBuilder(Material.IRON_BARS)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rule_editor.priority.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act_rule_editor.priority.lore", false,
-                    "%priority%", String.valueOf(rule.getPriority())
-                ).toArray(new String[0]))
-                .build(), (e) -> {
-            plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
-                try {
-                    int priority = Integer.parseInt(input);
-                    rule.setPriority(priority);
-                    plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
-                        });
-                    });
-                } catch (NumberFormatException ex) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.error.invalid_number"));
-                    new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
-                }
             });
         });
 
@@ -246,7 +223,7 @@ public class ActRuleEditorMenu extends Menu {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_rules.rule_deleted",
                         "%name%", rule.getName()));
-                    new ActRulesMenu(playerMenuUtility, plugin, collection).open();
+                    openPreviousMenu();
                 });
             });
         });
