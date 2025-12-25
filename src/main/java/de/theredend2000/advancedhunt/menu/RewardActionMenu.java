@@ -72,7 +72,7 @@ public class RewardActionMenu extends Menu {
         
         // Back button
         ItemStack back = new ItemBuilder(Material.ARROW)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back_to", false, "%menu%", "Rewards"))
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back", false, "%menu%", "Rewards"))
             .build();
         addButton(22, back, e -> parentMenu.open());
         

@@ -21,7 +21,8 @@ public abstract class PagedMenu extends Menu {
     }
 
     public void addMenuBorder() {
-        addButton(48, new ItemBuilder(Material.ARROW)
+        addButton(48, new ItemBuilder(Material.PLAYER_HEAD)
+                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.previous_page"))
                 .build(), (e) -> {
             if (page == 0) {
@@ -32,19 +33,8 @@ public abstract class PagedMenu extends Menu {
             }
         });
 
-        ItemStack closeOrBack = previousMenu == null 
-            ? new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.close")).build()
-            : new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.back")).build();
-
-        addButton(49, closeOrBack, (e) -> {
-            if (previousMenu == null) {
-                e.getWhoClicked().closeInventory();
-            } else {
-                openPreviousMenu();
-            }
-        });
-
-        addButton(50, new ItemBuilder(Material.ARROW)
+        addButton(50, new ItemBuilder(Material.PLAYER_HEAD)
+                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.next_page"))
                 .build(), (e) -> {
             if (hasNextPage) {

@@ -83,6 +83,7 @@ public class CollectionSettingsMenu extends Menu {
                 .build(), (e) -> {
             new RewardsMenu(playerMenuUtility, plugin, new CollectionRewardHolder(plugin, collection))
                     .setTitleKey("gui.rewards.collection_title")
+                    .setPreviousMenu(this)
                     .open();
         });
 
@@ -111,7 +112,7 @@ public class CollectionSettingsMenu extends Menu {
                     "%count%", String.valueOf(ruleCount)
                 ).toArray(new String[0]))
                 .build(), (e) -> {
-            new ActRulesMenu(playerMenuUtility, plugin, collection).open();
+            new ActRulesMenu(playerMenuUtility, plugin, collection).setPreviousMenu(this).open();
         });
 
         // Progress Reset Cron
@@ -123,7 +124,7 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.progress_reset_cron.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.progress_reset_cron.lore", false, "%cron%", cron).toArray(new String[0]))
                 .build(), (e) -> {
-            new ProgressResetCronMenu(playerMenuUtility, plugin, collection).open();
+            new ProgressResetCronMenu(playerMenuUtility, plugin, collection).setPreviousMenu(this).open();
         });
 
         // Delete Collection
@@ -146,11 +147,6 @@ public class CollectionSettingsMenu extends Menu {
                 }
             ).open();
         }, "advancedhunt.admin.collection.delete");
-
-        // Back Button
-        addButton(22, new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.back")).build(), (e) -> {
-            new CollectionEditorMenu(playerMenuUtility, plugin).open();
-        });
     }
 
     /**

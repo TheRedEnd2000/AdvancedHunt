@@ -103,7 +103,7 @@ public class ActRulesMenu extends PagedMenu {
                                 return;
                             }
                             // Edit rule
-                            new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
+                            new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).setPreviousMenu(this).open();
                         } else if (e.isRightClick()) {
                             // Toggle enabled
                             rule.setEnabled(!rule.isEnabled());
@@ -129,16 +129,9 @@ public class ActRulesMenu extends PagedMenu {
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
                     // Open GUI editor immediately
-                    new ActRuleEditorMenu(playerMenuUtility, plugin, collection, newRule).open();
+                    new ActRuleEditorMenu(playerMenuUtility, plugin, collection, newRule).setPreviousMenu(this).open();
                 });
             });
-        });
-
-        // Back to Settings Button
-        addButton(49, new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back", false))
-                .build(), (e) -> {
-            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
         });
     }
 }
