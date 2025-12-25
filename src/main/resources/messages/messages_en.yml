@@ -451,6 +451,7 @@ gui:
         - "&7Date Range: &f%date_range%"
         - "&7Duration: &f%duration%"
         - "&7Cron: &f%cron%"
+        - "&7Next Trigger: %next_trigger%"
         - ""
         - "&eLeft-Click to edit"
         - "&eRight-Click to toggle"
