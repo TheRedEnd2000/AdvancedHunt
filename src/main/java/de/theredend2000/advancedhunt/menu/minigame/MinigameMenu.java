@@ -43,4 +43,8 @@ public abstract class MinigameMenu extends Menu {
     public void handleMenu(InventoryClickEvent e) {
         // Default implementation, can be overridden
     }
+
+    @Override
+    public void addCloseOrBack() {
+    }
 }

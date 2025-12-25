@@ -173,6 +173,13 @@ gui:
         - ""
         - "&7Use &f%player% &7for the player's name."
         - "&7Use &f& &7for color codes."
+    open_add_menu:
+      name: "&a+ Add Reward"
+      lore:
+        - "&7Click to choose which"
+        - "&7type of reward to add."
+    add_menu:
+      title: "&8Add Reward"
     edit_info:
       name: "&eEdit Controls"
       lore:
