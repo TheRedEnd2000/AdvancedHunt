@@ -1,9 +1,8 @@
-# https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-# https://intellij-support.jetbrains.com/hc/en-us/articles/206544839-How-to-manage-projects-under-Version-Control-Systems
-# User-specific stuff
+# Default ignored files
 /shelf/
 /workspace.xml
-
-# Gradle
-/gradle.xml
-/libraries/
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
