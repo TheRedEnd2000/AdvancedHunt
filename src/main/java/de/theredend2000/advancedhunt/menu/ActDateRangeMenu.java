@@ -47,6 +47,7 @@ public class ActDateRangeMenu extends Menu {
 
     @Override
     public void setMenuItems() {
+        fillBorders(super.FILLER_GLASS);
         // Current date range display at top
         String currentValue = rule.getDateRange();
         String description = ActFormatParser.getHumanReadableDateRange(currentValue);
