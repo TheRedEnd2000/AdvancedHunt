@@ -148,29 +148,11 @@ public class RewardsMenu extends PagedMenu {
 
         // Edit mode controls
         if (editMode) {
-            // Add Item Reward button
-            addButton(45, new ItemBuilder(Material.CHEST)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_item.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_item.lore", false))
-                .build(), e -> openAddItemRewardMenu());
-            
-            // Add Command Reward button
-            addButton(46, new ItemBuilder(Material.COMMAND_BLOCK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_command.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_command.lore", false))
-                .build(), e -> promptAddCommandReward());
-            
-            // Add Chat Message Reward button
-            addButton(47, new ItemBuilder(Material.WRITABLE_BOOK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_chat_message.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_chat_message.lore", false))
-                .build(), e -> promptAddChatMessageReward());
-            
-            // Add Broadcast Message Reward button
-            addButton(51, new ItemBuilder(Material.BELL)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_broadcast_message.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_broadcast_message.lore", false))
-                .build(), e -> promptAddBroadcastMessageReward());
+            // Add Reward submenu opener
+            addButton(45, new ItemBuilder(Material.HOPPER)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_add_menu.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_add_menu.lore", false))
+                .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
 
             // Quick action mode toggle
             QuickActionMode mode = getQuickActionMode();
@@ -498,7 +480,7 @@ public class RewardsMenu extends PagedMenu {
      * Prompts for chat message input to add a chat message reward.
      * Defaults to 100% chance since chat messages are typically always shown.
      */
-    private void promptAddChatMessageReward() {
+    public void promptAddChatMessageReward() {
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chat_message"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
             if (message == null || message.isEmpty()) {
@@ -517,7 +499,7 @@ public class RewardsMenu extends PagedMenu {
      * Prompts for broadcast message input to add a broadcast message reward.
      * Defaults to 100% chance since broadcast messages are typically always shown.
      */
-    private void promptAddBroadcastMessageReward() {
+    public void promptAddBroadcastMessageReward() {
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_broadcast_message"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
             if (message == null || message.isEmpty()) {
@@ -535,7 +517,7 @@ public class RewardsMenu extends PagedMenu {
     /**
      * Opens the menu to add an item reward.
      */
-    private void openAddItemRewardMenu() {
+    public void openAddItemRewardMenu() {
         new AddItemRewardMenu(playerMenuUtility, plugin, this).open();
     }
 
@@ -582,7 +564,7 @@ public class RewardsMenu extends PagedMenu {
     /**
      * Prompts for command input to add a command reward.
      */
-    private void promptAddCommandReward() {
+    public void promptAddCommandReward() {
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_command"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, command -> {
             if (command == null || command.isEmpty()) {
