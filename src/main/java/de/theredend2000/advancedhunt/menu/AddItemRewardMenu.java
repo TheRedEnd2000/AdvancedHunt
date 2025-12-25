@@ -53,6 +53,9 @@ public class AddItemRewardMenu extends Menu {
     }
 
     @Override
+    public void addCloseOrBack() {}
+
+    @Override
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
         

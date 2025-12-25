@@ -69,15 +69,6 @@ public class TreasureActionMenu extends Menu {
             Player p = (Player) e.getWhoClicked();
             new WhoFoundMenu(p, plugin, treasureId, this).open();
         }, "advancedhunt.admin.view_finders");
-
-        // Back Button
-        ItemStack backItem = new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back", false))
-                .build();
-
-        addButton(15, backItem, e -> {
-            openPreviousMenu();
-        });
     }
 
     /**

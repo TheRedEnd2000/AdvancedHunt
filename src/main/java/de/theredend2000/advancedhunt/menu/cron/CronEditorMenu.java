@@ -46,7 +46,7 @@ public class CronEditorMenu extends Menu {
 
     @Override
     public int getSlots() {
-        return 54;
+        return 36;
     }
 
     @Override
@@ -162,7 +162,7 @@ public class CronEditorMenu extends Menu {
         });
 
         // Clear Button
-        addButton(43, new ItemBuilder(Material.BARRIER)
+        addButton(35, new ItemBuilder(Material.BARRIER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.clear.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.clear.lore").toArray(new String[0]))
                 .build(), (e) -> {
