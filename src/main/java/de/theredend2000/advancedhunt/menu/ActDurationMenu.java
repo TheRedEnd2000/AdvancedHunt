@@ -48,6 +48,7 @@ public class ActDurationMenu extends Menu {
 
     @Override
     public void setMenuItems() {
+        fillBorders(super.FILLER_GLASS);
         // Current duration display at top
         String currentValue = rule.getDuration();
         String description = ActFormatParser.getHumanReadableDuration(currentValue);
@@ -172,11 +173,7 @@ public class ActDurationMenu extends Menu {
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.duration.success"));
-                if (previousMenu != null) {
-                    previousMenu.open();
-                } else {
-                    new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
-                }
+                refresh();
             });
         });
     }

@@ -48,6 +48,7 @@ public class ActRuleEditorMenu extends Menu {
 
     @Override
     public void setMenuItems() {
+        fillBorders(super.FILLER_GLASS);
         // Live Preview Section (Top)
         String dateRangeReadable = ActFormatParser.getHumanReadableDateRange(rule.getDateRange());
         String durationReadable = ActFormatParser.getHumanReadableDuration(rule.getDuration());
