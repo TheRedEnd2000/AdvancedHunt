@@ -1,6 +1,9 @@
 package de.theredend2000.advancedhunt.commands;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.data.SqlRepository;
+import de.theredend2000.advancedhunt.data.YamlRepository;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameType;
 import de.theredend2000.advancedhunt.menu.*;
 import de.theredend2000.advancedhunt.model.Collection;
@@ -186,6 +189,30 @@ public class AdvancedHuntCommand {
                 .required("type", StringParser.stringParser(), minigameSuggestions)
                 .permission("advancedhunt.minigame")
                 .handler(context -> minigame(context.sender(), context.get("type")))
+        );
+
+        commandManager.command(
+                commandManager.commandBuilder("advancedhunt", "ah")
+                        .literal("migrate")
+                        .literal("yaml")
+                        .permission("advancedhunt.admin.migrate")
+                        .handler(context -> migrate(context.sender(), "YAML"))
+        );
+
+        commandManager.command(
+                commandManager.commandBuilder("advancedhunt", "ah")
+                        .literal("migrate")
+                        .literal("sqlite")
+                        .permission("advancedhunt.admin.migrate")
+                        .handler(context -> migrate(context.sender(), "SQLITE"))
+        );
+
+        commandManager.command(
+                commandManager.commandBuilder("advancedhunt", "ah")
+                        .literal("migrate")
+                        .literal("mysql")
+                        .permission("advancedhunt.admin.migrate")
+                        .handler(context -> migrate(context.sender(), "MYSQL"))
         );
     }
 
@@ -450,5 +477,38 @@ public class AdvancedHuntCommand {
                 player.sendMessage("§cMinigame failed.");
             }
         });
+    }
+
+    private void migrate(CommandSender sender, String type) {
+        sender.sendMessage("§aMigration started...");
+
+        DataRepository targetRepo;
+        if (type.equalsIgnoreCase("YAML")) {
+            targetRepo = new YamlRepository(plugin);
+        } else if (type.equalsIgnoreCase("SQLITE")) {
+            targetRepo = new SqlRepository(plugin, null, 0, null, null, null, true);
+        } else {
+            String host = plugin.getConfig().getString("migration.target.host");
+            int port = plugin.getConfig().getInt("migration.target.port");
+            String database = plugin.getConfig().getString("migration.target.database");
+            String username = plugin.getConfig().getString("migration.target.username");
+            String password = plugin.getConfig().getString("migration.target.password");
+            targetRepo = new SqlRepository(plugin, host, port, database, username, password, false);
+        }
+
+        targetRepo.init();
+
+        plugin.getMigrationService()
+                .migrate(plugin.getDataRepository(), targetRepo)
+                .thenRun(() -> {
+                    sender.sendMessage("§aMigration successful!");
+                    targetRepo.shutdown();
+                })
+                .exceptionally(e -> {
+                    sender.sendMessage("§cMigration failed.");
+                    e.printStackTrace();
+                    targetRepo.shutdown();
+                    return null;
+                });
     }
 }

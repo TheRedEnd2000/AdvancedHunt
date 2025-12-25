@@ -120,3 +120,14 @@ updater:
     #     SpigotMC: "6245"
 
 config-version: 1
+
+# Settings for data migration
+# These settings are ONLY used when running '/ah migrate mysql'
+# They define the TARGET database where data will be moved TO.
+migration:
+  target:
+    host: "localhost"
+    port: 3306
+    database: "advancedhunt_target"
+    username: "root"
+    password: "password"

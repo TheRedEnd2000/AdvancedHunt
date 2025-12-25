@@ -33,6 +33,7 @@ public final class Main extends JavaPlugin {
     private RewardManager rewardManager;
     private PlaceModeManager placeModeManager;
     private ParticleManager particleManager;
+    private MigrationService migrationService;
     private MessageManager messageManager;
     private PluginUpdater pluginUpdater;
     private ChatInputListener chatInputListener;
@@ -42,6 +43,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
+        migrationService = new MigrationService(getLogger());
         // Initialize Message Manager
         messageManager = new MessageManager(this);
 
@@ -201,6 +203,10 @@ public final class Main extends JavaPlugin {
 
     public MessageManager getMessageManager() {
         return messageManager;
+    }
+
+    public MigrationService getMigrationService() {
+        return migrationService;
     }
 
     public DataRepository getDataRepository() {
