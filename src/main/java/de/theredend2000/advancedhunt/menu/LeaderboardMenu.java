@@ -230,7 +230,7 @@ public class LeaderboardMenu extends PagedMenu {
         String loreKey = isCurrentPlayer ? "gui.leaderboard.player_entry_highlighted.lore" : "gui.leaderboard.player_entry.lore";
         
         ItemBuilder builder = new ItemBuilder(head)
-                .setSkullOwner(playerName)
+                .setSkullOwner(entry.getPlayerId())
                 .setDisplayName(plugin.getMessageManager().getMessage(nameKey, false,
                         "%rank%", String.valueOf(entry.getRank()),
                         "%player%", playerName));
