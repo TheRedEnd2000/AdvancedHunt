@@ -119,6 +119,7 @@ public class ActRulesMenu extends PagedMenu {
         }
 
         // Add New Rule Button
+        //TODO FIX HERE
         addButton(52, new ItemBuilder(Material.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rules.add_rule.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act_rules.add_rule.lore", false).toArray(new String[0]))
