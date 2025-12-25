@@ -82,7 +82,7 @@ public class PlaceModeListener implements Listener {
             event.getPlayer().sendMessage(plugin.getMessageManager().getMessage("treasure.removed"));
         } else {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(plugin.getMessageManager().getMessage("place_mode.no_break"));
+            event.getPlayer().sendMessage(plugin.getMessageManager().getMessage("command.place_mode.no_break"));
         }
     }
 }
