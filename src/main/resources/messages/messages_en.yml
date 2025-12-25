@@ -37,6 +37,12 @@ command:
     player_success: "%prefix%&aReset &e%count% &atreasure records for player &e%player%&a!"
     player_collection_success: "%prefix%&aReset &e%count% &atreasure records for player &e%player% &ain collection &e%collection%&a!"
     player_not_found: "%prefix%&cPlayer not found or has never played on this server."
+  minigame:
+    invalid_type: "%prefix%&cInvalid minigame type. Available: REACTION, MEMORY"
+  migration:
+    started: "%prefix%&aMigration started..."
+    success: "%prefix%&aMigration successful!"
+    failed: "%prefix%&cMigration failed."
 
 treasure:
   found: "%prefix%&aYou found a treasure!"

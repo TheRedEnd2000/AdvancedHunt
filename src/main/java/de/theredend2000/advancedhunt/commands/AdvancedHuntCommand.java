@@ -487,7 +487,7 @@ public class AdvancedHuntCommand {
         try {
             type = MinigameType.valueOf(typeName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            player.sendMessage("§cInvalid minigame type. Available: REACTION, MEMORY");
+            player.sendMessage(plugin.getMessageManager().getMessage("command.minigame.invalid_type"));
             return;
         }
 
@@ -501,7 +501,7 @@ public class AdvancedHuntCommand {
     }
 
     private void migrate(CommandSender sender, String type) {
-        sender.sendMessage("§aMigration started...");
+        sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.started"));
 
         DataRepository targetRepo;
         if (type.equalsIgnoreCase("YAML")) {
@@ -522,11 +522,11 @@ public class AdvancedHuntCommand {
         plugin.getMigrationService()
                 .migrate(plugin.getDataRepository(), targetRepo)
                 .thenRun(() -> {
-                    sender.sendMessage("§aMigration successful!");
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
                     targetRepo.shutdown();
                 })
                 .exceptionally(e -> {
-                    sender.sendMessage("§cMigration failed.");
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.failed"));
                     e.printStackTrace();
                     targetRepo.shutdown();
                     return null;
