@@ -54,11 +54,11 @@ public final class Main extends JavaPlugin {
         if (storageType.equalsIgnoreCase("MYSQL")) {
             dataRepository = new SqlRepository(
                     this,
-                    getConfig().getString("storage.host"),
-                    getConfig().getInt("storage.port"),
-                    getConfig().getString("storage.database"),
-                    getConfig().getString("storage.username"),
-                    getConfig().getString("storage.password"),
+                    getConfig().getString("storage.mysql.host"),
+                    getConfig().getInt("storage.mysql.port"),
+                    getConfig().getString("storage.mysql.database"),
+                    getConfig().getString("storage.mysql.username"),
+                    getConfig().getString("storage.mysql.password"),
                     false
             );
         } else if (storageType.equalsIgnoreCase("SQLITE")) {
