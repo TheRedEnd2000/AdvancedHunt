@@ -21,6 +21,7 @@ import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +41,20 @@ public class AdvancedHuntCommand {
                 .map(Suggestion::suggestion)
                 .collect(Collectors.toList())
         );
+
+        final SuggestionProvider<CommandSender> playerNameSuggestions = (context, input) -> {
+            return CompletableFuture.supplyAsync(() -> {
+                // Online players
+                List<Suggestion> suggestions = Bukkit.getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .map(Suggestion::suggestion)
+                        .collect(Collectors.toList());
+
+                //TODO ADD OFFLINE PLAYERS
+
+                return suggestions;
+            });
+        };
 
         final CommandComponent.Builder<CommandSender, String> collectionArgument = CommandComponent.<CommandSender, String>builder()
             .name("collection")
@@ -173,7 +188,7 @@ public class AdvancedHuntCommand {
             commandManager.commandBuilder("advancedhunt", "ah")
                 .literal("reset")
                 .literal("player")
-                .required("player", StringParser.stringParser())
+                .required("player", StringParser.stringParser(), playerNameSuggestions)
                 .permission("advancedhunt.admin.reset")
                 .handler(context -> resetPlayer(context.sender(), context.get("player")))
         );
@@ -182,7 +197,7 @@ public class AdvancedHuntCommand {
             commandManager.commandBuilder("advancedhunt", "ah")
                 .literal("reset")
                 .literal("player")
-                .required("player", StringParser.stringParser())
+                .required("player", StringParser.stringParser(), playerNameSuggestions)
                 .required(collectionArgument)
                 .permission("advancedhunt.admin.reset")
                 .handler(context -> resetPlayerCollection(
