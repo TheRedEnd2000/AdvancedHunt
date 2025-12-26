@@ -56,8 +56,6 @@ public class CollectionListMenu extends PagedMenu {
             return;
         }
 
-        addPagedButtons(treasures.size());
-
         // Calculate pagination
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, treasures.size());
@@ -119,7 +117,6 @@ public class CollectionListMenu extends PagedMenu {
             Treasure fullTreasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
             if (fullTreasure != null) {
                 String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
-                Bukkit.broadcastMessage("Texture: "+texture);
                 if (texture != null) {
                     builder.setSkullTexture(texture);
                 }
