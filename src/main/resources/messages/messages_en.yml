@@ -199,6 +199,69 @@ gui:
     reward_deleted: "%prefix%&cReward deleted."
     command_blacklisted: "%prefix%&cThat command is blacklisted and cannot be used!"
     chance_updated: "%prefix%&aChance updated successfully!"
+    editor:
+      title: "&8Reward #%number%"
+      edit_chance:
+        name: "&eEdit Chance"
+        lore:
+          - "&7Current: &f%chance%%"
+          - ""
+          - "&7Click to change the"
+          - "&7drop chance of this reward."
+      delete:
+        name: "&cDelete Reward"
+        lore:
+          - "&7Click to remove this"
+          - "&7reward from the treasure."
+      confirm_delete:
+        title: "&8Confirm Delete"
+        warning:
+          name: "&c&l⚠ Delete Reward?"
+          lore:
+            - "&7This action cannot be undone!"
+            - "&7The reward will be permanently"
+            - "&7removed from this treasure."
+        confirm:
+          name: "&c&lYes, Delete"
+          lore:
+            - "&7Click to permanently"
+            - "&7delete this reward."
+        cancel:
+          name: "&a&lNo, Go Back"
+          lore:
+            - "&7Click to cancel and"
+            - "&7return to the reward."
+
+    add:
+      item:
+        title: "&8Add Item Reward"
+        placeholder:
+          name: "&7Place Item Here"
+          lore:
+            - "&7Place the item you want"
+            - "&7to add as a reward."
+        info:
+          name: "&eHow to Add Item Reward"
+          lore:
+            - "&7Place the item in the"
+            - "&7center slot below."
+            - ""
+            - "&7The exact item (including"
+            - "&7enchants, name, lore) will"
+            - "&7be given as a reward."
+            - ""
+            - "&7Click &aConfirm &7when ready."
+        confirm:
+          name: "&aConfirm"
+          lore:
+            - "&7Click to add this item"
+            - "&7as a reward."
+        cancel:
+          name: "&cCancel"
+          lore:
+            - "&7Click to cancel and"
+            - "&7return to rewards menu."
+        no_item: "%prefix%&cPlease place an item in the slot first!"
   collection_content:
     treasure_item:
       lore_teleport: "&eLeft-Click &7to teleport"
@@ -219,15 +282,15 @@ gui:
       lore:
         - "&7Click to see which players"
         - "&7have found this treasure."
-  who_found:
+  finders:
     title: "&8Who Found This Treasure"
     loading: "&7Loading player data..."
-    no_one:
+    empty:
       name: "&7No One Yet"
       lore:
         - "&7This treasure has not"
         - "&7been found by anyone yet."
-    player_entry:
+    entry:
       name: "&e%player%"
       lore:
         - "&7Found this treasure"
@@ -306,68 +369,6 @@ gui:
         - ""
         - "&7Keep exploring to discover"
         - "&7this treasure's location!"
-  add_item_reward:
-    title: "&8Add Item Reward"
-    placeholder:
-      name: "&7Place Item Here"
-      lore:
-        - "&7Place the item you want"
-        - "&7to add as a reward."
-    info:
-      name: "&eHow to Add Item Reward"
-      lore:
-        - "&7Place the item in the"
-        - "&7center slot below."
-        - ""
-        - "&7The exact item (including"
-        - "&7enchants, name, lore) will"
-        - "&7be given as a reward."
-        - ""
-        - "&7Click &aConfirm &7when ready."
-    confirm:
-      name: "&aConfirm"
-      lore:
-        - "&7Click to add this item"
-        - "&7as a reward."
-    cancel:
-      name: "&cCancel"
-      lore:
-        - "&7Click to cancel and"
-        - "&7return to rewards menu."
-    no_item: "%prefix%&cPlease place an item in the slot first!"
-  reward_action:
-    title: "&8Reward #%number%"
-    edit_chance:
-      name: "&eEdit Chance"
-      lore:
-        - "&7Current: &f%chance%%"
-        - ""
-        - "&7Click to change the"
-        - "&7drop chance of this reward."
-    delete:
-      name: "&cDelete Reward"
-      lore:
-        - "&7Click to remove this"
-        - "&7reward from the treasure."
-    confirm_delete:
-      title: "&8Confirm Delete"
-      warning:
-        name: "&c&l⚠ Delete Reward?"
-        lore:
-          - "&7This action cannot be undone!"
-          - "&7The reward will be permanently"
-          - "&7removed from this treasure."
-      confirm:
-        name: "&c&lYes, Delete"
-        lore:
-          - "&7Click to permanently"
-          - "&7delete this reward."
-      cancel:
-        name: "&a&lNo, Go Back"
-        lore:
-          - "&7Click to cancel and"
-          - "&7return to the reward."
-
   editor:
     title: "Collection Editor"
     collection_item:
@@ -442,47 +443,8 @@ gui:
         - "&cClick to delete"
       confirm_title: "Confirm Delete Collection"
       success: "%prefix%&aSuccessfully deleted collection &e%collection%&a and all its treasures."
-  act_rules:
-    title: "Schedule Rules: %collection%"
-    rule_item:
-      name: "&6%name%"
-      lore:
-        - "&7Status: %status%"
-        - "&7Date Range: &f%date_range%"
-        - "&7Duration: &f%duration%"
-        - "&7Cron: &f%cron%"
-        - "&7Next Trigger: %next_trigger%"
-        - ""
-        - "&eLeft-Click to edit"
-        - "&eRight-Click to toggle"
-        - "&cShift+Left-Click to delete"
-    add_rule:
-      name: "&aAdd New Rule"
-      lore:
-        - "&7Click to create a new"
-        - "&7availability schedule rule"
-    rule_deleted: "%prefix%&cDeleted rule: &e%name%"
-  act_rule_editor:
-    name:
-      name: "&eName"
-      lore:
-        - "&7Current: &f%name%"
-        - ""
-        - "&eClick to rename"
-    enabled:
-      name: "&eEnabled"
-      lore:
-        - "&7Current: %status%"
-        - ""
-        - "&eClick to toggle"
-    delete:
-      name: "&cDelete Rule"
-      lore:
-        - "&7Permanently removes this rule"
-        - ""
-        - "&cClick to delete"
-  progress_reset_cron:
-    title: "Progress Reset Schedule"
+    reset_schedule:
+      title: "Progress Reset Schedule"
   cron:
     editor:
       title: "Cron Schedule Editor"
@@ -827,9 +789,6 @@ gui:
     error:
       invalid: "%prefix%&cInvalid cron expression! Please check the format."
   
-  act_format:
-    error:
-      invalid_format: "%prefix%&cInvalid ACT format! Expected: [DATE_RANGE] [DURATION] [CRON]"
   act:
     editor:
       title: "ACT Rule Editor: %name%"
@@ -850,153 +809,6 @@ gui:
           - "&7to quickly configure this rule"
           - ""
           - "&eClick to browse presets"
-    date_range:
-      manual:
-        name: "&dManual Date Range Input"
-        lore:
-          - "&7Enter a custom date range"
-          - "&7Format: YYYY-MM-DD:YYYY-MM-DD"
-          - "&7Example: 2025-12-24:2025-12-31"
-          - "&7Use &f* &7for always active"
-          - ""
-          - "&eClick to type manually"
-      editor:
-        title: "Edit Date Range"
-        current:
-          name: "&e&lCurrent Date Range"
-          value: "&f%date_range%"
-          description: "&7%description%"
-      preset:
-        always:
-          name: "&aAlways Active"
-          lore:
-            - "&7No date restrictions"
-            - "&7The rule can trigger any day"
-            - ""
-            - "&7Value: &f*"
-            - ""
-            - "&eClick to apply"
-        this_year:
-          name: "&eThis Year (%year%)"
-          lore:
-            - "&7Active during current year only"
-            - "&7From Jan 1st to Dec 31st"
-            - ""
-            - "&7Value: &f%year%-01-01:%year%-12-31"
-            - ""
-            - "&eClick to apply"
-        this_month:
-          name: "&eThis Month"
-          lore:
-            - "&7Active during current month"
-            - ""
-            - "&7Value: &f%start%:%end%"
-            - ""
-            - "&eClick to apply"
-        next_month:
-          name: "&eNext Month"
-          lore:
-            - "&7Active during next month"
-            - ""
-            - "&7Value: &f%start%:%end%"
-            - ""
-            - "&eClick to apply"
-      prompt: "%prefix%&aEnter date range (YYYY-MM-DD:YYYY-MM-DD or * for always):"
-      success: "%prefix%&aDate range updated successfully!"
-    duration:
-      editor:
-        title: "Edit Duration"
-        current:
-          name: "&e&lCurrent Duration"
-          value: "&f%duration%"
-          description: "&7%description%"
-      preset:
-        permanent:
-          name: "&aPermanent"
-          lore:
-            - "&7Collection stays available forever"
-            - "&7once triggered (until reset)"
-            - ""
-            - "&7Value: &f*"
-            - ""
-            - "&eClick to apply"
-        30_minutes:
-          name: "&e30 Minutes"
-          lore:
-            - "&7Available for half an hour"
-            - ""
-            - "&7Value: &f30m"
-            - ""
-            - "&eClick to apply"
-        1_hour:
-          name: "&e1 Hour"
-          lore:
-            - "&7Available for one hour"
-            - ""
-            - "&7Value: &f1h"
-            - ""
-            - "&eClick to apply"
-        2_hours:
-          name: "&e2 Hours"
-          lore:
-            - "&7Available for two hours"
-            - ""
-            - "&7Value: &f2h"
-            - ""
-            - "&eClick to apply"
-        4_hours:
-          name: "&e4 Hours"
-          lore:
-            - "&7Available for four hours"
-            - ""
-            - "&7Value: &f4h"
-            - ""
-            - "&eClick to apply"
-        8_hours:
-          name: "&e8 Hours"
-          lore:
-            - "&7Available for eight hours"
-            - ""
-            - "&7Value: &f8h"
-            - ""
-            - "&eClick to apply"
-        24_hours:
-          name: "&e24 Hours (1 Day)"
-          lore:
-            - "&7Available for one full day"
-            - ""
-            - "&7Value: &f24h"
-            - ""
-            - "&eClick to apply"
-        7_days:
-          name: "&e7 Days (1 Week)"
-          lore:
-            - "&7Available for one week"
-            - ""
-            - "&7Value: &f7d"
-            - ""
-            - "&eClick to apply"
-      custom:
-        name: "&dCustom Duration"
-        lore:
-          - "&7Enter a custom duration"
-          - "&7Format: <number><unit>"
-          - "&7Units: m (minutes), h (hours), d (days)"
-          - "&7Example: 90m, 12h, 3d"
-          - ""
-          - "&eClick to type manually"
-      increase:
-        name: "&a&l+ Increase"
-        lore:
-          - "&7Add 1 to the duration value"
-          - "&7(numeric durations only)"
-      decrease:
-        name: "&c&l- Decrease"
-        lore:
-          - "&7Subtract 1 from the duration value"
-          - "&7(numeric durations only, min: 1)"
-      prompt: "%prefix%&aEnter duration (e.g., 2h, 30m, 1d or * for permanent):"
-      success: "%prefix%&aDuration updated successfully!"
     manual:
       name: "&bManual ACT Input"
       lore:
@@ -1150,6 +962,198 @@ gui:
     success:
       applied: "%prefix%&aACT rule updated successfully!"
 
+    rules:
+      list:
+        title: "Schedule Rules: %collection%"
+        rule_item:
+          name: "&6%name%"
+          lore:
+            - "&7Status: %status%"
+            - "&7Date Range: &f%date_range%"
+            - "&7Duration: &f%duration%"
+            - "&7Cron: &f%cron%"
+            - "&7Next Trigger: %next_trigger%"
+            - ""
+            - "&eLeft-Click to edit"
+            - "&eRight-Click to toggle"
+            - "&cShift+Left-Click to delete"
+        add_rule:
+          name: "&aAdd New Rule"
+          lore:
+            - "&7Click to create a new"
+            - "&7availability schedule rule"
+        rule_deleted: "%prefix%&cDeleted rule: &e%name%"
+      editor:
+        name:
+          name: "&eName"
+          lore:
+            - "&7Current: &f%name%"
+            - ""
+            - "&eClick to rename"
+        enabled:
+          name: "&eEnabled"
+          lore:
+            - "&7Current: %status%"
+            - ""
+            - "&eClick to toggle"
+        delete:
+          name: "&cDelete Rule"
+          lore:
+            - "&7Permanently removes this rule"
+            - ""
+            - "&cClick to delete"
+    error:
+      format:
+        error:
+          invalid_format: "%prefix%&cInvalid ACT format! Expected: [DATE_RANGE] [DURATION] [CRON]"
+    components:
+      duration:
+        editor:
+          title: "Edit Duration"
+          current:
+            name: "&e&lCurrent Duration"
+            value: "&f%duration%"
+            description: "&7%description%"
+        preset:
+          permanent:
+            name: "&aPermanent"
+            lore:
+              - "&7Collection stays available forever"
+              - "&7once triggered (until reset)"
+              - ""
+              - "&7Value: &f*"
+              - ""
+              - "&eClick to apply"
+          30_minutes:
+            name: "&e30 Minutes"
+            lore:
+              - "&7Available for half an hour"
+              - ""
+              - "&7Value: &f30m"
+              - ""
+              - "&eClick to apply"
+          1_hour:
+            name: "&e1 Hour"
+            lore:
+              - "&7Available for one hour"
+              - ""
+              - "&7Value: &f1h"
+              - ""
+              - "&eClick to apply"
+          2_hours:
+            name: "&e2 Hours"
+            lore:
+              - "&7Available for two hours"
+              - ""
+              - "&7Value: &f2h"
+              - ""
+              - "&eClick to apply"
+          4_hours:
+            name: "&e4 Hours"
+            lore:
+              - "&7Available for four hours"
+              - ""
+              - "&7Value: &f4h"
+              - ""
+              - "&eClick to apply"
+          8_hours:
+            name: "&e8 Hours"
+            lore:
+              - "&7Available for eight hours"
+              - ""
+              - "&7Value: &f8h"
+              - ""
+              - "&eClick to apply"
+          24_hours:
+            name: "&e24 Hours (1 Day)"
+            lore:
+              - "&7Available for one full day"
+              - ""
+              - "&7Value: &f24h"
+              - ""
+              - "&eClick to apply"
+          7_days:
+            name: "&e7 Days (1 Week)"
+            lore:
+              - "&7Available for one week"
+              - ""
+              - "&7Value: &f7d"
+              - ""
+              - "&eClick to apply"
+        custom:
+          name: "&dCustom Duration"
+          lore:
+            - "&7Enter a custom duration"
+            - "&7Format: <number><unit>"
+            - "&7Units: m (minutes), h (hours), d (days)"
+            - "&7Example: 90m, 12h, 3d"
+            - ""
+            - "&eClick to type manually"
+        increase:
+          name: "&a&l+ Increase"
+          lore:
+            - "&7Add 1 to the duration value"
+            - "&7(numeric durations only)"
+        decrease:
+          name: "&c&l- Decrease"
+          lore:
+            - "&7Subtract 1 from the duration value"
+            - "&7(numeric durations only, min: 1)"
+        prompt: "%prefix%&aEnter duration (e.g., 2h, 30m, 1d or * for permanent):"
+        success: "%prefix%&aDuration updated successfully!"
+      date_range:
+        manual:
+          name: "&dManual Date Range Input"
+          lore:
+            - "&7Enter a custom date range"
+            - "&7Format: YYYY-MM-DD:YYYY-MM-DD"
+            - "&7Example: 2025-12-24:2025-12-31"
+            - "&7Use &f* &7for always active"
+            - ""
+            - "&eClick to type manually"
+        editor:
+          title: "Edit Date Range"
+          current:
+            name: "&e&lCurrent Date Range"
+            value: "&f%date_range%"
+            description: "&7%description%"
+        preset:
+          always:
+            name: "&aAlways Active"
+            lore:
+              - "&7No date restrictions"
+              - "&7The rule can trigger any day"
+              - ""
+              - "&7Value: &f*"
+              - ""
+              - "&eClick to apply"
+          this_year:
+            name: "&eThis Year (%year%)"
+            lore:
+              - "&7Active during current year only"
+              - "&7From Jan 1st to Dec 31st"
+              - ""
+              - "&7Value: &f%year%-01-01:%year%-12-31"
+              - ""
+              - "&eClick to apply"
+          this_month:
+            name: "&eThis Month"
+            lore:
+              - "&7Active during current month"
+              - ""
+              - "&7Value: &f%start%:%end%"
+              - ""
+              - "&eClick to apply"
+          next_month:
+            name: "&eNext Month"
+            lore:
+              - "&7Active during next month"
+              - ""
+              - "&7Value: &f%start%:%end%"
+              - ""
+              - "&eClick to apply"
+        prompt: "%prefix%&aEnter date range (YYYY-MM-DD:YYYY-MM-DD or * for always):"
+        success: "%prefix%&aDate range updated successfully!"
 minigame:
   success: "%prefix%&aMinigame completed successfully!"
   failed: "%prefix%&cMinigame failed."

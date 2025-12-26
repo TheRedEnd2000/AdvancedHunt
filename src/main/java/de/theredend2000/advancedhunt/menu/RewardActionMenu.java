@@ -33,7 +33,7 @@ public class RewardActionMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.reward_action.title", false,
+        return plugin.getMessageManager().getMessage("gui.rewards.editor.title", false,
             "%number%", String.valueOf(rewardIndex + 1));
     }
 
@@ -57,16 +57,16 @@ public class RewardActionMenu extends Menu {
         
         // Edit Chance button
         ItemStack editChance = new ItemBuilder(Material.CLOCK)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.reward_action.edit_chance.name", false))
-            .setLore(plugin.getMessageManager().getMessageList("gui.reward_action.edit_chance.lore", false,
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_chance.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_chance.lore", false,
                 "%chance%", formatChance(reward.getChance())))
             .build();
         addButton(11, editChance, e -> editChance());
         
         // Delete button
         ItemStack delete = new ItemBuilder(Material.RED_CONCRETE)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.reward_action.delete.name", false))
-            .setLore(plugin.getMessageManager().getMessageList("gui.reward_action.delete.lore", false))
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.delete.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.delete.lore", false))
             .build();
         addButton(15, delete, e -> confirmDelete());
         
@@ -229,7 +229,7 @@ public class RewardActionMenu extends Menu {
 
         @Override
         public String getMenuName() {
-            return plugin.getMessageManager().getMessage("gui.reward_action.confirm_delete.title", false);
+            return plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.title", false);
         }
 
         @Override
@@ -248,22 +248,22 @@ public class RewardActionMenu extends Menu {
             
             // Warning message
             ItemStack warning = new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.reward_action.confirm_delete.warning.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.reward_action.confirm_delete.warning.lore", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.warning.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.confirm_delete.warning.lore", false))
                 .build();
             addStaticItem(4, warning);
             
             // Confirm delete
             ItemStack confirm = new ItemBuilder(Material.RED_CONCRETE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.reward_action.confirm_delete.confirm.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.reward_action.confirm_delete.confirm.lore", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.confirm.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.confirm_delete.confirm.lore", false))
                 .build();
             addButton(11, confirm, e -> parentMenu.executeDelete());
             
             // Cancel
             ItemStack cancel = new ItemBuilder(Material.LIME_CONCRETE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.reward_action.confirm_delete.cancel.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.reward_action.confirm_delete.cancel.lore", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.cancel.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.confirm_delete.cancel.lore", false))
                 .build();
             addButton(15, cancel, e -> parentMenu.returnToActionMenu());
         }
