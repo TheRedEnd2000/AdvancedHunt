@@ -111,12 +111,12 @@ public class AddItemRewardMenu extends Menu {
         confirmed = true;
         
         // Prompt for chance
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chance"));
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chance"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
             try {
                 double chance = Double.parseDouble(chanceStr);
                 if (chance < 0 || chance > 100) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                     // Return item to player
                     giveItemBack(item);
                     lastMenu.open();
@@ -128,11 +128,11 @@ public class AddItemRewardMenu extends Menu {
                 Reward reward = new Reward(RewardType.ITEM, chance, serialized);
                 
                 parentMenu.addReward(reward);
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
                 parentMenu.open();
                 
             } catch (NumberFormatException ex) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                 // Return item to player
                 giveItemBack(item);
                 lastMenu.open();

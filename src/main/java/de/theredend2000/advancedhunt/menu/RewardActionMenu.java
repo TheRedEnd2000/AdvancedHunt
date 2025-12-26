@@ -159,14 +159,14 @@ public class RewardActionMenu extends Menu {
      * Opens chat prompt to edit the chance.
      */
     private void editChance() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_new_chance",
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.new_chance",
             "%current%", formatChance(reward.getChance())));
         
         plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
             try {
                 double chance = Double.parseDouble(chanceStr);
                 if (chance < 0 || chance > 100) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                     parentMenu.open();
                     return;
                 }
@@ -175,7 +175,7 @@ public class RewardActionMenu extends Menu {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.chance_updated"));
                 parentMenu.open();
             } catch (NumberFormatException ex) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                 parentMenu.open();
             }
         });
@@ -193,7 +193,7 @@ public class RewardActionMenu extends Menu {
      */
     public void executeDelete() {
         parentMenu.deleteReward(rewardIndex);
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_deleted"));
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.deleted"));
         parentMenu.open();
     }
 

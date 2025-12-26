@@ -116,7 +116,7 @@ public class ActDateRangeMenu extends Menu {
                 if (ActFormatParser.isValidDateRange(input)) {
                     applyDateRange(input);
                 } else {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.common.error.validation.date_range"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.validation.date_range"));
                     Bukkit.getScheduler().runTask(plugin, this::open);
                 }
             });
@@ -127,7 +127,7 @@ public class ActDateRangeMenu extends Menu {
         rule.setDateRange(dateRange);
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.date_range.success"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.date_range.success"));
                 if (previousMenu != null) {
                     previousMenu.open();
                 } else {

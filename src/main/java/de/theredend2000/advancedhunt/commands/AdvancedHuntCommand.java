@@ -487,7 +487,7 @@ public class AdvancedHuntCommand {
         try {
             type = MinigameType.valueOf(typeName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            player.sendMessage(plugin.getMessageManager().getMessage("command.minigame.invalid_type"));
+            player.sendMessage(plugin.getMessageManager().getMessage("minigame.error.invalid_type"));
             return;
         }
 

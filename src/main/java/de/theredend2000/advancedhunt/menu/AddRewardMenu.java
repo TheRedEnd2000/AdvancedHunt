@@ -78,7 +78,7 @@ public class AddRewardMenu extends Menu {
      * Defaults to 100% chance since chat messages are typically always shown.
      */
     public void promptAddChatMessageReward() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chat_message"));
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chat_message"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
             if (message == null || message.isEmpty()) {
                 open();
@@ -87,7 +87,7 @@ public class AddRewardMenu extends Menu {
 
             // Default to 100% chance for chat messages
             parentMenu.addReward(new Reward(RewardType.CHAT_MESSAGE, 100.0, message));
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
             parentMenu.open();
         });
     }
@@ -97,7 +97,7 @@ public class AddRewardMenu extends Menu {
      * Defaults to 100% chance since broadcast messages are typically always shown.
      */
     public void promptAddBroadcastMessageReward() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_broadcast_message"));
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.broadcast_message"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
             if (message == null || message.isEmpty()) {
                 open();
@@ -106,7 +106,7 @@ public class AddRewardMenu extends Menu {
 
             // Default to 100% chance for broadcast messages
             parentMenu.addReward(new Reward(RewardType.CHAT_MESSAGE_BROADCAST, 100.0, message));
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
             parentMenu.open();
         });
     }
@@ -115,7 +115,7 @@ public class AddRewardMenu extends Menu {
      * Prompts for command input to add a command reward.
      */
     public void promptAddCommandReward() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_command"));
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.command"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, command -> {
             if (command == null || command.isEmpty()) {
                 open();
@@ -123,27 +123,27 @@ public class AddRewardMenu extends Menu {
             }
 
             if (plugin.getRewardManager().isCommandBlacklisted(command)) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.command_blacklisted"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.command_blacklisted"));
                 open();
                 return;
             }
 
             // Now ask for chance
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chance"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chance"));
             plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
                 try {
                     double chance = Double.parseDouble(chanceStr);
                     if (chance < 0 || chance > 100) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                         open();
                         return;
                     }
 
                     parentMenu.addReward(new Reward(RewardType.COMMAND, chance, command));
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
                     parentMenu.open();
                 } catch (NumberFormatException ex) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                     open();
                 }
             });

@@ -315,7 +315,7 @@ public class RewardsMenu extends PagedMenu {
 
             if (mode == QuickActionMode.DELETE) {
                 deleteReward(rewardIndex);
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_deleted"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.deleted"));
 
                 // Clamp page after deletion (e.g., deleting last item on last page)
                 int totalPages = getTotalPages();
@@ -398,7 +398,7 @@ public class RewardsMenu extends PagedMenu {
         if (reward.getType() == RewardType.ITEM) {
             ItemStack item = ItemSerializer.deserialize(reward.getValue());
             if (item == null || item.getType() == Material.AIR) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.instance_invalid"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.instance_invalid"));
                 return;
             }
 
@@ -406,9 +406,9 @@ public class RewardsMenu extends PagedMenu {
             Map<Integer, ItemStack> leftover = playerMenuUtility.getInventory().addItem(toGive);
             if (!leftover.isEmpty()) {
                 leftover.values().forEach(stack -> playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), stack));
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.instance_dropped"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.instance_dropped"));
             } else {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.instance_given"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.instance_given"));
             }
             return;
         }
@@ -516,7 +516,7 @@ public class RewardsMenu extends PagedMenu {
      * Prompts for command input to add a command reward.
      */
     public void promptAddCommandReward() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_command"));
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.command"));
         plugin.getChatInputListener().requestInput(playerMenuUtility, command -> {
             if (command == null || command.isEmpty()) {
                 open();
@@ -524,27 +524,27 @@ public class RewardsMenu extends PagedMenu {
             }
 
             if (plugin.getRewardManager().isCommandBlacklisted(command)) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.command_blacklisted"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.command_blacklisted"));
                 open();
                 return;
             }
             
             // Now ask for chance
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.enter_chance"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chance"));
             plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
                 try {
                     double chance = Double.parseDouble(chanceStr);
                     if (chance < 0 || chance > 100) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                         open();
                         return;
                     }
                     
                     addReward(new Reward(RewardType.COMMAND, chance, command));
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.reward_added"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
                     open();
                 } catch (NumberFormatException ex) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.invalid_chance"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
                     open();
                 }
             });

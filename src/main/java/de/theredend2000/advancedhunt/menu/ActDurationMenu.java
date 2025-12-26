@@ -138,7 +138,7 @@ public class ActDurationMenu extends Menu {
                 if (ActFormatParser.isValidDuration(input)) {
                     applyDuration(input);
                 } else {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.common.error.validation.duration"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.validation.duration"));
                     Bukkit.getScheduler().runTask(plugin, this::open);
                 }
             });
@@ -172,7 +172,7 @@ public class ActDurationMenu extends Menu {
         rule.setDuration(duration);
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.duration.success"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.duration.success"));
                 refresh();
             });
         });
