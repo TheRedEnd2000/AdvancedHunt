@@ -1096,7 +1096,11 @@ def main(argv: list[str]) -> int:
     unused_but_found_as_string_literal: list[str] = []
     # 2) Not an exact literal, but found as a substring in code text
     unused_but_found_in_code_text: list[str] = []
-    # 3) Not found anywhere in code
+    # 3) Not directly found, but matched by wildcard pattern(s)
+    unused_but_matched_by_patterns: list[str] = []
+    # 4) Not directly found, but inferred by expanded pattern usages
+    unused_but_inferred_by_expansion: list[str] = []
+    # 5) Not found anywhere (even via patterns/expansion)
     unused_not_found_anywhere: list[str] = []
 
     code_blob = "\n".join(all_code_text_parts)
@@ -1105,6 +1109,10 @@ def main(argv: list[str]) -> int:
             unused_but_found_as_string_literal.append(key)
         elif key in code_blob:
             unused_but_found_in_code_text.append(key)
+        elif key in expanded_keys_present_in_yaml:
+            unused_but_inferred_by_expansion.append(key)
+        elif key in yaml_keys_matched_by_patterns:
+            unused_but_matched_by_patterns.append(key)
         else:
             unused_not_found_anywhere.append(key)
 
@@ -1170,6 +1178,8 @@ def main(argv: list[str]) -> int:
     print(f"Unused after patterns:       {len(unused_after_patterns)}")
     print(f"- found as string literal:   {len(unused_but_found_as_string_literal)}")
     print(f"- found in code text:        {len(unused_but_found_in_code_text)}")
+    print(f"- inferred by expansion:     {len(unused_but_inferred_by_expansion)}")
+    print(f"- matched by patterns:       {len(unused_but_matched_by_patterns)}")
     print(f"- not found anywhere:        {len(unused_not_found_anywhere)}")
     print(f"Prune candidates (safe):     {len(prune_candidates)}")
     if duplicates:
@@ -1219,9 +1229,29 @@ def main(argv: list[str]) -> int:
             print(f"... and {len(unused_but_found_in_code_text) - max_show} more")
         print()
 
+    if unused_but_inferred_by_expansion:
+        print("YAML keys not used in message lookups, but inferred by expanded patterns")
+        print("-----------------------------------------------------------------------")
+        max_show = 250
+        for key in unused_but_inferred_by_expansion[:max_show]:
+            print(f"- {key}")
+        if len(unused_but_inferred_by_expansion) > max_show:
+            print(f"... and {len(unused_but_inferred_by_expansion) - max_show} more")
+        print()
+
+    if unused_but_matched_by_patterns:
+        print("YAML keys not used in message lookups, but matched by wildcard patterns")
+        print("---------------------------------------------------------------------")
+        max_show = 250
+        for key in unused_but_matched_by_patterns[:max_show]:
+            print(f"- {key}")
+        if len(unused_but_matched_by_patterns) > max_show:
+            print(f"... and {len(unused_but_matched_by_patterns) - max_show} more")
+        print()
+
     if unused_not_found_anywhere:
-        print("YAML keys not found anywhere in code")
-        print("----------------------------------")
+        print("YAML keys not found anywhere in code (even via patterns/expansion)")
+        print("---------------------------------------------------------------")
         max_show = 250
         for key in unused_not_found_anywhere[:max_show]:
             print(f"- {key}")
@@ -1324,6 +1354,8 @@ def main(argv: list[str]) -> int:
                 "unused_after_patterns": len(unused_after_patterns),
                 "unused_found_as_string_literal": len(unused_but_found_as_string_literal),
                 "unused_found_in_code_text": len(unused_but_found_in_code_text),
+                "unused_inferred_by_expansion": len(unused_but_inferred_by_expansion),
+                "unused_matched_by_patterns": len(unused_but_matched_by_patterns),
                 "unused_not_found_anywhere": len(unused_not_found_anywhere),
                 "prune_candidates": len(prune_candidates),
             },
@@ -1346,6 +1378,8 @@ def main(argv: list[str]) -> int:
             "unused_after_patterns": unused_after_patterns,
             "unused_found_as_string_literal": unused_but_found_as_string_literal,
             "unused_found_in_code_text": unused_but_found_in_code_text,
+            "unused_inferred_by_expansion": unused_but_inferred_by_expansion,
+            "unused_matched_by_patterns": unused_but_matched_by_patterns,
             "unused_not_found_anywhere": unused_not_found_anywhere,
             "prune_candidates": prune_candidates,
             "pattern_usages": [
