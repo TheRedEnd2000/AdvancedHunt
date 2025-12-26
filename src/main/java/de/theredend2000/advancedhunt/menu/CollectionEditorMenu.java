@@ -36,6 +36,7 @@ public class CollectionEditorMenu extends PagedMenu {
         List<String> collectionNames = plugin.getCollectionManager().getAllCollectionNames();
 
         if (collectionNames != null && !collectionNames.isEmpty()) {
+            addPagedButtons(collectionNames.size());
             for (int i = 0; i < getMaxItemsPerPage(); i++) {
                 index = getMaxItemsPerPage() * page + i;
                 if (index >= collectionNames.size()) break;

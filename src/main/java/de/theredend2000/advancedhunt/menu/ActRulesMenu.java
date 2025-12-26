@@ -64,10 +64,11 @@ public class ActRulesMenu extends PagedMenu {
     public void setMenuItems() {
         List<ActRule> rules = collection.getActRules();
         this.hasNextPage = rules != null && (page + 1) * getMaxItemsPerPage() < rules.size();
-        
+
         addMenuBorder();
 
         if (rules != null && !rules.isEmpty()) {
+            addPagedButtons(rules.size());
             for (int i = 0; i < getMaxItemsPerPage(); i++) {
                 index = getMaxItemsPerPage() * page + i;
                 if (index >= rules.size()) break;

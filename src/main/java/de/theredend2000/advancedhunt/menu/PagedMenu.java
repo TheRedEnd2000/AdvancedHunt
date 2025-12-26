@@ -2,11 +2,13 @@ package de.theredend2000.advancedhunt.menu;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class PagedMenu extends Menu {
@@ -21,30 +23,6 @@ public abstract class PagedMenu extends Menu {
     }
 
     public void addMenuBorder() {
-        addButton(48, new ItemBuilder(Material.PLAYER_HEAD)
-                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.previous_page"))
-                .build(), (e) -> {
-            if (page == 0) {
-                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.first_page"));
-            } else {
-                page = page - 1;
-                open();
-            }
-        });
-
-        addButton(50, new ItemBuilder(Material.PLAYER_HEAD)
-                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.next_page"))
-                .build(), (e) -> {
-            if (hasNextPage) {
-                page = page + 1;
-                open();
-            } else {
-                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.last_page"));
-            }
-        });
-
         for (int i = 0; i < 10; i++) {
             if (inventory.getItem(i) == null) {
                 addStaticItem(i, super.FILLER_GLASS);
@@ -63,6 +41,32 @@ public abstract class PagedMenu extends Menu {
                 addStaticItem(i, super.FILLER_GLASS);
             }
         }
+    }
+
+    public void addPagedButtons(int size){
+        addButton(48, new ItemBuilder(Material.PLAYER_HEAD)
+                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.previous_page")+getPageIndicator(size))
+                .build(), (e) -> {
+            if (page == 0) {
+                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.first_page"));
+            } else {
+                page = page - 1;
+                open();
+            }
+        });
+
+        addButton(50, new ItemBuilder(Material.PLAYER_HEAD)
+                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.next_page")+getPageIndicator(size))
+                .build(), (e) -> {
+            if (hasNextPage) {
+                page = page + 1;
+                open();
+            } else {
+                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.last_page"));
+            }
+        });
     }
 
     public int getMaxItemsPerPage() {
@@ -85,5 +89,23 @@ public abstract class PagedMenu extends Menu {
     public void addPagedItem(int index, ItemStack item, Consumer<InventoryClickEvent> action) {
         int slot = getSlotForPagedIndex(index);
         addButton(slot, item, action);
+    }
+
+    public String getPageIndicator(int size){
+        String title = "";
+        if (getTotalPages(size) > 1) {
+            title += " " + plugin.getMessageManager().getMessage("gui.common.page_indicator", false,
+                    "%page%", String.valueOf(page + 1),
+                    "%total%", String.valueOf(getTotalPages(size)));
+        }
+        return title;
+    }
+
+    /**
+     * Returns the total number of pages needed to display all rewards.
+     */
+    public int getTotalPages(int size) {
+        if (size <= maxItemsPerPage) return 1;
+        return (int) Math.ceil((double) size / maxItemsPerPage);
     }
 }

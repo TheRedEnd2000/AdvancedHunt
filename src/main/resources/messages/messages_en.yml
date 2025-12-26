@@ -77,6 +77,7 @@ gui:
     close: "&cClose"
     previous_page: "&aPrevious Page"
     next_page: "&aNext Page"
+    page_indicator: "&7(%page%/%total%)"
     confirm: "&aConfirm"
     cancel: "&cCancel"
     enabled: "&aEnabled"
@@ -98,7 +99,6 @@ gui:
   rewards:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"
-    page_indicator: "&7(%page%/%total%)"
     open_reward_option_menu:
       title: "&8Reward Options"
       name: "&6+ Add Reward"
