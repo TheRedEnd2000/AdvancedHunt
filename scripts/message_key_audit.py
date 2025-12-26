@@ -222,6 +222,97 @@ class PatternMatcherSource:
     original_pattern: Optional[str]
 
 
+def _patterns_for_pattern_usage(
+    usage: PatternKeyUsage,
+    java_text: str,
+    *,
+    max_patterns: int = 50,
+    max_inline_depth: int = 2,
+) -> list[str]:
+    """Return one or more patterns that represent the usage.
+
+    Key behavior:
+    - If an expr segment resolves to multiple *literal* possibilities nearby, emit one
+      pattern per possibility (union) instead of collapsing to '*'.
+    - Only fall back to '*' when a segment cannot be resolved.
+    """
+
+    # Convert raw parts into segments.
+    segments: list[tuple[str, str]] = []
+    for part in usage.raw_parts:
+        lit = _parse_java_string_literal(part)
+        if lit is not None:
+            segments.append(("lit", lit))
+        else:
+            segments.append(("expr", part.strip()))
+
+    segments = _inline_concat_symbol_segments(segments, java_text, usage.site.line, max_depth=max_inline_depth)
+
+    # Build options per segment.
+    options: list[list[str]] = []
+    for kind, val in segments:
+        if kind == "lit":
+            options.append([val])
+            continue
+
+        sym = _extract_symbol_from_expr(val)
+        if sym is None:
+            options.append(["*"])
+            continue
+
+        literal_assignments = _infer_literal_assignments_near_site(java_text, usage.site.line, sym)
+        if literal_assignments:
+            opts = sorted(literal_assignments.keys())
+            options.append(opts)
+            continue
+
+        rhs = _infer_last_assignment_expr_near_site(java_text, usage.site.line, sym)
+        if rhs is None:
+            options.append(["*"])
+            continue
+
+        rhs_kind, rhs_value = _expr_to_key_or_pattern(rhs)
+        if rhs_kind == "certain":
+            options.append([rhs_value])
+            continue
+        if rhs_kind == "pattern":
+            options.append([rhs_value["pattern"]])
+            continue
+
+        options.append(["*"])
+
+    # Cartesian product with caps.
+    patterns: list[str] = [""]
+    for seg_opts in options:
+        # If a segment is already wildcard-y, avoid unnecessary explosion.
+        if seg_opts == ["*"]:
+            patterns = [p + "*" for p in patterns]
+            continue
+
+        next_patterns: list[str] = []
+        for prefix in patterns:
+            for opt in seg_opts:
+                next_patterns.append(prefix + opt)
+                if len(next_patterns) >= max_patterns:
+                    break
+            if len(next_patterns) >= max_patterns:
+                break
+        patterns = next_patterns
+        if len(patterns) >= max_patterns:
+            break
+
+    # Normalize: collapse repeated '*' and de-dupe while preserving order.
+    out: list[str] = []
+    seen: set[str] = set()
+    for p in patterns:
+        norm = re.sub(r"\*+", "*", p)
+        if norm not in seen:
+            seen.add(norm)
+            out.append(norm)
+
+    return out
+
+
 @dataclass(frozen=True)
 class YamlKeyInfo:
     key: str
@@ -1896,23 +1987,8 @@ def main(argv: list[str]) -> int:
     # preserve their literal segments. Also include patterns inferred from dynamic usages.
     pattern_sources: list[PatternMatcherSource] = []
 
-    # Patterns coming from code concatenation usages.
-    enhanced_by_site: dict[tuple[str, int, str], EnhancedPatternUsage] = {
-        (e.site.file, e.site.line, e.site.method): e for e in enhanced_patterns
-    }
     for p in all_patterns:
-        # If this pattern was enhanced, prefer the enhanced one.
-        enhanced = enhanced_by_site.get((p.site.file, p.site.line, p.site.method))
-        if enhanced is not None:
-            pattern_sources.append(
-                PatternMatcherSource(
-                    pattern=enhanced.pattern,
-                    source_kind="enhanced_concat",
-                    site=enhanced.site,
-                    original_pattern=enhanced.original_pattern,
-                )
-            )
-            continue
+        java_text = java_text_by_file.get(p.site.file)
 
         # Detect literal patterns (string literal containing '*' or regex markers).
         lit = _parse_java_string_literal(p.site.arg_expr)
@@ -1925,7 +2001,16 @@ def main(argv: list[str]) -> int:
                     original_pattern=None,
                 )
             )
+            continue
+
+        # Expand to multiple concrete patterns when possible.
+        resolved_patterns: list[str]
+        if java_text:
+            resolved_patterns = _patterns_for_pattern_usage(p, java_text)
         else:
+            resolved_patterns = [p.pattern]
+
+        if len(resolved_patterns) == 1 and resolved_patterns[0] == p.pattern:
             pattern_sources.append(
                 PatternMatcherSource(
                     pattern=p.pattern,
@@ -1934,6 +2019,16 @@ def main(argv: list[str]) -> int:
                     original_pattern=None,
                 )
             )
+        else:
+            for rp in resolved_patterns:
+                pattern_sources.append(
+                    PatternMatcherSource(
+                        pattern=rp,
+                        source_kind="enhanced_concat",
+                        site=p.site,
+                        original_pattern=p.pattern,
+                    )
+                )
 
     # Patterns inferred from dynamic usages (identifier assigned by concat).
     for p in resolved_uncertain_as_patterns:
@@ -2274,6 +2369,14 @@ def main(argv: list[str]) -> int:
             s = p.site
             print(f"- {p.pattern}  ({s.file}:{s.line})")
             print(f"  expr: {s.arg_expr}")
+            java_text = java_text_by_file.get(s.file)
+            if java_text:
+                resolved = _patterns_for_pattern_usage(p, java_text)
+                if resolved and not (len(resolved) == 1 and resolved[0] == p.pattern):
+                    show = 8
+                    shown = ", ".join(resolved[:show])
+                    suffix = "" if len(resolved) <= show else f" (+{len(resolved) - show} more)"
+                    print(f"  resolved: {shown}{suffix}")
         print()
 
     if enhanced_patterns:
