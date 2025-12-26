@@ -1737,13 +1737,13 @@
             
             // Visual Left Face (Screen Left) -> Mapped to Front Texture (8,8)
             // Top Edge: (-8, -4) to (0, 0)
-            // Matrix: [1, 0.5, 0, 1, -8*scale, -4*scale]
-            const mLeft = [1, 0.5, 0, 1, -8*scale, -4*scale];
+            // Matrix: [1, 0.5, 0, 1.118, -8*scale, -4*scale]
+            const mLeft = [1, 0.5, 0, 1.118, -8*scale, -4*scale];
 
             // Visual Right Face (Screen Right) -> Mapped to Right Texture (0,8)
             // Top Edge: (0, 0) to (8, -4)
-            // Matrix: [1, -0.5, 0, 1, 0, 0]
-            const mRight = [1, -0.5, 0, 1, 0, 0];
+            // Matrix: [1, -0.5, 0, 1.118, 0, 0]
+            const mRight = [1, -0.5, 0, 1.118, 0, 0];
 
             // Top Face (Diamond) -> Mapped to Top Texture (8,0)
             // Rotated so Bottom Edge connects to Visual Right (Front)
