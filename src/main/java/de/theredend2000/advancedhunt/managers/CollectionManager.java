@@ -85,6 +85,7 @@ public class CollectionManager {
             if (allFound) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     player.sendMessage(((Main) plugin).getMessageManager().getMessage("collection.completed", "%collection%", collection.getName()));
+                    ((Main) plugin).getSoundManager().playCollectionCompleted(player);
                     rewardManager.giveRewards(player, collection.getCompletionRewards());
                 });
             }
