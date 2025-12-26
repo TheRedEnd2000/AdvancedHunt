@@ -49,7 +49,6 @@ public final class Main extends JavaPlugin {
         // Initialize Message Manager
         messageManager = new MessageManager(this);
         soundManager = new SoundManager(this);
-        new Button(this); // register plugin for button
 
         // Initialize Data Repository
         String storageType = getConfig().getString("storage.type", "YAML");

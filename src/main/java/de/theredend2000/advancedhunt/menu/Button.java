@@ -11,14 +11,9 @@ import java.util.function.Consumer;
 
 public class Button {
 
-    private Main plugin;
     private ItemStack icon;
     private Consumer<InventoryClickEvent> action;
     private Sound clickSound;
-
-    public Button(Main plugin){
-        this.plugin = plugin;
-    }
 
     public Button(ItemStack icon) {
         this(icon, null);
@@ -33,7 +28,7 @@ public class Button {
     public void onClick(InventoryClickEvent event) {
         if (action != null) {
             if (event.getWhoClicked() instanceof Player) {
-                if(plugin.getSoundManager().isEnabled())
+                if(SoundManager.isEnabledStatic())
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), clickSound, 1f, 1f);
             }
             action.accept(event);
