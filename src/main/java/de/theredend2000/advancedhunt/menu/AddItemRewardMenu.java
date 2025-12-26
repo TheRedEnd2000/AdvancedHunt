@@ -179,7 +179,7 @@ public class AddItemRewardMenu extends Menu {
             }
             
             // Reopen parent menu after a tick (to avoid issues with close event)
-            Bukkit.getScheduler().runTaskLater(plugin, () -> lastMenu.open(), 1L);
+            Bukkit.getScheduler().runTaskLater(plugin, lastMenu::open, 1L);
         }
     }
 }
