@@ -77,6 +77,14 @@ class ExpandedKeyUsage:
 
 
 @dataclass(frozen=True)
+class EnhancedPatternUsage:
+    pattern: str
+    original_pattern: str
+    site: UsageSite
+    inferred_from_symbols: dict[str, str]
+
+
+@dataclass(frozen=True)
 class UncertainKeyUsage:
     site: UsageSite
 
@@ -196,6 +204,55 @@ def _find_matching_paren(text: str, open_paren_index: int) -> int:
             depth += 1
             continue
         if ch == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+            continue
+
+    return -1
+
+
+def _find_matching_brace(text: str, open_brace_index: int) -> int:
+    if open_brace_index < 0 or open_brace_index >= len(text) or text[open_brace_index] != "{":
+        raise ValueError("open_brace_index must point to '{'")
+
+    depth = 0
+    in_string = False
+    in_char = False
+    escaped = False
+
+    for i in range(open_brace_index, len(text)):
+        ch = text[i]
+
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+
+        if in_char:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            continue
+
+        if ch == '"':
+            in_string = True
+            continue
+        if ch == "'":
+            in_char = True
+            continue
+
+        if ch == "{":
+            depth += 1
+            continue
+        if ch == "}":
             depth -= 1
             if depth == 0:
                 return i
@@ -510,6 +567,92 @@ def _infer_literal_assignments_near_site(text: str, site_line: int, symbol: str)
     return literal_by_line
 
 
+def _infer_last_assignment_expr_near_site(text: str, site_line: int, symbol: str) -> Optional[str]:
+    # Best-effort: find the last assignment to `symbol` before `site_line` within a window.
+    # We only support single-statement assignments ending with ';'.
+    lines = text.splitlines()
+    start = max(0, site_line - 1 - 260)
+    end = min(len(lines), site_line - 1 + 10)
+
+    assign_re = re.compile(
+        r"^(?:\s*(?:final\s+)?String\s+)?" + re.escape(symbol) + r"\s*=\s*(.+?)\s*;\s*$"
+    )
+
+    last_expr: Optional[str] = None
+    for i in range(start, min(end, site_line - 1) + 1):
+        m = assign_re.match(lines[i])
+        if m:
+            last_expr = m.group(1).strip()
+
+    return last_expr
+
+
+def _enhance_pattern_usage(usage: PatternKeyUsage, java_text: str) -> Optional[EnhancedPatternUsage]:
+    # Build a better wildcard pattern by substituting intermediate variables that are
+    # themselves concatenations (e.g. fieldKey = "a." + key + ".b."), preserving
+    # their literal segments.
+    segments: list[tuple[str, str]] = []  # (kind, value) kind=lit|expr
+    for part in usage.raw_parts:
+        lit = _parse_java_string_literal(part)
+        if lit is not None:
+            segments.append(("lit", lit))
+        else:
+            segments.append(("expr", part.strip()))
+
+    inferred: dict[str, str] = {}
+    out_parts: list[str] = []
+
+    for kind, val in segments:
+        if kind == "lit":
+            out_parts.append(val)
+            continue
+
+        sym = _extract_symbol_from_expr(val)
+        if sym is None:
+            out_parts.append("*")
+            continue
+
+        # If the symbol is directly set to a literal nearby, we cannot represent multiple
+        # values in a single pattern, so fall back to '*'.
+        literal_assignments = _infer_literal_assignments_near_site(java_text, usage.site.line, sym)
+        if len(literal_assignments) == 1:
+            only_value = next(iter(literal_assignments.keys()))
+            inferred[sym] = only_value
+            out_parts.append(only_value)
+            continue
+        if len(literal_assignments) > 1:
+            out_parts.append("*")
+            continue
+
+        rhs = _infer_last_assignment_expr_near_site(java_text, usage.site.line, sym)
+        if rhs is None:
+            out_parts.append("*")
+            continue
+
+        rhs_kind, rhs_value = _expr_to_key_or_pattern(rhs)
+        if rhs_kind == "certain":
+            inferred[sym] = rhs_value
+            out_parts.append(rhs_value)
+            continue
+        if rhs_kind == "pattern":
+            inferred[sym] = rhs_value["pattern"]
+            out_parts.append(rhs_value["pattern"])
+            continue
+
+        out_parts.append("*")
+
+    enhanced = "".join(out_parts)
+    enhanced = re.sub(r"\*+", "*", enhanced)
+    if enhanced == usage.pattern:
+        return None
+    return EnhancedPatternUsage(
+        pattern=enhanced,
+        original_pattern=usage.pattern,
+        site=usage.site,
+        inferred_from_symbols=inferred,
+    )
+
+
 def _infer_key_values_from_key_classes(text: str) -> dict[str, set[str]]:
     # Looks for inner classes that contain `final String key;` and then collects
     # string literals passed as the first ctor arg in `new <Class>("...")`.
@@ -528,7 +671,153 @@ def _infer_key_values_from_key_classes(text: str) -> dict[str, set[str]]:
             if lit is None:
                 continue
             values_by_class.setdefault(cls, set()).add(lit)
+
+    # Enum inference: enums that define `final String key;` and have constants like NAME("second", ...)
+    for enum_name, enum_keys in _infer_enum_key_values(text).items():
+        if enum_keys:
+            values_by_class.setdefault(f"enum:{enum_name}", set()).update(enum_keys)
+
     return values_by_class
+
+
+def _infer_enum_key_values(text: str) -> dict[str, set[str]]:
+    out: dict[str, set[str]] = {}
+
+    enum_re = re.compile(r"\benum\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\{")
+    for m in enum_re.finditer(text):
+        enum_name = m.group(1)
+        open_brace = text.find("{", m.end() - 1)
+        if open_brace == -1:
+            continue
+        close_brace = _find_matching_brace(text, open_brace)
+        if close_brace == -1:
+            continue
+
+        body = text[open_brace + 1 : close_brace]
+        if not re.search(r"\bfinal\s+String\s+key\s*;", body):
+            continue
+
+        # Constants are before the first ';' at top-level (paren depth 0).
+        in_string = False
+        in_char = False
+        escaped = False
+        depth_paren = 0
+        constants_end = None
+        for i, ch in enumerate(body):
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == '"':
+                    in_string = False
+                continue
+            if in_char:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == "'":
+                    in_char = False
+                continue
+
+            if ch == '"':
+                in_string = True
+                continue
+            if ch == "'":
+                in_char = True
+                continue
+            if ch == "(":
+                depth_paren += 1
+                continue
+            if ch == ")":
+                depth_paren = max(0, depth_paren - 1)
+                continue
+
+            if ch == ";" and depth_paren == 0:
+                constants_end = i
+                break
+
+        if constants_end is None:
+            continue
+
+        constants_blob = body[:constants_end]
+        # Split constants on top-level commas.
+        constants = _split_top_level(constants_blob, ",")
+        keys: set[str] = set()
+        for c in constants:
+            cm = re.search(r"\(\s*(\"(?:\\.|[^\"\\])*\")", c)
+            if not cm:
+                continue
+            lit = _parse_java_string_literal(cm.group(1))
+            if lit is None:
+                continue
+            keys.add(lit)
+
+        if keys:
+            out[enum_name] = keys
+
+    return out
+
+
+def _inline_concat_symbol_segments(
+    segments: list[tuple[str, str]],
+    java_text: str,
+    site_line: int,
+    max_depth: int = 2,
+) -> list[tuple[str, str]]:
+    # Inline simple assignment expressions into the current concat segments.
+    # Example: [expr fieldKey, lit every_interval] with
+    #   fieldKey = "a." + key + ".b.";
+    # becomes: [lit a., expr key, lit .b., lit every_interval]
+    current = segments
+    inlined_symbols: set[str] = set()
+
+    for _ in range(max_depth):
+        changed = False
+        next_segments: list[tuple[str, str]] = []
+
+        for kind, val in current:
+            if kind != "expr":
+                next_segments.append((kind, val))
+                continue
+
+            sym = _extract_symbol_from_expr(val)
+            if sym is None or sym in inlined_symbols:
+                next_segments.append((kind, val))
+                continue
+
+            rhs = _infer_last_assignment_expr_near_site(java_text, site_line, sym)
+            if rhs is None:
+                next_segments.append((kind, val))
+                continue
+
+            rhs_kind, rhs_value = _expr_to_key_or_pattern(rhs)
+            if rhs_kind == "certain":
+                next_segments.append(("lit", rhs_value))
+                inlined_symbols.add(sym)
+                changed = True
+                continue
+
+            if rhs_kind == "pattern":
+                # Inline the RHS parts, preserving symbols.
+                for part in rhs_value["parts"]:
+                    lit = _parse_java_string_literal(part)
+                    if lit is not None:
+                        next_segments.append(("lit", lit))
+                    else:
+                        next_segments.append(("expr", part.strip()))
+                inlined_symbols.add(sym)
+                changed = True
+                continue
+
+            next_segments.append((kind, val))
+
+        current = next_segments
+        if not changed:
+            break
+
+    return current
 
 
 def _expand_pattern_usage(
@@ -549,6 +838,9 @@ def _expand_pattern_usage(
         else:
             segments.append(("expr", part.strip()))
 
+    # Inline intermediate concat symbols (e.g. fieldKey).
+    segments = _inline_concat_symbol_segments(segments, java_text, usage.site.line)
+
     # Determine which expr segments are resolvable symbols.
     symbols_in_order: list[Optional[str]] = []
     for kind, val in segments:
@@ -561,7 +853,7 @@ def _expand_pattern_usage(
     symbol_values: dict[str, list[str]] = {}
     resolution_sites: list[UsageSite] = []
 
-    # Special: infer ctor first-arg keys for `key` fields in this file.
+    # Special: infer ctor first-arg keys for `key` fields + enum constant keys in this file.
     key_values_by_class = _infer_key_values_from_key_classes(java_text)
     combined_key_values: set[str] = set()
     for vals in key_values_by_class.values():
@@ -749,6 +1041,21 @@ def main(argv: list[str]) -> int:
 
     yaml_keys = set(yaml_key_types.keys())
 
+    # 2.25) Improve wildcard patterns by resolving intermediate variables.
+    enhanced_patterns: list[EnhancedPatternUsage] = []
+    all_effective_patterns: list[str] = []
+    for p in all_patterns:
+        java_text = java_text_by_file.get(p.site.file)
+        if not java_text:
+            all_effective_patterns.append(p.pattern)
+            continue
+        enhanced = _enhance_pattern_usage(p, java_text)
+        if enhanced is not None:
+            enhanced_patterns.append(enhanced)
+            all_effective_patterns.append(enhanced.pattern)
+        else:
+            all_effective_patterns.append(p.pattern)
+
     # 2.5) Resolve templates into likely concrete keys when possible.
     expanded_key_usages: list[ExpandedKeyUsage] = []
     expansion_resolution_sites: list[UsageSite] = []
@@ -771,8 +1078,9 @@ def main(argv: list[str]) -> int:
     unused_in_message_lookups = sorted([k for k in yaml_keys if k not in certain_keys])
 
     # Treat wildcard patterns (string concat) as "likely used" for pruning decisions.
-    # Example: switchKey + ".name" => "*.name" which is broad, but safe.
-    pattern_regexes = [_pattern_to_regex(p.pattern) for p in all_patterns]
+    # We use enhanced patterns when available so intermediate variables (e.g. fieldKey)
+    # preserve their literal segments.
+    pattern_regexes = [_pattern_to_regex(p) for p in all_effective_patterns]
     yaml_keys_matched_by_patterns: set[str] = set()
     if pattern_regexes:
         for key in yaml_keys:
@@ -850,6 +1158,8 @@ def main(argv: list[str]) -> int:
     print(f"Total key usages found:      {len(all_certain) + len(all_patterns) + len(all_uncertain)}")
     print(f"Unique certain keys (code):  {len(certain_keys)}")
     print(f"Pattern key usages:          {len(all_patterns)}")
+    if enhanced_patterns:
+        print(f"Enhanced pattern usages:     {len(enhanced_patterns)}")
     print(f"Expanded template keys:      {len(expanded_key_usages)}")
     print(f"Expanded missing in YAML:    {len(expanded_keys_missing_in_yaml)}")
     print(f"Uncertain/dynamic usages:    {len(all_uncertain)}")
@@ -949,6 +1259,20 @@ def main(argv: list[str]) -> int:
             print(f"  expr: {s.arg_expr}")
         print()
 
+    if enhanced_patterns:
+        print("Enhanced patterns (resolved intermediates)")
+        print("----------------------------------------")
+        max_show = 250
+        for e in enhanced_patterns[:max_show]:
+            print(f"- {e.pattern}  ({e.site.file}:{e.site.line})")
+            if e.inferred_from_symbols:
+                items = ", ".join(f"{k}={v}" for k, v in sorted(e.inferred_from_symbols.items()))
+                print(f"  inferred: {items}")
+            print(f"  original: {e.original_pattern}")
+        if len(enhanced_patterns) > max_show:
+            print(f"... and {len(enhanced_patterns) - max_show} more")
+        print()
+
     if expanded_key_usages:
         print("Expanded pattern usages (inferred keys)")
         print("--------------------------------------")
@@ -1036,6 +1360,19 @@ def main(argv: list[str]) -> int:
                     "raw_parts": list(p.raw_parts),
                 }
                 for p in all_patterns
+            ],
+            "enhanced_pattern_usages": [
+                {
+                    "pattern": e.pattern,
+                    "original_pattern": e.original_pattern,
+                    "site": {
+                        "file": e.site.file,
+                        "line": e.site.line,
+                        "method": e.site.method,
+                    },
+                    "inferred_from_symbols": e.inferred_from_symbols,
+                }
+                for e in enhanced_patterns
             ],
             "expanded_pattern_usages": [
                 {
