@@ -2219,11 +2219,114 @@ def main(argv: list[str]) -> int:
     if unused_but_inferred_by_expansion:
         print("YAML keys not used in message lookups, but inferred by expanded patterns")
         print("-----------------------------------------------------------------------")
-        max_show = 250
-        for key in unused_but_inferred_by_expansion[:max_show]:
-            print(f"- {key}")
-        if len(unused_but_inferred_by_expansion) > max_show:
-            print(f"... and {len(unused_but_inferred_by_expansion) - max_show} more")
+        # Explain WHY a YAML key landed here by grouping it by the pattern usage that inferred it.
+        inferred_set = set(unused_but_inferred_by_expansion)
+
+        pattern_usage_by_site: dict[tuple[str, int, str], PatternKeyUsage] = {}
+        for p in all_patterns:
+            pattern_usage_by_site.setdefault((p.site.file, p.site.line, p.site.method), p)
+
+        groups: dict[tuple[str, str, int, str], list[ExpandedKeyUsage]] = {}
+        for u in expanded_key_usages:
+            if u.key not in inferred_set:
+                continue
+            if u.key not in yaml_keys:
+                # This section is specifically for YAML keys.
+                continue
+            groups.setdefault((u.pattern, u.site.file, u.site.line, u.site.method), []).append(u)
+
+        # Sort groups in a stable, readable way.
+        sorted_groups = sorted(groups.items(), key=lambda kv: kv[0])
+
+        max_pattern_groups = 40
+        max_keys_per_group = 30
+        total_key_cap = 500
+
+        shown_groups = 0
+        shown_keys = 0
+
+        for (pattern, file, line, method), usages in sorted_groups:
+            if shown_groups >= max_pattern_groups or shown_keys >= total_key_cap:
+                break
+
+            java_text = java_text_by_file.get(file)
+            pattern_usage = pattern_usage_by_site.get((file, line, method))
+            resolved_source_patterns: list[str] = []
+            if java_text and pattern_usage:
+                resolved_source_patterns = _patterns_for_pattern_usage(pattern_usage, java_text)
+
+            # Summarize symbol values used to infer keys for this pattern.
+            values_by_symbol: dict[str, set[str]] = {}
+            for u in usages:
+                for sym, vals in u.symbols.items():
+                    values_by_symbol.setdefault(sym, set()).update(vals)
+
+            symbol_summary = ""
+            if values_by_symbol:
+                parts: list[str] = []
+                for sym in sorted(values_by_symbol.keys()):
+                    vals = sorted(values_by_symbol[sym])
+                    if not vals:
+                        continue
+                    shown = ",".join(vals[:6])
+                    suffix = "" if len(vals) <= 6 else f"(+{len(vals) - 6})"
+                    parts.append(f"{sym}={shown}{suffix}")
+                if parts:
+                    symbol_summary = "  symbols: " + "; ".join(parts)
+
+            # Group header
+            keys_in_group = sorted({u.key for u in usages})
+            print(f"template: {pattern}  ({file}:{line})  ({method})  -> {len(keys_in_group)} key(s)")
+            if pattern_usage is not None:
+                print(f"  expr: {pattern_usage.site.arg_expr}")
+            if resolved_source_patterns:
+                show = 8
+                shown_resolved = ", ".join(resolved_source_patterns[:show])
+                suffix = "" if len(resolved_source_patterns) <= show else f" (+{len(resolved_source_patterns) - show} more)"
+                print(f"  resolved_patterns: {shown_resolved}{suffix}")
+            if symbol_summary:
+                print(symbol_summary)
+
+            # Show keys (with per-key symbol trace when available)
+            usages_by_key: dict[str, list[ExpandedKeyUsage]] = {}
+            for u in usages:
+                usages_by_key.setdefault(u.key, []).append(u)
+
+            for key in keys_in_group[:max_keys_per_group]:
+                if shown_keys >= total_key_cap:
+                    break
+
+                examples = usages_by_key.get(key) or []
+                # Pick one example usage for this key and render its symbols compactly.
+                symbol_trace = ""
+                if examples and examples[0].symbols:
+                    items: list[str] = []
+                    for sym in sorted(examples[0].symbols.keys()):
+                        vals = examples[0].symbols.get(sym) or []
+                        if not vals:
+                            continue
+                        if len(vals) == 1:
+                            items.append(f"{sym}={vals[0]}")
+                        else:
+                            items.append(f"{sym}={','.join(vals[:4])}{'...' if len(vals) > 4 else ''}")
+                    if items:
+                        symbol_trace = "  (via " + ", ".join(items) + ")"
+
+                print(f"- {key}{symbol_trace}")
+                shown_keys += 1
+
+            remaining = len(keys_in_group) - min(len(keys_in_group), max_keys_per_group)
+            if remaining > 0:
+                print(f"... and {remaining} more key(s) for this pattern")
+
+            shown_groups += 1
+
+        remaining_groups = len(sorted_groups) - shown_groups
+        remaining_keys = len(unused_but_inferred_by_expansion) - shown_keys
+        if remaining_groups > 0:
+            print(f"... and {remaining_groups} more pattern group(s)")
+        if remaining_keys > 0 and shown_keys >= total_key_cap:
+            print(f"... and {remaining_keys} more key(s) total")
         print()
 
     if unused_but_matched_by_patterns:
