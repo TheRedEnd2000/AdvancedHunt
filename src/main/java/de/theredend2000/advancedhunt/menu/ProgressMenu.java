@@ -71,44 +71,50 @@ public class ProgressMenu extends PagedMenu {
         if (isLoading) {
             addMenuBorder();
             ItemStack loadingItem = new ItemBuilder(Material.HOPPER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.loading", false))
-                .build();
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.loading", false))
+                    .build();
             addStaticItem(22, loadingItem);
             fetchData();
             return;
         }
 
         addMenuBorder();
-        
+
         // Add stats button at slot 8 (top right corner)
         addStatsButton();
 
         if (treasures == null || treasures.isEmpty()) {
             ItemStack emptyItem = new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.no_treasures.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.progress.no_treasures.lore", false))
-                .build();
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.no_treasures.name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.progress.no_treasures.lore", false))
+                    .build();
             addStaticItem(22, emptyItem);
             return;
         }
 
         addPagedButtons(treasures.size());
 
-        for (int i = 0; i < treasures.size(); i++) {
+        // WICHTIG: Berechne Start und End Index für diese Seite
+        int startIndex = page * maxItemsPerPage;
+        int endIndex = Math.min(startIndex + maxItemsPerPage, treasures.size());
+
+        // WICHTIG: Setze hasNextPage Flag
+        this.hasNextPage = endIndex < treasures.size();
+
+        // Zeige nur Items für die aktuelle Seite
+        for (int i = startIndex; i < endIndex; i++) {
             TreasureCore treasureCore = treasures.get(i);
             boolean isFound = playerData.getFoundTreasures().contains(treasureCore.getId());
-            
-            // Calculate if this item should be on the current page
-            int pageIndex = i - (page * maxItemsPerPage);
-            
-            if (pageIndex >= 0 && pageIndex < maxItemsPerPage) {
-                ItemStack item = createTreasureItem(treasureCore, i, isFound);
-                addPagedItem(pageIndex, item, e -> handleTreasureClick(e, treasureCore, isFound));
-            }
+
+            // Page index ist relativ zur aktuellen Seite
+            int pageIndex = i - startIndex;
+
+            ItemStack item = createTreasureItem(treasureCore, i, isFound);
+            addPagedItem(pageIndex, item, e -> handleTreasureClick(e, treasureCore, isFound));
         }
-        
+
         // Update index for pagination
-        this.index = Math.min(treasures.size() - 1, (page + 1) * maxItemsPerPage - 1);
+        this.index = endIndex - 1;
     }
 
     private void fetchData() {
