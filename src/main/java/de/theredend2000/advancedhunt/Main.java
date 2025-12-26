@@ -38,6 +38,7 @@ public final class Main extends JavaPlugin {
     private PluginUpdater pluginUpdater;
     private ChatInputListener chatInputListener;
     private MinigameManager minigameManager;
+    private SoundManager soundManager;
 
     @Override
     public void onEnable() {
@@ -46,6 +47,7 @@ public final class Main extends JavaPlugin {
         migrationService = new MigrationService(getLogger());
         // Initialize Message Manager
         messageManager = new MessageManager(this);
+        soundManager = new SoundManager(this);
 
         // Initialize Data Repository
         String storageType = getConfig().getString("storage.type", "YAML");
@@ -219,5 +221,9 @@ public final class Main extends JavaPlugin {
 
     public MinigameManager getMinigameManager() {
         return minigameManager;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
     }
 }
