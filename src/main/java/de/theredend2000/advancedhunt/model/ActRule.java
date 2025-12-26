@@ -20,13 +20,6 @@ public class ActRule {
     private int priority;           // For UI ordering
 
     /**
-     * Creates a new ACT rule with generated UUID
-     */
-    public ActRule(UUID collectionId, String name) {
-        this(UUID.randomUUID(), collectionId, name);
-    }
-
-    /**
      * Creates a new ACT rule with specified UUID (for loading from storage)
      */
     public ActRule(UUID id, UUID collectionId, String name) {

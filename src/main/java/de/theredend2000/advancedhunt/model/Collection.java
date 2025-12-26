@@ -14,10 +14,6 @@ public class Collection {
     private boolean singlePlayerFind; // If true, only one player can find it (global treasure)
     private List<Reward> completionRewards; // Rewards for finding all treasures
 
-    public Collection(String name, boolean enabled) {
-        this(UUID.randomUUID(), name, enabled);
-    }
-
     public Collection(UUID id, String name, boolean enabled) {
         this.id = id;
         this.name = name;

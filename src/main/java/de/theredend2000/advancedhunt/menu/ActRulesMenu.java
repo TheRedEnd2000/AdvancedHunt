@@ -158,7 +158,7 @@ public class ActRulesMenu extends PagedMenu {
                 .build(), (e) -> {
             processing = true;
             // Create new rule with default name
-            ActRule newRule = new ActRule(collection.getId(), "New Rule");
+            ActRule newRule = new ActRule(plugin.getCollectionManager().generateUniqueActRuleId(), collection.getId(), "New Rule");
             collection.addActRule(newRule);
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
