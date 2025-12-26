@@ -1,10 +1,14 @@
 storage:
-  type: SQLITE # Options: SQLITE, MYSQL, YAML
-  host: localhost
-  port: 3306
-  database: advancedhunt
-  username: root
-  password: password
+  # Options: SQLITE, MYSQL, YAML
+  type: SQLITE
+
+  # MySQL Configuration (Only needed if type is MYSQL)
+  mysql:
+    host: localhost
+    port: 3306
+    database: advancedhunt
+    username: root
+    password: password
 
 dev-mode: false
 
