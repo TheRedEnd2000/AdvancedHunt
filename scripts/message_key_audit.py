@@ -38,6 +38,9 @@ from typing import Any, Iterable, Optional
 METHOD_NAMES = ("getMessage", "getMessageList")
 
 
+JAVA_STRING_LITERAL_RE = re.compile(r'"(?:\\.|[^"\\])*"', re.DOTALL)
+
+
 @dataclass(frozen=True)
 class UsageSite:
     file: str
@@ -125,6 +128,16 @@ def _parse_java_string_literal(expr: str) -> Optional[str]:
         i += 1
     # Unescape common sequences for readability, but keep unknown escapes as-is.
     return bytes(content, "utf-8").decode("unicode_escape")
+
+
+def _extract_java_string_literals(text: str) -> set[str]:
+    out: set[str] = set()
+    for m in JAVA_STRING_LITERAL_RE.finditer(text):
+        # Includes the surrounding quotes.
+        lit = _parse_java_string_literal(m.group(0))
+        if lit is not None:
+            out.add(lit)
+    return out
 
 
 def _find_matching_paren(text: str, open_paren_index: int) -> int:
@@ -435,10 +448,18 @@ def main(argv: list[str]) -> int:
     all_patterns: list[PatternKeyUsage] = []
     all_uncertain: list[UncertainKeyUsage] = []
 
+    # For classifying “unused in message lookups” YAML keys:
+    # - exact matches found in ANY Java string literal
+    # - fallback substring matches found anywhere in Java source
+    all_string_literals: set[str] = set()
+    all_code_text_parts: list[str] = []
+
     java_files = list(_iter_java_files(java_root))
     for file_path in java_files:
         rel_file = file_path.relative_to(root).as_posix()
         text = _read_text(file_path)
+        all_code_text_parts.append(text)
+        all_string_literals |= _extract_java_string_literals(text)
         certain, patterns, uncertain = _extract_method_calls(text, rel_file)
         all_certain.extend(certain)
         all_patterns.extend(patterns)
@@ -467,7 +488,25 @@ def main(argv: list[str]) -> int:
 
     # 3) Compare
     missing_in_yaml = sorted([k for k in certain_keys.keys() if k not in yaml_keys])
-    unused_in_code = sorted([k for k in yaml_keys if k not in certain_keys])
+    # "Unused" here means: not referenced as a *certain literal* key in getMessage/getMessageList.
+    unused_in_message_lookups = sorted([k for k in yaml_keys if k not in certain_keys])
+
+    # Further classify unused YAML keys by presence anywhere in code.
+    # 1) Found as an exact Java string literal
+    unused_but_found_as_string_literal: list[str] = []
+    # 2) Not an exact literal, but found as a substring in code text
+    unused_but_found_in_code_text: list[str] = []
+    # 3) Not found anywhere in code
+    unused_not_found_anywhere: list[str] = []
+
+    code_blob = "\n".join(all_code_text_parts)
+    for key in unused_in_message_lookups:
+        if key in all_string_literals:
+            unused_but_found_as_string_literal.append(key)
+        elif key in code_blob:
+            unused_but_found_in_code_text.append(key)
+        else:
+            unused_not_found_anywhere.append(key)
 
     type_mismatches: list[dict[str, Any]] = []
     for key, sites in certain_keys.items():
@@ -506,7 +545,10 @@ def main(argv: list[str]) -> int:
     print(f"Uncertain/dynamic usages:    {len(all_uncertain)}")
     print(f"YAML keys (flattened):       {len(yaml_keys)}")
     print(f"Missing in YAML (certain):   {len(missing_in_yaml)}")
-    print(f"Unused in code (certain):    {len(unused_in_code)}")
+    print(f"Unused in message lookups:   {len(unused_in_message_lookups)}")
+    print(f"- found as string literal:   {len(unused_but_found_as_string_literal)}")
+    print(f"- found in code text:        {len(unused_but_found_in_code_text)}")
+    print(f"- not found anywhere:        {len(unused_not_found_anywhere)}")
     if duplicates:
         print(f"YAML duplicate/type-collisions: {len(duplicates)}")
     print()
@@ -519,15 +561,34 @@ def main(argv: list[str]) -> int:
             print(f"- {key}  ({site.file}:{site.line})")
         print()
 
-    if unused_in_code:
-        print("Unused YAML keys (not referenced as string literals)")
-        print("---------------------------------------------------")
-        # Keep this section readable; don’t spam thousands of lines.
+    if unused_but_found_as_string_literal:
+        print("YAML keys not used in message lookups, but found as Java string literals")
+        print("-----------------------------------------------------------------------")
         max_show = 250
-        for key in unused_in_code[:max_show]:
+        for key in unused_but_found_as_string_literal[:max_show]:
             print(f"- {key}")
-        if len(unused_in_code) > max_show:
-            print(f"... and {len(unused_in_code) - max_show} more")
+        if len(unused_but_found_as_string_literal) > max_show:
+            print(f"... and {len(unused_but_found_as_string_literal) - max_show} more")
+        print()
+
+    if unused_but_found_in_code_text:
+        print("YAML keys not used in message lookups, but found somewhere in code text")
+        print("---------------------------------------------------------------------")
+        max_show = 250
+        for key in unused_but_found_in_code_text[:max_show]:
+            print(f"- {key}")
+        if len(unused_but_found_in_code_text) > max_show:
+            print(f"... and {len(unused_but_found_in_code_text) - max_show} more")
+        print()
+
+    if unused_not_found_anywhere:
+        print("YAML keys not found anywhere in code")
+        print("----------------------------------")
+        max_show = 250
+        for key in unused_not_found_anywhere[:max_show]:
+            print(f"- {key}")
+        if len(unused_not_found_anywhere) > max_show:
+            print(f"... and {len(unused_not_found_anywhere) - max_show} more")
         print()
 
     if type_mismatches:
@@ -572,7 +633,10 @@ def main(argv: list[str]) -> int:
                 "uncertain_usages": len(all_uncertain),
                 "yaml_keys": len(yaml_keys),
                 "missing_in_yaml": len(missing_in_yaml),
-                "unused_in_code": len(unused_in_code),
+                "unused_in_message_lookups": len(unused_in_message_lookups),
+                "unused_found_as_string_literal": len(unused_but_found_as_string_literal),
+                "unused_found_in_code_text": len(unused_but_found_in_code_text),
+                "unused_not_found_anywhere": len(unused_not_found_anywhere),
             },
             "missing_in_yaml": [
                 {
@@ -585,7 +649,10 @@ def main(argv: list[str]) -> int:
                 }
                 for k in missing_in_yaml
             ],
-            "unused_in_code": unused_in_code,
+            "unused_in_message_lookups": unused_in_message_lookups,
+            "unused_found_as_string_literal": unused_but_found_as_string_literal,
+            "unused_found_in_code_text": unused_but_found_in_code_text,
+            "unused_not_found_anywhere": unused_not_found_anywhere,
             "pattern_usages": [
                 {
                     "pattern": p.pattern,
