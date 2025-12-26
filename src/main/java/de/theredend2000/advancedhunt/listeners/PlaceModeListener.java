@@ -59,7 +59,7 @@ public class PlaceModeListener implements Listener {
         }
 
         Treasure treasure = new Treasure(
-                UUID.randomUUID(),
+                treasureManager.generateUniqueTreasureId(),
                 collectionId,
                 block.getLocation(),
                 new ArrayList<>(),

@@ -104,12 +104,39 @@ public class CollectionManager {
         });
     }
 
+    public UUID generateUniqueCollectionId() {
+        UUID id;
+        do {
+            id = UUID.randomUUID();
+        } while (getCollectionById(id).isPresent());
+        return id;
+    }
+
+    public UUID generateUniqueActRuleId() {
+        UUID id;
+        do {
+            id = UUID.randomUUID();
+        } while (doesActRuleExist(id));
+        return id;
+    }
+
+    private boolean doesActRuleExist(UUID id) {
+        for (Collection collection : cachedCollections) {
+            if (collection.getActRules() != null) {
+                for (de.theredend2000.advancedhunt.model.ActRule rule : collection.getActRules()) {
+                    if (rule.getId().equals(id)) return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public CompletableFuture<Boolean> createCollection(String name) {
         if (getCollectionByName(name).isPresent()) {
             return CompletableFuture.completedFuture(false);
         }
 
-        Collection collection = new Collection(UUID.randomUUID(), name, true);
+        Collection collection = new Collection(generateUniqueCollectionId(), name, true);
         return repository.saveCollection(collection).thenCompose(v -> 
             reloadCollections().thenApply(x -> true)
         );
