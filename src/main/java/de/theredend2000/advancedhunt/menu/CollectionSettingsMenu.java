@@ -47,11 +47,11 @@ public class CollectionSettingsMenu extends Menu {
                 plugin.getCollectionManager().renameCollection(collection.getName(), input).thenAccept(success -> {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         if (success) {
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("rename.success", "%old_name%", collection.getName(), "%new_name%", input));
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.success", "%old_name%", collection.getName(), "%new_name%", input));
                             collection.setName(input); // Update local object
                             new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
                         } else {
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("rename.failed"));
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.failed"));
                             new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
                         }
                     });

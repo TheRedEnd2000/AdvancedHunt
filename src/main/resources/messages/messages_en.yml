@@ -1,5 +1,8 @@
 prefix: "&6AdvancedHunt &8>> &7"
 
+error:
+  no_permission: "%prefix%&cYou do not have permission to do this!"
+
 command:
   help:
     - "&6AdvancedHunt V3 Help:"
@@ -82,8 +85,6 @@ gui:
       validation:
         date_range: "%prefix%&cInvalid date range! Use ISO dates (2024-01-01:2024-12-31) or * for always."
         duration: "%prefix%&cInvalid duration! Use format like 2h, 30m, or * for always active."
-  error:
-    no_permission: "%prefix%&cYou do not have permission to do this!"
   rewards:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"
