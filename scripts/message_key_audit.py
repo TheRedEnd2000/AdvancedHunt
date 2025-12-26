@@ -346,6 +346,160 @@ def _split_top_level(text: str, separator: str) -> list[str]:
     return [p for p in parts if p != ""]
 
 
+def _split_top_level_ternary(expr: str) -> Optional[tuple[str, str, str]]:
+    # Splits a Java ternary expression at top-level into (cond, true_expr, false_expr).
+    # Returns None if no top-level ternary could be found.
+    depth_paren = 0
+    depth_brack = 0
+    depth_brace = 0
+    in_string = False
+    in_char = False
+    escaped = False
+
+    q_index = None
+    # Find first top-level '?'
+    for i, ch in enumerate(expr):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+
+        if in_char:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            continue
+
+        if ch == '"':
+            in_string = True
+            continue
+        if ch == "'":
+            in_char = True
+            continue
+
+        if ch == "(":
+            depth_paren += 1
+            continue
+        if ch == ")":
+            depth_paren = max(0, depth_paren - 1)
+            continue
+        if ch == "[":
+            depth_brack += 1
+            continue
+        if ch == "]":
+            depth_brack = max(0, depth_brack - 1)
+            continue
+        if ch == "{":
+            depth_brace += 1
+            continue
+        if ch == "}":
+            depth_brace = max(0, depth_brace - 1)
+            continue
+
+        if ch == "?" and depth_paren == 0 and depth_brack == 0 and depth_brace == 0:
+            q_index = i
+            break
+
+    if q_index is None:
+        return None
+
+    # Find matching ':' for this '?' (handle nested ternaries at top-level).
+    in_string = False
+    in_char = False
+    escaped = False
+    depth_paren = depth_brack = depth_brace = 0
+    ternary_depth = 0
+    colon_index = None
+
+    for i in range(q_index, len(expr)):
+        ch = expr[i]
+
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+
+        if in_char:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            continue
+
+        if ch == '"':
+            in_string = True
+            continue
+        if ch == "'":
+            in_char = True
+            continue
+
+        if ch == "(":
+            depth_paren += 1
+            continue
+        if ch == ")":
+            depth_paren = max(0, depth_paren - 1)
+            continue
+        if ch == "[":
+            depth_brack += 1
+            continue
+        if ch == "]":
+            depth_brack = max(0, depth_brack - 1)
+            continue
+        if ch == "{":
+            depth_brace += 1
+            continue
+        if ch == "}":
+            depth_brace = max(0, depth_brace - 1)
+            continue
+
+        if depth_paren != 0 or depth_brack != 0 or depth_brace != 0:
+            continue
+
+        if ch == "?":
+            ternary_depth += 1
+            continue
+
+        if ch == ":":
+            if ternary_depth == 0:
+                colon_index = i
+                break
+            ternary_depth -= 1
+            continue
+
+    if colon_index is None:
+        return None
+
+    cond = expr[:q_index].strip()
+    true_expr = expr[q_index + 1 : colon_index].strip()
+    false_expr = expr[colon_index + 1 :].strip()
+    return cond, true_expr, false_expr
+
+
+def _ternary_literal_branches(expr: str) -> Optional[tuple[str, str]]:
+    parsed = _split_top_level_ternary(expr)
+    if parsed is None:
+        return None
+    _cond, t_expr, f_expr = parsed
+    t_lit = _parse_java_string_literal(t_expr)
+    f_lit = _parse_java_string_literal(f_expr)
+    if t_lit is None or f_lit is None:
+        return None
+    return t_lit, f_lit
+
+
 JAVA_IDENTIFIER_RE = re.compile(r"^[A-Za-z_$][A-Za-z0-9_$]*$")
 
 
@@ -422,6 +576,15 @@ def _extract_method_calls(
 
         arg_expr = args[0]
         site = UsageSite(rel_file, _offset_to_line(line_starts, match.start()), method, arg_expr.strip())
+
+        # Support "inline if" (ternary) used directly in getMessage/getMessageList first arg.
+        ternary = _ternary_literal_branches(arg_expr)
+        if ternary is not None:
+            t_key, f_key = ternary
+            certain.append(CertainKeyUsage(key=t_key, site=site))
+            certain.append(CertainKeyUsage(key=f_key, site=site))
+            continue
+
         kind, value = _expr_to_key_or_pattern(arg_expr)
 
         if kind == "certain":
@@ -542,6 +705,27 @@ def _infer_literal_assignments_near_site(text: str, site_line: int, symbol: str)
     )
     for m in ternary_re.finditer(window):
         for group_index in (1, 2):
+            lit = _parse_java_string_literal(m.group(group_index))
+            if lit is None:
+                continue
+            before = window[: m.start()]
+            line_in_window = before.count("\n")
+            file_line = start + 1 + line_in_window
+            literal_by_line.setdefault(lit, []).append(file_line)
+
+    # Inline if/else assignment (common alternative to ternary):
+    # if (cond) symbol = "a"; else symbol = "b";
+    # Also supports braces with minimal nesting.
+    if_else_re = re.compile(
+        r"\bif\s*\([^\)]*\)\s*(?:\{\s*)?" + re.escape(symbol) +
+        r"\s*=\s*(\"(?:\\.|[^\"\\])*\")\s*;\s*(?:\}\s*)?" +
+        r"(?:else\s*(?:\{\s*)?" + re.escape(symbol) + r"\s*=\s*(\"(?:\\.|[^\"\\])*\")\s*;)?",
+        re.DOTALL,
+    )
+    for m in if_else_re.finditer(window):
+        for group_index in (1, 2):
+            if m.group(group_index) is None:
+                continue
             lit = _parse_java_string_literal(m.group(group_index))
             if lit is None:
                 continue
@@ -1020,6 +1204,32 @@ def main(argv: list[str]) -> int:
         if not any(u.site.file.endswith(suffix) for suffix in IGNORE_UNCERTAIN_FILE_SUFFIXES)
     ]
 
+    # Resolve some uncertain usages where the arg is a simple identifier and we can
+    # infer its literal values nearby (ternary or if/else assignments).
+    resolved_uncertain_as_certain: list[CertainKeyUsage] = []
+    remaining_uncertain: list[UncertainKeyUsage] = []
+    for u in all_uncertain:
+        java_text = java_text_by_file.get(u.site.file)
+        if not java_text:
+            remaining_uncertain.append(u)
+            continue
+
+        sym = _extract_symbol_from_expr(u.site.arg_expr)
+        if sym is None:
+            remaining_uncertain.append(u)
+            continue
+
+        inferred = _infer_literal_assignments_near_site(java_text, u.site.line, sym)
+        if not inferred:
+            remaining_uncertain.append(u)
+            continue
+
+        for lit in sorted(inferred.keys()):
+            resolved_uncertain_as_certain.append(CertainKeyUsage(key=lit, site=u.site))
+
+    all_uncertain = remaining_uncertain
+    all_certain.extend(resolved_uncertain_as_certain)
+
     certain_keys: dict[str, list[UsageSite]] = {}
     for usage in all_certain:
         certain_keys.setdefault(usage.key, []).append(usage.site)
@@ -1072,6 +1282,11 @@ def main(argv: list[str]) -> int:
     expanded_keys_present_in_yaml = {k for k in expanded_keys if k in yaml_keys}
     expanded_keys_missing_in_yaml = sorted([k for k in expanded_keys if k not in yaml_keys])
 
+    expanded_pattern_sites: set[tuple[str, int, str]] = {
+        (u.site.file, u.site.line, u.pattern)
+        for u in expanded_key_usages
+    }
+
     # 3) Compare
     missing_in_yaml = sorted([k for k in certain_keys.keys() if k not in yaml_keys])
     # "Unused" here means: not referenced as a *certain literal* key in getMessage/getMessageList.
@@ -1116,8 +1331,9 @@ def main(argv: list[str]) -> int:
         else:
             unused_not_found_anywhere.append(key)
 
-    # Safe prune candidates: not used as certain, not matched by patterns, and not found anywhere.
-    prune_candidates = sorted([k for k in unused_after_patterns if k not in all_string_literals and k not in code_blob])
+    # Safe prune candidates: keep explicitly identical to the
+    # "not found anywhere (even via patterns/expansion)" bucket.
+    prune_candidates = sorted(unused_not_found_anywhere)
 
     type_mismatches: list[dict[str, Any]] = []
     for key, sites in certain_keys.items():
@@ -1170,6 +1386,8 @@ def main(argv: list[str]) -> int:
         print(f"Enhanced pattern usages:     {len(enhanced_patterns)}")
     print(f"Expanded template keys:      {len(expanded_key_usages)}")
     print(f"Expanded missing in YAML:    {len(expanded_keys_missing_in_yaml)}")
+    if resolved_uncertain_as_certain:
+        print(f"Resolved dynamic usages:     {len(resolved_uncertain_as_certain)}")
     print(f"Uncertain/dynamic usages:    {len(all_uncertain)}")
     print(f"YAML keys (flattened):       {len(yaml_keys)}")
     print(f"Missing in YAML (certain):   {len(missing_in_yaml)}")
@@ -1280,10 +1498,14 @@ def main(argv: list[str]) -> int:
             print(f"... and {len(prune_candidates) - max_show} more")
         print()
 
-    if all_patterns:
-        print("Pattern key usages (needs review)")
-        print("--------------------------------")
-        for p in all_patterns:
+    unexpanded_patterns = [
+        p for p in all_patterns
+        if (p.site.file, p.site.line, p.pattern) not in expanded_pattern_sites
+    ]
+    if unexpanded_patterns:
+        print("Pattern key usages (unexpanded; needs review)")
+        print("-------------------------------------------")
+        for p in unexpanded_patterns:
             s = p.site
             print(f"- {p.pattern}  ({s.file}:{s.line})")
             print(f"  expr: {s.arg_expr}")
@@ -1346,6 +1568,7 @@ def main(argv: list[str]) -> int:
                 "pattern_usages": len(all_patterns),
                 "expanded_pattern_usages": len(expanded_key_usages),
                 "expanded_missing_in_yaml": len(expanded_keys_missing_in_yaml),
+                "resolved_dynamic_usages": len(resolved_uncertain_as_certain),
                 "uncertain_usages": len(all_uncertain),
                 "yaml_keys": len(yaml_keys),
                 "missing_in_yaml": len(missing_in_yaml),
@@ -1395,6 +1618,19 @@ def main(argv: list[str]) -> int:
                 }
                 for p in all_patterns
             ],
+            "unexpanded_pattern_usages": [
+                {
+                    "pattern": p.pattern,
+                    "site": {
+                        "file": p.site.file,
+                        "line": p.site.line,
+                        "method": p.site.method,
+                    },
+                    "expr": p.site.arg_expr,
+                    "raw_parts": list(p.raw_parts),
+                }
+                for p in unexpanded_patterns
+            ],
             "enhanced_pattern_usages": [
                 {
                     "pattern": e.pattern,
@@ -1420,6 +1656,18 @@ def main(argv: list[str]) -> int:
                     "symbols": u.symbols,
                 }
                 for u in expanded_key_usages
+            ],
+            "resolved_dynamic_usages": [
+                {
+                    "key": u.key,
+                    "site": {
+                        "file": u.site.file,
+                        "line": u.site.line,
+                        "method": u.site.method,
+                    },
+                    "expr": u.site.arg_expr,
+                }
+                for u in resolved_uncertain_as_certain
             ],
             "expansion_resolution_sites": [
                 {
