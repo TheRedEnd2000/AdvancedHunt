@@ -429,9 +429,6 @@ public class YamlRepository implements DataRepository {
                                     Object enabledObj = ruleMap.get("enabled");
                                     rule.setEnabled(enabledObj != null ? (Boolean) enabledObj : true);
                                     
-                                    Object priorityObj = ruleMap.get("priority");
-                                    rule.setPriority(priorityObj != null ? ((Number) priorityObj).intValue() : 0);
-                                    
                                     actRules.add(rule);
                                 } catch (Exception e) {
                                     plugin.getLogger().warning("Failed to load ACT rule: " + e.getMessage());
@@ -478,7 +475,6 @@ public class YamlRepository implements DataRepository {
                 ruleMap.put("duration", rule.getDuration());
                 ruleMap.put("cron", rule.getCronExpression());
                 ruleMap.put("enabled", rule.isEnabled());
-                ruleMap.put("priority", rule.getPriority());
                 rulesList.add(ruleMap);
             }
             config.set("act-rules", rulesList);
