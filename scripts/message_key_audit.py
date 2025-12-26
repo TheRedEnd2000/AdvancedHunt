@@ -215,6 +215,14 @@ class UncertainUsageContext:
 
 
 @dataclass(frozen=True)
+class PatternMatcherSource:
+    pattern: str
+    source_kind: str  # 'concat'|'enhanced_concat'|'literal_pattern'|'inferred_dynamic'
+    site: Optional[UsageSite]
+    original_pattern: Optional[str]
+
+
+@dataclass(frozen=True)
 class YamlKeyInfo:
     key: str
     value_type: str  # "scalar" or "list"
@@ -1262,7 +1270,26 @@ def _enhance_pattern_usage(usage: PatternKeyUsage, java_text: str) -> Optional[E
             out_parts.append(only_value)
             continue
         if len(literal_assignments) > 1:
-            out_parts.append("*")
+            # If the symbol can take multiple literal values, we can't inline a single
+            # concrete value. But we can often keep useful structure by preserving the
+            # longest common prefix/suffix.
+            values = sorted(literal_assignments.keys())
+            # Python stdlib has os.path.commonprefix, but we keep this local and string-based.
+            prefix = values[0]
+            for v in values[1:]:
+                # shrink prefix until it matches
+                while prefix and not v.startswith(prefix):
+                    prefix = prefix[:-1]
+
+            suffix = values[0]
+            for v in values[1:]:
+                while suffix and not v.endswith(suffix):
+                    suffix = suffix[1:]
+
+            if prefix or suffix:
+                out_parts.append(prefix + "*" + suffix)
+            else:
+                out_parts.append("*")
             continue
 
         rhs = _infer_last_assignment_expr_near_site(java_text, usage.site.line, sym)
@@ -1867,13 +1894,85 @@ def main(argv: list[str]) -> int:
     # Treat wildcard/regex patterns as "likely used" for pruning decisions.
     # We use enhanced patterns when available so intermediate variables (e.g. fieldKey)
     # preserve their literal segments. Also include patterns inferred from dynamic usages.
-    all_effective_patterns = [*all_effective_patterns, *[p.pattern for p in resolved_uncertain_as_patterns]]
-    pattern_regexes = [r for p in all_effective_patterns for r in [_compile_key_matcher(p)] if r is not None]
+    pattern_sources: list[PatternMatcherSource] = []
+
+    # Patterns coming from code concatenation usages.
+    enhanced_by_site: dict[tuple[str, int, str], EnhancedPatternUsage] = {
+        (e.site.file, e.site.line, e.site.method): e for e in enhanced_patterns
+    }
+    for p in all_patterns:
+        # If this pattern was enhanced, prefer the enhanced one.
+        enhanced = enhanced_by_site.get((p.site.file, p.site.line, p.site.method))
+        if enhanced is not None:
+            pattern_sources.append(
+                PatternMatcherSource(
+                    pattern=enhanced.pattern,
+                    source_kind="enhanced_concat",
+                    site=enhanced.site,
+                    original_pattern=enhanced.original_pattern,
+                )
+            )
+            continue
+
+        # Detect literal patterns (string literal containing '*' or regex markers).
+        lit = _parse_java_string_literal(p.site.arg_expr)
+        if lit is not None and _literal_key_is_pattern(lit):
+            pattern_sources.append(
+                PatternMatcherSource(
+                    pattern=lit,
+                    source_kind="literal_pattern",
+                    site=p.site,
+                    original_pattern=None,
+                )
+            )
+        else:
+            pattern_sources.append(
+                PatternMatcherSource(
+                    pattern=p.pattern,
+                    source_kind="concat",
+                    site=p.site,
+                    original_pattern=None,
+                )
+            )
+
+    # Patterns inferred from dynamic usages (identifier assigned by concat).
+    for p in resolved_uncertain_as_patterns:
+        pattern_sources.append(
+            PatternMatcherSource(
+                pattern=p.pattern,
+                source_kind="inferred_dynamic",
+                site=p.site,
+                original_pattern=None,
+            )
+        )
+
+    # De-duplicate while preserving order.
+    seen_patterns: set[tuple[str, str, Optional[str], Optional[int]]] = set()
+    deduped_pattern_sources: list[PatternMatcherSource] = []
+    for ps in pattern_sources:
+        key = (ps.pattern, ps.source_kind, ps.site.file if ps.site else None, ps.site.line if ps.site else None)
+        if key in seen_patterns:
+            continue
+        seen_patterns.add(key)
+        deduped_pattern_sources.append(ps)
+    pattern_sources = deduped_pattern_sources
+
+    compiled_pattern_sources: list[tuple[re.Pattern[str], PatternMatcherSource]] = []
+    for ps in pattern_sources:
+        r = _compile_key_matcher(ps.pattern)
+        if r is None:
+            continue
+        compiled_pattern_sources.append((r, ps))
+
     yaml_keys_matched_by_patterns: set[str] = set()
-    if pattern_regexes:
+    yaml_key_first_match: dict[str, PatternMatcherSource] = {}
+    if compiled_pattern_sources:
         for key in yaml_keys:
-            if any(r.match(key) for r in pattern_regexes):
-                yaml_keys_matched_by_patterns.add(key)
+            for r, src in compiled_pattern_sources:
+                if r.match(key):
+                    yaml_keys_matched_by_patterns.add(key)
+                    yaml_key_first_match.setdefault(key, src)
+                    break
 
     # For pruning, treat keys concretely used by expansions as used.
     used_for_pruning = set(certain_keys.keys()) | yaml_keys_matched_by_patterns | expanded_keys_present_in_yaml
@@ -2035,11 +2134,109 @@ def main(argv: list[str]) -> int:
     if unused_but_matched_by_patterns:
         print("YAML keys not used in message lookups, but matched by wildcard patterns")
         print("---------------------------------------------------------------------")
-        max_show = 250
-        for key in unused_but_matched_by_patterns[:max_show]:
-            print(f"- {key}")
-        if len(unused_but_matched_by_patterns) > max_show:
-            print(f"... and {len(unused_but_matched_by_patterns) - max_show} more")
+        if pattern_sources:
+            # Make it obvious where the wildcards/regexes come from.
+            kinds = sorted({p.source_kind for p in pattern_sources})
+            print(f"Patterns considered for matching: {len(pattern_sources)}  (sources: {', '.join(kinds)})")
+
+            # Group patterns to keep the section scannable.
+            by_kind: dict[str, list[PatternMatcherSource]] = {}
+            for ps in pattern_sources:
+                by_kind.setdefault(ps.source_kind, []).append(ps)
+
+            per_group_cap = 6
+            total_shown = 0
+            total_cap = 18
+
+            for kind in kinds:
+                group = by_kind.get(kind) or []
+                if not group:
+                    continue
+                print(f"{kind}: {len(group)}")
+
+                shown_here = 0
+                for ps in group:
+                    if total_shown >= total_cap or shown_here >= per_group_cap:
+                        break
+                    if ps.site is None:
+                        print(f"- pattern: {ps.pattern}")
+                    else:
+                        suffix = ""
+                        if ps.source_kind == "enhanced_concat" and ps.original_pattern:
+                            suffix = f"  (original: {ps.original_pattern})"
+                        print(f"- pattern: {ps.pattern}  ({ps.site.file}:{ps.site.line}){suffix}")
+                    total_shown += 1
+                    shown_here += 1
+
+                remaining_here = len(group) - shown_here
+                if remaining_here > 0 and (shown_here >= per_group_cap or total_shown >= total_cap):
+                    print(f"... and {remaining_here} more {kind} pattern(s)")
+
+                if total_shown >= total_cap:
+                    remaining_total = len(pattern_sources) - total_shown
+                    if remaining_total > 0:
+                        print(f"... and {remaining_total} more patterns total")
+                    break
+        # Group keys by the first matching pattern to make this section easier to read.
+        groups: dict[tuple[str, str, Optional[str], Optional[int]], list[str]] = {}
+        src_by_group: dict[tuple[str, str, Optional[str], Optional[int]], PatternMatcherSource] = {}
+        for key in unused_but_matched_by_patterns:
+            src = yaml_key_first_match.get(key)
+            gk = (
+                src.pattern if src is not None else "<unknown>",
+                src.source_kind if src is not None else "<unknown>",
+                src.site.file if (src is not None and src.site is not None) else None,
+                src.site.line if (src is not None and src.site is not None) else None,
+            )
+            groups.setdefault(gk, []).append(key)
+            if src is not None:
+                src_by_group[gk] = src
+
+        # Sort groups by pattern then kind then site.
+        sorted_groups = sorted(groups.items(), key=lambda kv: kv[0])
+
+        max_patterns_show = 40
+        max_keys_per_pattern = 30
+        shown_patterns = 0
+        total_keys_shown = 0
+        total_keys_cap = 500
+
+        for gk, keys in sorted_groups:
+            if shown_patterns >= max_patterns_show or total_keys_shown >= total_keys_cap:
+                break
+
+            pattern, kind, file, line = gk
+            keys_sorted = sorted(keys)
+            src = src_by_group.get(gk)
+
+            if file is None or line is None:
+                header = f"pattern: {pattern}  [{kind}]"
+            else:
+                header = f"pattern: {pattern}  [{kind}]  ({file}:{line})"
+            if src is not None and src.source_kind == "enhanced_concat" and src.original_pattern:
+                header += f"  (original: {src.original_pattern})"
+            header += f"  -> {len(keys_sorted)} key(s)"
+
+            print(header)
+
+            keys_to_show = keys_sorted[:max_keys_per_pattern]
+            for k in keys_to_show:
+                if total_keys_shown >= total_keys_cap:
+                    break
+                print(f"- {k}")
+                total_keys_shown += 1
+
+            if len(keys_sorted) > len(keys_to_show):
+                print(f"... and {len(keys_sorted) - len(keys_to_show)} more key(s) for this pattern")
+
+            shown_patterns += 1
+
+        remaining_patterns = len(sorted_groups) - shown_patterns
+        remaining_keys = len(unused_but_matched_by_patterns) - total_keys_shown
+        if remaining_patterns > 0:
+            print(f"... and {remaining_patterns} more pattern group(s)")
+        if remaining_keys > 0 and total_keys_shown >= total_keys_cap:
+            print(f"... and {remaining_keys} more key(s) total")
         print()
 
     # Note: keys that are truly not found anywhere (even via patterns/expansion)
