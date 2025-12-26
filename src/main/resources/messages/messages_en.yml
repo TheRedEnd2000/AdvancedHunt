@@ -51,17 +51,12 @@ treasure:
   added: "%prefix%&aTreasure added to collection!"
   removed: "%prefix%&cTreasure removed from collection."
   protected: "%prefix%&cYou cannot break treasure blocks!"
-  rewards:
-    header: "%prefix%&6Treasure Rewards:"
-    entry: "&7 %index%. &e%type% &7(%chance%% chance): &f%reward%"
-    none: "%prefix%&7This treasure has no rewards configured."
 
 collection:
   unavailable: "%prefix%&cThe collection &e%collection% &cis not currently available!"
   available_at: "%prefix%&eIt will be available at: &f%time%"
   available: "&a✓ Available"
   not_available: "&c✗ Not Available"
-  available_until: "%prefix%&eAvailable until: &f%time%"
   completed: "%prefix%&6You have completed the &e%collection% &6collection!"
 
 chat_input:
@@ -83,19 +78,12 @@ gui:
     enabled: "&aEnabled"
     disabled: "&cDisabled"
     none: "&cNone"
-    lore:
-      click_to_apply: "&aClick to apply"
-      click_to_edit: "&eClick to edit"
-      click_to_toggle: "&eClick to toggle"
     error:
       validation:
         date_range: "%prefix%&cInvalid date range! Use ISO dates (2024-01-01:2024-12-31) or * for always."
         duration: "%prefix%&cInvalid duration! Use format like 2h, 30m, or * for always active."
-        cron: "%prefix%&cInvalid cron expression! Use valid Quartz format or MANUAL/NONE."
   error:
-    invalid_number: "%prefix%&cInvalid number! Please enter a valid integer."
     no_permission: "%prefix%&cYou do not have permission to do this!"
-    invalid_time: "%prefix%&cInvalid time format! Use HH:mm (e.g., 14:30)"
   rewards:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"
@@ -194,13 +182,6 @@ gui:
         - ""
         - "&7Use &f%player% &7for the player's name."
         - "&7Use &f& &7for color codes."
-    open_add_menu:
-      name: "&a+ Add Reward"
-      lore:
-        - "&7Click to choose which"
-        - "&7type of reward to add."
-    add_menu:
-      title: "&8Add Reward"
     edit_info:
       name: "&eEdit Controls"
       lore:
@@ -439,22 +420,6 @@ gui:
         - "&7progress on a schedule."
         - ""
         - "&eClick to configure"
-    cron:
-      name: "&eReset Cron"
-      lore:
-        - "&7Current: %cron%"
-        - ""
-        - "&eClick to set cron expression"
-        - "&7Type 'none' to remove"
-    active_time:
-      name: "&eActive Time"
-      lore:
-        - "&7Start: %start%"
-        - "&7End: %end%"
-        - ""
-        - "&eLeft-Click to set Start"
-        - "&eRight-Click to set End"
-        - "&7Type 'none' to remove"
     single_player_find:
       name: "&eSingle Player Find"
       lore:
@@ -497,44 +462,12 @@ gui:
         - "&7availability schedule rule"
     rule_deleted: "%prefix%&cDeleted rule: &e%name%"
   act_rule_editor:
-    title: "Edit Rule: %name%"
     name:
       name: "&eName"
       lore:
         - "&7Current: &f%name%"
         - ""
         - "&eClick to rename"
-    date_range:
-      name: "&eDate Range"
-      lore:
-        - "&7Current: &f%date_range%"
-        - ""
-        - "&7Format: YYYY-MM-DD:YYYY-MM-DD"
-        - "&7Example: 2025-12-24:2025-12-31"
-        - "&7Use &f*&7 for always active"
-        - ""
-        - "&eClick to change"
-    duration:
-      name: "&eDuration"
-      lore:
-        - "&7Current: &f%duration%"
-        - ""
-        - "&7Format: <number><unit>"
-        - "&7Units: m (minutes), h (hours), d (days)"
-        - "&7Example: 2h, 30m, 1d"
-        - "&7Use &f*&7 for permanent"
-        - ""
-        - "&eClick to change"
-    cron:
-      name: "&eCron Expression"
-      lore:
-        - "&7Current: &f%cron%"
-        - ""
-        - "&7Defines when the rule triggers"
-        - "&7Use MANUAL for manual activation"
-        - "&7Use NONE for no schedule"
-        - ""
-        - "&eClick to change"
     enabled:
       name: "&eEnabled"
       lore:
@@ -803,7 +736,7 @@ gui:
             1: "January"
             6: "June"
             12: "December"
-            1_4_7_10: "Quarterly (Jan/Apr/Jul/Oct)"
+            "1_4_7_10": "Quarterly (Jan/Apr/Jul/Oct)"
         day_of_week:
           name: "Day of Week"
           description: "Day of week (1-7 or SUN-SAT)"
@@ -896,7 +829,6 @@ gui:
   act_format:
     error:
       invalid_format: "%prefix%&cInvalid ACT format! Expected: [DATE_RANGE] [DURATION] [CRON]"
-      missing_components: "%prefix%&cACT format must have exactly 3 components: [DATE_RANGE] [DURATION] [CRON]"
   act:
     editor:
       title: "ACT Rule Editor: %name%"
@@ -909,13 +841,6 @@ gui:
         validation: "&7Validation: %status%"
         valid: "&a✓ Valid"
         invalid: "&c✗ Invalid"
-        preview_description:
-          - "&7This rule makes the collection"
-          - "&7available based on the schedule:"
-          - ""
-          - "&7• &fDate Range: &e%date_range_readable%"
-          - "&7• &fDuration: &e%duration_readable%"
-          - "&7• &fTrigger: &e%cron_readable%"
     preset:
       apply:
         name: "&6Apply Complete Preset"
@@ -934,8 +859,6 @@ gui:
           - "&7Use &f* &7for always active"
           - ""
           - "&eClick to type manually"
-        prompt: "%prefix%&aEnter date range (YYYY-MM-DD:YYYY-MM-DD or * for always):"
-        success: "%prefix%&aDate range updated successfully!"
       editor:
         title: "Edit Date Range"
         current:
@@ -977,14 +900,6 @@ gui:
             - "&7Value: &f%start%:%end%"
             - ""
             - "&eClick to apply"
-        custom:
-          name: "&dCustom Date Range"
-          lore:
-            - "&7Enter a custom date range"
-            - "&7Format: YYYY-MM-DD:YYYY-MM-DD"
-            - "&7Example: 2025-12-24:2025-12-31"
-            - ""
-            - "&eClick to type manually"
       prompt: "%prefix%&aEnter date range (YYYY-MM-DD:YYYY-MM-DD or * for always):"
       success: "%prefix%&aDate range updated successfully!"
     duration:
@@ -1231,11 +1146,6 @@ gui:
           - "&7with advanced builder"
           - ""
           - "&eClick to edit"
-    save:
-      name: "&a&lSave Changes"
-      lore:
-        - "&7Save all changes and"
-        - "&7return to rule list"
     success:
       applied: "%prefix%&aACT rule updated successfully!"
 
