@@ -1,0 +1,23 @@
+# Ignore configuration for scripts/message_key_audit.py
+#
+# Entries can be:
+# - exact keys (e.g. gui.foo.bar)
+# - wildcard patterns using '*' (e.g. gui.foo.*.bar)
+# - regex-like patterns (e.g. ^gui\.foo\..*$)
+#
+# This file is optional. The auditor auto-loads it when present.
+
+expanded_missing_in_yaml:
+  # CronFieldMenu expands template keys that are not real message keys.
+  # These currently show up as false positives under:
+  #   "Possibly missing in YAML (expanded from patterns)"
+  - gui.cron.builder.fields.day.values.every_interval
+  - gui.cron.builder.fields.day.values.specific_year
+  - gui.cron.builder.fields.day_of_week.values.every_interval
+  - gui.cron.builder.fields.day_of_week.values.specific_year
+  - gui.cron.builder.fields.hour.values.specific_year
+  - gui.cron.builder.fields.minute.values.specific_year
+  - gui.cron.builder.fields.month.values.every_interval
+  - gui.cron.builder.fields.month.values.specific_year
+  - gui.cron.builder.fields.second.values.specific_year
+  - gui.cron.builder.fields.year.values.every_interval

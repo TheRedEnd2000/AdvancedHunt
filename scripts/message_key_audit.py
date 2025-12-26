@@ -222,6 +222,77 @@ class PatternMatcherSource:
     original_pattern: Optional[str]
 
 
+@dataclass(frozen=True)
+class IgnoreConfig:
+    expanded_missing_in_yaml: tuple[str, ...] = ()
+
+
+def _load_ignore_config(path: Path) -> IgnoreConfig:
+    """Load ignore configuration.
+
+    Supported formats:
+    - YAML/JSON with top-level keys (currently: expanded_missing_in_yaml)
+    - Plain text file with one entry per line (treated as expanded_missing_in_yaml)
+
+    Entries may be:
+    - exact keys
+    - wildcard patterns using '*'
+    - regex-like patterns (see _looks_like_regex_pattern)
+    """
+
+    if not path.exists() or not path.is_file():
+        return IgnoreConfig()
+
+    # Best effort: prefer structured YAML/JSON. Fall back to line-based parsing.
+    data: Any
+    if path.suffix.lower() in (".yml", ".yaml", ".json"):
+        if path.suffix.lower() == ".json":
+            data = json.loads(_read_text(path))
+        else:
+            data = _load_yaml(path)
+    else:
+        # Plain text: non-empty, non-comment lines.
+        lines = _read_text(path).splitlines()
+        entries = [ln.strip() for ln in lines if ln.strip() and not ln.strip().startswith("#")]
+        return IgnoreConfig(expanded_missing_in_yaml=tuple(entries))
+
+    if not isinstance(data, dict):
+        return IgnoreConfig()
+
+    raw = data.get("expanded_missing_in_yaml", [])
+    if raw is None:
+        raw = []
+    if isinstance(raw, str):
+        raw_entries = [raw]
+    elif isinstance(raw, list):
+        raw_entries = [str(x) for x in raw if str(x).strip()]
+    else:
+        raw_entries = []
+
+    return IgnoreConfig(expanded_missing_in_yaml=tuple(raw_entries))
+
+
+def _compile_ignore_matchers(entries: Iterable[str]) -> tuple[set[str], list[re.Pattern[str]]]:
+    exact: set[str] = set()
+    patterns: list[re.Pattern[str]] = []
+    for e in entries:
+        s = str(e).strip()
+        if not s or s.startswith("#"):
+            continue
+        r = _compile_key_matcher(s)
+        if r is not None:
+            patterns.append(r)
+        else:
+            exact.add(s)
+    return exact, patterns
+
+
+def _is_ignored_key(key: str, *, exact: set[str], patterns: list[re.Pattern[str]]) -> bool:
+    if key in exact:
+        return True
+    return any(r.match(key) for r in patterns)
+
+
 def _patterns_for_pattern_usage(
     usage: PatternKeyUsage,
     java_text: str,
@@ -1783,11 +1854,25 @@ def main(argv: list[str]) -> int:
         ),
     )
 
+    parser.add_argument(
+        "--ignore-file",
+        type=Path,
+        default=None,
+        help=(
+            "Optional ignore config file. If not provided, the script will auto-load "
+            "<root>/scripts/message_key_audit_ignores.yml when it exists."
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     root: Path = args.root.resolve()
     java_root = (args.java or root / "src" / "main" / "java").resolve()
     yaml_path = (args.yaml or root / "src" / "main" / "resources" / "messages" / "messages_en.yml").resolve()
+
+    ignore_path = args.ignore_file.resolve() if args.ignore_file is not None else (root / "scripts" / "message_key_audit_ignores.yml")
+    ignore_cfg = _load_ignore_config(ignore_path)
+    ignore_expanded_exact, ignore_expanded_patterns = _compile_ignore_matchers(ignore_cfg.expanded_missing_in_yaml)
 
     if not java_root.exists() or not java_root.is_dir():
         print(f"ERROR: Java root not found: {java_root}")
@@ -1970,7 +2055,17 @@ def main(argv: list[str]) -> int:
 
     expanded_keys = {u.key for u in expanded_key_usages}
     expanded_keys_present_in_yaml = {k for k in expanded_keys if k in yaml_keys}
-    expanded_keys_missing_in_yaml = sorted([k for k in expanded_keys if k not in yaml_keys])
+    expanded_keys_missing_in_yaml_all = sorted([k for k in expanded_keys if k not in yaml_keys])
+
+    ignored_expanded_missing_in_yaml: list[str] = []
+    ignored_expanded_missing_set: set[str] = set()
+    if ignore_cfg.expanded_missing_in_yaml:
+        for k in expanded_keys_missing_in_yaml_all:
+            if _is_ignored_key(k, exact=ignore_expanded_exact, patterns=ignore_expanded_patterns):
+                ignored_expanded_missing_in_yaml.append(k)
+                ignored_expanded_missing_set.add(k)
+
+    expanded_keys_missing_in_yaml = [k for k in expanded_keys_missing_in_yaml_all if k not in ignored_expanded_missing_set]
 
     expanded_pattern_sites: set[tuple[str, int, str]] = {
         (u.site.file, u.site.line, u.pattern)
@@ -2153,6 +2248,9 @@ def main(argv: list[str]) -> int:
         print(f"Enhanced pattern usages:     {len(enhanced_patterns)}")
     print(f"Expanded template keys:      {len(expanded_key_usages)}")
     print(f"Expanded missing in YAML:    {len(expanded_keys_missing_in_yaml)}")
+    if ignore_cfg.expanded_missing_in_yaml or ignored_expanded_missing_in_yaml:
+        print(f"Ignore rules (expanded):     {len(ignore_cfg.expanded_missing_in_yaml)}")
+        print(f"Ignored expanded-missing:    {len(ignored_expanded_missing_in_yaml)}")
     if resolved_uncertain_as_certain:
         print(f"Resolved dynamic usages:     {len(resolved_uncertain_as_certain)}")
     if resolved_uncertain_as_patterns:
@@ -2182,7 +2280,7 @@ def main(argv: list[str]) -> int:
         print()
 
     if expanded_keys_missing_in_yaml:
-        print("Likely missing in YAML (expanded from patterns)")
+        print("Possibly missing in YAML (expanded from patterns)")
         print("--------------------------------------------")
         max_show = 250
         for key in expanded_keys_missing_in_yaml[:max_show]:
@@ -2194,6 +2292,20 @@ def main(argv: list[str]) -> int:
                 print(f"- {key}  ({site.file}:{site.line})")
         if len(expanded_keys_missing_in_yaml) > max_show:
             print(f"... and {len(expanded_keys_missing_in_yaml) - max_show} more")
+        print()
+
+    if ignored_expanded_missing_in_yaml:
+        print("Ignored expanded-missing keys")
+        print("----------------------------")
+        max_show = 250
+        for key in ignored_expanded_missing_in_yaml[:max_show]:
+            site = next((u.site for u in expanded_key_usages if u.key == key), None)
+            if site is None:
+                print(f"- {key}")
+            else:
+                print(f"- {key}  ({site.file}:{site.line})")
+        if len(ignored_expanded_missing_in_yaml) > max_show:
+            print(f"... and {len(ignored_expanded_missing_in_yaml) - max_show} more")
         print()
 
     if unused_but_found_as_string_literal:
@@ -2504,7 +2616,12 @@ def main(argv: list[str]) -> int:
         for u in expanded_key_usages:
             if shown >= max_show:
                 break
-            marker = "OK" if u.key in yaml_keys else "MISSING"
+            if u.key in yaml_keys:
+                marker = "OK"
+            elif u.key in ignored_expanded_missing_set:
+                marker = "IGNORED"
+            else:
+                marker = "MISSING"
             print(f"- [{marker}] {u.key}  ({u.site.file}:{u.site.line})")
             shown += 1
         if len(expanded_key_usages) > max_show:
@@ -2564,6 +2681,10 @@ def main(argv: list[str]) -> int:
             "root": str(root),
             "java_root": str(java_root),
             "yaml_file": str(yaml_path),
+            "ignore_file": str(ignore_path),
+            "ignore_rules": {
+                "expanded_missing_in_yaml": list(ignore_cfg.expanded_missing_in_yaml),
+            },
             "summary": {
                 "java_files_scanned": len(java_files),
                 "total_usages": len(all_certain) + len(all_patterns) + len(all_uncertain),
@@ -2571,6 +2692,7 @@ def main(argv: list[str]) -> int:
                 "pattern_usages": len(all_patterns),
                 "expanded_pattern_usages": len(expanded_key_usages),
                 "expanded_missing_in_yaml": len(expanded_keys_missing_in_yaml),
+                "ignored_expanded_missing_in_yaml": len(ignored_expanded_missing_in_yaml),
                 "resolved_dynamic_usages": len(resolved_uncertain_as_certain),
                 "inferred_dynamic_patterns": len(resolved_uncertain_as_patterns),
                 "uncertain_usages": len(all_uncertain),
@@ -2601,6 +2723,7 @@ def main(argv: list[str]) -> int:
             "unused_in_message_lookups": unused_in_message_lookups,
             "matched_by_patterns": sorted(yaml_keys_matched_by_patterns),
             "expanded_keys_present_in_yaml": sorted(expanded_keys_present_in_yaml),
+            "ignored_expanded_missing_in_yaml": ignored_expanded_missing_in_yaml,
             "expanded_keys_missing_in_yaml": expanded_keys_missing_in_yaml,
             "unused_after_patterns": unused_after_patterns,
             "unused_found_as_string_literal": unused_but_found_as_string_literal,
@@ -2651,6 +2774,13 @@ def main(argv: list[str]) -> int:
             "expanded_pattern_usages": [
                 {
                     "key": u.key,
+                    "status": (
+                        "ok"
+                        if u.key in yaml_keys
+                        else "ignored"
+                        if u.key in ignored_expanded_missing_set
+                        else "missing"
+                    ),
                     "pattern": u.pattern,
                     "site": {
                         "file": u.site.file,
