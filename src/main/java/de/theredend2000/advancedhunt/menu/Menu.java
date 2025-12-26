@@ -89,7 +89,7 @@ public abstract class Menu implements InventoryHolder {
     public void addButton(int slot, ItemStack item, Consumer<InventoryClickEvent> action, String permission) {
         setButton(slot, new Button(item, (e) -> {
             if (permission != null && !playerMenuUtility.hasPermission(permission)) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.error.no_permission"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
                 return;
             }
             if (action != null) {
