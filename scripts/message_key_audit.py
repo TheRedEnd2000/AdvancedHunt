@@ -47,6 +47,101 @@ IGNORE_UNCERTAIN_FILE_SUFFIXES = (
 JAVA_STRING_LITERAL_RE = re.compile(r'"(?:\\.|[^"\\])*"', re.DOTALL)
 
 
+def _mask_java_comments(text: str) -> str:
+    """Return a same-length string with Java comments replaced by spaces.
+
+    This prevents comment contents from confusing our simple parser
+    (parenthesis matching, top-level splitting, etc.) while preserving
+    offsets/line numbers.
+
+    Notes:
+    - Newlines are preserved.
+    - Comment markers inside string/char literals are not treated as comments.
+    """
+
+    out = list(text)
+    in_string = False
+    in_char = False
+    escaped = False
+    in_line_comment = False
+    in_block_comment = False
+
+    i = 0
+    while i < len(out):
+        ch = out[i]
+
+        if in_line_comment:
+            if ch == "\n":
+                in_line_comment = False
+                i += 1
+                continue
+            out[i] = " "
+            i += 1
+            continue
+
+        if in_block_comment:
+            if ch == "*" and i + 1 < len(out) and out[i + 1] == "/":
+                out[i] = " "
+                out[i + 1] = " "
+                in_block_comment = False
+                i += 2
+                continue
+            if ch != "\n":
+                out[i] = " "
+            i += 1
+            continue
+
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            i += 1
+            continue
+
+        if in_char:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            i += 1
+            continue
+
+        if ch == '"':
+            in_string = True
+            i += 1
+            continue
+
+        if ch == "'":
+            in_char = True
+            i += 1
+            continue
+
+        # Comment starts.
+        if ch == "/" and i + 1 < len(out):
+            nxt = out[i + 1]
+            if nxt == "/":
+                out[i] = " "
+                out[i + 1] = " "
+                in_line_comment = True
+                i += 2
+                continue
+            if nxt == "*":
+                out[i] = " "
+                out[i + 1] = " "
+                in_block_comment = True
+                i += 2
+                continue
+
+        i += 1
+
+    return "".join(out)
+
+
 @dataclass(frozen=True)
 class UsageSite:
     file: str
@@ -131,14 +226,91 @@ def _strip_wrapping_parens(expr: str) -> str:
     return s
 
 
+def _unescape_java_string_content(content: str) -> Optional[str]:
+    """Best-effort Java string unescaper.
+
+    Returns None if the literal is malformed enough that we can't safely parse it.
+
+    We intentionally do not try to be a full Java lexer; this aims to be:
+    - correct for common escapes (\\n, \\t, \\", \\\\, \\uXXXX, octal)
+    - conservative for unknown/invalid escapes (kept as-is)
+    """
+
+    out: list[str] = []
+    i = 0
+    while i < len(content):
+        ch = content[i]
+
+        if ch != "\\":
+            out.append(ch)
+            i += 1
+            continue
+
+        if i + 1 >= len(content):
+            # Trailing backslash is not a valid Java string escape.
+            return None
+
+        esc = content[i + 1]
+
+        simple = {
+            "b": "\b",
+            "t": "\t",
+            "n": "\n",
+            "f": "\f",
+            "r": "\r",
+            '"': '"',
+            "'": "'",
+            "\\": "\\",
+        }
+        if esc in simple:
+            out.append(simple[esc])
+            i += 2
+            continue
+
+        if esc == "u":
+            # Java allows multiple 'u' characters: \\uuuu0041
+            j = i + 2
+            while j < len(content) and content[j] == "u":
+                j += 1
+            if j + 4 > len(content):
+                return None
+            hex_part = content[j : j + 4]
+            if not re.fullmatch(r"[0-9a-fA-F]{4}", hex_part):
+                return None
+            out.append(chr(int(hex_part, 16)))
+            i = j + 4
+            continue
+
+        if esc in "01234567":
+            # Octal escape: up to 3 octal digits.
+            j = i + 1
+            digits = [content[j]]
+            j += 1
+            for _ in range(2):
+                if j >= len(content) or content[j] not in "01234567":
+                    break
+                digits.append(content[j])
+                j += 1
+            out.append(chr(int("".join(digits), 8)))
+            i = j
+            continue
+
+        # Unknown escape; keep as-is to avoid mutating keys.
+        out.append("\\" + esc)
+        i += 2
+
+    return "".join(out)
+
+
 def _parse_java_string_literal(expr: str) -> Optional[str]:
     s = _strip_wrapping_parens(_strip_java_casts(expr))
     if len(s) < 2 or not (s.startswith('"') and s.endswith('"')):
         return None
 
-    # Validate/parse escapes minimally; keep raw value.
-    # We don't need full Java escape semantics; we just want the literal content.
+    # We don't need full Java escape semantics; we just want the literal content
+    # without accidentally mutating it via Python-specific escape handling.
     content = s[1:-1]
+
     # Disallow unescaped quotes inside.
     i = 0
     while i < len(content):
@@ -149,8 +321,9 @@ def _parse_java_string_literal(expr: str) -> Optional[str]:
         if ch == '"':
             return None
         i += 1
-    # Unescape common sequences for readability, but keep unknown escapes as-is.
-    return bytes(content, "utf-8").decode("unicode_escape")
+
+    unescaped = _unescape_java_string_content(content)
+    return unescaped
 
 
 def _extract_java_string_literals(text: str) -> set[str]:
@@ -551,28 +724,34 @@ def _expr_to_key_or_pattern(expr: str) -> tuple[str, Any]:
 
 
 def _extract_method_calls(
-    text: str, rel_file: str
+    text: str, rel_file: str, *, parse_text: Optional[str] = None
 ) -> tuple[list[CertainKeyUsage], list[PatternKeyUsage], list[UncertainKeyUsage]]:
     certain: list[CertainKeyUsage] = []
     patterns: list[PatternKeyUsage] = []
     uncertain: list[UncertainKeyUsage] = []
 
-    line_starts = _build_line_index(text)
+    parse_text = text if parse_text is None else parse_text
+    line_starts = _build_line_index(parse_text)
 
     # Find method occurrences and parse the argument list.
     method_re = re.compile(r"\b(" + "|".join(map(re.escape, METHOD_NAMES)) + r")\s*\(")
 
-    for match in method_re.finditer(text):
+    for match in method_re.finditer(parse_text):
         method = match.group(1)
         open_paren_index = match.end() - 1
-        close_paren_index = _find_matching_paren(text, open_paren_index)
+        close_paren_index = _find_matching_paren(parse_text, open_paren_index)
         if close_paren_index == -1:
             # Unbalanced; skip but still report as uncertain.
-            site = UsageSite(rel_file, _offset_to_line(line_starts, match.start()), method, "<unbalanced parentheses>")
+            site = UsageSite(
+                rel_file,
+                _offset_to_line(line_starts, match.start()),
+                method,
+                "<unbalanced parentheses>",
+            )
             uncertain.append(UncertainKeyUsage(site))
             continue
 
-        arg_list = text[open_paren_index + 1 : close_paren_index]
+        arg_list = parse_text[open_paren_index + 1 : close_paren_index]
         args = _split_top_level(arg_list, ",")
         if not args:
             continue
@@ -598,6 +777,16 @@ def _extract_method_calls(
             uncertain.append(UncertainKeyUsage(site))
 
     return certain, patterns, uncertain
+
+
+def _safe_rel_file(file_path: Path, root: Path, java_root: Path) -> str:
+    resolved = file_path.resolve()
+    for base in (root.resolve(), java_root.resolve()):
+        try:
+            return resolved.relative_to(base).as_posix()
+        except ValueError:
+            continue
+    return resolved.as_posix()
 
 
 def _iter_java_files(java_root: Path) -> Iterable[Path]:
@@ -1105,17 +1294,67 @@ def _expand_pattern_usage(
 
 
 def _yaml_stubs_for_missing_keys(missing: list[str], expected_types: dict[str, str]) -> list[str]:
-    # Emits a simple YAML snippet. We intentionally do NOT attempt to round-trip
-    # and edit the main messages file to avoid destroying comments/formatting.
-    lines: list[str] = []
+    """Emit a nested YAML snippet for dotted message keys.
+
+    This is intended to be pasteable into the nested messages YAML.
+    We intentionally do NOT round-trip edit the main messages file to avoid
+    destroying formatting/comments.
+    """
+
+    def insert(tree: dict[str, Any], dotted_key: str, value: Any) -> None:
+        parts = [p for p in dotted_key.split(".") if p]
+        cur: dict[str, Any] = tree
+        for part in parts[:-1]:
+            existing = cur.get(part)
+            if existing is None:
+                nxt: dict[str, Any] = {}
+                cur[part] = nxt
+                cur = nxt
+                continue
+            if not isinstance(existing, dict):
+                # Collision (scalar/list vs nested). Keep existing and stop.
+                return
+            cur = existing
+
+        leaf = parts[-1] if parts else dotted_key
+        if leaf not in cur:
+            cur[leaf] = value
+            return
+        # Collision: keep first value.
+
+    tree: dict[str, Any] = {}
     for key in missing:
         expected = expected_types.get(key, "scalar")
+        val: Any
         if expected == "list":
-            lines.append(f"{key}:")
-            lines.append('  - "TODO"')
+            val = ["TODO"]
         else:
-            lines.append(f'{key}: "TODO"')
-    return lines
+            val = "TODO"
+        insert(tree, key, val)
+
+    def render(node: Any, indent: int) -> list[str]:
+        pad = " " * indent
+        if isinstance(node, dict):
+            lines: list[str] = []
+            for k in sorted(node.keys()):
+                v = node[k]
+                if isinstance(v, dict):
+                    lines.append(f"{pad}{k}:")
+                    lines.extend(render(v, indent + 2))
+                elif isinstance(v, list):
+                    lines.append(f"{pad}{k}:")
+                    for item in v:
+                        lines.append(f"{pad}  - {json.dumps(str(item), ensure_ascii=False)}")
+                else:
+                    lines.append(f"{pad}{k}: {json.dumps(str(v), ensure_ascii=False)}")
+            return lines
+
+        if isinstance(node, list):
+            return [f"{pad}- {json.dumps(str(x), ensure_ascii=False)}" for x in node]
+
+        return [f"{pad}{json.dumps(str(node), ensure_ascii=False)}"]
+
+    return render(tree, 0)
 
 
 def main(argv: list[str]) -> int:
@@ -1190,12 +1429,15 @@ def main(argv: list[str]) -> int:
 
     java_files = list(_iter_java_files(java_root))
     for file_path in java_files:
-        rel_file = file_path.relative_to(root).as_posix()
         text = _read_text(file_path)
+
+        rel_file = _safe_rel_file(file_path, root, java_root)
         java_text_by_file[rel_file] = text
         all_code_text_parts.append(text)
         all_string_literals |= _extract_java_string_literals(text)
-        certain, patterns, uncertain = _extract_method_calls(text, rel_file)
+
+        parse_text = _mask_java_comments(text)
+        certain, patterns, uncertain = _extract_method_calls(text, rel_file, parse_text=parse_text)
         all_certain.extend(certain)
         all_patterns.extend(patterns)
         all_uncertain.extend(uncertain)
