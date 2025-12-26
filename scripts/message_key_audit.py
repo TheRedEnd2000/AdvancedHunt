@@ -1467,15 +1467,8 @@ def main(argv: list[str]) -> int:
             print(f"... and {len(unused_but_matched_by_patterns) - max_show} more")
         print()
 
-    if unused_not_found_anywhere:
-        print("YAML keys not found anywhere in code (even via patterns/expansion)")
-        print("---------------------------------------------------------------")
-        max_show = 250
-        for key in unused_not_found_anywhere[:max_show]:
-            print(f"- {key}")
-        if len(unused_not_found_anywhere) > max_show:
-            print(f"... and {len(unused_not_found_anywhere) - max_show} more")
-        print()
+    # Note: keys that are truly not found anywhere (even via patterns/expansion)
+    # are identical to the prune candidate set. We list them only once below.
 
     if type_mismatches:
         print("Warnings: message key type mismatches")
