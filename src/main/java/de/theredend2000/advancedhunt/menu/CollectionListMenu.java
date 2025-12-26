@@ -56,6 +56,8 @@ public class CollectionListMenu extends PagedMenu {
             return;
         }
 
+        addPagedButtons(treasures.size());
+
         // Calculate pagination
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, treasures.size());
