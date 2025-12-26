@@ -47,6 +47,14 @@ public class TreasureManager {
                 .build();
     }
 
+    public UUID generateUniqueTreasureId() {
+        UUID id;
+        do {
+            id = UUID.randomUUID();
+        } while (treasureCoreById.containsKey(id));
+        return id;
+    }
+
     public void loadTreasures() {
         repository.loadTreasures().thenAccept(treasures -> {
             treasureChunkMap.clear();
