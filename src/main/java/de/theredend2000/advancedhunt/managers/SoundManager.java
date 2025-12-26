@@ -11,7 +11,6 @@ public class SoundManager {
 
     private final JavaPlugin plugin;
     private ConfigurationSection soundConfig;
-    private static ConfigurationSection staticSoundConfig;
 
     public SoundManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -20,15 +19,10 @@ public class SoundManager {
 
     public void reload() {
         soundConfig = plugin.getConfig().getConfigurationSection("sounds");
-        staticSoundConfig = plugin.getConfig().getConfigurationSection("sounds");
     }
 
     public boolean isEnabled(){
         return soundConfig != null && soundConfig.getBoolean("enabled", true);
-    }
-
-    public static boolean isEnabledStatic(){
-        return staticSoundConfig != null && staticSoundConfig.getBoolean("enabled", true);
     }
 
     public boolean isSoundEnabled(String key){
