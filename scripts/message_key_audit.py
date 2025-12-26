@@ -349,6 +349,7 @@ def _split_top_level(text: str, separator: str) -> list[str]:
 def _split_top_level_ternary(expr: str) -> Optional[tuple[str, str, str]]:
     # Splits a Java ternary expression at top-level into (cond, true_expr, false_expr).
     # Returns None if no top-level ternary could be found.
+    expr = _strip_wrapping_parens(_strip_java_casts(expr)).strip()
     depth_paren = 0
     depth_brack = 0
     depth_brace = 0
@@ -415,10 +416,11 @@ def _split_top_level_ternary(expr: str) -> Optional[tuple[str, str, str]]:
     in_char = False
     escaped = False
     depth_paren = depth_brack = depth_brace = 0
-    ternary_depth = 0
+    # We already found the first '?', so depth starts at 1.
+    ternary_depth = 1
     colon_index = None
 
-    for i in range(q_index, len(expr)):
+    for i in range(q_index + 1, len(expr)):
         ch = expr[i]
 
         if in_string:
@@ -473,10 +475,11 @@ def _split_top_level_ternary(expr: str) -> Optional[tuple[str, str, str]]:
             continue
 
         if ch == ":":
-            if ternary_depth == 0:
+            # ':' closes one ternary level.
+            if ternary_depth == 1:
                 colon_index = i
                 break
-            ternary_depth -= 1
+            ternary_depth = max(0, ternary_depth - 1)
             continue
 
     if colon_index is None:
