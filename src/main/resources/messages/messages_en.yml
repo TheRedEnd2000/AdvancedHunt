@@ -81,7 +81,6 @@ command:
     player_success: "%prefix%&aReset &e%count% &atreasure records for player &e%player%&a!"
     player_collection_success: "%prefix%&aReset &e%count% &atreasure records for player &e%player% &ain collection &e%collection%&a!"
     player_not_found: "%prefix%&cPlayer not found or has never played on this server."
-  minigame:
   migration:
     started: "%prefix%&aMigration started..."
     success: "%prefix%&aMigration successful!"
@@ -119,8 +118,6 @@ gui:
     enabled: "&aEnabled"
     disabled: "&cDisabled"
     none: "&cNone"
-    error:
-      validation:
   rewards:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"
@@ -802,8 +799,6 @@ gui:
         - "&7Collection will not auto-reset"
         - ""
         - "&cClick to clear"
-    success:
-    error:
   act:
     editor:
       title: "ACT Rule Editor: %name%"
@@ -974,7 +969,6 @@ gui:
           - "&7with advanced builder"
           - ""
           - "&eClick to edit"
-    success:
     rules:
       list:
         title: "Schedule Rules: %collection%"

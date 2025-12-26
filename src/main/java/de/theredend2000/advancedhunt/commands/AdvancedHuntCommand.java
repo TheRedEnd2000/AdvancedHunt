@@ -20,10 +20,7 @@ import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -45,14 +42,15 @@ public class AdvancedHuntCommand {
         final SuggestionProvider<CommandSender> playerNameSuggestions = (context, input) -> {
             return CompletableFuture.supplyAsync(() -> {
                 // Online players
-                List<Suggestion> suggestions = Bukkit.getOnlinePlayers().stream()
-                        .map(Player::getName)
+                List<Suggestion> suggestions = new ArrayList<>();
+
+                suggestions.addAll(Arrays.stream(Bukkit.getOfflinePlayers())
+                        .map(OfflinePlayer::getName)
+                        .filter(name -> name != null && !name.isEmpty())
                         .map(Suggestion::suggestion)
-                        .collect(Collectors.toList());
+                        .toList());
 
-                //TODO ADD OFFLINE PLAYERS
-
-                return suggestions;
+                return suggestions.stream().distinct().collect(Collectors.toList());
             });
         };
 
