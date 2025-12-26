@@ -175,6 +175,14 @@ class PatternKeyUsage:
 
 
 @dataclass(frozen=True)
+class ResolvedUncertainPatternUsage:
+    pattern: str
+    source_expr: str
+    assignment_expr: Optional[str]
+    site: UsageSite
+
+
+@dataclass(frozen=True)
 class ExpandedKeyUsage:
     key: str
     pattern: str
@@ -193,6 +201,17 @@ class EnhancedPatternUsage:
 @dataclass(frozen=True)
 class UncertainKeyUsage:
     site: UsageSite
+
+
+@dataclass(frozen=True)
+class UncertainUsageContext:
+    class_name: Optional[str]
+    method_signature: Optional[str]
+    snippet: Optional[str]
+    symbol: Optional[str]
+    last_assignment_expr: Optional[str]
+    inferred_pattern: Optional[str]
+    propagated_literals: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -699,6 +718,10 @@ def _expr_to_key_or_pattern(expr: str) -> tuple[str, Any]:
     """
     literal = _parse_java_string_literal(expr)
     if literal is not None:
+        # If code intentionally uses wildcard/regex-like literal keys, treat them as
+        # patterns so they protect matching YAML keys from being pruned.
+        if _literal_key_is_pattern(literal):
+            return "pattern", {"pattern": literal, "parts": [expr.strip()]}
         return "certain", literal
 
     # Handle top-level concatenation: a + b + c
@@ -864,6 +887,237 @@ def _pattern_to_regex(pattern: str) -> re.Pattern[str]:
     escaped = re.escape(pattern)
     escaped = escaped.replace(r"\*", r".*")
     return re.compile(r"^" + escaped + r"$")
+
+
+def _looks_like_regex_pattern(literal: str) -> bool:
+    # Heuristic: treat only explicitly regex-y strings as regex.
+    # Normal message keys contain '.' but should not be treated as regex.
+    return (
+        ".*" in literal
+        or literal.startswith("^")
+        or literal.endswith("$")
+        or "[" in literal
+        or "]" in literal
+        or "(" in literal
+        or ")" in literal
+        or "|" in literal
+        or "\\" in literal
+    )
+
+
+def _compile_key_matcher(pattern_or_regex: str) -> Optional[re.Pattern[str]]:
+    """Compile a key matcher.
+
+    Supports:
+    - wildcard patterns using '*' (escaped, then '*' -> '.*', anchored)
+    - raw regex-like patterns (anchored unless already anchored)
+    """
+
+    s = pattern_or_regex.strip()
+    if not s:
+        return None
+
+    if "*" in s and not _looks_like_regex_pattern(s):
+        return _pattern_to_regex(s)
+
+    if _looks_like_regex_pattern(s):
+        regex = s
+        if not regex.startswith("^"):
+            regex = "^" + regex
+        if not regex.endswith("$"):
+            regex = regex + "$"
+        try:
+            return re.compile(regex)
+        except re.error:
+            return None
+
+    return None
+
+
+def _literal_key_is_pattern(literal: str) -> bool:
+    # Treat explicit wildcard or regex-like literals as patterns.
+    return "*" in literal or _looks_like_regex_pattern(literal)
+
+
+def _java_line_snippet(text: str, line: int, *, context: int = 2) -> str:
+    lines = text.splitlines()
+    if not lines:
+        return ""
+    idx = max(0, min(len(lines) - 1, line - 1))
+    start = max(0, idx - context)
+    end = min(len(lines), idx + context + 1)
+
+    out: list[str] = []
+    width = len(str(end))
+    for i in range(start, end):
+        prefix = f"{i + 1:>{width}}| "
+        out.append(prefix + lines[i])
+    return "\n".join(out)
+
+
+def _find_enclosing_class_name(text: str, line: int) -> Optional[str]:
+    # Best-effort: last `class X` before the line.
+    prefix = "\n".join(text.splitlines()[: max(0, line - 1)])
+    last: Optional[str] = None
+    for m in re.finditer(r"\bclass\s+([A-Za-z_$][A-Za-z0-9_$]*)\b", prefix):
+        last = m.group(1)
+    return last
+
+
+_CONTROL_BLOCK_START_RE = re.compile(r"^\s*(if|for|while|switch|catch|synchronized|do|else|try)\b")
+
+
+def _find_enclosing_method_context(text: str, line: int) -> tuple[Optional[str], Optional[str], list[str]]:
+    """Return (method_name, signature, param_names) for the method enclosing line.
+
+    Heuristic only; designed to be good enough for local helper methods.
+    """
+
+    lines = text.splitlines()
+    if not lines:
+        return None, None, []
+
+    start_line = max(0, min(len(lines) - 1, line - 1))
+
+    for i in range(start_line, max(-1, start_line - 120), -1):
+        s = lines[i]
+        if "(" not in s:
+            continue
+        if _CONTROL_BLOCK_START_RE.match(s):
+            continue
+        if s.strip().startswith("//"):
+            continue
+
+        sig_parts: list[str] = [s.strip()]
+        j = i + 1
+        while j < len(lines) and "{" not in " ".join(sig_parts) and j < i + 12:
+            if lines[j].strip().startswith("@"):  # annotations typically belong above
+                break
+            sig_parts.append(lines[j].strip())
+            j += 1
+        signature = " ".join([p for p in sig_parts if p])
+
+        if "->" in signature:
+            continue
+
+        m = re.search(r"\b([A-Za-z_$][A-Za-z0-9_$]*)\s*\(", signature)
+        if not m:
+            continue
+        method_name = m.group(1)
+
+        if ";" in signature and "{" not in signature:
+            continue
+
+        open_idx = signature.find("(")
+        close_idx = _find_matching_paren(signature, open_idx) if open_idx != -1 else -1
+        if close_idx == -1:
+            continue
+
+        params_blob = signature[open_idx + 1 : close_idx].strip()
+        param_names: list[str] = []
+        if params_blob:
+            for p in _split_top_level(params_blob, ","):
+                p2 = re.sub(r"@[A-Za-z0-9_$.]+(\([^)]*\))?\s+", "", p).strip()
+                p2 = re.sub(r"\b(final|@NotNull|@Nullable)\b\s+", "", p2).strip()
+                tokens = [t for t in re.split(r"\s+", p2) if t]
+                if tokens:
+                    name = tokens[-1]
+                    if JAVA_IDENTIFIER_RE.match(name):
+                        param_names.append(name)
+
+        return method_name, signature, param_names
+
+    return None, None, []
+
+
+def _expression_to_wildcard_pattern(
+    expr: str,
+    *,
+    java_text: str,
+    site_line: int,
+    max_inline_depth: int = 2,
+) -> Optional[tuple[str, tuple[str, ...]]]:
+    """Try to turn an expression into a '*' wildcard pattern.
+
+    Returns (pattern, raw_parts) or None.
+    """
+
+    parts = _split_top_level(expr, "+")
+    if len(parts) <= 1:
+        return None
+
+    segments: list[tuple[str, str]] = []
+    for part in parts:
+        lit = _parse_java_string_literal(part)
+        if lit is not None:
+            segments.append(("lit", lit))
+        else:
+            segments.append(("expr", part.strip()))
+
+    segments = _inline_concat_symbol_segments(segments, java_text, site_line, max_depth=max_inline_depth)
+
+    saw_literal = any(k == "lit" for k, _ in segments)
+    if not saw_literal:
+        return None
+
+    out_parts: list[str] = []
+    for kind, val in segments:
+        if kind == "lit":
+            out_parts.append(val)
+        else:
+            if not out_parts or out_parts[-1] != "*":
+                out_parts.append("*")
+
+    pattern = "".join(out_parts)
+    pattern = re.sub(r"\*+", "*", pattern)
+    return pattern, tuple(parts)
+
+
+def _propagate_literal_args_from_call_sites(
+    *,
+    java_text: str,
+    target_method_name: str,
+    param_index: int,
+    max_results: int = 50,
+) -> list[tuple[str, int]]:
+    """Find string-literal arguments passed to a given method in the same file.
+
+    Returns list of (literal, line).
+    """
+
+    parse_text = _mask_java_comments(java_text)
+    line_starts = _build_line_index(parse_text)
+
+    call_re = re.compile(r"\b" + re.escape(target_method_name) + r"\s*\(")
+    out: list[tuple[str, int]] = []
+    for m in call_re.finditer(parse_text):
+        open_paren_index = m.end() - 1
+        close_paren_index = _find_matching_paren(parse_text, open_paren_index)
+        if close_paren_index == -1:
+            continue
+
+        # Skip declarations: if the next non-space char after ')' is '{'.
+        k = close_paren_index + 1
+        while k < len(parse_text) and parse_text[k].isspace():
+            k += 1
+        if k < len(parse_text) and parse_text[k] == "{":
+            continue
+
+        arg_list = parse_text[open_paren_index + 1 : close_paren_index]
+        args = _split_top_level(arg_list, ",")
+        if param_index < 0 or param_index >= len(args):
+            continue
+
+        lit = _parse_java_string_literal(args[param_index])
+        if lit is None:
+            continue
+
+        call_line = _offset_to_line(line_starts, m.start())
+        out.append((lit, call_line))
+        if len(out) >= max_results:
+            break
+
+    return out
 
 
 def _extract_symbol_from_expr(expr: str) -> Optional[str]:
@@ -1461,8 +1715,12 @@ def main(argv: list[str]) -> int:
     ]
 
     # Resolve some uncertain usages where the arg is a simple identifier and we can
-    # infer its literal values nearby (ternary or if/else assignments).
+    # infer its literal values nearby (ternary or if/else assignments). Additionally:
+    # - infer wildcard patterns from nearby concat assignments (to protect prune candidates)
+    # - propagate literal args from call sites when the symbol is a method parameter
     resolved_uncertain_as_certain: list[CertainKeyUsage] = []
+    resolved_uncertain_as_patterns: list[ResolvedUncertainPatternUsage] = []
+    uncertain_contexts: dict[tuple[str, int, str, str], UncertainUsageContext] = {}
     remaining_uncertain: list[UncertainKeyUsage] = []
     for u in all_uncertain:
         java_text = java_text_by_file.get(u.site.file)
@@ -1471,17 +1729,75 @@ def main(argv: list[str]) -> int:
             continue
 
         sym = _extract_symbol_from_expr(u.site.arg_expr)
-        if sym is None:
-            remaining_uncertain.append(u)
-            continue
 
-        inferred = _infer_literal_assignments_near_site(java_text, u.site.line, sym)
-        if not inferred:
-            remaining_uncertain.append(u)
-            continue
+        class_name = _find_enclosing_class_name(java_text, u.site.line)
+        enclosing_method_name, enclosing_sig, enclosing_params = _find_enclosing_method_context(java_text, u.site.line)
+        snippet = _java_line_snippet(java_text, u.site.line, context=2)
 
-        for lit in sorted(inferred.keys()):
-            resolved_uncertain_as_certain.append(CertainKeyUsage(key=lit, site=u.site))
+        inferred_literals: dict[str, list[int]] = {}
+        last_assignment_expr: Optional[str] = None
+        inferred_pattern: Optional[str] = None
+        propagated_literals: list[str] = []
+
+        if sym is not None:
+            inferred_literals = _infer_literal_assignments_near_site(java_text, u.site.line, sym)
+            last_assignment_expr = _infer_last_assignment_expr_near_site(java_text, u.site.line, sym)
+
+            # 1) If we can infer literal values, convert to certain keys.
+            if inferred_literals:
+                for lit in sorted(inferred_literals.keys()):
+                    resolved_uncertain_as_certain.append(CertainKeyUsage(key=lit, site=u.site))
+            else:
+                # 2) Try infer a wildcard pattern from the last assignment.
+                if last_assignment_expr is not None:
+                    inferred_pat = _expression_to_wildcard_pattern(
+                        last_assignment_expr,
+                        java_text=java_text,
+                        site_line=u.site.line,
+                    )
+                    if inferred_pat is not None:
+                        inferred_pattern, _raw_parts = inferred_pat
+                        resolved_uncertain_as_patterns.append(
+                            ResolvedUncertainPatternUsage(
+                                pattern=inferred_pattern,
+                                source_expr=u.site.arg_expr,
+                                assignment_expr=last_assignment_expr,
+                                site=u.site,
+                            )
+                        )
+
+                # 3) If this symbol is a parameter, propagate literal args from callsites.
+                if enclosing_method_name and enclosing_params and sym in enclosing_params:
+                    param_index = enclosing_params.index(sym)
+                    propagated = _propagate_literal_args_from_call_sites(
+                        java_text=java_text,
+                        target_method_name=enclosing_method_name,
+                        param_index=param_index,
+                    )
+                    for lit, call_line in propagated:
+                        propagated_literals.append(lit)
+                        call_site = UsageSite(
+                            u.site.file,
+                            call_line,
+                            "<propagated>",
+                            f"{enclosing_method_name}(...)",
+                        )
+                        resolved_uncertain_as_certain.append(CertainKeyUsage(key=lit, site=call_site))
+
+        ctx_key = (u.site.file, u.site.line, u.site.method, u.site.arg_expr)
+        uncertain_contexts[ctx_key] = UncertainUsageContext(
+            class_name=class_name,
+            method_signature=enclosing_sig,
+            snippet=snippet,
+            symbol=sym,
+            last_assignment_expr=last_assignment_expr,
+            inferred_pattern=inferred_pattern,
+            propagated_literals=tuple(sorted(set(propagated_literals))),
+        )
+
+        # Keep as uncertain only if we didn't resolve to any literal key.
+        if sym is None or (not inferred_literals and not propagated_literals):
+            remaining_uncertain.append(u)
 
     all_uncertain = remaining_uncertain
     all_certain.extend(resolved_uncertain_as_certain)
@@ -1548,10 +1864,11 @@ def main(argv: list[str]) -> int:
     # "Unused" here means: not referenced as a *certain literal* key in getMessage/getMessageList.
     unused_in_message_lookups = sorted([k for k in yaml_keys if k not in certain_keys])
 
-    # Treat wildcard patterns (string concat) as "likely used" for pruning decisions.
+    # Treat wildcard/regex patterns as "likely used" for pruning decisions.
     # We use enhanced patterns when available so intermediate variables (e.g. fieldKey)
-    # preserve their literal segments.
-    pattern_regexes = [_pattern_to_regex(p) for p in all_effective_patterns]
+    # preserve their literal segments. Also include patterns inferred from dynamic usages.
+    all_effective_patterns = [*all_effective_patterns, *[p.pattern for p in resolved_uncertain_as_patterns]]
+    pattern_regexes = [r for p in all_effective_patterns for r in [_compile_key_matcher(p)] if r is not None]
     yaml_keys_matched_by_patterns: set[str] = set()
     if pattern_regexes:
         for key in yaml_keys:
@@ -1644,6 +1961,8 @@ def main(argv: list[str]) -> int:
     print(f"Expanded missing in YAML:    {len(expanded_keys_missing_in_yaml)}")
     if resolved_uncertain_as_certain:
         print(f"Resolved dynamic usages:     {len(resolved_uncertain_as_certain)}")
+    if resolved_uncertain_as_patterns:
+        print(f"Inferred dynamic patterns:   {len(resolved_uncertain_as_patterns)}")
     print(f"Uncertain/dynamic usages:    {len(all_uncertain)}")
     print(f"YAML keys (flattened):       {len(yaml_keys)}")
     print(f"Missing in YAML (certain):   {len(missing_in_yaml)}")
@@ -1797,8 +2116,40 @@ def main(argv: list[str]) -> int:
             s = u.site
             print(f"- ({s.method}) {s.file}:{s.line}")
             print(f"  expr: {s.arg_expr}")
+            ctx = uncertain_contexts.get((s.file, s.line, s.method, s.arg_expr))
+            if ctx is not None:
+                if ctx.class_name or ctx.method_signature:
+                    extra = " / ".join([p for p in [ctx.class_name, ctx.method_signature] if p])
+                    if extra:
+                        print(f"  context: {extra}")
+                if ctx.symbol:
+                    print(f"  symbol: {ctx.symbol}")
+                if ctx.last_assignment_expr:
+                    print(f"  last_assign: {ctx.last_assignment_expr}")
+                if ctx.inferred_pattern:
+                    print(f"  inferred_pattern: {ctx.inferred_pattern}")
+                if ctx.propagated_literals:
+                    lits = ", ".join(ctx.propagated_literals[:10])
+                    suffix = "" if len(ctx.propagated_literals) <= 10 else f" (+{len(ctx.propagated_literals) - 10} more)"
+                    print(f"  propagated_literals: {lits}{suffix}")
+                if ctx.snippet:
+                    print("  snippet:\n" + "\n".join("    " + ln for ln in ctx.snippet.splitlines()))
         if len(all_uncertain) > max_show:
             print(f"... and {len(all_uncertain) - max_show} more")
+        print()
+
+    if resolved_uncertain_as_patterns:
+        print("Inferred wildcard patterns (from dynamic usages)")
+        print("---------------------------------------------")
+        max_show = 250
+        for p in resolved_uncertain_as_patterns[:max_show]:
+            s = p.site
+            print(f"- {p.pattern}  ({s.file}:{s.line})")
+            print(f"  expr: {p.source_expr}")
+            if p.assignment_expr:
+                print(f"  last_assign: {p.assignment_expr}")
+        if len(resolved_uncertain_as_patterns) > max_show:
+            print(f"... and {len(resolved_uncertain_as_patterns) - max_show} more")
         print()
 
     if args.json is not None:
@@ -1818,6 +2169,7 @@ def main(argv: list[str]) -> int:
                 "expanded_pattern_usages": len(expanded_key_usages),
                 "expanded_missing_in_yaml": len(expanded_keys_missing_in_yaml),
                 "resolved_dynamic_usages": len(resolved_uncertain_as_certain),
+                "inferred_dynamic_patterns": len(resolved_uncertain_as_patterns),
                 "uncertain_usages": len(all_uncertain),
                 "yaml_keys": len(yaml_keys),
                 "missing_in_yaml": len(missing_in_yaml),
@@ -1918,6 +2270,19 @@ def main(argv: list[str]) -> int:
                 }
                 for u in resolved_uncertain_as_certain
             ],
+            "inferred_dynamic_patterns": [
+                {
+                    "pattern": p.pattern,
+                    "site": {
+                        "file": p.site.file,
+                        "line": p.site.line,
+                        "method": p.site.method,
+                    },
+                    "expr": p.source_expr,
+                    "last_assignment_expr": p.assignment_expr,
+                }
+                for p in resolved_uncertain_as_patterns
+            ],
             "expansion_resolution_sites": [
                 {
                     "file": s.file,
@@ -1927,7 +2292,14 @@ def main(argv: list[str]) -> int:
                 }
                 for s in expansion_resolution_sites
             ],
-            "uncertain_usages": [
+            "uncertain_usages": [],
+            "type_mismatches": type_mismatches,
+            "yaml_duplicates_or_type_collisions": sorted(set(duplicates)),
+        }
+
+        for u in all_uncertain:
+            ctx = uncertain_contexts.get((u.site.file, u.site.line, u.site.method, u.site.arg_expr))
+            report["uncertain_usages"].append(
                 {
                     "site": {
                         "file": u.site.file,
@@ -1935,12 +2307,21 @@ def main(argv: list[str]) -> int:
                         "method": u.site.method,
                     },
                     "expr": u.site.arg_expr,
+                    "context": (
+                        {
+                            "class_name": ctx.class_name,
+                            "method_signature": ctx.method_signature,
+                            "symbol": ctx.symbol,
+                            "last_assignment_expr": ctx.last_assignment_expr,
+                            "inferred_pattern": ctx.inferred_pattern,
+                            "propagated_literals": list(ctx.propagated_literals),
+                            "snippet": ctx.snippet,
+                        }
+                        if ctx is not None
+                        else None
+                    ),
                 }
-                for u in all_uncertain
-            ],
-            "type_mismatches": type_mismatches,
-            "yaml_duplicates_or_type_collisions": sorted(set(duplicates)),
-        }
+            )
         _write_json(args.json, report)
         print(f"Wrote JSON report: {args.json}")
 
