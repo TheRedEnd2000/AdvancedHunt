@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.managers;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.Reward;
 import de.theredend2000.advancedhunt.model.RewardType;
+import de.theredend2000.advancedhunt.util.HexColor;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,10 +44,10 @@ public class RewardManager {
                 }
             } else if (reward.getType() == RewardType.CHAT_MESSAGE) {
                 String message = reward.getValue().replace("%player%", player.getName());
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+                player.sendMessage(HexColor.color(message,'&'));
             } else if (reward.getType() == RewardType.CHAT_MESSAGE_BROADCAST) {
                 String message = reward.getValue().replace("%player%", player.getName());
-                String formattedMessage = ChatColor.translateAlternateColorCodes('&', message);
+                String formattedMessage = HexColor.color(message,'&');
                 Bukkit.broadcastMessage(formattedMessage);
             }
         }

@@ -72,8 +72,7 @@ public class MessageManager {
         
         String prefix = messagesConfig.getString("prefix", "&6AdvancedHunt &8>> &7");
         message = message.replace("%prefix%", prefix);
-        message = ChatColor.translateAlternateColorCodes('&', message);
-        HexColor.color(message, '&');
+        message = HexColor.color(message,'&');
         
         messageCache.put(key, message);
         return message;
