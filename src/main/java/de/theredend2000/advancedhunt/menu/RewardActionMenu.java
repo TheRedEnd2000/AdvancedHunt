@@ -247,7 +247,7 @@ public class RewardActionMenu extends Menu {
             fillBackground(FILLER_GLASS);
             
             // Warning message
-            ItemStack warning = new ItemBuilder(Material.BARRIER)
+            ItemStack warning = new ItemBuilder(Material.CLOCK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.warning.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.confirm_delete.warning.lore", false))
                 .build();
