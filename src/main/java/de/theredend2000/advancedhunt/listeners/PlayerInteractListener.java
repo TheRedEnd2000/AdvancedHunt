@@ -82,6 +82,7 @@ public class PlayerInteractListener implements Listener {
 
         if (data.hasFound(treasureCore.getId())) {
             player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
+            plugin.getSoundManager().playTreasureAlreadyFound(player);
             return;
         }
 
@@ -110,6 +111,7 @@ public class PlayerInteractListener implements Listener {
                         // Someone already found it
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_claimed_global"));
+                            plugin.getSoundManager().playTreasureClaimedByOther(player);
                         });
                         return;
                     }
@@ -130,7 +132,6 @@ public class PlayerInteractListener implements Listener {
         data.addFoundTreasure(treasureCore.getId());
         playerManager.savePlayerData(player.getUniqueId()); // Async save triggered
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.found"));
-        plugin.getSoundManager().playTreasureFound(player);
 
         // Update particle manager cache for single-player-find collections
         collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {

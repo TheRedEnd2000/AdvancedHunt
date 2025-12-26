@@ -1,5 +1,7 @@
 package de.theredend2000.advancedhunt.menu;
 
+import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.managers.SoundManager;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,7 +28,8 @@ public class Button {
     public void onClick(InventoryClickEvent event) {
         if (action != null) {
             if (event.getWhoClicked() instanceof Player) {
-                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), clickSound, 1f, 1f);
+                if(SoundManager.isEnabledStatic())
+                    ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), clickSound, 1f, 1f);
             }
             action.accept(event);
         }

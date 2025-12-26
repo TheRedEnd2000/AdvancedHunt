@@ -11,6 +11,7 @@ public class SoundManager {
 
     private final JavaPlugin plugin;
     private ConfigurationSection soundConfig;
+    private static ConfigurationSection staticSoundConfig;
 
     public SoundManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -19,6 +20,20 @@ public class SoundManager {
 
     public void reload() {
         soundConfig = plugin.getConfig().getConfigurationSection("sounds");
+        staticSoundConfig = plugin.getConfig().getConfigurationSection("sounds");
+    }
+
+    public boolean isEnabled(){
+        return soundConfig != null && soundConfig.getBoolean("enabled", true);
+    }
+
+    public static boolean isEnabledStatic(){
+        return staticSoundConfig != null && staticSoundConfig.getBoolean("enabled", true);
+    }
+
+    public boolean isSoundEnabled(String key){
+        ConfigurationSection section = soundConfig.getConfigurationSection(key);
+        return section != null && section.getBoolean("enabled", true);
     }
 
     public void playTreasureFound(Player player) {
@@ -29,15 +44,36 @@ public class SoundManager {
         playSound(player, "collection-completed");
     }
 
+    public void playTreasurePlaced(Player player) {
+        playSound(player, "treasure-placed");
+    }
+
+    public void playTreasureBroken(Player player) {
+        playSound(player, "treasure-broken");
+    }
+
+    public void playTreasureAlreadyFound(Player player) {
+        playSound(player, "treasure-already-found");
+    }
+
+    public void playTreasureClaimedByOther(Player player) {
+        playSound(player, "treasure-claimed-by-other");
+    }
+
+    public void playBlockProtected(Player player) {
+        playSound(player, "block-protected");
+    }
+    public void playPlaceModeBreakDeny(Player player) {
+        playSound(player, "place-mode-break-denied");
+    }
+
     private void playSound(Player player, String key) {
-        if (soundConfig == null || !soundConfig.getBoolean("enabled", true)) {
-            return;
-        }
+        if (!isEnabled()) return;
+
+        if (!isSoundEnabled(key)) return;
 
         ConfigurationSection section = soundConfig.getConfigurationSection(key);
-        if (section == null || !section.getBoolean("enabled", true)) {
-            return;
-        }
+        if (section == null) return;
 
         String soundName = section.getString("sound");
         if (soundName == null || soundName.isEmpty()) {

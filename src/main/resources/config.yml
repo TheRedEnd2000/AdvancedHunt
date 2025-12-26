@@ -121,18 +121,47 @@ updater:
 
 sounds:
   enabled: true
-  # Sound played when a player finds a treasure
   treasure-found:
     enabled: true
-    sound: ENTITY_EXPERIENCE_ORB_PICKUP
+    sound: ENTITY_PLAYER_LEVELUP
     volume: 1.0
-    pitch: 1.0
-  # Sound played when a player completes a collection
+    pitch: 1.5
   collection-completed:
     enabled: true
     sound: UI_TOAST_CHALLENGE_COMPLETE
     volume: 1.0
     pitch: 1.0
+  treasure-placed:
+    enabled: true
+    sound: BLOCK_NOTE_BLOCK_PLING
+    volume: 1.0
+    pitch: 2.0
+  treasure-broken:
+    enabled: true
+    sound: BLOCK_WOOD_BREAK
+    volume: 0.7
+    pitch: 0.7
+  treasure-already-found:
+    enabled: true
+    sound: BLOCK_NOTE_BLOCK_BASS
+    volume: 0.7
+    pitch: 0.5
+  treasure-claimed-by-other:
+    enabled: true
+    sound: ENTITY_ENDERMAN_TELEPORT
+    volume: 0.6
+    pitch: 0.8
+  block-protected:
+    enabled: true
+    sound: ITEM_SHIELD_BLOCK
+    volume: 0.8
+    pitch: 1.0
+  place-mode-break-denied:
+    enabled: true
+    sound: ENTITY_VILLAGER_NO
+    volume: 0.6
+    pitch: 0.9
+
 
 config-version: 1
 

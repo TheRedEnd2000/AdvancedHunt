@@ -70,6 +70,7 @@ public class PlaceModeListener implements Listener {
 
         treasureManager.addTreasure(treasure);
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.added"));
+        plugin.getSoundManager().playTreasurePlaced(player);
     }
 
     @EventHandler
@@ -80,9 +81,11 @@ public class PlaceModeListener implements Listener {
         if (treasure != null) {
             treasureManager.deleteTreasure(treasure);
             event.getPlayer().sendMessage(plugin.getMessageManager().getMessage("treasure.removed"));
+            plugin.getSoundManager().playTreasureBroken(event.getPlayer());
         } else {
             event.setCancelled(true);
             event.getPlayer().sendMessage(plugin.getMessageManager().getMessage("command.place_mode.no_break"));
+            plugin.getSoundManager().playPlaceModeBreakDeny(event.getPlayer());
         }
     }
 }
