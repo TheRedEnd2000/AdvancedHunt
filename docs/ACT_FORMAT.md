@@ -244,22 +244,15 @@ Give each rule a descriptive name in the editor:
 - "Christmas Special"
 - "Weekday Evening Event"
 
-### 2. **Set Priorities**
-Higher priority rules take precedence for display purposes:
-- 100+ - Critical events (holidays)
-- 50-99 - Special events
-- 1-49 - Regular schedules
-- 0 - Default
-
-### 3. **Test Your Cron Expressions**
+### 2. **Test Your Cron Expressions**
 Use online cron validators to test expressions:
 - [Cron Expression Generator](https://www.freeformatter.com/cron-expression-generator-quartz.html)
 - Verify next trigger times before deploying
 
-### 4. **Consider Timezones**
+### 3. **Consider Timezones**
 All times use the server's timezone. Communicate this to players.
 
-### 5. **Avoid Overlapping Durations**
+### 4. **Avoid Overlapping Durations**
 If rules overlap, the collection stays available (OR logic). This is usually fine, but be aware:
 ```
 Rule 1: [*] [6h] [0 0 8 * * ?]   # 8 AM - 2 PM
@@ -267,7 +260,7 @@ Rule 2: [*] [6h] [0 0 12 * * ?]  # 12 PM - 6 PM
 # Collection is actually available 8 AM - 6 PM (10 hours)
 ```
 
-### 6. **Use MANUAL for Special Events**
+### 5. **Use MANUAL for Special Events**
 For one-time or admin-controlled events, use `[MANUAL]` and trigger via command.
 
 ---

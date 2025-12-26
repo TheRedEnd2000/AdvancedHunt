@@ -17,7 +17,6 @@ public class ActRule {
     private String duration;        // [2h], [30m], [*] for permanent
     private String cronExpression;  // Quartz cron or [MANUAL] or [NONE]
     private boolean enabled;
-    private int priority;           // For UI ordering
 
     /**
      * Creates a new ACT rule with specified UUID (for loading from storage)
@@ -30,7 +29,6 @@ public class ActRule {
         this.duration = "*";
         this.cronExpression = "MANUAL";
         this.enabled = true;
-        this.priority = 0;
     }
 
     // Getters
@@ -62,10 +60,6 @@ public class ActRule {
         return enabled;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
     // Setters
     public void setCollectionId(UUID collectionId) {
         this.collectionId = collectionId;
@@ -89,10 +83,6 @@ public class ActRule {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
     }
 
     /**

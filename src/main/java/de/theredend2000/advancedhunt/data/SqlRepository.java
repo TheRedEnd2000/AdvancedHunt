@@ -91,7 +91,6 @@ public class SqlRepository implements DataRepository {
                     "duration VARCHAR(16), " +
                     "cron_expression VARCHAR(64), " +
                     "enabled BOOLEAN, " +
-                    "priority INT, " +
                     "FOREIGN KEY (collection_id) REFERENCES ah_collections(id) ON DELETE CASCADE)");
 
             // Treasures Table
@@ -203,7 +202,7 @@ public class SqlRepository implements DataRepository {
      */
     private List<ActRule> loadActRules(Connection conn, UUID collectionId) throws SQLException {
         List<ActRule> rules = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_act_rules WHERE collection_id = ? ORDER BY priority")) {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_act_rules WHERE collection_id = ?")) {
             ps.setString(1, collectionId.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -214,7 +213,6 @@ public class SqlRepository implements DataRepository {
                 rule.setDuration(rs.getString("duration"));
                 rule.setCronExpression(rs.getString("cron_expression"));
                 rule.setEnabled(rs.getBoolean("enabled"));
-                rule.setPriority(rs.getInt("priority"));
                 rules.add(rule);
             }
         }
@@ -441,7 +439,7 @@ public class SqlRepository implements DataRepository {
                 
                 // Save ACT rules
                 for (ActRule rule : collection.getActRules()) {
-                    try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setString(1, rule.getId().toString());
                         ps.setString(2, rule.getCollectionId().toString());
                         ps.setString(3, rule.getName());
@@ -449,7 +447,6 @@ public class SqlRepository implements DataRepository {
                         ps.setString(5, rule.getDuration());
                         ps.setString(6, rule.getCronExpression());
                         ps.setBoolean(7, rule.isEnabled());
-                        ps.setInt(8, rule.getPriority());
                         ps.executeUpdate();
                     }
                 }
