@@ -333,7 +333,7 @@ public class RewardsMenu extends PagedMenu {
         }
         
         Reward reward = rewards.get(rewardIndex);
-        new RewardActionMenu(playerMenuUtility, plugin, this, reward, rewardIndex).open();
+        new RewardActionMenu(playerMenuUtility, plugin, this, reward, rewardIndex).setPreviousMenu(this).open();
     }
 
     private QuickActionMode getQuickActionMode() {

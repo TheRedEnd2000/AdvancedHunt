@@ -7,6 +7,7 @@ import de.theredend2000.advancedhunt.data.YamlRepository;
 import de.theredend2000.advancedhunt.listeners.*;
 import de.theredend2000.advancedhunt.managers.*;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameManager;
+import de.theredend2000.advancedhunt.menu.Button;
 import de.theredend2000.advancedhunt.placeholder.AdvancedHuntExpansion;
 import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
 import org.bstats.bukkit.Metrics;

@@ -142,9 +142,9 @@ sounds:
     pitch: 2.0
   treasure-broken:
     enabled: true
-    sound: BLOCK_WOOD_BREAK
-    volume: 0.7
-    pitch: 0.7
+    sound: BLOCK_NOTE_BLOCK_SNARE
+    volume: 0.6
+    pitch: 0.8
   treasure-already-found:
     enabled: true
     sound: BLOCK_NOTE_BLOCK_BASS
@@ -157,13 +157,13 @@ sounds:
     pitch: 0.8
   block-protected:
     enabled: true
-    sound: ITEM_SHIELD_BLOCK
+    sound: ENTITY_VILLAGER_NO
     volume: 0.8
     pitch: 1.0
   place-mode-break-denied:
     enabled: true
-    sound: ENTITY_VILLAGER_NO
-    volume: 0.6
+    sound: ITEM_SHIELD_BLOCK
+    volume: 0.4
     pitch: 0.9
 
 
