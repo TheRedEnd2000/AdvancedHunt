@@ -61,6 +61,7 @@ public class ActPresetMenu extends PagedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
+        addPagedButtons(PRESETS.size());
 
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, PRESETS.size());

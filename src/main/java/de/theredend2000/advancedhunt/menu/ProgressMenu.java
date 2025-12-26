@@ -92,6 +92,8 @@ public class ProgressMenu extends PagedMenu {
             return;
         }
 
+        addPagedButtons(treasures.size());
+
         for (int i = 0; i < treasures.size(); i++) {
             TreasureCore treasureCore = treasures.get(i);
             boolean isFound = playerData.getFoundTreasures().contains(treasureCore.getId());

@@ -73,6 +73,7 @@ public class WhoFoundMenu extends PagedMenu {
             return;
         }
 
+        addPagedButtons(finderUuids.size());
         // Calculate pagination
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, finderUuids.size());

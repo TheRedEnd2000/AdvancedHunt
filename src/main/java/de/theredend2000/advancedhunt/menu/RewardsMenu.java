@@ -75,13 +75,7 @@ public class RewardsMenu extends PagedMenu {
 
     @Override
     public String getMenuName() {
-        String title = plugin.getMessageManager().getMessage(titleKey, false);
-        if (getTotalPages() > 1) {
-            title += " " + plugin.getMessageManager().getMessage("gui.rewards.page_indicator", false,
-                "%page%", String.valueOf(page + 1),
-                "%total%", String.valueOf(getTotalPages()));
-        }
-        return title;
+        return plugin.getMessageManager().getMessage(titleKey, false);
     }
 
     @Override
@@ -108,6 +102,8 @@ public class RewardsMenu extends PagedMenu {
                 .build();
             addStaticItem(22, noRewards);
         } else {
+
+            addPagedButtons(rewards.size());
             // Calculate pagination
             int startIndex = page * maxItemsPerPage;
             int endIndex = Math.min(startIndex + maxItemsPerPage, rewards.size());

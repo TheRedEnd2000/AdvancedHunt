@@ -85,6 +85,8 @@ public class LeaderboardMenu extends PagedMenu {
             return;
         }
 
+        addPagedButtons(entries.size());
+
         // Calculate pagination
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, entries.size());
