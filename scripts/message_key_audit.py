@@ -37,6 +37,12 @@ from typing import Any, Iterable, Optional
 
 METHOD_NAMES = ("getMessage", "getMessageList")
 
+# The MessageManager contains method declarations like getMessage(String key, ...)
+# which are not real key usages and would otherwise show up as "uncertain".
+IGNORE_UNCERTAIN_FILE_SUFFIXES = (
+    "src/main/java/de/theredend2000/advancedhunt/managers/MessageManager.java",
+)
+
 
 JAVA_STRING_LITERAL_RE = re.compile(r'"(?:\\.|[^"\\])*"', re.DOTALL)
 
@@ -464,6 +470,13 @@ def main(argv: list[str]) -> int:
         all_certain.extend(certain)
         all_patterns.extend(patterns)
         all_uncertain.extend(uncertain)
+
+    # Whitelist-ignore uncertain sites from MessageManager internals.
+    all_uncertain = [
+        u
+        for u in all_uncertain
+        if not any(u.site.file.endswith(suffix) for suffix in IGNORE_UNCERTAIN_FILE_SUFFIXES)
+    ]
 
     certain_keys: dict[str, list[UsageSite]] = {}
     for usage in all_certain:
