@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Head Editor</title>
+    <style>
+        :root {
+            --bg-color: #262626;
+            --panel-bg: #333333;
+            --text-color: #e0e0e0;
+            --accent-color: #007acc;
+            --border-color: #444;
+            --hover-bg: rgba(255,255,255,0.1);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        /* --- Layout --- */
+        .toolbar {
+            width: 50px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            z-index: 10;
+        }
+        .workspace {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1e1e1e;
+            position: relative;
+            overflow: auto;
+        }
+        
+        #editor-container-3d {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            overflow: hidden;
+            cursor: move;
+            background: radial-gradient(circle at center, #333 0%, #1a1a1a 100%);
+            position: relative;
+        }
+
+        .floating-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #555;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            padding: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+        .floating-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+        .sidebar {
+            width: 280px;
+            background-color: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 20px;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        /* --- Tools --- */
+        .tool-btn {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+        .tool-btn:hover {
+            background-color: var(--hover-bg);
+        }
+        .tool-btn.active {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        /* --- Canvas Area --- */
+        #editor-container {
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            /* Checkerboard pattern for transparency */
+            background-image: 
+                linear-gradient(45deg, #2a2a2a 25%, transparent 25%), 
+                linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #2a2a2a 75%), 
+                linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 1px solid var(--border-color);
+            /* Center the canvas */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        canvas {
+            image-rendering: pixelated;
+            cursor: crosshair;
+            display: block;
+        }
+
+        /* --- Right Panel Sections --- */
+        .panel-section {
+            background: #2a2a2a;
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .panel-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: #888;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- 3D Preview --- */
+        .preview-container {
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 800px;
+            overflow: hidden;
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+        .scene {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-30deg) rotateY(45deg);
+            transition: transform 0.5s ease; /* Smooth transition if we add controls later */
+        }
+        /* @keyframes rotate removed for static inventory view */
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+        .face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: transparent;
+            image-rendering: pixelated;
+            backface-visibility: visible;
+        }
+        
+        /* Inner Head Mapping */
+        .inner .front  { transform: rotateY(  0deg) translateZ(40px); }
+        .inner .back   { transform: rotateY(180deg) translateZ(40px); }
+        .inner .right  { transform: rotateY( 90deg) translateZ(40px); }
+        .inner .left   { transform: rotateY(-90deg) translateZ(40px); }
+        .inner .top    { transform: rotateX( 90deg) translateZ(40px); }
+        .inner .bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+        /* Outer Hat Mapping */
+        .outer {
+            transform: scale(1.125); /* Hat is slightly larger */
+        }
+        .outer .front  { transform: rotateY(  0deg) translateZ(40px); }
+        .outer .back   { transform: rotateY(180deg) translateZ(40px); }
+        .outer .right  { transform: rotateY( 90deg) translateZ(40px); }
+        .outer .left   { transform: rotateY(-90deg) translateZ(40px); }
+        .outer .top    { transform: rotateX( 90deg) translateZ(40px); }
+        .outer .bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+        /* --- Colors --- */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .color-swatch {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #555;
+            transition: transform 0.1s;
+        }
+        .color-swatch:hover {
+            transform: scale(1.1);
+            z-index: 2;
+        }
+        .color-swatch.active {
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            border-radius: 4px;
+            padding: 5px;
+            border: 1px solid #444;
+        }
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 100%;
+            height: 24px;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 2px;
+        }
+
+        /* --- Layers --- */
+        .layer-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .layer-item:last-child { margin-bottom: 0; }
+        .layer-item input {
+            margin-right: 10px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        /* --- Export --- */
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background-color: #0062a3;
+        }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #262626;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+            <button class="tool-btn active" id="view-2d" title="2D View">2D</button>
+            <button class="tool-btn" id="view-3d" title="3D View">3D</button>
+        </div>
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+
+        <label class="tool-btn" title="Import Skin" style="cursor: pointer;">
+            📂
+            <input type="file" id="file-import" accept="image/png" style="display: none;">
+        </label>
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+        
+        <button class="tool-btn" id="action-undo" title="Undo (Ctrl+Z)">↩️</button>
+        <button class="tool-btn" id="action-redo" title="Redo (Ctrl+Y)">↪️</button>
+        
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+
+        <button class="tool-btn active" id="tool-pen" title="Pen (P)">✏️</button>
+        <button class="tool-btn" id="tool-eraser" title="Eraser (E)">🧹</button>
+        <button class="tool-btn" id="tool-bucket" title="Bucket Fill (B)">🪣</button>
+        <button class="tool-btn" id="tool-picker" title="Color Picker (I)">💉</button>
+        <button class="tool-btn" id="tool-shade" title="Shading Tool (S)">🌗</button>
+        
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+
+        <button class="tool-btn" id="tool-select" title="Rectangular Marquee (M)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+            </svg>
+        </button>
+        <button class="tool-btn" id="tool-move" title="Move Selection (V)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M19 9l3 3-3 3M9 19l3 3 3-3M2 12h20M12 2v20" />
+            </svg>
+        </button>
+
+        <div style="flex-grow: 1;"></div>
+        <button class="tool-btn" id="action-clear" title="Clear All" style="color: #ff4444;">🗑️</button>
+        <div style="height: 10px;"></div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+        <div id="editor-container">
+            <!-- 
+                Visual Layout:
+                Inner Head: 32x24
+                Gap: 8
+                Outer Hat: 32x24
+                Total Width: 72 logical -> 720 physical
+                Total Height: 24 logical -> 240 physical
+            -->
+            <canvas id="skinCanvas" width="720" height="240"></canvas>
+        </div>
+        <div id="editor-container-3d" style="display: none;">
+            <button id="view-reset" class="floating-btn" title="Reset View Angle">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+            </button>
+            <!-- Scene will be moved here -->
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Selection Options -->
+        <div class="panel-section" id="panel-selection" style="display: none;">
+            <div class="panel-title">Selection</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <button class="btn-primary" id="sel-rotate-cw" style="padding: 8px;">↻ 90°</button>
+                <button class="btn-primary" id="sel-rotate-ccw" style="padding: 8px;">↺ -90°</button>
+                <button class="btn-primary" id="sel-flip-h" style="padding: 8px;">Flip H</button>
+                <button class="btn-primary" id="sel-flip-v" style="padding: 8px;">Flip V</button>
+            </div>
+            <button class="btn-primary" id="sel-deselect" style="margin-top: 5px; background-color: #444;">Deselect</button>
+        </div>
+
+        <!-- Tool Options -->
+        <div class="panel-section">
+            <div class="panel-title">Tool Options</div>
+            
+            <div style="margin-bottom: 10px;">
+                <div style="font-size: 12px; color: #888; margin-bottom: 4px;">Brush Size: <span id="brush-size-val">1</span>px</div>
+                <input type="range" id="brush-size" min="1" max="4" value="1" style="width: 100%;">
+            </div>
+
+            <label class="layer-item">
+                <input type="checkbox" id="opt-mirror">
+                <span>Mirror Painting (X)</span>
+            </label>
+        </div>
+
+        <!-- 3D Preview -->
+        <div class="panel-section">
+            <div class="panel-title">3D Preview</div>
+            <div class="preview-container">
+                <div class="scene" id="scene">
+                    <div class="cube inner" id="cube-inner">
+                        <canvas class="face front" width="8" height="8" data-layer="inner" data-sx="8" data-sy="8"></canvas>
+                        <canvas class="face back" width="8" height="8" data-layer="inner" data-sx="24" data-sy="8"></canvas>
+                        <canvas class="face right" width="8" height="8" data-layer="inner" data-sx="16" data-sy="8"></canvas>
+                        <canvas class="face left" width="8" height="8" data-layer="inner" data-sx="0" data-sy="8"></canvas>
+                        <canvas class="face top" width="8" height="8" data-layer="inner" data-sx="8" data-sy="0"></canvas>
+                        <canvas class="face bottom" width="8" height="8" data-layer="inner" data-sx="16" data-sy="0"></canvas>
+                    </div>
+                    <div class="cube outer" id="cube-outer">
+                        <canvas class="face front" width="8" height="8" data-layer="outer" data-sx="40" data-sy="8"></canvas>
+                        <canvas class="face back" width="8" height="8" data-layer="outer" data-sx="56" data-sy="8"></canvas>
+                        <canvas class="face right" width="8" height="8" data-layer="outer" data-sx="48" data-sy="8"></canvas>
+                        <canvas class="face left" width="8" height="8" data-layer="outer" data-sx="32" data-sy="8"></canvas>
+                        <canvas class="face top" width="8" height="8" data-layer="outer" data-sx="40" data-sy="0"></canvas>
+                        <canvas class="face bottom" width="8" height="8" data-layer="outer" data-sx="48" data-sy="0"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layers -->
+        <div class="panel-section">
+            <div class="panel-title">Layers</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 10px; color: #666;">
+                <span>VISIBILITY</span>
+                <span>LOCK</span>
+            </div>
+            <div class="layer-item" style="justify-content: space-between;">
+                <label style="display: flex; align-items: center;">
+                    <input type="checkbox" id="toggle-hat" checked>
+                    <span>Outer Hat</span>
+                </label>
+                <input type="checkbox" id="lock-hat">
+            </div>
+            <div class="layer-item" style="justify-content: space-between;">
+                <label style="display: flex; align-items: center;">
+                    <input type="checkbox" id="toggle-head" checked>
+                    <span>Inner Head</span>
+                </label>
+                <input type="checkbox" id="lock-head">
+            </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="panel-section">
+            <div class="panel-title">Palette</div>
+            <div class="color-grid" id="palette">
+                <!-- Generated by JS -->
+            </div>
+            <div class="color-input-wrapper">
+                <input type="color" id="color-picker" value="#ff0000">
+            </div>
+        </div>
+
+        <!-- Export -->
+        <div class="panel-section">
+            <div class="panel-title">Export</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn-primary" id="btn-export">
+                    <span>⬇</span> Download Skin (.png)
+                </button>
+                <button class="btn-primary" id="btn-export-icon" style="background-color: #2d8545;">
+                    <span>🖼</span> Download Head Icon
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants & State ---
+        const CANVAS_SCALE = 10; // 1 pixel = 10 screen pixels
+        const SKIN_WIDTH = 64;
+        const SKIN_HEIGHT = 64;
+        
+        // Visual Layout Constants
+        const INNER_OFFSET_X = 0;
+        const OUTER_OFFSET_X = 40; // 32 + 8px gap
+        
+        // Mapping Definitions: [VisualX, VisualY, SourceX, SourceY, Width, Height]
+        const MAPPINGS = [
+            // Inner Head
+            { vx: 8,  vy: 0,  sx: 8,  sy: 0,  w: 8, h: 8, name: 'Top' },
+            { vx: 8,  vy: 16, sx: 16, sy: 0,  w: 8, h: 8, name: 'Bottom' },
+            { vx: 0,  vy: 8,  sx: 0,  sy: 8,  w: 8, h: 8, name: 'Right' },
+            { vx: 8,  vy: 8,  sx: 8,  sy: 8,  w: 8, h: 8, name: 'Front' },
+            { vx: 16, vy: 8,  sx: 16, sy: 8,  w: 8, h: 8, name: 'Left' },
+            { vx: 24, vy: 8,  sx: 24, sy: 8,  w: 8, h: 8, name: 'Back' },
+            
+            // Outer Hat (Offset X by 40)
+            { vx: 48, vy: 0,  sx: 40, sy: 0,  w: 8, h: 8, name: 'Hat Top' },
+            { vx: 48, vy: 16, sx: 48, sy: 0,  w: 8, h: 8, name: 'Hat Bottom' },
+            { vx: 40, vy: 8,  sx: 32, sy: 8,  w: 8, h: 8, name: 'Hat Right' },
+            { vx: 48, vy: 8,  sx: 40, sy: 8,  w: 8, h: 8, name: 'Hat Front' },
+            { vx: 56, vy: 8,  sx: 48, sy: 8,  w: 8, h: 8, name: 'Hat Left' },
+            { vx: 64, vy: 8,  sx: 56, sy: 8,  w: 8, h: 8, name: 'Hat Back' }
+        ];
+
+        let currentColor = '#ff0000';
+        let currentTool = 'pen'; // pen, eraser, bucket, picker, shade, select, move
+        let isDrawing = false;
+        let brushSize = 1;
+        let isMirror = false;
+        
+        // Zoom State
+        let zoom2D = 1;
+        let zoom3D = 3;
+
+        // Selection State
+        let selection = null; // { x, y, w, h, content: Canvas (if floating), floating: boolean }
+        let isSelecting = false;
+        let isMovingSelection = false;
+        let moveStartX = 0;
+        let moveStartY = 0;
+        
+        // History
+        const history = [];
+        let historyStep = -1;
+        const MAX_HISTORY = 50;
+
+        // DOM Elements
+        const canvas = document.getElementById('skinCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('color-picker');
+        const paletteContainer = document.getElementById('palette');
+        
+        // Offscreen canvas for the actual data (1:1 scale)
+        const dataCanvas = document.createElement('canvas');
+        dataCanvas.width = SKIN_WIDTH;
+        dataCanvas.height = SKIN_HEIGHT;
+        const dataCtx = dataCanvas.getContext('2d');
+
+        // 3D View State
+        let currentView = '2d';
+        let rotX = -30;
+        let rotY = 45;
+        let isDragging3D = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        function setView(mode) {
+            currentView = mode;
+            
+            // Update Buttons
+            document.getElementById('view-2d').classList.toggle('active', mode === '2d');
+            document.getElementById('view-3d').classList.toggle('active', mode === '3d');
+            
+            const scene = document.querySelector('.scene');
+            const previewContainer = document.querySelector('.preview-container');
+            const workspace3d = document.getElementById('editor-container-3d');
+            
+            if (mode === '3d') {
+                document.getElementById('editor-container').style.display = 'none';
+                workspace3d.style.display = 'flex';
+                
+                // Move scene to workspace
+                workspace3d.appendChild(scene);
+                
+                // Scale up for editing
+                scene.style.transform = `scale(3) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            } else {
+                document.getElementById('editor-container').style.display = 'flex';
+                workspace3d.style.display = 'none';
+                
+                // Move scene back to sidebar
+                previewContainer.appendChild(scene);
+                
+                // Reset transform for preview
+                scene.style.transform = 'rotateX(-30deg) rotateY(45deg)';
+            }
+        }
+
+        function init3DControls() {
+            const container = document.getElementById('editor-container-3d');
+            
+            container.addEventListener('mousedown', (e) => {
+                // Don't rotate if clicking on face (drawing)
+                if (e.target.classList.contains('face')) return;
+                
+                isDragging3D = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging3D) return;
+                
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                
+                rotY += deltaX * 0.5;
+                rotX -= deltaY * 0.5;
+                
+                const scene = document.querySelector('.scene');
+                if (currentView === '3d') {
+                    scene.style.transform = `scale(3) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                }
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+            
+            window.addEventListener('mouseup', () => {
+                isDragging3D = false;
+            });
+        }
+
+        function resetViewAngle() {
+            rotX = -30;
+            rotY = 45;
+            const scene = document.querySelector('.scene');
+            if (currentView === '3d') {
+                scene.style.transform = `scale(3) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            } else {
+                scene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            }
+        }
+
+        // --- Initialization ---
+        function init() {
+            init3DControls();
+            // Initialize palette
+            const colors = [
+                '#1a1a1a', '#ffffff', '#b4202a', '#1e7432', '#193d82', 
+                '#f0c426', '#f27f18', '#9c4e26', '#4a2c18', '#d98e68'
+            ];
+            colors.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'color-swatch';
+                div.style.backgroundColor = c;
+                div.onclick = () => setColor(c);
+                paletteContainer.appendChild(div);
+            });
+            // Set initial active color
+            setColor(colors[2]);
+
+            // Setup Event Listeners
+            canvas.addEventListener('mousedown', startDrawing);
+            window.addEventListener('mousemove', draw); // Window to catch drags outside
+            window.addEventListener('mouseup', stopDrawing);
+            
+            // Keyboard Shortcuts
+            window.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT') return; // Don't trigger if typing
+                if (e.key.toLowerCase() === 'p') setTool('pen');
+                if (e.key.toLowerCase() === 'e') setTool('eraser');
+                if (e.key.toLowerCase() === 'b') setTool('bucket');
+                if (e.key.toLowerCase() === 'i') setTool('picker');
+                if (e.key.toLowerCase() === 's') setTool('shade');
+                if (e.key.toLowerCase() === 'm') setTool('select');
+                if (e.key.toLowerCase() === 'v') setTool('move');
+                if (e.key === 'Escape') deselect();
+                if (e.key === 'Delete' || e.key === 'Backspace') deleteSelection();
+                
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    undo();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+                    e.preventDefault();
+                    redo();
+                }
+            });
+
+            document.getElementById('tool-pen').onclick = () => setTool('pen');
+            document.getElementById('tool-eraser').onclick = () => setTool('eraser');
+            document.getElementById('tool-bucket').onclick = () => setTool('bucket');
+            document.getElementById('tool-picker').onclick = () => setTool('picker');
+            document.getElementById('tool-shade').onclick = () => setTool('shade');
+            document.getElementById('tool-select').onclick = () => setTool('select');
+            document.getElementById('tool-move').onclick = () => setTool('move');
+            
+            // Selection Actions
+            document.getElementById('sel-deselect').onclick = deselect;
+            document.getElementById('sel-rotate-cw').onclick = () => rotateSelection(90);
+            document.getElementById('sel-rotate-ccw').onclick = () => rotateSelection(-90);
+            document.getElementById('sel-flip-h').onclick = () => flipSelection('h');
+            document.getElementById('sel-flip-v').onclick = () => flipSelection('v');
+
+            document.getElementById('view-2d').onclick = () => setView('2d');
+            document.getElementById('view-3d').onclick = () => setView('3d');
+            document.getElementById('view-reset').onclick = resetViewAngle;
+
+            document.getElementById('action-undo').onclick = undo;
+            document.getElementById('action-redo').onclick = redo;
+            document.getElementById('action-clear').onclick = clearAll;
+
+            document.getElementById('toggle-hat').onchange = (e) => {
+                document.getElementById('cube-outer').style.display = e.target.checked ? 'block' : 'none';
+            };
+            document.getElementById('toggle-head').onchange = (e) => {
+                document.getElementById('cube-inner').style.display = e.target.checked ? 'block' : 'none';
+            };
+            
+            // Set initial visibility based on checkboxes (fixes refresh issue)
+            document.getElementById('cube-outer').style.display = document.getElementById('toggle-hat').checked ? 'block' : 'none';
+            document.getElementById('cube-inner').style.display = document.getElementById('toggle-head').checked ? 'block' : 'none';
+            
+            // Tool Options
+            document.getElementById('brush-size').oninput = (e) => {
+                brushSize = parseInt(e.target.value);
+                document.getElementById('brush-size-val').textContent = brushSize;
+            };
+            document.getElementById('opt-mirror').onchange = (e) => {
+                isMirror = e.target.checked;
+            };
+
+            colorPicker.addEventListener('input', (e) => setColor(e.target.value));
+            
+            document.getElementById('btn-export').onclick = exportSkin;
+            document.getElementById('btn-export-icon').onclick = exportHeadIcon;
+            
+            // Import Listener
+            document.getElementById('file-import').addEventListener('change', handleImport);
+
+            // 3D Interaction Listeners
+            document.querySelectorAll('.face').forEach(face => {
+                face.addEventListener('mousedown', startDrawing3D);
+                face.addEventListener('mousemove', draw3D);
+                face.addEventListener('mouseup', stopDrawing);
+            });
+            
+            // Zoom Listeners
+            document.getElementById('editor-container').addEventListener('wheel', handleZoom2D, { passive: false });
+            document.getElementById('editor-container-3d').addEventListener('wheel', handleZoom3D, { passive: false });
+
+            // Initial Render
+            // Fill with transparent black initially
+            dataCtx.clearRect(0, 0, SKIN_WIDTH, SKIN_HEIGHT);
+            saveState(); // Initial state
+            
+            renderCanvas();
+            updatePreview();
+        }
+        
+        function handleZoom2D(e) {
+            if (e.ctrlKey) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                zoom2D = Math.max(0.5, Math.min(5, zoom2D + delta));
+                
+                canvas.style.width = (720 * zoom2D) + 'px';
+                canvas.style.height = (240 * zoom2D) + 'px';
+            }
+        }
+        
+        function handleZoom3D(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.2 : 0.2;
+            zoom3D = Math.max(0.5, Math.min(10, zoom3D + delta));
+            
+            const scene = document.querySelector('.scene');
+            scene.style.transform = `scale(${zoom3D}) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        }
+
+        // --- History ---
+        function saveState() {
+            // Remove any redo steps
+            if (historyStep < history.length - 1) {
+                history.length = historyStep + 1;
+            }
+            history.push(dataCanvas.toDataURL());
+            if (history.length > MAX_HISTORY) history.shift();
+            else historyStep++;
+            updateHistoryButtons();
+        }
+
+        function undo() {
+            if (historyStep > 0) {
+                historyStep--;
+                loadState(history[historyStep]);
+            }
+            updateHistoryButtons();
+        }
+
+        function redo() {
+            if (historyStep < history.length - 1) {
+                historyStep++;
+                loadState(history[historyStep]);
+            }
+            updateHistoryButtons();
+        }
+
+        function loadState(dataUrl) {
+            const img = new Image();
+            img.onload = () => {
+                dataCtx.clearRect(0, 0, SKIN_WIDTH, SKIN_HEIGHT);
+                dataCtx.drawImage(img, 0, 0);
+                renderCanvas();
+                updatePreview();
+            };
+            img.src = dataUrl;
+        }
+
+        function updateHistoryButtons() {
+            document.getElementById('action-undo').style.opacity = historyStep > 0 ? 1 : 0.3;
+            document.getElementById('action-redo').style.opacity = historyStep < history.length - 1 ? 1 : 0.3;
+        }
+
+        // --- Import Logic ---
+        function handleImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Clear current
+                    dataCtx.clearRect(0, 0, SKIN_WIDTH, SKIN_HEIGHT);
+                    // Draw new image
+                    dataCtx.drawImage(img, 0, 0);
+                    renderCanvas();
+                    updatePreview();
+                    saveState();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+            // Reset input so same file can be selected again
+            e.target.value = '';
+        }
+
+        // --- 3D Drawing Logic ---
+        function startDrawing3D(e) {
+            isDrawing = true;
+            handleTool3D(e);
+        }
+
+        function draw3D(e) {
+            if (!isDrawing) return;
+            handleTool3D(e);
+        }
+
+        function handleTool3D(e) {
+            // Prevent default drag behavior
+            e.preventDefault();
+            
+            const face = e.target;
+            const sx = parseInt(face.dataset.sx);
+            const sy = parseInt(face.dataset.sy);
+            
+            // Calculate local coordinates on the face (0-7)
+            // The face is 80x80px
+            // Use offsetX/Y for accurate local coordinates on transformed elements
+            const localX = Math.floor(e.offsetX / 10); 
+            const localY = Math.floor(e.offsetY / 10);
+            
+            if (localX < 0 || localX >= 8 || localY < 0 || localY >= 8) return;
+            
+            const targetX = sx + localX;
+            const targetY = sy + localY;
+            
+            handleToolCommon(targetX, targetY, e);
+        }
+
+        // --- Drawing Logic ---
+        function startDrawing(e) {
+            if (e.target !== canvas) return;
+            isDrawing = true;
+            handleTool(e);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            // Only process if we are over the canvas (unless selecting/moving)
+            const rect = canvas.getBoundingClientRect();
+            if (currentTool !== 'select' && currentTool !== 'move') {
+                if (e.clientX < rect.left || e.clientX > rect.right || 
+                    e.clientY < rect.top || e.clientY > rect.bottom) return;
+            }
+
+            if (currentTool === 'pen' || currentTool === 'eraser' || currentTool === 'shade' || currentTool === 'select' || currentTool === 'move') {
+                handleTool(e);
+            }
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveState();
+            }
+            if (isSelecting) {
+                isSelecting = false;
+            }
+            if (isMovingSelection) {
+                isMovingSelection = false;
+                // Don't save state yet, wait for commit
+            }
+        }
+
+        // Convert Mouse Event to Source Data Coordinates
+        function getSourceCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            
+            // Adjust for CSS Zoom
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const vx = Math.floor((e.clientX - rect.left) * scaleX / CANVAS_SCALE);
+            const vy = Math.floor((e.clientY - rect.top) * scaleY / CANVAS_SCALE);
+            
+            // Find which mapping region we are in
+            for (const map of MAPPINGS) {
+                if (vx >= map.vx && vx < map.vx + map.w &&
+                    vy >= map.vy && vy < map.vy + map.h) {
+                    
+                    // Calculate offset within the region
+                    const offsetX = vx - map.vx;
+                    const offsetY = vy - map.vy;
+                    
+                    return { x: map.sx + offsetX, y: map.sy + offsetY };
+                }
+            }
+            return null; // Clicked outside a valid face
+        }
+
+        function handleTool(e) {
+            const coords = getSourceCoords(e);
+            
+            // Special handling for Select/Move which might not need valid coords initially or handle outside
+            if (currentTool === 'select') {
+                handleSelectTool(e, coords);
+                return;
+            }
+            if (currentTool === 'move') {
+                handleMoveTool(e, coords);
+                return;
+            }
+
+            if (!coords) return;
+            
+            // If we have a selection and click outside with a drawing tool, commit it
+            if (selection && selection.floating) {
+                commitSelection();
+            }
+            
+            handleToolCommon(coords.x, coords.y, e);
+        }
+
+        // Get Visual Coordinates (Grid coordinates on the canvas)
+        function getVisualCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const vx = Math.floor((e.clientX - rect.left) * scaleX / CANVAS_SCALE);
+            const vy = Math.floor((e.clientY - rect.top) * scaleY / CANVAS_SCALE);
+            
+            return { x: vx, y: vy };
+        }
+
+        // --- Selection Logic ---
+        function handleSelectTool(e) {
+            const coords = getVisualCoords(e);
+            const { x, y } = coords;
+            
+            if (!isSelecting) {
+                // Start selection
+                isSelecting = true;
+                // If we had a previous floating selection, commit it first
+                if (selection && selection.floating) commitSelection();
+                
+                selection = {
+                    startX: x,
+                    startY: y,
+                    x: x,
+                    y: y,
+                    w: 1,
+                    h: 1,
+                    floating: false,
+                    content: null
+                };
+            } else {
+                // Update selection
+                const minX = Math.min(selection.startX, x);
+                const minY = Math.min(selection.startY, y);
+                const maxX = Math.max(selection.startX, x);
+                const maxY = Math.max(selection.startY, y);
+                
+                selection.x = minX;
+                selection.y = minY;
+                selection.w = maxX - minX + 1;
+                selection.h = maxY - minY + 1;
+            }
+            
+            renderCanvas();
+            updateSelectionPanel();
+        }
+
+        function handleMoveTool(e) {
+            // If no selection, do nothing
+            if (!selection) return;
+            
+            // If not floating yet, lift it
+            if (!selection.floating) {
+                liftSelection();
+            }
+            
+            if (!isMovingSelection) {
+                isMovingSelection = true;
+                moveStartX = e.clientX; // Use screen coords for smooth movement
+                moveStartY = e.clientY;
+                selection.originX = selection.x;
+                selection.originY = selection.y;
+            } else {
+                // Calculate scale factor based on current zoom
+                const rect = canvas.getBoundingClientRect();
+                const scale = (rect.width / canvas.width) * CANVAS_SCALE;
+
+                const deltaX = Math.floor((e.clientX - moveStartX) / scale);
+                const deltaY = Math.floor((e.clientY - moveStartY) / scale);
+                
+                selection.x = selection.originX + deltaX;
+                selection.y = selection.originY + deltaY;
+            }
+            
+            renderCanvas();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveState();
+            }
+            if (isSelecting) {
+                isSelecting = false;
+            }
+            if (isMovingSelection) {
+                isMovingSelection = false;
+                // Don't save state yet, wait for commit
+            }
+        }
+
+        function liftSelection() {
+            if (!selection || selection.floating) return;
+            
+            // Create temp canvas for selection content
+            const tempC = document.createElement('canvas');
+            tempC.width = selection.w;
+            tempC.height = selection.h;
+            const tempCtx = tempC.getContext('2d');
+            
+            // Iterate mappings to find what to lift
+            for (const map of MAPPINGS) {
+                // Intersection in Visual Space
+                const ix = Math.max(selection.x, map.vx);
+                const iy = Math.max(selection.y, map.vy);
+                const iRight = Math.min(selection.x + selection.w, map.vx + map.w);
+                const iBottom = Math.min(selection.y + selection.h, map.vy + map.h);
+                
+                if (ix < iRight && iy < iBottom) {
+                    const w = iRight - ix;
+                    const h = iBottom - iy;
+                    
+                    // Offsets
+                    const mapOffsetX = ix - map.vx;
+                    const mapOffsetY = iy - map.vy;
+                    const selOffsetX = ix - selection.x;
+                    const selOffsetY = iy - selection.y;
+                    
+                    // Copy from Source to Temp
+                    tempCtx.drawImage(
+                        dataCanvas, 
+                        map.sx + mapOffsetX, map.sy + mapOffsetY, w, h,
+                        selOffsetX, selOffsetY, w, h
+                    );
+                    
+                    // Clear from Source
+                    dataCtx.clearRect(map.sx + mapOffsetX, map.sy + mapOffsetY, w, h);
+                }
+            }
+            
+            selection.content = tempC;
+            selection.floating = true;
+            
+            renderCanvas();
+        }
+
+        function commitSelection() {
+            if (!selection || !selection.floating) {
+                selection = null;
+                renderCanvas();
+                updateSelectionPanel();
+                return;
+            }
+            
+            for (const map of MAPPINGS) {
+                const ix = Math.max(selection.x, map.vx);
+                const iy = Math.max(selection.y, map.vy);
+                const iRight = Math.min(selection.x + selection.w, map.vx + map.w);
+                const iBottom = Math.min(selection.y + selection.h, map.vy + map.h);
+                
+                if (ix < iRight && iy < iBottom) {
+                    const w = iRight - ix;
+                    const h = iBottom - iy;
+                    
+                    const mapOffsetX = ix - map.vx;
+                    const mapOffsetY = iy - map.vy;
+                    const selOffsetX = ix - selection.x;
+                    const selOffsetY = iy - selection.y;
+                    
+                    // Copy from Temp to Source
+                    dataCtx.drawImage(
+                        selection.content,
+                        selOffsetX, selOffsetY, w, h,
+                        map.sx + mapOffsetX, map.sy + mapOffsetY, w, h
+                    );
+                }
+            }
+            
+            selection = null;
+            renderCanvas();
+            updatePreview();
+            updateSelectionPanel();
+            saveState();
+        }
+
+        function deselect() {
+            commitSelection();
+        }
+        
+        function deleteSelection() {
+            if (selection) {
+                if (!selection.floating) {
+                    // If not floating, we need to clear the source pixels under the selection
+                    for (const map of MAPPINGS) {
+                        const ix = Math.max(selection.x, map.vx);
+                        const iy = Math.max(selection.y, map.vy);
+                        const iRight = Math.min(selection.x + selection.w, map.vx + map.w);
+                        const iBottom = Math.min(selection.y + selection.h, map.vy + map.h);
+                        
+                        if (ix < iRight && iy < iBottom) {
+                            const w = iRight - ix;
+                            const h = iBottom - iy;
+                            const mapOffsetX = ix - map.vx;
+                            const mapOffsetY = iy - map.vy;
+                            
+                            dataCtx.clearRect(map.sx + mapOffsetX, map.sy + mapOffsetY, w, h);
+                        }
+                    }
+                    saveState();
+                }
+                selection = null;
+                renderCanvas();
+                updatePreview();
+                updateSelectionPanel();
+            }
+        }
+
+        function rotateSelection(deg) {
+            if (!selection) return;
+            if (!selection.floating) liftSelection();
+            
+            const src = selection.content;
+            const dst = document.createElement('canvas');
+            
+            if (Math.abs(deg) === 90) {
+                dst.width = src.height;
+                dst.height = src.width;
+            } else {
+                dst.width = src.width;
+                dst.height = src.height;
+            }
+            
+            const dCtx = dst.getContext('2d');
+            dCtx.translate(dst.width/2, dst.height/2);
+            dCtx.rotate(deg * Math.PI / 180);
+            dCtx.drawImage(src, -src.width/2, -src.height/2);
+            
+            selection.content = dst;
+            selection.w = dst.width;
+            selection.h = dst.height;
+            
+            renderCanvas();
+        }
+
+        function flipSelection(axis) {
+            if (!selection) return;
+            if (!selection.floating) liftSelection();
+            
+            const src = selection.content;
+            const dst = document.createElement('canvas');
+            dst.width = src.width;
+            dst.height = src.height;
+            
+            const dCtx = dst.getContext('2d');
+            dCtx.translate(dst.width/2, dst.height/2);
+            if (axis === 'h') dCtx.scale(-1, 1);
+            else dCtx.scale(1, -1);
+            dCtx.drawImage(src, -src.width/2, -src.height/2);
+            
+            selection.content = dst;
+            renderCanvas();
+        }
+
+        // --- Tool Logic ---
+        function getFaceAt(x, y) {
+            for (const map of MAPPINGS) {
+                if (x >= map.sx && x < map.sx + map.w &&
+                    y >= map.sy && y < map.sy + map.h) {
+                    return map;
+                }
+            }
+            return null;
+        }
+
+        function isLayerLocked(x, y) {
+            const face = getFaceAt(x, y);
+            if (!face) return false;
+            
+            const isHat = face.name.startsWith('Hat');
+            if (isHat && document.getElementById('lock-hat').checked) return true;
+            if (!isHat && document.getElementById('lock-head').checked) return true;
+            
+            return false;
+        }
+
+        function getMirrorCoords(x, y) {
+            const face = getFaceAt(x, y);
+            if (!face) return null;
+            
+            const localX = x - face.sx;
+            const localY = y - face.sy;
+            const mirroredLocalX = face.w - 1 - localX;
+            
+            let targetFaceName = face.name;
+            
+            // Swap Left/Right faces
+            if (face.name === 'Right') targetFaceName = 'Left';
+            else if (face.name === 'Left') targetFaceName = 'Right';
+            else if (face.name === 'Hat Right') targetFaceName = 'Hat Left';
+            else if (face.name === 'Hat Left') targetFaceName = 'Hat Right';
+            
+            // Find target face
+            const targetFace = MAPPINGS.find(m => m.name === targetFaceName);
+            if (!targetFace) return null;
+            
+            return { x: targetFace.sx + mirroredLocalX, y: targetFace.sy + localY };
+        }
+
+        function shadePixel(x, y, darken = false) {
+            const p = dataCtx.getImageData(x, y, 1, 1).data;
+            if (p[3] === 0) return; // Don't shade transparent
+            
+            const amount = 20;
+            const factor = darken ? -1 : 1;
+            
+            const r = Math.min(255, Math.max(0, p[0] + amount * factor));
+            const g = Math.min(255, Math.max(0, p[1] + amount * factor));
+            const b = Math.min(255, Math.max(0, p[2] + amount * factor));
+            
+            const hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            setPixel(x, y, hex);
+        }
+
+        function applyTool(x, y, e) {
+            if (isLayerLocked(x, y)) return;
+
+            // Brush Size Loop
+            const half = Math.floor((brushSize - 1) / 2);
+            const startX = x - half;
+            const startY = y - half;
+            
+            for (let bx = 0; bx < brushSize; bx++) {
+                for (let by = 0; by < brushSize; by++) {
+                    const curX = startX + bx;
+                    const curY = startY + by;
+                    
+                    // Check if valid and within same face (optional, but good for 3D)
+                    // For 2D, we might want to allow crossing faces? 
+                    // Let's just check bounds of the canvas
+                    if (curX < 0 || curX >= SKIN_WIDTH || curY < 0 || curY >= SKIN_HEIGHT) continue;
+                    
+                    // For bucket, we don't use brush size
+                    if (currentTool === 'bucket') {
+                        if (bx === 0 && by === 0) fill(curX, curY, currentColor);
+                        continue;
+                    }
+
+                    if (currentTool === 'pen') {
+                        setPixel(curX, curY, currentColor);
+                    } else if (currentTool === 'eraser') {
+                        setPixel(curX, curY, 'transparent');
+                    } else if (currentTool === 'shade') {
+                        shadePixel(curX, curY, e.altKey);
+                    }
+                }
+            }
+        }
+        
+        function handleToolCommon(x, y, e) {
+             if (currentTool === 'picker') {
+                pickColor(x, y);
+                isDrawing = false;
+                return;
+            }
+            
+            applyTool(x, y, e);
+            
+            if (isMirror) {
+                const mirror = getMirrorCoords(x, y);
+                if (mirror) {
+                    applyTool(mirror.x, mirror.y, e);
+                }
+            }
+            
+            renderCanvas();
+            updatePreview();
+        }
+
+        function setPixel(x, y, color) {
+            if (color === 'transparent') {
+                dataCtx.clearRect(x, y, 1, 1);
+            } else {
+                dataCtx.fillStyle = color;
+                dataCtx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        function pickColor(x, y) {
+            const p = dataCtx.getImageData(x, y, 1, 1).data;
+            if (p[3] === 0) return; // Transparent
+            const hex = "#" + ((1 << 24) + (p[0] << 16) + (p[1] << 8) + p[2]).toString(16).slice(1);
+            setColor(hex);
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear the entire skin?')) {
+                dataCtx.clearRect(0, 0, SKIN_WIDTH, SKIN_HEIGHT);
+                renderCanvas();
+                updatePreview();
+                saveState();
+            }
+        }
+
+        function fill(startX, startY, fillColor) {
+            // Find the face bounds for the starting pixel
+            let bounds = null;
+            for (const map of MAPPINGS) {
+                if (startX >= map.sx && startX < map.sx + map.w &&
+                    startY >= map.sy && startY < map.sy + map.h) {
+                    bounds = {
+                        minX: map.sx,
+                        maxX: map.sx + map.w,
+                        minY: map.sy,
+                        maxY: map.sy + map.h
+                    };
+                    break;
+                }
+            }
+
+            // If we somehow clicked outside a mapped face (shouldn't happen with getSourceCoords), abort or default
+            if (!bounds) return;
+
+            const imgData = dataCtx.getImageData(0, 0, SKIN_WIDTH, SKIN_HEIGHT);
+            const pixels = imgData.data;
+            
+            const getPixelColor = (x, y) => {
+                if (x < 0 || y < 0 || x >= SKIN_WIDTH || y >= SKIN_HEIGHT) return null;
+                const idx = (y * SKIN_WIDTH + x) * 4;
+                return { r: pixels[idx], g: pixels[idx+1], b: pixels[idx+2], a: pixels[idx+3] };
+            };
+
+            const targetColor = getPixelColor(startX, startY);
+            
+            // Parse fill color
+            const r = parseInt(fillColor.slice(1, 3), 16);
+            const g = parseInt(fillColor.slice(3, 5), 16);
+            const b = parseInt(fillColor.slice(5, 7), 16);
+            
+            // Avoid infinite loop if filling same color
+            if (targetColor.r === r && targetColor.g === g && targetColor.b === b && targetColor.a === 255) return;
+
+            const stack = [[startX, startY]];
+            
+            while(stack.length) {
+                const [x, y] = stack.pop();
+                const current = getPixelColor(x, y);
+                
+                // Boundary check: Constrain to the specific face bounds
+                if (x < bounds.minX || x >= bounds.maxX || y < bounds.minY || y >= bounds.maxY) continue;
+                
+                if (current.r === targetColor.r && current.g === targetColor.g && current.b === targetColor.b && current.a === targetColor.a) {
+                    const idx = (y * SKIN_WIDTH + x) * 4;
+                    pixels[idx] = r;
+                    pixels[idx+1] = g;
+                    pixels[idx+2] = b;
+                    pixels[idx+3] = 255;
+                    
+                    stack.push([x+1, y]);
+                    stack.push([x-1, y]);
+                    stack.push([x, y+1]);
+                    stack.push([x, y-1]);
+                }
+            }
+            
+            dataCtx.putImageData(imgData, 0, 0);
+        }
+
+        // --- Rendering ---
+        function renderCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.imageSmoothingEnabled = false;
+            
+            // Draw each mapped region
+            for (const map of MAPPINGS) {
+                // Draw from dataCanvas (source) to canvas (visual)
+                ctx.drawImage(
+                    dataCanvas, 
+                    map.sx, map.sy, map.w, map.h, 
+                    map.vx * CANVAS_SCALE, map.vy * CANVAS_SCALE, map.w * CANVAS_SCALE, map.h * CANVAS_SCALE
+                );
+                
+                // Draw Border for the face
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(
+                    map.vx * CANVAS_SCALE, map.vy * CANVAS_SCALE, 
+                    map.w * CANVAS_SCALE, map.h * CANVAS_SCALE
+                );
+            }
+            
+            // Draw Floating Selection
+            if (selection && selection.floating) {
+                ctx.drawImage(
+                    selection.content, 
+                    selection.x * CANVAS_SCALE, 
+                    selection.y * CANVAS_SCALE, 
+                    selection.w * CANVAS_SCALE, 
+                    selection.h * CANVAS_SCALE
+                );
+            }
+            
+            // Draw Selection Outline
+            if (selection) {
+                ctx.save();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.strokeRect(
+                    selection.x * CANVAS_SCALE, 
+                    selection.y * CANVAS_SCALE, 
+                    selection.w * CANVAS_SCALE, 
+                    selection.h * CANVAS_SCALE
+                );
+                ctx.strokeStyle = '#000';
+                ctx.lineDashOffset = 4;
+                ctx.strokeRect(
+                    selection.x * CANVAS_SCALE, 
+                    selection.y * CANVAS_SCALE, 
+                    selection.w * CANVAS_SCALE, 
+                    selection.h * CANVAS_SCALE
+                );
+                ctx.restore();
+            }
+            
+            // Draw Grid (Optional, but nice)
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            // We can just draw a grid over the whole canvas, it's simpler
+            for(let x=0; x<=canvas.width; x+=CANVAS_SCALE) { ctx.moveTo(x,0); ctx.lineTo(x, canvas.height); }
+            for(let y=0; y<=canvas.height; y+=CANVAS_SCALE) { ctx.moveTo(0,y); ctx.lineTo(canvas.width, y); }
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = '12px sans-serif';
+            ctx.fillText("INNER HEAD", 8 * CANVAS_SCALE, 23 * CANVAS_SCALE);
+            ctx.fillText("OUTER HAT", 48 * CANVAS_SCALE, 23 * CANVAS_SCALE);
+        }
+
+        function updatePreview() {
+            const faces = document.querySelectorAll('.face');
+            faces.forEach(face => {
+                const ctx = face.getContext('2d');
+                const sx = parseInt(face.dataset.sx);
+                const sy = parseInt(face.dataset.sy);
+                
+                ctx.clearRect(0, 0, 8, 8);
+                ctx.drawImage(dataCanvas, sx, sy, 8, 8, 0, 0, 8, 8);
+                
+                // Draw floating selection on 3D preview
+                if (selection && selection.floating) {
+                    // Find which mapping corresponds to this face
+                    // We need to find the mapping that has this sx, sy
+                    // Note: MAPPINGS might have multiple entries for same sx/sy? No, unique.
+                    const map = MAPPINGS.find(m => m.sx === sx && m.sy === sy);
+                    
+                    if (map) {
+                        // Check intersection with this face in Visual Space
+                        const ix = Math.max(selection.x, map.vx);
+                        const iy = Math.max(selection.y, map.vy);
+                        const iRight = Math.min(selection.x + selection.w, map.vx + map.w);
+                        const iBottom = Math.min(selection.y + selection.h, map.vy + map.h);
+                        
+                        if (ix < iRight && iy < iBottom) {
+                            const w = iRight - ix;
+                            const h = iBottom - iy;
+                            const selOffsetX = ix - selection.x;
+                            const selOffsetY = iy - selection.y;
+                            const faceX = ix - map.vx;
+                            const faceY = iy - map.vy;
+                            
+                            ctx.drawImage(selection.content, selOffsetX, selOffsetY, w, h, faceX, faceY, w, h);
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- UI Helpers ---
+        function setColor(c) {
+            currentColor = c;
+            colorPicker.value = c;
+            document.querySelectorAll('.color-swatch').forEach(s => {
+                s.classList.toggle('active', s.style.backgroundColor === c || rgbToHex(s.style.backgroundColor) === c);
+            });
+        }
+        
+        // Helper to normalize colors for comparison
+        function rgbToHex(rgb) {
+            if (rgb.startsWith('#')) return rgb;
+            const [r, g, b] = rgb.match(/\d+/g);
+            return "#" + ((1 << 24) + (+r << 16) + (+g << 8) + +b).toString(16).slice(1);
+        }
+
+        function setTool(t) {
+            // If switching away from move/select and we have a floating selection, commit it?
+            // Or just keep it floating? Standard behavior is usually commit on tool switch.
+            if (selection && selection.floating && (t !== 'move' && t !== 'select')) {
+                commitSelection();
+            }
+            
+            currentTool = t;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tool-${t}`).classList.add('active');
+            
+            // Show/Hide Selection Panel
+            updateSelectionPanel();
+        }
+        
+        function updateSelectionPanel() {
+            const panel = document.getElementById('panel-selection');
+            if (selection) {
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function exportSkin() {
+            const link = document.createElement('a');
+            link.download = 'minecraft_skin.png';
+            link.href = dataCanvas.toDataURL();
+            link.click();
+        }
+
+        function exportHeadIcon() {
+            const size = 512;
+            const iconCanvas = document.createElement('canvas');
+            iconCanvas.width = size;
+            iconCanvas.height = size;
+            const ctx = iconCanvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+            
+            const cx = size / 2;
+            const cy = size / 2 + 40; // Center point (the "Y" junction), moved down slightly
+            const scale = 24; // Base scale for 8 pixels (8 * 24 = 192 width approx)
+
+            // Helper to draw a transformed face
+            // m: [a, b, c, d, e, f]
+            const drawLayer = (sx, sy, m, isHat) => {
+                ctx.save();
+                
+                if (isHat) {
+                    // Scale around the visual center of the cube to keep layers aligned
+                    // The visual center of an isometric cube drawn from (cx, cy) is at (cx, cy + 2*scale)
+                    // (Calculated as the center of the bounding hexagon)
+                    const centerX = cx;
+                    const centerY = cy + 2 * scale;
+                    
+                    ctx.translate(centerX, centerY);
+                    ctx.scale(1.15, 1.15);
+                    ctx.translate(-centerX, -centerY);
+                }
+
+                ctx.translate(cx, cy);
+                ctx.transform(...m);
+                ctx.drawImage(dataCanvas, sx, sy, 8, 8, 0, 0, 8*scale, 8*scale);
+                ctx.restore();
+            };
+
+            // Matrices (Origin at the central "Y" junction of the cube)
+            
+            // Visual Left Face (Screen Left) -> Mapped to Front Texture (8,8)
+            // Top Edge: (-8, -4) to (0, 0)
+            // Matrix: [1, 0.5, 0, 1, -8*scale, -4*scale]
+            const mLeft = [1, 0.5, 0, 1, -8*scale, -4*scale];
+
+            // Visual Right Face (Screen Right) -> Mapped to Right Texture (0,8)
+            // Top Edge: (0, 0) to (8, -4)
+            // Matrix: [1, -0.5, 0, 1, 0, 0]
+            const mRight = [1, -0.5, 0, 1, 0, 0];
+
+            // Top Face (Diamond) -> Mapped to Top Texture (8,0)
+            // Rotated so Bottom Edge connects to Visual Right (Front)
+            // and Left Edge connects to Visual Left (Right/CharRight)
+            // Matrix: [1, -0.5, 1, 0.5, -8*scale, -4*scale]
+            const mTop = [1, -0.5, 1, 0.5, -8*scale, -4*scale];
+
+            // Draw Inner Head
+            // Top (8,0)
+            drawLayer(8, 0, mTop, false);
+            // Visual Left -> Right Texture (0,8)
+            drawLayer(0, 8, mLeft, false);
+            // Visual Right -> Front Texture (8,8)
+            drawLayer(8, 8, mRight, false);
+
+            // Draw Outer Hat (if enabled)
+            if (document.getElementById('toggle-hat').checked) {
+                // Top Hat (40,0)
+                drawLayer(40, 0, mTop, true);
+                // Front Hat (40,8) -> Visual Right
+                drawLayer(40, 8, mRight, true);
+                // Right Hat (32,8) -> Visual Left
+                drawLayer(32, 8, mLeft, true);
+            }
+
+            const link = document.createElement('a');
+            link.download = 'head_icon.png';
+            link.href = iconCanvas.toDataURL();
+            link.click();
+        }
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
