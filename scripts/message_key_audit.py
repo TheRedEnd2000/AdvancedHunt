@@ -64,7 +64,16 @@ class CertainKeyUsage:
 @dataclass(frozen=True)
 class PatternKeyUsage:
     pattern: str
+    raw_parts: tuple[str, ...]
     site: UsageSite
+
+
+@dataclass(frozen=True)
+class ExpandedKeyUsage:
+    key: str
+    pattern: str
+    site: UsageSite
+    symbols: dict[str, list[str]]
 
 
 @dataclass(frozen=True)
@@ -280,8 +289,16 @@ def _split_top_level(text: str, separator: str) -> list[str]:
     return [p for p in parts if p != ""]
 
 
-def _expr_to_key_or_pattern(expr: str) -> tuple[str, str]:
-    """Returns (kind, value) where kind is 'certain'|'pattern'|'uncertain'."""
+JAVA_IDENTIFIER_RE = re.compile(r"^[A-Za-z_$][A-Za-z0-9_$]*$")
+
+
+def _expr_to_key_or_pattern(expr: str) -> tuple[str, Any]:
+    """Returns (kind, value) where kind is 'certain'|'pattern'|'uncertain'.
+
+    For kind == 'pattern', value is a dict with:
+        - pattern: str  (with '*' placeholders)
+        - parts: list[str] (top-level '+' parts, raw)
+    """
     literal = _parse_java_string_literal(expr)
     if literal is not None:
         return "certain", literal
@@ -313,13 +330,15 @@ def _expr_to_key_or_pattern(expr: str) -> tuple[str, str]:
         # Merge adjacent literals around '*' naturally.
         pattern = "".join(pattern_parts)
         pattern = re.sub(r"\*+", "*", pattern)
-        return "pattern", pattern
+        return "pattern", {"pattern": pattern, "parts": parts}
 
     # Technically possible (no placeholders) but we would have matched literal above.
     return "uncertain", expr.strip()
 
 
-def _extract_method_calls(text: str, rel_file: str) -> tuple[list[CertainKeyUsage], list[PatternKeyUsage], list[UncertainKeyUsage]]:
+def _extract_method_calls(
+    text: str, rel_file: str
+) -> tuple[list[CertainKeyUsage], list[PatternKeyUsage], list[UncertainKeyUsage]]:
     certain: list[CertainKeyUsage] = []
     patterns: list[PatternKeyUsage] = []
     uncertain: list[UncertainKeyUsage] = []
@@ -351,7 +370,7 @@ def _extract_method_calls(text: str, rel_file: str) -> tuple[list[CertainKeyUsag
         if kind == "certain":
             certain.append(CertainKeyUsage(key=value, site=site))
         elif kind == "pattern":
-            patterns.append(PatternKeyUsage(pattern=value, site=site))
+            patterns.append(PatternKeyUsage(pattern=value["pattern"], raw_parts=tuple(value["parts"]), site=site))
         else:
             uncertain.append(UncertainKeyUsage(site))
 
@@ -408,6 +427,218 @@ def _write_json(path: Path, obj: Any) -> None:
     path.write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+def _write_text_lines(path: Path, lines: Iterable[str]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    content = "\n".join(lines)
+    if content and not content.endswith("\n"):
+        content += "\n"
+    path.write_text(content, encoding="utf-8")
+
+
+def _pattern_to_regex(pattern: str) -> re.Pattern[str]:
+    # Only '*' wildcards are supported.
+    # Example: gui.rewards.*.name -> ^gui\.rewards\..*\.name$
+    escaped = re.escape(pattern)
+    escaped = escaped.replace(r"\*", r".*")
+    return re.compile(r"^" + escaped + r"$")
+
+
+def _extract_symbol_from_expr(expr: str) -> Optional[str]:
+    s = _strip_wrapping_parens(_strip_java_casts(expr)).strip()
+    if s.startswith("this."):
+        s = s[len("this."):]
+    # Only accept simple identifiers; method calls / field chains are too dynamic.
+    if JAVA_IDENTIFIER_RE.match(s):
+        return s
+    return None
+
+
+def _infer_literal_assignments_near_site(text: str, site_line: int, symbol: str) -> dict[str, list[int]]:
+    # Heuristic, local dataflow:
+    # Scan a window around the usage for assignments like:
+    #   String symbol = "foo";
+    #   symbol = "foo";
+    #   symbol = cond ? "a" : "b";
+    # Also follow 1-level aliases like `symbol = other;` when other is literal.
+    lines = text.splitlines()
+    start = max(0, site_line - 1 - 220)
+    end = min(len(lines), site_line - 1 + 80)
+    window = "\n".join(lines[start:end])
+
+    literal_by_line: dict[str, list[int]] = {}
+
+    # Simple assignment forms
+    assign_re = re.compile(r"(?:^|[^A-Za-z0-9_$])(?:String\s+)?" + re.escape(symbol) + r"\s*=\s*(\"(?:\\.|[^\"\\])*\")")
+    for m in assign_re.finditer(window):
+        lit = _parse_java_string_literal(m.group(1))
+        if lit is None:
+            continue
+        # approximate line number (within file)
+        before = window[: m.start()]
+        line_in_window = before.count("\n")
+        file_line = start + 1 + line_in_window
+        literal_by_line.setdefault(lit, []).append(file_line)
+
+    # Ternary assignment: symbol = cond ? "a" : "b"
+    ternary_re = re.compile(
+        r"(?:^|[^A-Za-z0-9_$])" + re.escape(symbol) + r"\s*=\s*[^;?]*\?\s*(\"(?:\\.|[^\"\\])*\")\s*:\s*(\"(?:\\.|[^\"\\])*\")"
+    )
+    for m in ternary_re.finditer(window):
+        for group_index in (1, 2):
+            lit = _parse_java_string_literal(m.group(group_index))
+            if lit is None:
+                continue
+            before = window[: m.start()]
+            line_in_window = before.count("\n")
+            file_line = start + 1 + line_in_window
+            literal_by_line.setdefault(lit, []).append(file_line)
+
+    # 1-level alias: symbol = other;
+    alias_re = re.compile(r"(?:^|[^A-Za-z0-9_$])" + re.escape(symbol) + r"\s*=\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*;")
+    aliases = {m.group(1) for m in alias_re.finditer(window)}
+    for other in aliases:
+        other_assign_re = re.compile(r"(?:^|[^A-Za-z0-9_$])(?:String\s+)?" + re.escape(other) + r"\s*=\s*(\"(?:\\.|[^\"\\])*\")")
+        for m in other_assign_re.finditer(window):
+            lit = _parse_java_string_literal(m.group(1))
+            if lit is None:
+                continue
+            before = window[: m.start()]
+            line_in_window = before.count("\n")
+            file_line = start + 1 + line_in_window
+            literal_by_line.setdefault(lit, []).append(file_line)
+
+    return literal_by_line
+
+
+def _infer_key_values_from_key_classes(text: str) -> dict[str, set[str]]:
+    # Looks for inner classes that contain `final String key;` and then collects
+    # string literals passed as the first ctor arg in `new <Class>("...")`.
+    key_classes: list[str] = []
+    for m in re.finditer(r"\bclass\s+([A-Za-z_$][A-Za-z0-9_$]*)\b", text):
+        name = m.group(1)
+        snippet = text[m.end() : m.end() + 2500]
+        if re.search(r"\bfinal\s+String\s+key\s*;", snippet):
+            key_classes.append(name)
+
+    values_by_class: dict[str, set[str]] = {}
+    for cls in key_classes:
+        ctor_re = re.compile(r"\bnew\s+" + re.escape(cls) + r"\s*\(\s*(\"(?:\\.|[^\"\\])*\")")
+        for m in ctor_re.finditer(text):
+            lit = _parse_java_string_literal(m.group(1))
+            if lit is None:
+                continue
+            values_by_class.setdefault(cls, set()).add(lit)
+    return values_by_class
+
+
+def _expand_pattern_usage(
+    usage: PatternKeyUsage,
+    java_text: str,
+    yaml_keys: set[str],
+    max_expansions: int = 500,
+) -> tuple[list[ExpandedKeyUsage], list[UsageSite]]:
+    # Returns (expanded_usages, resolution_sites)
+    # - expanded_usages: concrete keys we could infer
+    # - resolution_sites: where the inferred values came from (line-level, approximate)
+    raw_parts = list(usage.raw_parts)
+    segments: list[tuple[str, str]] = []  # (kind, value) kind=lit|expr
+    for part in raw_parts:
+        lit = _parse_java_string_literal(part)
+        if lit is not None:
+            segments.append(("lit", lit))
+        else:
+            segments.append(("expr", part.strip()))
+
+    # Determine which expr segments are resolvable symbols.
+    symbols_in_order: list[Optional[str]] = []
+    for kind, val in segments:
+        if kind == "expr":
+            symbols_in_order.append(_extract_symbol_from_expr(val))
+        else:
+            symbols_in_order.append(None)
+
+    # Collect possible values for each symbol.
+    symbol_values: dict[str, list[str]] = {}
+    resolution_sites: list[UsageSite] = []
+
+    # Special: infer ctor first-arg keys for `key` fields in this file.
+    key_values_by_class = _infer_key_values_from_key_classes(java_text)
+    combined_key_values: set[str] = set()
+    for vals in key_values_by_class.values():
+        combined_key_values |= vals
+
+    for sym in sorted({s for s in symbols_in_order if s is not None}):
+        inferred: set[str] = set()
+        inferred_lines: list[int] = []
+        if sym == "key" and combined_key_values:
+            inferred |= combined_key_values
+
+        nearby = _infer_literal_assignments_near_site(java_text, usage.site.line, sym)
+        for val, lines in nearby.items():
+            inferred.add(val)
+            inferred_lines.extend(lines)
+
+        if inferred:
+            symbol_values[sym] = sorted(inferred)
+            # record approximate source sites for debugging
+            for line in sorted(set(inferred_lines))[:20]:
+                resolution_sites.append(UsageSite(usage.site.file, line, "<inferred>", f"{sym}=<literal>"))
+
+    # If we have no resolvable symbols, stop.
+    unresolved_expr = [
+        seg
+        for (seg, sym) in zip(segments, symbols_in_order)
+        if seg[0] == "expr" and (sym is None or sym not in symbol_values)
+    ]
+    if unresolved_expr:
+        return [], []
+
+    # Expand.
+    expansions: list[tuple[str, dict[str, list[str]]]] = [("", {})]
+    for (kind, val), sym in zip(segments, symbols_in_order):
+        if kind == "lit":
+            expansions = [(prefix + val, used) for (prefix, used) in expansions]
+            continue
+
+        assert sym is not None
+        vals = symbol_values.get(sym)
+        if not vals:
+            return [], []
+
+        next_expansions: list[tuple[str, dict[str, list[str]]]] = []
+        for prefix, used in expansions:
+            for v in vals:
+                used2 = dict(used)
+                used2.setdefault(sym, [])
+                if v not in used2[sym]:
+                    used2[sym] = [*used2[sym], v]
+                next_expansions.append((prefix + v, used2))
+                if len(next_expansions) >= max_expansions:
+                    break
+            if len(next_expansions) >= max_expansions:
+                break
+        expansions = next_expansions
+
+    out: list[ExpandedKeyUsage] = []
+    for key, used in expansions:
+        out.append(ExpandedKeyUsage(key=key, pattern=usage.pattern, site=usage.site, symbols=used))
+    return out, resolution_sites
+
+
+def _yaml_stubs_for_missing_keys(missing: list[str], expected_types: dict[str, str]) -> list[str]:
+    # Emits a simple YAML snippet. We intentionally do NOT attempt to round-trip
+    # and edit the main messages file to avoid destroying comments/formatting.
+    lines: list[str] = []
+    for key in missing:
+        expected = expected_types.get(key, "scalar")
+        if expected == "list":
+            lines.append(f"{key}:")
+            lines.append('  - "TODO"')
+        else:
+            lines.append(f'{key}: "TODO"')
+    return lines
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Audit message keys used in code vs messages_en.yml")
     parser.add_argument(
@@ -435,6 +666,22 @@ def main(argv: list[str]) -> int:
         help="Write a JSON report to this path (optional)",
     )
 
+    parser.add_argument(
+        "--write-missing-stubs",
+        type=Path,
+        default=None,
+        help="Write a YAML snippet with stub values for missing certain keys",
+    )
+    parser.add_argument(
+        "--write-prune-candidates",
+        type=Path,
+        default=None,
+        help=(
+            "Write newline-separated prune candidates (safe set: keys not used as certain keys, "
+            "not matched by wildcard patterns, and not found anywhere in code)",
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     root: Path = args.root.resolve()
@@ -454,6 +701,8 @@ def main(argv: list[str]) -> int:
     all_patterns: list[PatternKeyUsage] = []
     all_uncertain: list[UncertainKeyUsage] = []
 
+    java_text_by_file: dict[str, str] = {}
+
     # For classifying “unused in message lookups” YAML keys:
     # - exact matches found in ANY Java string literal
     # - fallback substring matches found anywhere in Java source
@@ -464,6 +713,7 @@ def main(argv: list[str]) -> int:
     for file_path in java_files:
         rel_file = file_path.relative_to(root).as_posix()
         text = _read_text(file_path)
+        java_text_by_file[rel_file] = text
         all_code_text_parts.append(text)
         all_string_literals |= _extract_java_string_literals(text)
         certain, patterns, uncertain = _extract_method_calls(text, rel_file)
@@ -499,10 +749,39 @@ def main(argv: list[str]) -> int:
 
     yaml_keys = set(yaml_key_types.keys())
 
+    # 2.5) Resolve templates into likely concrete keys when possible.
+    expanded_key_usages: list[ExpandedKeyUsage] = []
+    expansion_resolution_sites: list[UsageSite] = []
+    for p in all_patterns:
+        java_text = java_text_by_file.get(p.site.file)
+        if not java_text:
+            continue
+        expanded, sources = _expand_pattern_usage(p, java_text, yaml_keys)
+        if expanded:
+            expanded_key_usages.extend(expanded)
+            expansion_resolution_sites.extend(sources)
+
+    expanded_keys = {u.key for u in expanded_key_usages}
+    expanded_keys_present_in_yaml = {k for k in expanded_keys if k in yaml_keys}
+    expanded_keys_missing_in_yaml = sorted([k for k in expanded_keys if k not in yaml_keys])
+
     # 3) Compare
     missing_in_yaml = sorted([k for k in certain_keys.keys() if k not in yaml_keys])
     # "Unused" here means: not referenced as a *certain literal* key in getMessage/getMessageList.
     unused_in_message_lookups = sorted([k for k in yaml_keys if k not in certain_keys])
+
+    # Treat wildcard patterns (string concat) as "likely used" for pruning decisions.
+    # Example: switchKey + ".name" => "*.name" which is broad, but safe.
+    pattern_regexes = [_pattern_to_regex(p.pattern) for p in all_patterns]
+    yaml_keys_matched_by_patterns: set[str] = set()
+    if pattern_regexes:
+        for key in yaml_keys:
+            if any(r.match(key) for r in pattern_regexes):
+                yaml_keys_matched_by_patterns.add(key)
+
+    # For pruning, treat keys concretely used by expansions as used.
+    used_for_pruning = set(certain_keys.keys()) | yaml_keys_matched_by_patterns | expanded_keys_present_in_yaml
+    unused_after_patterns = sorted([k for k in yaml_keys if k not in used_for_pruning])
 
     # Further classify unused YAML keys by presence anywhere in code.
     # 1) Found as an exact Java string literal
@@ -521,6 +800,9 @@ def main(argv: list[str]) -> int:
         else:
             unused_not_found_anywhere.append(key)
 
+    # Safe prune candidates: not used as certain, not matched by patterns, and not found anywhere.
+    prune_candidates = sorted([k for k in unused_after_patterns if k not in all_string_literals and k not in code_blob])
+
     type_mismatches: list[dict[str, Any]] = []
     for key, sites in certain_keys.items():
         expected = "list" if any(s.method == "getMessageList" for s in sites) else "scalar"
@@ -528,6 +810,19 @@ def main(argv: list[str]) -> int:
         if actual is None:
             continue
         if expected == "list" and actual == "scalar":
+            type_mismatches.append(
+                {
+                    "key": key,
+                    "expected": expected,
+                    "actual": actual,
+                    "example_site": {
+                        "file": sites[0].file,
+                        "line": sites[0].line,
+                        "method": sites[0].method,
+                    },
+                }
+            )
+        if expected == "scalar" and actual == "list":
             type_mismatches.append(
                 {
                     "key": key,
@@ -555,13 +850,18 @@ def main(argv: list[str]) -> int:
     print(f"Total key usages found:      {len(all_certain) + len(all_patterns) + len(all_uncertain)}")
     print(f"Unique certain keys (code):  {len(certain_keys)}")
     print(f"Pattern key usages:          {len(all_patterns)}")
+    print(f"Expanded template keys:      {len(expanded_key_usages)}")
+    print(f"Expanded missing in YAML:    {len(expanded_keys_missing_in_yaml)}")
     print(f"Uncertain/dynamic usages:    {len(all_uncertain)}")
     print(f"YAML keys (flattened):       {len(yaml_keys)}")
     print(f"Missing in YAML (certain):   {len(missing_in_yaml)}")
     print(f"Unused in message lookups:   {len(unused_in_message_lookups)}")
+    print(f"Matched by patterns:         {len(yaml_keys_matched_by_patterns)}")
+    print(f"Unused after patterns:       {len(unused_after_patterns)}")
     print(f"- found as string literal:   {len(unused_but_found_as_string_literal)}")
     print(f"- found in code text:        {len(unused_but_found_in_code_text)}")
     print(f"- not found anywhere:        {len(unused_not_found_anywhere)}")
+    print(f"Prune candidates (safe):     {len(prune_candidates)}")
     if duplicates:
         print(f"YAML duplicate/type-collisions: {len(duplicates)}")
     print()
@@ -572,6 +872,21 @@ def main(argv: list[str]) -> int:
         for key in missing_in_yaml:
             site = certain_keys[key][0]
             print(f"- {key}  ({site.file}:{site.line})")
+        print()
+
+    if expanded_keys_missing_in_yaml:
+        print("Likely missing in YAML (expanded from patterns)")
+        print("--------------------------------------------")
+        max_show = 250
+        for key in expanded_keys_missing_in_yaml[:max_show]:
+            # show first site that produced it
+            site = next((u.site for u in expanded_key_usages if u.key == key), None)
+            if site is None:
+                print(f"- {key}")
+            else:
+                print(f"- {key}  ({site.file}:{site.line})")
+        if len(expanded_keys_missing_in_yaml) > max_show:
+            print(f"... and {len(expanded_keys_missing_in_yaml) - max_show} more")
         print()
 
     if unused_but_found_as_string_literal:
@@ -605,11 +920,24 @@ def main(argv: list[str]) -> int:
         print()
 
     if type_mismatches:
-        print("Warnings: getMessageList used but YAML is scalar")
-        print("-----------------------------------------------")
+        print("Warnings: message key type mismatches")
+        print("------------------------------------")
         for w in type_mismatches:
             site = w["example_site"]
-            print(f"- {w['key']}  (expected list, YAML scalar)  ({site['file']}:{site['line']})")
+            print(
+                f"- {w['key']}  (expected {w['expected']}, YAML {w['actual']})  "
+                f"({site['file']}:{site['line']})"
+            )
+        print()
+
+    if prune_candidates:
+        print("Prune candidates (safe set)")
+        print("--------------------------")
+        max_show = 250
+        for key in prune_candidates[:max_show]:
+            print(f"- {key}")
+        if len(prune_candidates) > max_show:
+            print(f"... and {len(prune_candidates) - max_show} more")
         print()
 
     if all_patterns:
@@ -619,6 +947,21 @@ def main(argv: list[str]) -> int:
             s = p.site
             print(f"- {p.pattern}  ({s.file}:{s.line})")
             print(f"  expr: {s.arg_expr}")
+        print()
+
+    if expanded_key_usages:
+        print("Expanded pattern usages (inferred keys)")
+        print("--------------------------------------")
+        max_show = 250
+        shown = 0
+        for u in expanded_key_usages:
+            if shown >= max_show:
+                break
+            marker = "OK" if u.key in yaml_keys else "MISSING"
+            print(f"- [{marker}] {u.key}  ({u.site.file}:{u.site.line})")
+            shown += 1
+        if len(expanded_key_usages) > max_show:
+            print(f"... and {len(expanded_key_usages) - max_show} more")
         print()
 
     if all_uncertain:
@@ -634,6 +977,10 @@ def main(argv: list[str]) -> int:
         print()
 
     if args.json is not None:
+        expected_types_for_missing: dict[str, str] = {}
+        for key, sites in certain_keys.items():
+            expected_types_for_missing[key] = "list" if any(s.method == "getMessageList" for s in sites) else "scalar"
+
         report = {
             "root": str(root),
             "java_root": str(java_root),
@@ -643,13 +990,18 @@ def main(argv: list[str]) -> int:
                 "total_usages": len(all_certain) + len(all_patterns) + len(all_uncertain),
                 "unique_certain_keys": len(certain_keys),
                 "pattern_usages": len(all_patterns),
+                "expanded_pattern_usages": len(expanded_key_usages),
+                "expanded_missing_in_yaml": len(expanded_keys_missing_in_yaml),
                 "uncertain_usages": len(all_uncertain),
                 "yaml_keys": len(yaml_keys),
                 "missing_in_yaml": len(missing_in_yaml),
                 "unused_in_message_lookups": len(unused_in_message_lookups),
+                "matched_by_patterns": len(yaml_keys_matched_by_patterns),
+                "unused_after_patterns": len(unused_after_patterns),
                 "unused_found_as_string_literal": len(unused_but_found_as_string_literal),
                 "unused_found_in_code_text": len(unused_but_found_in_code_text),
                 "unused_not_found_anywhere": len(unused_not_found_anywhere),
+                "prune_candidates": len(prune_candidates),
             },
             "missing_in_yaml": [
                 {
@@ -659,13 +1011,19 @@ def main(argv: list[str]) -> int:
                         "line": certain_keys[k][0].line,
                         "method": certain_keys[k][0].method,
                     },
+                    "expected_value_type": expected_types_for_missing.get(k, "scalar"),
                 }
                 for k in missing_in_yaml
             ],
             "unused_in_message_lookups": unused_in_message_lookups,
+            "matched_by_patterns": sorted(yaml_keys_matched_by_patterns),
+            "expanded_keys_present_in_yaml": sorted(expanded_keys_present_in_yaml),
+            "expanded_keys_missing_in_yaml": expanded_keys_missing_in_yaml,
+            "unused_after_patterns": unused_after_patterns,
             "unused_found_as_string_literal": unused_but_found_as_string_literal,
             "unused_found_in_code_text": unused_but_found_in_code_text,
             "unused_not_found_anywhere": unused_not_found_anywhere,
+            "prune_candidates": prune_candidates,
             "pattern_usages": [
                 {
                     "pattern": p.pattern,
@@ -675,8 +1033,31 @@ def main(argv: list[str]) -> int:
                         "method": p.site.method,
                     },
                     "expr": p.site.arg_expr,
+                    "raw_parts": list(p.raw_parts),
                 }
                 for p in all_patterns
+            ],
+            "expanded_pattern_usages": [
+                {
+                    "key": u.key,
+                    "pattern": u.pattern,
+                    "site": {
+                        "file": u.site.file,
+                        "line": u.site.line,
+                        "method": u.site.method,
+                    },
+                    "symbols": u.symbols,
+                }
+                for u in expanded_key_usages
+            ],
+            "expansion_resolution_sites": [
+                {
+                    "file": s.file,
+                    "line": s.line,
+                    "method": s.method,
+                    "expr": s.arg_expr,
+                }
+                for s in expansion_resolution_sites
             ],
             "uncertain_usages": [
                 {
@@ -694,6 +1075,18 @@ def main(argv: list[str]) -> int:
         }
         _write_json(args.json, report)
         print(f"Wrote JSON report: {args.json}")
+
+    if args.write_missing_stubs is not None and missing_in_yaml:
+        expected_types_for_missing: dict[str, str] = {}
+        for key, sites in certain_keys.items():
+            expected_types_for_missing[key] = "list" if any(s.method == "getMessageList" for s in sites) else "scalar"
+        stubs = _yaml_stubs_for_missing_keys(missing_in_yaml, expected_types_for_missing)
+        _write_text_lines(args.write_missing_stubs, stubs)
+        print(f"Wrote missing-key YAML stubs: {args.write_missing_stubs}")
+
+    if args.write_prune_candidates is not None and prune_candidates:
+        _write_text_lines(args.write_prune_candidates, prune_candidates)
+        print(f"Wrote prune-candidate list: {args.write_prune_candidates}")
 
     # Non-zero exit if there are missing certain keys.
     return 1 if missing_in_yaml else 0
