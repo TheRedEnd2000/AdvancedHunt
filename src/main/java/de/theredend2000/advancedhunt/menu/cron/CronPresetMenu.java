@@ -92,7 +92,7 @@ public class CronPresetMenu extends PagedMenu {
                     }
                     plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                         Bukkit.getScheduler().runTask(plugin, () -> {
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.success.preset", "%preset%", preset.getName(plugin)));
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.preset_applied", "%preset%", preset.getName(plugin)));
                             if (previousMenu != null) {
                                 previousMenu.open();
                             } else {

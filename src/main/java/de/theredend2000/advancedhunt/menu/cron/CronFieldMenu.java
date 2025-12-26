@@ -185,7 +185,7 @@ public class CronFieldMenu extends Menu {
             if (ValidationUtil.validateCron(expression)) {
                 applyCron(expression);
             } else {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.error.invalid"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.cron.invalid"));
             }
         });
     }
@@ -243,7 +243,7 @@ public class CronFieldMenu extends Menu {
         
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.success.applied"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.applied"));
                 navigateBack();
             });
         });

@@ -154,7 +154,7 @@ public class CronEditorMenu extends Menu {
                     if (ValidationUtil.validateCron(input)) {
                         applyCron(input);
                     } else {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.error.invalid"));
+                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.cron.invalid"));
                         reopenMenu();
                     }
                 });
@@ -173,7 +173,7 @@ public class CronEditorMenu extends Menu {
     private void applyPreset(String cronExpression, String presetNameKey) {
         applyCron(cronExpression);
         String presetName = plugin.getMessageManager().getMessage(presetNameKey);
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.success.preset", "%preset%", presetName));
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.preset_applied", "%preset%", presetName));
     }
 
     // Context-aware helper methods
@@ -195,7 +195,7 @@ public class CronEditorMenu extends Menu {
         
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.success.applied"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.applied"));
                 refresh();
             });
         });
@@ -210,7 +210,7 @@ public class CronEditorMenu extends Menu {
         
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.cron.success.cleared"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.cleared"));
                 refresh();
             });
         });

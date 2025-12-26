@@ -79,7 +79,7 @@ public class TreasureActionMenu extends Menu {
         Location location = treasure.getLocation();
         
         if (location == null || location.getWorld() == null) {
-            player.sendMessage(plugin.getMessageManager().getMessage("gui.treasure_action.teleport.invalid_location"));
+            player.sendMessage(plugin.getMessageManager().getMessage("feedback.teleport.invalid_location"));
             return;
         }
 
@@ -115,16 +115,16 @@ public class TreasureActionMenu extends Menu {
                 safeLoc = safeLocation;
                 safeLoc.setYaw(player.getLocation().getYaw());
                 safeLoc.setPitch(player.getLocation().getPitch());
-                player.sendMessage(plugin.getMessageManager().getMessage("gui.treasure_action.teleport.adjusted"));
+                player.sendMessage(plugin.getMessageManager().getMessage("feedback.teleport.adjusted"));
             } else {
-                player.sendMessage(plugin.getMessageManager().getMessage("gui.treasure_action.teleport.unsafe"));
+                player.sendMessage(plugin.getMessageManager().getMessage("feedback.teleport.unsafe"));
                 return;
             }
         }
 
         // Perform teleport
         player.teleport(safeLoc);
-        player.sendMessage(plugin.getMessageManager().getMessage("gui.treasure_action.teleport.success"));
+        player.sendMessage(plugin.getMessageManager().getMessage("feedback.teleport.success"));
     }
 
     /**

@@ -178,7 +178,7 @@ public class ActRuleEditorMenu extends Menu {
                     
                     plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                         Bukkit.getScheduler().runTask(plugin, () -> {
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.success.applied"));
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.applied"));
                             this.open();
                         });
                     });

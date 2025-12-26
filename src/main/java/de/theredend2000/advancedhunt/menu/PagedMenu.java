@@ -2,13 +2,11 @@ package de.theredend2000.advancedhunt.menu;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class PagedMenu extends Menu {
@@ -49,7 +47,7 @@ public abstract class PagedMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.previous_page")+getPageIndicator(size))
                 .build(), (e) -> {
             if (page == 0) {
-                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.first_page"));
+                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("feedback.gui.first_page"));
             } else {
                 page = page - 1;
                 open();
@@ -64,7 +62,7 @@ public abstract class PagedMenu extends Menu {
                 page = page + 1;
                 open();
             } else {
-                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("gui.common.last_page"));
+                e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("feedback.gui.last_page"));
             }
         });
     }
