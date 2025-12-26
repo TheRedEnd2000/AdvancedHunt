@@ -130,6 +130,7 @@ public class PlayerInteractListener implements Listener {
         data.addFoundTreasure(treasureCore.getId());
         playerManager.savePlayerData(player.getUniqueId()); // Async save triggered
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.found"));
+        plugin.getSoundManager().playTreasureFound(player);
 
         // Update particle manager cache for single-player-find collections
         collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
