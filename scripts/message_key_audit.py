@@ -18,9 +18,20 @@ Requirements:
 - PyYAML (pip install pyyaml)
 
 Usage examples:
-  python scripts/message_key_audit.py
-  python scripts/message_key_audit.py --json report.json
-  python scripts/message_key_audit.py --root . --yaml src/main/resources/messages/messages_en.yml
+    # Defaults (root=., java=src/main/java, yaml=src/main/resources/messages/messages_en.yml)
+    python scripts/message_key_audit.py
+
+    # Explicit roots/files + JSON report
+    python scripts/message_key_audit.py \
+        --root . \
+        --java src/main/java \
+        --yaml src/main/resources/messages/messages_en.yml \
+        --json report.json
+
+    # Write helper outputs (stubs for missing keys + safe prune candidates)
+    python scripts/message_key_audit.py \
+        --write-missing-stubs build/missing_message_keys.yml \
+        --write-prune-candidates build/prune_candidates.txt
 """
 
 from __future__ import annotations
