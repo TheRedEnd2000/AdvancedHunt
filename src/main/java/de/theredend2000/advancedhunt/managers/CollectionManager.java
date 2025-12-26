@@ -88,7 +88,8 @@ public class CollectionManager {
                     ((Main) plugin).getSoundManager().playCollectionCompleted(player);
                     rewardManager.giveRewards(player, collection.getCompletionRewards());
                 });
-            }
+            }else
+                ((Main) plugin).getSoundManager().playTreasureFound(player);
         });
     }
 

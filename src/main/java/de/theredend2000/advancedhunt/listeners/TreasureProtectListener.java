@@ -40,6 +40,7 @@ public class TreasureProtectListener implements Listener {
         // Prevent breaking treasures by normal players
         event.setCancelled(true);
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.protected"));
+        plugin.getSoundManager().playBlockProtected(event.getPlayer());
     }
 
     @EventHandler
