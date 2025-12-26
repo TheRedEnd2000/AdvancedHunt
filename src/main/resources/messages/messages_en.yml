@@ -207,7 +207,7 @@ gui:
         - "&7as a reward for this treasure."
         - ""
         - "&7Use &f%player% &7for the player's name."
-        - "&7Use &f& &7for color codes."
+        - "&7Use &f& &7for color codes and hex colors."
     add_broadcast_message:
       name: "&a+ Add Broadcast Message Reward"
       lore:
@@ -215,7 +215,7 @@ gui:
         - "&7that all players will see."
         - ""
         - "&7Use &f%player% &7for the player's name."
-        - "&7Use &f& &7for color codes."
+        - "&7Use &f& &7for color codesand hex colors."
     edit_info:
       name: "&eEdit Controls"
       lore:
