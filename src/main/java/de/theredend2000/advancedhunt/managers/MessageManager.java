@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.managers;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.util.HexColor;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -72,6 +73,7 @@ public class MessageManager {
         String prefix = messagesConfig.getString("prefix", "&6AdvancedHunt &8>> &7");
         message = message.replace("%prefix%", prefix);
         message = ChatColor.translateAlternateColorCodes('&', message);
+        HexColor.color(message, '&');
         
         messageCache.put(key, message);
         return message;
