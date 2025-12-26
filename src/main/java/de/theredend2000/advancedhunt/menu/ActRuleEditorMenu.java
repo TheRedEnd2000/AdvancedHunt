@@ -96,8 +96,8 @@ public class ActRuleEditorMenu extends Menu {
 
         // Name Editor
         addButton(10, new ItemBuilder(Material.NAME_TAG)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rule_editor.name.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act_rule_editor.name.lore", false,
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.editor.name.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.editor.name.lore", false,
                     "%name%", rule.getName()
                 ).toArray(new String[0]))
                 .build(), (e) -> {
@@ -183,7 +183,7 @@ public class ActRuleEditorMenu extends Menu {
                         });
                     });
                 } else {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_format.error.invalid_format"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.error.format.error.invalid_format"));
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         this.open();
                     });
@@ -200,8 +200,8 @@ public class ActRuleEditorMenu extends Menu {
         Material statusMaterial = rule.isEnabled() ? Material.LIME_DYE : Material.GRAY_DYE;
         
         addButton(38, new ItemBuilder(statusMaterial)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rule_editor.enabled.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act_rule_editor.enabled.lore", false,
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.editor.enabled.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.editor.enabled.lore", false,
                     "%status%", enabledStatus
                 ).toArray(new String[0]))
                 .build(), (e) -> {
@@ -215,13 +215,13 @@ public class ActRuleEditorMenu extends Menu {
 
         // Delete Rule
         addButton(42, new ItemBuilder(Material.RED_DYE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rule_editor.delete.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act_rule_editor.delete.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.editor.delete.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.editor.delete.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
             collection.removeActRule(rule.getId());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_rules.rule_deleted",
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.rules.list.rule_deleted",
                         "%name%", rule.getName()));
                     openPreviousMenu();
                 });

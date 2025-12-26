@@ -31,7 +31,7 @@ public class AddItemRewardMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.add_item_reward.title", false);
+        return plugin.getMessageManager().getMessage("gui.rewards.add.item.title", false);
     }
 
     @Override
@@ -64,29 +64,29 @@ public class AddItemRewardMenu extends Menu {
         
         // Item placement indicator (shows before item is placed)
         ItemStack placeholder = new ItemBuilder(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.add_item_reward.placeholder.name", false))
-            .setLore(plugin.getMessageManager().getMessageList("gui.add_item_reward.placeholder.lore", false))
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add.item.placeholder.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add.item.placeholder.lore", false))
             .build();
         addStaticItem(ITEM_SLOT, placeholder);
         
         // Instructions
         ItemStack info = new ItemBuilder(Material.BOOK)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.add_item_reward.info.name", false))
-            .setLore(plugin.getMessageManager().getMessageList("gui.add_item_reward.info.lore", false))
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add.item.info.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add.item.info.lore", false))
             .build();
         addStaticItem(4, info);
         
         // Confirm button
         ItemStack confirm = new ItemBuilder(Material.LIME_CONCRETE)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.add_item_reward.confirm.name", false))
-            .setLore(plugin.getMessageManager().getMessageList("gui.add_item_reward.confirm.lore", false))
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add.item.confirm.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add.item.confirm.lore", false))
             .build();
         addButton(39, confirm, e -> confirmAdd());
         
         // Cancel button
         ItemStack cancel = new ItemBuilder(Material.RED_CONCRETE)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.add_item_reward.cancel.name", false))
-            .setLore(plugin.getMessageManager().getMessageList("gui.add_item_reward.cancel.lore", false))
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add.item.cancel.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add.item.cancel.lore", false))
             .build();
         addButton(41, cancel, e -> cancelAndReturn());
         
@@ -104,7 +104,7 @@ public class AddItemRewardMenu extends Menu {
         ItemStack item = inventory.getItem(ITEM_SLOT);
         
         if (item == null || item.getType() == Material.AIR) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.add_item_reward.no_item"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.add.item.no_item"));
             return;
         }
         

@@ -41,7 +41,7 @@ public class ActRulesMenu extends PagedMenu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.act_rules.title", false, "%collection%", collection.getName());
+        return plugin.getMessageManager().getMessage("gui.act.rules.list.title", false, "%collection%", collection.getName());
     }
 
     @Override
@@ -101,9 +101,9 @@ public class ActRulesMenu extends PagedMenu {
                     }
 
                     addPagedItem(finalI, new ItemBuilder(material)
-                            .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rules.rule_item.name", false, 
+                            .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.list.rule_item.name", false, 
                                 "%name%", rule.getName()))
-                            .setLore(plugin.getMessageManager().getMessageList("gui.act_rules.rule_item.lore", false,
+                            .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.list.rule_item.lore", false,
                                 "%status%", status,
                                 "%date_range%", dateRange,
                                 "%duration%", duration,
@@ -117,7 +117,7 @@ public class ActRulesMenu extends PagedMenu {
                             collection.removeActRule(rule.getId());
                             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                                 plugin.getServer().getScheduler().runTask(plugin, () -> {
-                                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act_rules.rule_deleted",
+                                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.rules.list.rule_deleted",
                                             "%name%", rule.getName()));
                                     refresh();
                                     processing = false;
@@ -153,8 +153,8 @@ public class ActRulesMenu extends PagedMenu {
 
         // Add New Rule Button
         addButton(52, new ItemBuilder(Material.EMERALD)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act_rules.add_rule.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act_rules.add_rule.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.list.add_rule.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.list.add_rule.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
             processing = true;
             // Create new rule with default name

@@ -32,7 +32,7 @@ public class ActDateRangeMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.act.date_range.editor.title", false);
+        return plugin.getMessageManager().getMessage("gui.act.components.date_range.editor.title", false);
     }
 
     @Override
@@ -54,10 +54,10 @@ public class ActDateRangeMenu extends Menu {
         boolean isValid = ActFormatParser.isValidDateRange(currentValue);
 
         addButton(13, new ItemBuilder(Material.PAPER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.date_range.editor.current.name", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.editor.current.name", false))
                 .setLore(
-                    plugin.getMessageManager().getMessage("gui.act.date_range.editor.current.value", false, "%date_range%", currentValue),
-                    plugin.getMessageManager().getMessage("gui.act.date_range.editor.current.description", false, "%description%", description),
+                    plugin.getMessageManager().getMessage("gui.act.components.date_range.editor.current.value", false, "%date_range%", currentValue),
+                    plugin.getMessageManager().getMessage("gui.act.components.date_range.editor.current.description", false, "%description%", description),
                     "",
                     isValid ? "§a✓ Valid" : "§c✗ Invalid"
                 )
@@ -65,8 +65,8 @@ public class ActDateRangeMenu extends Menu {
 
         // Preset: Always Active (*)
         addButton(19, new ItemBuilder(Material.LIME_DYE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.date_range.preset.always.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.date_range.preset.always.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.always.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.always.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDateRange("*"));
 
         // Preset: This Year
@@ -74,8 +74,8 @@ public class ActDateRangeMenu extends Menu {
         int currentYear = now.getYear();
         String thisYearRange = currentYear + "-01-01:" + currentYear + "-12-31";
         addButton(20, new ItemBuilder(Material.YELLOW_DYE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.date_range.preset.this_year.name", false, "%year%", String.valueOf(currentYear)))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.date_range.preset.this_year.lore", false, 
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.this_year.name", false, "%year%", String.valueOf(currentYear)))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.this_year.lore", false, 
                     "%year%", String.valueOf(currentYear)).toArray(new String[0]))
                 .build(), (e) -> applyDateRange(thisYearRange));
 
@@ -85,8 +85,8 @@ public class ActDateRangeMenu extends Menu {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
         String thisMonthRange = monthStart.format(formatter) + ":" + monthEnd.format(formatter);
         addButton(21, new ItemBuilder(Material.ORANGE_DYE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.date_range.preset.this_month.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.date_range.preset.this_month.lore", false,
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.this_month.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.this_month.lore", false,
                     "%start%", monthStart.format(formatter),
                     "%end%", monthEnd.format(formatter)).toArray(new String[0]))
                 .build(), (e) -> applyDateRange(thisMonthRange));
@@ -96,21 +96,21 @@ public class ActDateRangeMenu extends Menu {
         LocalDate nextMonthEnd = nextMonthStart.withDayOfMonth(nextMonthStart.lengthOfMonth());
         String nextMonthRange = nextMonthStart.format(formatter) + ":" + nextMonthEnd.format(formatter);
         addButton(22, new ItemBuilder(Material.PINK_DYE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.date_range.preset.next_month.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.date_range.preset.next_month.lore", false,
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.next_month.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.next_month.lore", false,
                     "%start%", nextMonthStart.format(formatter),
                     "%end%", nextMonthEnd.format(formatter)).toArray(new String[0]))
                 .build(), (e) -> applyDateRange(nextMonthRange));
 
         // Manual Input
         addButton(31, new ItemBuilder(Material.ANVIL)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.date_range.manual.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.date_range.manual.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.manual.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.manual.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
             Player player = (Player) e.getWhoClicked();
             player.closeInventory();
             
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.date_range.prompt"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.date_range.prompt"));
             
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
                 if (ActFormatParser.isValidDateRange(input)) {
@@ -127,7 +127,7 @@ public class ActDateRangeMenu extends Menu {
         rule.setDateRange(dateRange);
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.date_range.success"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.date_range.success"));
                 if (previousMenu != null) {
                     previousMenu.open();
                 } else {

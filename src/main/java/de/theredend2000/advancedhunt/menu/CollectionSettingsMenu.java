@@ -159,7 +159,7 @@ public class CollectionSettingsMenu extends Menu {
 
         @Override
         public String getMenuName() {
-            return plugin.getMessageManager().getMessage("gui.progress_reset_cron.title", false);
+            return plugin.getMessageManager().getMessage("gui.settings.reset_schedule.title", false);
         }
     }
 }

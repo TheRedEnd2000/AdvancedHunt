@@ -33,7 +33,7 @@ public class ActDurationMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.act.duration.editor.title", false);
+        return plugin.getMessageManager().getMessage("gui.act.components.duration.editor.title", false);
     }
 
     @Override
@@ -55,10 +55,10 @@ public class ActDurationMenu extends Menu {
         boolean isValid = ActFormatParser.isValidDuration(currentValue);
 
         addButton(13, new ItemBuilder(Material.CLOCK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.editor.current.name", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.editor.current.name", false))
                 .setLore(
-                    plugin.getMessageManager().getMessage("gui.act.duration.editor.current.value", false, "%duration%", currentValue),
-                    plugin.getMessageManager().getMessage("gui.act.duration.editor.current.description", false, "%description%", description),
+                    plugin.getMessageManager().getMessage("gui.act.components.duration.editor.current.value", false, "%duration%", currentValue),
+                    plugin.getMessageManager().getMessage("gui.act.components.duration.editor.current.description", false, "%description%", description),
                     "",
                     isValid ? "§a✓ Valid" : "§c✗ Invalid"
                 )
@@ -66,73 +66,73 @@ public class ActDurationMenu extends Menu {
 
         // Preset: Permanent (*)
         addButton(19, new ItemBuilder(Material.NETHER_STAR)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.permanent.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.permanent.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.permanent.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.permanent.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("*"));
 
         // Preset: 30 Minutes
         addButton(20, new ItemBuilder(Material.IRON_NUGGET)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.30_minutes.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.30_minutes.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.30_minutes.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.30_minutes.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("30m"));
 
         // Preset: 1 Hour
         addButton(21, new ItemBuilder(Material.GOLD_NUGGET)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.1_hour.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.1_hour.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.1_hour.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.1_hour.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("1h"));
 
         // Preset: 2 Hours
         addButton(22, new ItemBuilder(Material.GOLD_INGOT)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.2_hours.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.2_hours.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.2_hours.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.2_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("2h"));
 
         // Preset: 4 Hours
         addButton(23, new ItemBuilder(Material.GOLDEN_CARROT)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.4_hours.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.4_hours.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.4_hours.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.4_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("4h"));
 
         // Preset: 8 Hours
         addButton(24, new ItemBuilder(Material.GOLDEN_APPLE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.8_hours.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.8_hours.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.8_hours.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.8_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("8h"));
 
         // Preset: 24 Hours
         addButton(25, new ItemBuilder(Material.ENCHANTED_GOLDEN_APPLE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.24_hours.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.24_hours.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.24_hours.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.24_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("24h"));
 
         // Preset: 7 Days
         addButton(28, new ItemBuilder(Material.TOTEM_OF_UNDYING)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.preset.7_days.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.preset.7_days.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.7_days.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.7_days.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("7d"));
 
         // Decrease button (-1)
         addButton(37, new ItemBuilder(Material.RED_CONCRETE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.decrease.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.decrease.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.decrease.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.decrease.lore", false).toArray(new String[0]))
                 .build(), (e) -> modifyNumericDuration(-1));
 
         // Increase button (+1)
         addButton(43, new ItemBuilder(Material.LIME_CONCRETE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.increase.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.increase.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.increase.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.increase.lore", false).toArray(new String[0]))
                 .build(), (e) -> modifyNumericDuration(1));
 
         // Manual Input
         addButton(40, new ItemBuilder(Material.ANVIL)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.duration.custom.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.duration.custom.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.custom.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.custom.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
             Player player = (Player) e.getWhoClicked();
             player.closeInventory();
             
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.duration.prompt"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.duration.prompt"));
             
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
                 if (ActFormatParser.isValidDuration(input)) {
@@ -172,7 +172,7 @@ public class ActDurationMenu extends Menu {
         rule.setDuration(duration);
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.duration.success"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.duration.success"));
                 refresh();
             });
         });

@@ -33,7 +33,7 @@ public class WhoFoundMenu extends PagedMenu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.who_found.title", false);
+        return plugin.getMessageManager().getMessage("gui.finders.title", false);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class WhoFoundMenu extends PagedMenu {
             // Show loading indicator
             addMenuBorder();
             ItemStack loadingItem = new ItemBuilder(Material.HOPPER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.who_found.loading", false))
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.finders.loading", false))
                     .build();
             addStaticItem(22, loadingItem);
             
@@ -66,8 +66,8 @@ public class WhoFoundMenu extends PagedMenu {
         if (finderUuids.isEmpty()) {
             // Show "no one found" message
             ItemStack noOneItem = new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.who_found.no_one.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.who_found.no_one.lore", false))
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.finders.empty.name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.finders.empty.lore", false))
                     .build();
             addStaticItem(22, noOneItem);
             return;
@@ -139,11 +139,11 @@ public class WhoFoundMenu extends PagedMenu {
         ItemBuilder builder = new ItemBuilder(head)
                 .setSkullOwner(playerUuid)
                 .setDisplayName(plugin.getMessageManager().getMessage(
-                "gui.who_found.player_entry.name", false,
+                "gui.finders.entry.name", false,
                 "%player%", playerName));
         
         List<String> lore = plugin.getMessageManager().getMessageList(
-                "gui.who_found.player_entry.lore", false,
+                "gui.finders.entry.lore", false,
                 "%player%", playerName);
         
         for (String line : lore) {
