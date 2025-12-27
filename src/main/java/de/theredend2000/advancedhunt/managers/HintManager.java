@@ -43,6 +43,8 @@ public class HintManager {
     private int cooldownSeconds;
     private int proximityRange;
     private CoordinateRevealType revealType;
+    private int visualHintMaxDistance;
+    private int visualHintOffsetRange;
     
     // Constants for visual effects
     private static final long VISUAL_UPDATE_INTERVAL = 10L; // 0.5 seconds
@@ -100,6 +102,8 @@ public class HintManager {
         }
         this.visualHintDuration = Math.max(1, plugin.getConfig().getInt("minigames.hint.visual-hint.duration-seconds", 15));
         this.visualHintParticle = plugin.getConfig().getString("minigames.hint.visual-hint.particle", "END_ROD");
+        this.visualHintMaxDistance = Math.max(5, plugin.getConfig().getInt("minigames.hint.visual-hint.max-distance", 15));
+        this.visualHintOffsetRange = Math.max(3, plugin.getConfig().getInt("minigames.hint.visual-hint.offset-range", 10));
         this.applyFailCooldown = plugin.getConfig().getBoolean("minigames.hint.apply-cooldown-on-fail", true);
         this.cooldownSeconds = Math.max(0, plugin.getConfig().getInt("minigames.hint.cooldown-seconds", 300));
         this.proximityRange = Math.max(1, plugin.getConfig().getInt("minigames.hint.proximity-range", 50));
@@ -333,7 +337,8 @@ public class HintManager {
     }
 
     /**
-     * Start a particle trail from player to treasure.
+     * Start a particle trail from player toward treasure (limited distance for hint, not full path).
+     * Only shows particles for the first few blocks in the correct direction.
      * Updates every 0.5 seconds to reduce performance impact.
      */
     private BukkitTask startParticleTrail(Player player, TreasureCore treasure) {
@@ -354,13 +359,16 @@ public class HintManager {
                 // Get player eye location (single allocation per update)
                 Location playerEye = player.getEyeLocation();
                 
-                // Calculate direction vector
+                // Calculate direction vector to treasure
                 Vector direction = treasureCenter.toVector().subtract(playerEye.toVector());
-                double distance = direction.length();
+                double actualDistance = direction.length();
                 direction.normalize();
                 
-                // Spawn particles along the line
-                double steps = Math.ceil(distance / PARTICLE_SPACING);
+                // Only show particles for max-distance blocks (partial hint, not full path)
+                double hintDistance = Math.min(actualDistance, visualHintMaxDistance);
+                
+                // Spawn particles along the limited direction
+                double steps = Math.ceil(hintDistance / PARTICLE_SPACING);
                 for (int i = 0; i < steps; i++) {
                     double offset = i * PARTICLE_SPACING;
                     Location particleLoc = playerEye.clone().add(direction.clone().multiply(offset));
@@ -373,11 +381,17 @@ public class HintManager {
     }
 
     /**
-     * Point player's compass to treasure
+     * Point player's compass toward treasure's general area (with random offset for hint, not exact location).
+     * Compass points to approximate area within offset-range blocks of the treasure.
      */
     private BukkitTask startCompassPointing(Player player, TreasureCore treasure) {
+        // Add random offset to treasure location for approximate pointing
         Location treasureLoc = treasure.getLocation();
-        player.setCompassTarget(treasureLoc);
+        int offsetX = ThreadLocalRandom.current().nextInt(-visualHintOffsetRange, visualHintOffsetRange + 1);
+        int offsetZ = ThreadLocalRandom.current().nextInt(-visualHintOffsetRange, visualHintOffsetRange + 1);
+        Location approximateTarget = treasureLoc.clone().add(offsetX, 0, offsetZ);
+        
+        player.setCompassTarget(approximateTarget);
         
         // Reset compass after duration
         return new BukkitRunnable() {
@@ -392,11 +406,17 @@ public class HintManager {
     }
 
     /**
-     * Create a vertical beacon beam at treasure location
+     * Create a vertical beacon beam near treasure's general area (with offset for hint, not exact location).
+     * Beacon appears within offset-range blocks of the actual treasure location.
      */
     private BukkitTask startBeaconEffect(Player player, TreasureCore treasure) {
-        // Pre-calculate base location (immutable)
-        final Location baseLoc = treasure.getLocation().clone().add(0.5, 0, 0.5);
+        // Add random offset to treasure location for approximate beacon placement
+        Location treasureLoc = treasure.getLocation();
+        int offsetX = ThreadLocalRandom.current().nextInt(-visualHintOffsetRange, visualHintOffsetRange + 1);
+        int offsetZ = ThreadLocalRandom.current().nextInt(-visualHintOffsetRange, visualHintOffsetRange + 1);
+        
+        // Pre-calculate base location with offset (immutable)
+        final Location baseLoc = treasureLoc.clone().add(offsetX + 0.5, 0, offsetZ + 0.5);
         final int maxHeight = Math.min(BEACON_HEIGHT, baseLoc.getWorld().getMaxHeight() - baseLoc.getBlockY());
         
         return new BukkitRunnable() {
@@ -410,7 +430,7 @@ public class HintManager {
                     return;
                 }
                 
-                // Spawn vertical beam of particles
+                // Spawn vertical beam of particles in approximate area
                 for (int y = 0; y < maxHeight; y++) {
                     Location particleLoc = baseLoc.clone().add(0, y, 0);
                     ParticleUtils.spawnParticleForPlayer(player, particleLoc, visualHintParticle, 2, 0.1, 0.1, 0.1, 0);
