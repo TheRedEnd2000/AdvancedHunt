@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Manages hint delivery for players seeking treasures.
@@ -42,6 +43,18 @@ public class HintManager {
     private int cooldownSeconds;
     private int proximityRange;
     private CoordinateRevealType revealType;
+    
+    // Constants for visual effects
+    private static final long VISUAL_UPDATE_INTERVAL = 10L; // 0.5 seconds
+    private static final double PARTICLE_SPACING = 0.5;
+    private static final int BEACON_HEIGHT = 20;
+    private static final double EYE_LEVEL_OFFSET = 1.0;
+    
+    // Cardinal direction lookup (optimized)
+    private static final String[] DIRECTIONS = {
+        "East", "Southeast", "South", "Southwest", 
+        "West", "Northwest", "North", "Northeast"
+    };
 
     public enum VisualHintType {
         NONE,
@@ -63,6 +76,14 @@ public class HintManager {
         this.messageManager = messageManager;
         this.particleManager = particleManager;
         reloadConfig();
+        
+        // Periodic cleanup of expired cooldowns (every 5 minutes)
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                cleanupExpiredCooldowns();
+            }
+        }.runTaskTimerAsynchronously(plugin, 6000L, 6000L);
     }
 
     /**
@@ -77,11 +98,11 @@ public class HintManager {
             this.visualHintType = VisualHintType.NONE;
             plugin.getLogger().warning("Invalid visual hint type: " + typeStr + ", defaulting to NONE");
         }
-        this.visualHintDuration = plugin.getConfig().getInt("minigames.hint.visual-hint.duration-seconds", 15);
+        this.visualHintDuration = Math.max(1, plugin.getConfig().getInt("minigames.hint.visual-hint.duration-seconds", 15));
         this.visualHintParticle = plugin.getConfig().getString("minigames.hint.visual-hint.particle", "END_ROD");
         this.applyFailCooldown = plugin.getConfig().getBoolean("minigames.hint.apply-cooldown-on-fail", true);
-        this.cooldownSeconds = plugin.getConfig().getInt("minigames.hint.cooldown-seconds", 300);
-        this.proximityRange = plugin.getConfig().getInt("minigames.hint.proximity-range", 50);
+        this.cooldownSeconds = Math.max(0, plugin.getConfig().getInt("minigames.hint.cooldown-seconds", 300));
+        this.proximityRange = Math.max(1, plugin.getConfig().getInt("minigames.hint.proximity-range", 50));
         
         String revealStr = plugin.getConfig().getString("minigames.hint.reveal-coordinate", "RANDOM");
         try {
@@ -129,6 +150,15 @@ public class HintManager {
             applyCooldown(playerId);
         }
     }
+    
+    /**
+     * Clean up expired cooldowns to prevent memory leak
+     */
+    private void cleanupExpiredCooldowns() {
+        long now = System.currentTimeMillis();
+        long expirationThreshold = cooldownSeconds * 1000L;
+        cooldowns.entrySet().removeIf(entry -> (now - entry.getValue()) > expirationThreshold);
+    }
 
     /**
      * Find a random unfound treasure within proximity range
@@ -138,22 +168,25 @@ public class HintManager {
         Location playerLoc = player.getLocation();
         
         // Get available collections (ACT rules)
-        Set<UUID> availableCollections = collectionManager.getAllCollections()
-                .stream()
-                .filter(collectionManager::isCollectionAvailable)
-                .map(Collection::getId)
-                .collect(java.util.stream.Collectors.toSet());
+        java.util.Collection<Collection> allCollections = collectionManager.getAllCollections();
+        Set<UUID> availableCollections = new HashSet<>();
+        for (Collection collection : allCollections) {
+            if (collectionManager.isCollectionAvailable(collection)) {
+                availableCollections.add(collection.getId());
+            }
+        }
 
         if (availableCollections.isEmpty()) {
             return Optional.empty();
         }
 
         // Find unfound treasures in range using chunk-based search
-        List<TreasureCore> candidateTreasures = new ArrayList<>();
         int chunkX = playerLoc.getBlockX() >> 4;
         int chunkZ = playerLoc.getBlockZ() >> 4;
         int chunkRadius = (int) Math.ceil((double) proximityRange / 16.0);
         int rangeSq = proximityRange * proximityRange;
+        
+        List<TreasureCore> candidateTreasures = null;
 
         for (int x = chunkX - chunkRadius; x <= chunkX + chunkRadius; x++) {
             for (int z = chunkZ - chunkRadius; z <= chunkZ + chunkRadius; z++) {
@@ -164,7 +197,7 @@ public class HintManager {
                     // Check world match
                     if (!treasure.getLocation().getWorld().equals(playerLoc.getWorld())) continue;
                     
-                    // Check distance
+                    // Check distance (using squared distance for performance)
                     if (treasure.getLocation().distanceSquared(playerLoc) > rangeSq) continue;
                     
                     // Check if player has found it
@@ -173,17 +206,22 @@ public class HintManager {
                     // Check if collection is available
                     if (!availableCollections.contains(treasure.getCollectionId())) continue;
                     
+                    // Lazy initialize list only when needed
+                    if (candidateTreasures == null) {
+                        candidateTreasures = new ArrayList<>();
+                    }
                     candidateTreasures.add(treasure);
                 }
             }
         }
 
-        if (candidateTreasures.isEmpty()) {
+        if (candidateTreasures == null || candidateTreasures.isEmpty()) {
             return Optional.empty();
         }
 
-        // Return random treasure
-        return Optional.of(candidateTreasures.get(new Random().nextInt(candidateTreasures.size())));
+        // Return random treasure using ThreadLocalRandom (faster, no allocation)
+        int randomIndex = ThreadLocalRandom.current().nextInt(candidateTreasures.size());
+        return Optional.of(candidateTreasures.get(randomIndex));
     }
 
     /**
@@ -200,12 +238,7 @@ public class HintManager {
         String direction = getCardinalDirection(playerLoc, treasureLoc);
         
         // Determine which coordinate to reveal
-        CoordinateRevealType actualReveal = revealType;
-        if (revealType == CoordinateRevealType.RANDOM) {
-            // Only reveal X or Z (Y is too easy to use)
-            CoordinateRevealType[] types = {CoordinateRevealType.X, CoordinateRevealType.Z};
-            actualReveal = types[new Random().nextInt(types.length)];
-        }
+        CoordinateRevealType actualReveal = selectCoordinateToReveal();
         
         // Send coordinate hint
         String messageKey;
@@ -241,31 +274,36 @@ public class HintManager {
         // Apply cooldown
         applyCooldown(player.getUniqueId());
     }
+    
+    /**
+     * Select which coordinate type to reveal based on configuration
+     */
+    private CoordinateRevealType selectCoordinateToReveal() {
+        if (revealType != CoordinateRevealType.RANDOM) {
+            return revealType;
+        }
+        
+        // Only reveal X or Z (Y is too hard to use)
+        return ThreadLocalRandom.current().nextBoolean() ? CoordinateRevealType.X : CoordinateRevealType.Z;
+    }
 
     /**
-     * Calculate cardinal direction from one location to another
+     * Calculate cardinal direction from one location to another.
+     * Uses lookup table for performance.
      */
     private String getCardinalDirection(Location from, Location to) {
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         
-        // Calculate angle in degrees
+        // Calculate angle in degrees and normalize to 0-360
         double angle = Math.toDegrees(Math.atan2(dz, dx));
-        
-        // Normalize to 0-360
         if (angle < 0) {
             angle += 360;
         }
         
-        // Convert to cardinal directions (8 directions)
-        if (angle >= 337.5 || angle < 22.5) return "East";
-        else if (angle >= 22.5 && angle < 67.5) return "Southeast";
-        else if (angle >= 67.5 && angle < 112.5) return "South";
-        else if (angle >= 112.5 && angle < 157.5) return "Southwest";
-        else if (angle >= 157.5 && angle < 202.5) return "West";
-        else if (angle >= 202.5 && angle < 247.5) return "Northwest";
-        else if (angle >= 247.5 && angle < 292.5) return "North";
-        else return "Northeast";
+        // Map to 8 cardinal directions (45 degrees each)
+        int directionIndex = (int) Math.round(angle / 45.0) % 8;
+        return DIRECTIONS[directionIndex];
     }
 
     /**
@@ -295,9 +333,13 @@ public class HintManager {
     }
 
     /**
-     * Start a particle trail from player to treasure
+     * Start a particle trail from player to treasure.
+     * Updates every 0.5 seconds to reduce performance impact.
      */
     private BukkitTask startParticleTrail(Player player, TreasureCore treasure) {
+        // Pre-calculate treasure center (immutable)
+        final Location treasureCenter = treasure.getLocation().clone().add(0.5, 0.5, 0.5);
+        
         return new BukkitRunnable() {
             int ticksRemaining = visualHintDuration * 20;
             
@@ -309,23 +351,25 @@ public class HintManager {
                     return;
                 }
                 
-                Location playerLoc = player.getLocation().add(0, 1, 0); // Eye level
-                Location treasureLoc = treasure.getLocation().clone().add(0.5, 0.5, 0.5); // Center of block
+                // Get player eye location (single allocation per update)
+                Location playerEye = player.getEyeLocation();
                 
-                // Draw particle line
-                Vector direction = treasureLoc.toVector().subtract(playerLoc.toVector());
+                // Calculate direction vector
+                Vector direction = treasureCenter.toVector().subtract(playerEye.toVector());
                 double distance = direction.length();
                 direction.normalize();
                 
-                // Spawn particles along the line (every 0.5 blocks)
-                for (double i = 0; i < distance; i += 0.5) {
-                    Location particleLoc = playerLoc.clone().add(direction.clone().multiply(i));
+                // Spawn particles along the line
+                double steps = Math.ceil(distance / PARTICLE_SPACING);
+                for (int i = 0; i < steps; i++) {
+                    double offset = i * PARTICLE_SPACING;
+                    Location particleLoc = playerEye.clone().add(direction.clone().multiply(offset));
                     ParticleUtils.spawnParticleForPlayer(player, particleLoc, visualHintParticle, 1, 0, 0, 0, 0);
                 }
                 
-                ticksRemaining--;
+                ticksRemaining -= VISUAL_UPDATE_INTERVAL;
             }
-        }.runTaskTimer(plugin, 0L, 10L); // Update every 0.5 seconds
+        }.runTaskTimer(plugin, 0L, VISUAL_UPDATE_INTERVAL);
     }
 
     /**
@@ -351,6 +395,10 @@ public class HintManager {
      * Create a vertical beacon beam at treasure location
      */
     private BukkitTask startBeaconEffect(Player player, TreasureCore treasure) {
+        // Pre-calculate base location (immutable)
+        final Location baseLoc = treasure.getLocation().clone().add(0.5, 0, 0.5);
+        final int maxHeight = Math.min(BEACON_HEIGHT, baseLoc.getWorld().getMaxHeight() - baseLoc.getBlockY());
+        
         return new BukkitRunnable() {
             int ticksRemaining = visualHintDuration * 20;
             
@@ -362,17 +410,15 @@ public class HintManager {
                     return;
                 }
                 
-                Location baseLoc = treasure.getLocation().clone().add(0.5, 0, 0.5);
-                
-                // Spawn vertical beam of particles (up to 20 blocks high or to world height)
-                for (int y = 0; y < 20 && baseLoc.getBlockY() + y < baseLoc.getWorld().getMaxHeight(); y++) {
+                // Spawn vertical beam of particles
+                for (int y = 0; y < maxHeight; y++) {
                     Location particleLoc = baseLoc.clone().add(0, y, 0);
                     ParticleUtils.spawnParticleForPlayer(player, particleLoc, visualHintParticle, 2, 0.1, 0.1, 0.1, 0);
                 }
                 
-                ticksRemaining -= 10;
+                ticksRemaining -= VISUAL_UPDATE_INTERVAL;
             }
-        }.runTaskTimer(plugin, 0L, 10L); // Update every 0.5 seconds
+        }.runTaskTimer(plugin, 0L, VISUAL_UPDATE_INTERVAL);
     }
 
     /**
