@@ -1,3 +1,5 @@
+config-version: 1
+
 storage:
   # Options: SQLITE, MYSQL, YAML
   type: SQLITE
@@ -199,9 +201,6 @@ sounds:
     sound: ITEM_SHIELD_BLOCK
     volume: 0.4
     pitch: 0.9
-
-
-config-version: 1
 
 # Settings for data migration
 # These settings are ONLY used when running '/ah migrate mysql'

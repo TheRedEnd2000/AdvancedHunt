@@ -8,6 +8,7 @@ import de.theredend2000.advancedhunt.listeners.*;
 import de.theredend2000.advancedhunt.managers.*;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameManager;
 import de.theredend2000.advancedhunt.placeholder.AdvancedHuntExpansion;
+import de.theredend2000.advancedhunt.util.ConfigUpdater;
 import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -19,6 +20,7 @@ import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"));
+        reloadConfig();
 
         migrationService = new MigrationService(getLogger());
         // Initialize Message Manager
