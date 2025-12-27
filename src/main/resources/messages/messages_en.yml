@@ -1158,3 +1158,13 @@ minigame:
 
 proximity:
   near_treasure: "&eYou are near a treasure!"
+
+hint:
+  no_unfound_nearby: "%prefix%&cNo unfound treasures nearby in active collections!"
+  cooldown: "%prefix%&cYou must wait &e%time% seconds &cbefore requesting another hint."
+  coordinate_x: "%prefix%&aHint: X coordinate is &e%value% &a(&e%distance%m &a%direction%)"
+  coordinate_y: "%prefix%&aHint: Y coordinate is &e%value% &a(&e%distance%m &aaway)"
+  coordinate_z: "%prefix%&aHint: Z coordinate is &e%value% &a(&e%distance%m &a%direction%)"
+  success: "%prefix%&aYou earned a hint!"
+  visual_active: "%prefix%&eVisual hint activated!"
+  minigame_failed: "%prefix%&cMinigame failed. No hint for you!"

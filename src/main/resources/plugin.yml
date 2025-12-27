@@ -17,6 +17,9 @@ permissions:
   advancedhunt.progress:
     description: Allows viewing collection progress
     default: true
+  advancedhunt.hint:
+    description: Allows requesting hints via minigame
+    default: true
   advancedhunt.admin:
     description: Grants all administrative permissions
     default: op

@@ -205,6 +205,14 @@ public class AdvancedHuntCommand {
                 .handler(context -> minigame((Player) context.sender(), context.get("type")))
         );
 
+        // ==================== Hint Command ====================
+        commandManager.command(
+            playerBuilder()
+                .literal("hint")
+                .permission("advancedhunt.hint")
+                .handler(context -> hint((Player) context.sender()))
+        );
+
         // ==================== Migration Commands ====================
         SuggestionProvider<CommandSender> migrationTypes = (context, input) ->
             CompletableFuture.completedFuture(List.of("yaml", "sqlite", "mysql").stream()
@@ -464,6 +472,58 @@ public class AdvancedHuntCommand {
                 player.sendMessage(plugin.getMessageManager().getMessage("minigame.success"));
             } else {
                 player.sendMessage(plugin.getMessageManager().getMessage("minigame.failed"));
+            }
+        });
+    }
+
+    private void hint(Player player) {
+        // Check if hint minigame is enabled
+        if (!plugin.getConfig().getBoolean("minigames.hint.enabled", true)) {
+            player.sendMessage(plugin.getMessageManager().getMessage("error.feature_disabled"));
+            return;
+        }
+
+        // Check cooldown
+        if (plugin.getHintManager().isOnCooldown(player.getUniqueId())) {
+            long remaining = plugin.getHintManager().getRemainingCooldown(player.getUniqueId());
+            player.sendMessage(plugin.getMessageManager().getMessage("hint.cooldown",
+                    "%time%", String.valueOf(remaining)));
+            return;
+        }
+
+        // Find a random unfound treasure in range
+        Optional<de.theredend2000.advancedhunt.model.TreasureCore> treasureOpt = 
+                plugin.getHintManager().findRandomUnfoundTreasure(player);
+        
+        if (treasureOpt.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("hint.no_unfound_nearby"));
+            // Apply failure cooldown if configured
+            plugin.getHintManager().applyFailureCooldown(player.getUniqueId());
+            return;
+        }
+
+        de.theredend2000.advancedhunt.model.TreasureCore treasure = treasureOpt.get();
+
+        // Get minigame type from config
+        String minigameTypeStr = plugin.getConfig().getString("minigames.hint.minigame-type", "REACTION");
+        MinigameType minigameType;
+        try {
+            minigameType = MinigameType.valueOf(minigameTypeStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage(plugin.getMessageManager().getMessage("minigame.error.invalid_type"));
+            plugin.getLogger().warning("Invalid hint minigame type in config: " + minigameTypeStr);
+            return;
+        }
+
+        // Start minigame with hint delivery on success
+        plugin.getMinigameManager().startMinigame(player, minigameType, (success) -> {
+            if (success) {
+                player.sendMessage(plugin.getMessageManager().getMessage("hint.success"));
+                plugin.getHintManager().deliverHint(player, treasure);
+            } else {
+                player.sendMessage(plugin.getMessageManager().getMessage("hint.minigame_failed"));
+                // Apply failure cooldown if configured
+                plugin.getHintManager().applyFailureCooldown(player.getUniqueId());
             }
         });
     }
