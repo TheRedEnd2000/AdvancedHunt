@@ -168,13 +168,6 @@ public class CronFieldMenu extends Menu {
         });
 
         // Action Buttons
-        addButton(45, new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.cancel.name"))
-                .setLore(plugin.getMessageManager().getMessageList("gui.cron.builder.cancel.lore").toArray(new String[0]))
-                .build(), (e) -> {
-            navigateBack();
-        });
-
         addButton(53, new ItemBuilder(Material.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.save.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.builder.save.lore",
@@ -258,14 +251,12 @@ public class CronFieldMenu extends Menu {
     }
     
     private void navigateBack() {
-        if (isActRuleContext) {
+        if (previousMenu != null) {
+            previousMenu.open();
+        } else if (isActRuleContext) {
             new CronEditorMenu(playerMenuUtility, plugin, collection, actRule).open();
         } else {
-            if (previousMenu != null) {
-                previousMenu.open();
-            } else {
-                new CronEditorMenu(playerMenuUtility, plugin, collection).open();
-            }
+            new CronEditorMenu(playerMenuUtility, plugin, collection).open();
         }
     }
 

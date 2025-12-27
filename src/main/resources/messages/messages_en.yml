@@ -785,10 +785,6 @@ gui:
         name: "&a&l+ Increase"
         lore:
           - "&7Increase numeric value by 1"
-      cancel:
-        name: "&c&lCancel"
-        lore:
-          - "&7Return without saving"
       save:
         name: "&a&lSave & Apply"
         lore:
