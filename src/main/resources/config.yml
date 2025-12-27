@@ -82,6 +82,10 @@ particle-settings:
       y: 0.2
       z: 0.3
 
+proximity-settings:
+  enabled: false
+  range: 10
+
 leaderboard:
   # Maximum number of entries to display in the GUI leaderboard (per collection)
   display-limit: 100
