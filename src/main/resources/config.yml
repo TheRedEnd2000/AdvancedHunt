@@ -114,6 +114,32 @@ minigames:
     # Time in ticks to show each color during the sequence display
     display-time: 20
 
+  # Settings for the Hint minigame
+  hint:
+    enabled: true
+    # Which minigame to use for hints (REACTION or MEMORY)
+    minigame-type: REACTION
+    # Cooldown in seconds before player can request another hint
+    cooldown-seconds: 300
+    # Maximum distance in blocks to search for treasures
+    proximity-range: 50
+    # Apply cooldown if the player fails the minigame?
+    apply-cooldown-on-fail: true
+    # Which coordinate to reveal: X, Y, Z, or RANDOM
+    reveal-coordinate: RANDOM
+    # Visual hint settings (experimental)
+    visual-hint:
+      enabled: false
+      # Type of visual hint: NONE, TRAIL, COMPASS, or BEACON
+      # TRAIL: Particle line from player to treasure
+      # COMPASS: Point player's compass to treasure
+      # BEACON: Vertical particle beam at treasure location
+      type: NONE
+      # Duration of visual hint in seconds
+      duration-seconds: 15
+      # Particle type for TRAIL and BEACON (see: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html)
+      particle: END_ROD
+
 updater:
   enabled: true
   sources:

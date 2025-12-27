@@ -41,6 +41,7 @@ public final class Main extends JavaPlugin {
     private SoundManager soundManager;
     private ProximityManager proximityManager;
     private ScanManager scanManager;
+    private HintManager hintManager;
 
     @Override
     public void onEnable() {
@@ -86,6 +87,7 @@ public final class Main extends JavaPlugin {
         placeModeManager = new PlaceModeManager();
         minigameManager = new MinigameManager(this);
         particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
+        hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
         particleManager.start();
 
         proximityManager = new ProximityManager(this, treasureManager, playerManager);
@@ -174,6 +176,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (hintManager != null) {
+            hintManager.cancelAllVisualHints();
+        }
         if (scanManager != null) {
             scanManager.stop();
         }
@@ -243,5 +248,9 @@ public final class Main extends JavaPlugin {
 
     public ScanManager getScanManager() {
         return scanManager;
+    }
+
+    public HintManager getHintManager() {
+        return hintManager;
     }
 }
