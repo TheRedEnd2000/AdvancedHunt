@@ -240,22 +240,6 @@ gui:
           - "&7reward from the treasure."
       confirm_delete:
         title: "&8Confirm Delete"
-        warning:
-          name: "&c&l⚠ Delete Reward?"
-          lore:
-            - "&7This action cannot be undone!"
-            - "&7The reward will be permanently"
-            - "&7removed from this treasure."
-        confirm:
-          name: "&c&lYes, Delete"
-          lore:
-            - "&7Click to permanently"
-            - "&7delete this reward."
-        cancel:
-          name: "&a&lNo, Go Back"
-          lore:
-            - "&7Click to cancel and"
-            - "&7return to the reward."
 
     add:
       item:

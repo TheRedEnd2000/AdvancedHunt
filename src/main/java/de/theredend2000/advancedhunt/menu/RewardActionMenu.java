@@ -185,23 +185,19 @@ public class RewardActionMenu extends Menu {
      * Opens a confirmation menu before deleting.
      */
     private void confirmDelete() {
-        new ConfirmDeleteMenu(playerMenuUtility, plugin, this).open();
-    }
-
-    /**
-     * Actually deletes the reward (called from confirmation menu).
-     */
-    public void executeDelete() {
-        parentMenu.deleteReward(rewardIndex);
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.deleted"));
-        parentMenu.open();
-    }
-
-    /**
-     * Returns to this menu (from confirmation menu on cancel).
-     */
-    public void returnToActionMenu() {
-        open();
+        String title = plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.title", false);
+        ConfirmationMenu confirmMenu = new ConfirmationMenu(
+            playerMenuUtility,
+            plugin,
+            title,
+            e -> {
+                parentMenu.deleteReward(rewardIndex);
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.deleted"));
+                parentMenu.open();
+            },
+            e -> open()
+        );
+        confirmMenu.open();
     }
 
     private String formatChance(double chance) {
@@ -209,63 +205,5 @@ public class RewardActionMenu extends Menu {
             return String.valueOf((int) chance);
         }
         return String.format("%.1f", chance);
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Inner class for delete confirmation
-    // ─────────────────────────────────────────────────────────────────────────────
-
-    /**
-     * Simple confirmation menu for deleting a reward.
-     */
-    public static class ConfirmDeleteMenu extends Menu {
-
-        private final RewardActionMenu parentMenu;
-
-        public ConfirmDeleteMenu(Player player, Main plugin, RewardActionMenu parentMenu) {
-            super(player, plugin);
-            this.parentMenu = parentMenu;
-        }
-
-        @Override
-        public String getMenuName() {
-            return plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.title", false);
-        }
-
-        @Override
-        public int getSlots() {
-            return 27;
-        }
-
-        @Override
-        public void handleMenu(InventoryClickEvent e) {
-            // All handled by buttons
-        }
-
-        @Override
-        public void setMenuItems() {
-            fillBackground(FILLER_GLASS);
-            
-            // Warning message
-            ItemStack warning = new ItemBuilder(Material.CLOCK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.warning.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.confirm_delete.warning.lore", false))
-                .build();
-            addStaticItem(4, warning);
-            
-            // Confirm delete
-            ItemStack confirm = new ItemBuilder(Material.RED_CONCRETE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.confirm.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.confirm_delete.confirm.lore", false))
-                .build();
-            addButton(11, confirm, e -> parentMenu.executeDelete());
-            
-            // Cancel
-            ItemStack cancel = new ItemBuilder(Material.LIME_CONCRETE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.confirm_delete.cancel.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.confirm_delete.cancel.lore", false))
-                .build();
-            addButton(15, cancel, e -> parentMenu.returnToActionMenu());
-        }
     }
 }
