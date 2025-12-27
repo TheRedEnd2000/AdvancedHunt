@@ -29,6 +29,34 @@ public class ParticleManager {
     
     // Cache of globally claimed treasures in single-player-find collections
     private final Map<UUID, Boolean> globallyClaimedCache = new ConcurrentHashMap<>();
+    
+    // Staggered update tracking (rotate through treasures over 3 ticks)
+    private int staggerTick = 0;
+    private static final int STAGGER_CYCLE = 3;
+    
+    // Object pools to eliminate transient allocations
+    private final ArrayDeque<ParticleAction> particleActionPool = new ArrayDeque<>(200);
+    private final ArrayDeque<GlobalParticleAction> globalParticleActionPool = new ArrayDeque<>(200);
+    private final ArrayDeque<HashSet<UUID>> hashSetPool = new ArrayDeque<>(50);
+    private static final int MAX_POOL_SIZE = 500;
+    
+    // Per-player particle batch limiting
+    private static final int MAX_PARTICLES_PER_PLAYER_PER_TICK = 75;
+    
+    // Reusable distance calculation object
+    private static class TreasureDistance {
+        TreasureCore treasure;
+        Location treasureLoc;
+        double distanceSq;
+        ParticleConfig config;
+        
+        void set(TreasureCore treasure, Location treasureLoc, double distanceSq, ParticleConfig config) {
+            this.treasure = treasure;
+            this.treasureLoc = treasureLoc;
+            this.distanceSq = distanceSq;
+            this.config = config;
+        }
+    }
 
     // Cached configuration values for three particle states
     private ParticleConfig notFoundConfig;
@@ -181,8 +209,10 @@ public class ParticleManager {
     }
 
     /**
-     * Main particle tick method. Iterates through players and checks nearby chunks
-     * for treasures to spawn particles. This is spatially optimized for large treasure counts.
+     * Main particle tick method with staggered updates and batch limiting.
+     * - Updates 1/3 of treasures per tick (staggered over 3 ticks)
+     * - Uses object pooling to eliminate transient allocations
+     * - Limits particles per player with closest-treasure prioritization
      */
     public void processTick(List<PlayerSnapshot> snapshots, Set<UUID> availableCollections, Set<UUID> singlePlayerFindCollections) {
         FileConfiguration config = plugin.getConfig();
@@ -190,22 +220,29 @@ public class ParticleManager {
             return;
         }
 
-        // For legacy versions (1.8), use simplified global particles since per-player particles aren't supported
+        // For legacy versions (1.8), use simplified global particles
         if (ParticleUtils.isLegacy()) {
             tickParticlesLegacy(snapshots, availableCollections);
             return;
         }
+        
+        // Increment stagger tick (0, 1, 2, then cycle)
+        staggerTick = (staggerTick + 1) % STAGGER_CYCLE;
 
         List<ParticleAction> actions = new ArrayList<>();
         int chunkRadius = (int) Math.ceil(Math.sqrt(viewDistanceSq) / 16.0);
 
         for (PlayerSnapshot snapshot : snapshots) {
-            Set<UUID> processedTreasures = new HashSet<>();
+            // Borrow HashSet from pool to track processed treasures
+            HashSet<UUID> processedTreasures = borrowHashSet();
             Location playerLoc = snapshot.location();
             int playerChunkX = playerLoc.getBlockX() >> 4;
             int playerChunkZ = playerLoc.getBlockZ() >> 4;
             
             PlayerData playerData = playerManager.getPlayerData(snapshot.player().getUniqueId());
+            
+            // Use list for batch limiting with distance prioritization
+            List<TreasureDistance> nearbyTreasures = new ArrayList<>();
 
             for (int x = -chunkRadius; x <= chunkRadius; x++) {
                 for (int z = -chunkRadius; z <= chunkRadius; z++) {
@@ -217,6 +254,11 @@ public class ParticleManager {
 
                     for (TreasureCore treasure : treasures) {
                         if (processedTreasures.contains(treasure.getId())) continue;
+
+                        // Staggered update: only process treasures matching current stagger tick
+                        // This reduces particle updates by 66% (only 1/3 per tick)
+                        int treasureStagger = Math.abs(treasure.getId().hashCode() % STAGGER_CYCLE);
+                        if (treasureStagger != staggerTick) continue;
 
                         Location treasureLoc = treasure.getLocation();
                         if (treasureLoc == null || treasureLoc.getWorld() == null || 
@@ -232,13 +274,30 @@ public class ParticleManager {
                                 availableCollections, singlePlayerFindCollections, globallyClaimedCache);
                             
                             if (particleConfig != null && particleConfig.enabled) {
-                                actions.add(new ParticleAction(snapshot.player(), treasureLoc, particleConfig));
+                                // Add to nearby list for batch limiting
+                                TreasureDistance td = new TreasureDistance();
+                                td.set(treasure, treasureLoc, distSq, particleConfig);
+                                nearbyTreasures.add(td);
                             }
                             processedTreasures.add(treasure.getId());
                         }
                     }
                 }
             }
+            
+            // Batch limiting: prioritize closest treasures if count exceeds limit
+            if (nearbyTreasures.size() > MAX_PARTICLES_PER_PLAYER_PER_TICK) {
+                nearbyTreasures.sort(Comparator.comparingDouble(td -> td.distanceSq));
+                nearbyTreasures = nearbyTreasures.subList(0, MAX_PARTICLES_PER_PLAYER_PER_TICK);
+            }
+            
+            // Create particle actions using object pool
+            for (TreasureDistance td : nearbyTreasures) {
+                actions.add(borrowParticleAction(snapshot.player(), td.treasureLoc, td.config));
+            }
+            
+            // Return borrowed HashSet to pool
+            returnHashSet(processedTreasures);
         }
 
         // Schedule sync task to spawn particles
@@ -253,21 +312,27 @@ public class ParticleManager {
                     ParticleUtils.spawnParticleForPlayer(action.player, particleLoc, 
                         action.config.particleName, action.config.count, 
                         action.config.offX, action.config.offY, action.config.offZ, action.config.speed);
+                    
+                    // Return action to pool after use
+                    returnParticleAction(action);
                 }
             });
         }
     }
     
     /**
-     * Simplified particle spawning for legacy versions (1.8.x).
+     * Simplified particle spawning for legacy versions (1.8.x) with object pooling.
      * Shows basic particles for all treasures globally since per-player particles aren't supported.
      */
     private void tickParticlesLegacy(List<PlayerSnapshot> snapshots, Set<UUID> availableCollections) {
-        Set<UUID> processedTreasures = new HashSet<>();
+        HashSet<UUID> processedTreasures = borrowHashSet();
         List<GlobalParticleAction> actions = new ArrayList<>();
         int chunkRadius = (int) Math.ceil(Math.sqrt(viewDistanceSq) / 16.0);
         
-        if (notFoundConfig == null || !notFoundConfig.enabled) return;
+        if (notFoundConfig == null || !notFoundConfig.enabled) {
+            returnHashSet(processedTreasures);
+            return;
+        }
 
         for (PlayerSnapshot snapshot : snapshots) {
             Location playerLoc = snapshot.location();
@@ -297,13 +362,15 @@ public class ParticleManager {
                         double distSq = dx * dx + dy * dy + dz * dz;
 
                         if (distSq <= viewDistanceSq) {
-                            actions.add(new GlobalParticleAction(treasureLoc, notFoundConfig));
+                            actions.add(borrowGlobalParticleAction(treasureLoc, notFoundConfig));
                             processedTreasures.add(treasure.getId());
                         }
                     }
                 }
             }
         }
+        
+        returnHashSet(processedTreasures);
 
         if (!actions.isEmpty()) {
             Bukkit.getScheduler().runTask(plugin, () -> {
@@ -315,6 +382,8 @@ public class ParticleManager {
                     ParticleUtils.spawnParticle(particleLoc, action.config.particleName, 
                         action.config.count, action.config.offX, action.config.offY, 
                         action.config.offZ, action.config.speed);
+                    
+                    returnGlobalParticleAction(action);
                 }
             });
         }
@@ -353,9 +422,9 @@ public class ParticleManager {
     }
 
     private static class ParticleAction {
-        final Player player;
-        final Location location;
-        final ParticleConfig config;
+        Player player;
+        Location location;
+        ParticleConfig config;
 
         ParticleAction(Player player, Location location, ParticleConfig config) {
             this.player = player;
@@ -365,12 +434,68 @@ public class ParticleManager {
     }
 
     private static class GlobalParticleAction {
-        final Location location;
-        final ParticleConfig config;
+        Location location;
+        ParticleConfig config;
 
         GlobalParticleAction(Location location, ParticleConfig config) {
             this.location = location;
             this.config = config;
+        }
+    }
+    
+    // Object pool management methods
+    private ParticleAction borrowParticleAction(Player player, Location location, ParticleConfig config) {
+        ParticleAction action = particleActionPool.pollLast();
+        if (action == null) {
+            return new ParticleAction(player, location, config);
+        }
+        // Reuse existing object
+        action.player = player;
+        action.location = location;
+        action.config = config;
+        return action;
+    }
+    
+    private void returnParticleAction(ParticleAction action) {
+        if (particleActionPool.size() < MAX_POOL_SIZE) {
+            action.player = null;
+            action.location = null;
+            action.config = null;
+            particleActionPool.addLast(action);
+        }
+    }
+    
+    private GlobalParticleAction borrowGlobalParticleAction(Location location, ParticleConfig config) {
+        GlobalParticleAction action = globalParticleActionPool.pollLast();
+        if (action == null) {
+            return new GlobalParticleAction(location, config);
+        }
+        action.location = location;
+        action.config = config;
+        return action;
+    }
+    
+    private void returnGlobalParticleAction(GlobalParticleAction action) {
+        if (globalParticleActionPool.size() < MAX_POOL_SIZE) {
+            action.location = null;
+            action.config = null;
+            globalParticleActionPool.addLast(action);
+        }
+    }
+    
+    private HashSet<UUID> borrowHashSet() {
+        HashSet<UUID> set = hashSetPool.pollLast();
+        if (set == null) {
+            return new HashSet<>();
+        }
+        set.clear();
+        return set;
+    }
+    
+    private void returnHashSet(HashSet<UUID> set) {
+        if (hashSetPool.size() < MAX_POOL_SIZE) {
+            set.clear();
+            hashSetPool.addLast(set);
         }
     }
 
