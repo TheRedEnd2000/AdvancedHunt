@@ -492,7 +492,7 @@ public class AdvancedHuntCommand {
         }
 
         // Find a random unfound treasure in range
-        Optional<de.theredend2000.advancedhunt.model.TreasureCore> treasureOpt = 
+        Optional<TreasureCore> treasureOpt =
                 plugin.getHintManager().findRandomUnfoundTreasure(player);
         
         if (treasureOpt.isEmpty()) {
@@ -502,7 +502,7 @@ public class AdvancedHuntCommand {
             return;
         }
 
-        de.theredend2000.advancedhunt.model.TreasureCore treasure = treasureOpt.get();
+        TreasureCore treasure = treasureOpt.get();
 
         // Get minigame type from config
         String minigameTypeStr = plugin.getConfig().getString("minigames.hint.minigame-type", "REACTION");
