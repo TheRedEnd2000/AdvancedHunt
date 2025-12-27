@@ -14,81 +14,204 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.Command;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AdvancedHuntCommand {
 
     private final Main plugin;
+    private LegacyPaperCommandManager<CommandSender> commandManager;
 
     public AdvancedHuntCommand(Main plugin) {
         this.plugin = plugin;
     }
 
     public void register(final LegacyPaperCommandManager<CommandSender> commandManager) {
-        final SuggestionProvider<CommandSender> collectionsSuggestions = (context, input) -> CompletableFuture.completedFuture(
+        this.commandManager = commandManager;
+        // Setup suggestion providers
+        final SuggestionProvider<CommandSender> collectionsSuggestions = createCollectionsSuggestions();
+        final SuggestionProvider<CommandSender> playerNameSuggestions = createPlayerNameSuggestions();
+        final SuggestionProvider<CommandSender> minigameSuggestions = createMinigameSuggestions();
+        
+        // Setup reusable argument components
+        final CommandComponent.Builder<CommandSender, String> collectionArgument = 
+            createCollectionArgument(collectionsSuggestions);
+
+        // Register all commands
+        registerGeneralCommands(commandManager);
+        registerCollectionCommands(commandManager, collectionsSuggestions, collectionArgument);
+        registerPlayerCommands(commandManager, collectionArgument);
+        registerResetCommands(commandManager, collectionArgument, playerNameSuggestions);
+        registerMinigameCommands(commandManager, minigameSuggestions);
+        registerMigrationCommands(commandManager);
+    }
+
+    // ==================== Helper Methods ====================
+
+    /**
+     * Creates a base command builder for /advancedhunt or /ah.
+     */
+    private Command.Builder<CommandSender> baseBuilder() {
+        return commandManager.commandBuilder("advancedhunt", "ah");
+    }
+
+    /**
+     * Validates that the sender is a player and returns it, or sends error message.
+     */
+    private Optional<Player> requirePlayer(CommandSender sender) {
+        if (sender instanceof Player player) {
+            return Optional.of(player);
+        }
+        sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
+        return Optional.empty();
+    }
+
+    /**
+     * Looks up a collection by name and executes action if found, or sends error message.
+     */
+    private void withCollection(CommandSender sender, String collectionName, 
+                               Consumer<Collection> action) {
+        plugin.getCollectionManager().getCollectionByName(collectionName)
+            .ifPresentOrElse(action, 
+                () -> sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found")));
+    }
+
+    /**
+     * Invalidates player cache for all online players.
+     */
+    private void invalidateAllPlayerCaches() {
+        Bukkit.getOnlinePlayers().forEach(p -> 
+            plugin.getPlayerManager().invalidate(p.getUniqueId()));
+    }
+
+    /**
+     * Validates an offline player exists.
+     */
+    private Optional<OfflinePlayer> validateOfflinePlayer(CommandSender sender, String playerName) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_not_found"));
+            return Optional.empty();
+        }
+        return Optional.of(offlinePlayer);
+    }
+
+    // ==================== Suggestion Providers ====================
+
+    private SuggestionProvider<CommandSender> createCollectionsSuggestions() {
+        return (context, input) -> CompletableFuture.completedFuture(
             plugin.getCollectionManager().getAllCollectionNames().stream()
                 .map(Suggestion::suggestion)
                 .collect(Collectors.toList())
         );
+    }
 
-        final SuggestionProvider<CommandSender> playerNameSuggestions = (context, input) -> {
-            return CompletableFuture.supplyAsync(() -> {
-                // Online players
-                List<Suggestion> suggestions = new ArrayList<>();
+    private SuggestionProvider<CommandSender> createPlayerNameSuggestions() {
+        return (context, input) -> CompletableFuture.supplyAsync(() ->
+            Arrays.stream(Bukkit.getOfflinePlayers())
+                .map(OfflinePlayer::getName)
+                .filter(name -> name != null && !name.isEmpty())
+                .map(Suggestion::suggestion)
+                .distinct()
+                .collect(Collectors.toList())
+        );
+    }
 
-                suggestions.addAll(Arrays.stream(Bukkit.getOfflinePlayers())
-                        .map(OfflinePlayer::getName)
-                        .filter(name -> name != null && !name.isEmpty())
-                        .map(Suggestion::suggestion)
-                        .toList());
-
-                return suggestions.stream().distinct().collect(Collectors.toList());
-            });
-        };
-
-        final CommandComponent.Builder<CommandSender, String> collectionArgument = CommandComponent.<CommandSender, String>builder()
-            .name("collection")
-            .parser(StringParser.stringParser())
-            .suggestionProvider(collectionsSuggestions);
-
-        final SuggestionProvider<CommandSender> minigameSuggestions = (context, input) -> CompletableFuture.completedFuture(
+    private SuggestionProvider<CommandSender> createMinigameSuggestions() {
+        return (context, input) -> CompletableFuture.completedFuture(
             Arrays.stream(MinigameType.values())
                 .map(Enum::name)
                 .map(Suggestion::suggestion)
                 .collect(Collectors.toList())
         );
+    }
 
+    private CommandComponent.Builder<CommandSender, String> createCollectionArgument(
+            SuggestionProvider<CommandSender> collectionsSuggestions) {
+        return CommandComponent.<CommandSender, String>builder()
+            .name("collection")
+            .parser(StringParser.stringParser())
+            .suggestionProvider(collectionsSuggestions);
+    }
+
+    // ==================== Command Registration ====================
+
+    /**
+     * Register general utility commands (help, reload, rewards).
+     */
+    private void registerGeneralCommands(LegacyPaperCommandManager<CommandSender> commandManager) {
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("help")
                 .permission("advancedhunt.help")
                 .handler(context -> help(context.sender()))
         );
 
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
+                .literal("reload")
+                .permission("advancedhunt.admin.reload")
+                .handler(context -> reload(context.sender()))
+        );
+
+        commandManager.command(
+            baseBuilder()
                 .literal("rewards")
                 .permission("advancedhunt.admin.rewards")
                 .handler(context -> rewards(context.sender()))
         );
+    }
 
+    /**
+     * Register collection management commands (editor, create, edit, rename).
+     */
+    private void registerCollectionCommands(
+            LegacyPaperCommandManager<CommandSender> commandManager,
+            SuggestionProvider<CommandSender> collectionsSuggestions,
+            CommandComponent.Builder<CommandSender, String> collectionArgument) {
+        
+        // /ah collection - open editor
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("collection")
                 .permission("advancedhunt.admin.editor")
                 .handler(context -> editor(context.sender()))
         );
 
+        // /ah collection create <name>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
+                .literal("collection")
+                .literal("create")
+                .required("name", StringParser.stringParser())
+                .permission("advancedhunt.admin.collection.create")
+                .handler(context -> createCollection(context.sender(), context.get("name")))
+        );
+
+        // /ah collection edit <name>
+        commandManager.command(
+            baseBuilder()
+                .literal("collection")
+                .literal("edit")
+                .required("name", StringParser.stringParser(), collectionsSuggestions)
+                .permission("advancedhunt.admin.collection.edit")
+                .handler(context -> editCollection(context.sender(), context.get("name")))
+        );
+
+        // /ah collection rename <oldName> <newName>
+        commandManager.command(
+            baseBuilder()
                 .literal("collection")
                 .literal("rename")
                 .required("oldName", StringParser.stringParser(), collectionsSuggestions)
@@ -100,81 +223,80 @@ public class AdvancedHuntCommand {
                     context.get("newName")
                 ))
         );
+    }
 
+    /**
+     * Register player-facing commands (list, leaderboard, progress, place).
+     */
+    private void registerPlayerCommands(
+            LegacyPaperCommandManager<CommandSender> commandManager,
+            CommandComponent.Builder<CommandSender, String> collectionArgument) {
+        
+        // /ah list
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
-                .literal("collection")
-                .literal("create")
-                .required("name", StringParser.stringParser())
-                .permission("advancedhunt.admin.collection.create")
-                .handler(context -> createCollection(context.sender(), context.get("name")))
-        );
-
-        commandManager.command(
-                commandManager.commandBuilder("advancedhunt", "ah")
-                        .literal("collection")
-                        .literal("edit")
-                        .required("name", StringParser.stringParser(), collectionsSuggestions)
-                        .permission("advancedhunt.admin.collection.edit")
-                        .handler(context -> editCollection(context.sender(), context.get("name")))
-        );
-
-        commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
-                .literal("reload")
-                .permission("advancedhunt.admin.reload")
-                .handler(context -> reload(context.sender()))
-        );
-
-        commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("list")
                 .permission("advancedhunt.list")
                 .handler(context -> list(context.sender(), null))
         );
 
+        // /ah list <collection>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("list")
                 .required(collectionArgument)
                 .permission("advancedhunt.list")
                 .handler(context -> list(context.sender(), context.get("collection")))
         );
 
+        // /ah leaderboard <collection>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("leaderboard")
                 .required(collectionArgument)
                 .permission("advancedhunt.leaderboard")
                 .handler(context -> leaderboard(context.sender(), context.get("collection")))
         );
 
+        // /ah progress <collection>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("progress")
                 .required(collectionArgument)
                 .permission("advancedhunt.progress")
                 .handler(context -> progress(context.sender(), context.get("collection")))
         );
 
+        // /ah place <collection>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("place")
                 .required(collectionArgument)
                 .permission("advancedhunt.admin.place")
                 .handler(context -> placeMode(context.sender(), context.get("collection")))
         );
+    }
 
+    /**
+     * Register reset commands (all, collection, player, player + collection).
+     */
+    private void registerResetCommands(
+            LegacyPaperCommandManager<CommandSender> commandManager,
+            CommandComponent.Builder<CommandSender, String> collectionArgument,
+            SuggestionProvider<CommandSender> playerNameSuggestions) {
+        
+        // /ah reset all
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("reset")
                 .literal("all")
                 .permission("advancedhunt.admin.reset")
                 .handler(context -> resetAll(context.sender()))
         );
 
+        // /ah reset collection <collection>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("reset")
                 .literal("collection")
                 .required(collectionArgument)
@@ -182,8 +304,9 @@ public class AdvancedHuntCommand {
                 .handler(context -> resetCollection(context.sender(), context.get("collection")))
         );
 
+        // /ah reset player <player>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("reset")
                 .literal("player")
                 .required("player", StringParser.stringParser(), playerNameSuggestions)
@@ -191,8 +314,9 @@ public class AdvancedHuntCommand {
                 .handler(context -> resetPlayer(context.sender(), context.get("player")))
         );
 
+        // /ah reset player <player> <collection>
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("reset")
                 .literal("player")
                 .required("player", StringParser.stringParser(), playerNameSuggestions)
@@ -204,76 +328,73 @@ public class AdvancedHuntCommand {
                     context.get("collection")
                 ))
         );
+    }
 
+    /**
+     * Register minigame commands.
+     */
+    private void registerMinigameCommands(
+            LegacyPaperCommandManager<CommandSender> commandManager,
+            SuggestionProvider<CommandSender> minigameSuggestions) {
+        
         commandManager.command(
-            commandManager.commandBuilder("advancedhunt", "ah")
+            baseBuilder()
                 .literal("minigame")
                 .required("type", StringParser.stringParser(), minigameSuggestions)
                 .permission("advancedhunt.minigame")
                 .handler(context -> minigame(context.sender(), context.get("type")))
         );
+    }
 
-        commandManager.command(
-                commandManager.commandBuilder("advancedhunt", "ah")
-                        .literal("migrate")
-                        .literal("yaml")
-                        .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "YAML", false))
-        );
+    /**
+     * Register migration commands (yaml, sqlite, mysql with --force variants).
+     */
+    private void registerMigrationCommands(LegacyPaperCommandManager<CommandSender> commandManager) {
+        // YAML migration
+        registerMigrationCommand(commandManager, "yaml", false);
+        registerMigrationCommand(commandManager, "yaml", true);
+        
+        // SQLite migration
+        registerMigrationCommand(commandManager, "sqlite", false);
+        registerMigrationCommand(commandManager, "sqlite", true);
+        
+        // MySQL migration
+        registerMigrationCommand(commandManager, "mysql", false);
+        registerMigrationCommand(commandManager, "mysql", true);
+    }
 
+    /**
+     * Helper to register a single migration command with or without --force.
+     */
+    private void registerMigrationCommand(
+            LegacyPaperCommandManager<CommandSender> commandManager,
+            String storageType,
+            boolean force) {
+        
+        var builder = baseBuilder()
+            .literal("migrate")
+            .literal(storageType.toLowerCase());
+        
+        if (force) {
+            builder = builder.literal("--force");
+        }
+        
         commandManager.command(
-                commandManager.commandBuilder("advancedhunt", "ah")
-                        .literal("migrate")
-                        .literal("yaml")
-                        .literal("--force")
-                        .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "YAML", true))
-        );
-
-        commandManager.command(
-                commandManager.commandBuilder("advancedhunt", "ah")
-                        .literal("migrate")
-                        .literal("sqlite")
-                        .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "SQLITE", false))
-        );
-
-        commandManager.command(
-                commandManager.commandBuilder("advancedhunt", "ah")
-                        .literal("migrate")
-                        .literal("sqlite")
-                        .literal("--force")
-                        .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "SQLITE", true))
-        );
-
-        commandManager.command(
-                commandManager.commandBuilder("advancedhunt", "ah")
-                        .literal("migrate")
-                        .literal("mysql")
-                        .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "MYSQL", false))
-        );
-
-        commandManager.command(
-                commandManager.commandBuilder("advancedhunt", "ah")
-                        .literal("migrate")
-                        .literal("mysql")
-                        .literal("--force")
-                        .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "MYSQL", true))
+            builder.permission("advancedhunt.admin.migrate")
+                .handler(context -> migrate(context.sender(), storageType.toUpperCase(), force))
         );
     }
+
+    // ==================== Command Handlers ====================
 
     public void help(CommandSender sender) {
         sender.sendMessage(plugin.getMessageManager().getMessageList("command.help").toArray(new String[0]));
     }
 
     public void rewards(CommandSender sender) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
-            return;
-        }
+        var playerOpt = requirePlayer(sender);
+        if (playerOpt.isEmpty()) return;
+        Player player = playerOpt.get();
         
         // Get the block the player is looking at
         Block targetBlock = player.getTargetBlockExact(5);
@@ -294,11 +415,9 @@ public class AdvancedHuntCommand {
     }
 
     public void editor(CommandSender sender) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
-            return;
-        }
-        new CollectionEditorMenu((Player) sender, plugin).open();
+        requirePlayer(sender).ifPresent(player -> 
+            new CollectionEditorMenu(player, plugin).open()
+        );
     }
 
     public void reload(CommandSender sender) {
@@ -350,56 +469,38 @@ public class AdvancedHuntCommand {
     }
 
     public void leaderboard(CommandSender sender, String collectionName) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
-            return;
-        }
-
-        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
-        if (collectionOpt.isPresent()) {
-            new LeaderboardMenu(player, plugin, collectionOpt.get(), null).open();
-        } else {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
-        }
+        requirePlayer(sender).ifPresent(player ->
+            withCollection(sender, collectionName, collection ->
+                new LeaderboardMenu(player, plugin, collection, null).open()
+            )
+        );
     }
 
     public void progress(CommandSender sender, String collectionName) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
-            return;
-        }
-
-        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
-        if (collectionOpt.isPresent()) {
-            Collection collection = collectionOpt.get();
-            
-            // Warn if collection is not currently available
-            if (!plugin.getCollectionManager().isCollectionAvailable(collection)) {
-                player.sendMessage(plugin.getMessageManager().getMessage("collection.unavailable", 
-                    "%collection%", collection.getName()));
-                plugin.getCollectionManager().getNextActivation(collection).ifPresent(nextTime -> {
-                    String timeStr = plugin.getMessageManager().formatDateTime(nextTime);
-                    player.sendMessage(plugin.getMessageManager().getMessage("collection.available_at",
-                        "%time%", timeStr));
-                });
-            }
-            
-            new ProgressMenu(player, collection.getId(), collection.getName(), plugin).open();
-        } else {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
-        }
+        requirePlayer(sender).ifPresent(player ->
+            withCollection(sender, collectionName, collection -> {
+                // Warn if collection is not currently available
+                if (!plugin.getCollectionManager().isCollectionAvailable(collection)) {
+                    player.sendMessage(plugin.getMessageManager().getMessage("collection.unavailable", 
+                        "%collection%", collection.getName()));
+                    plugin.getCollectionManager().getNextActivation(collection).ifPresent(nextTime -> {
+                        String timeStr = plugin.getMessageManager().formatDateTime(nextTime);
+                        player.sendMessage(plugin.getMessageManager().getMessage("collection.available_at",
+                            "%time%", timeStr));
+                    });
+                }
+                
+                new ProgressMenu(player, collection.getId(), collection.getName(), plugin).open();
+            })
+        );
     }
 
     public void editCollection(CommandSender sender, String name) {
-        if(!(sender instanceof Player)) return;
-        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(name);
-        if (collectionOpt.isPresent()) {
-            Collection collection = collectionOpt.get();
-
-            new CollectionSettingsMenu((Player) sender, plugin, collection).open();
-        } else {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
-        }
+        requirePlayer(sender).ifPresent(player ->
+            withCollection(sender, name, collection ->
+                new CollectionSettingsMenu(player, plugin, collection).open()
+            )
+        );
     }
 
     public void renameCollection(CommandSender sender, String oldName, String newName) {
@@ -423,11 +524,9 @@ public class AdvancedHuntCommand {
     }
 
     public void placeMode(CommandSender sender, String collectionName) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
-            return;
-        }
-        Player player = (Player) sender;
+        var playerOpt = requirePlayer(sender);
+        if (playerOpt.isEmpty()) return;
+        Player player = playerOpt.get();
         
         if (plugin.getPlaceModeManager().isInPlaceMode(player)) {
             plugin.getPlaceModeManager().removePlaceMode(player);
@@ -446,41 +545,28 @@ public class AdvancedHuntCommand {
     public void resetAll(CommandSender sender) {
         plugin.getDataRepository().resetAllProgress().thenAccept(count -> {
             plugin.getParticleManager().clearAllGlobalCache();
-            
-            // Invalidate cache for all online players
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                plugin.getPlayerManager().invalidate(p.getUniqueId());
-            }
+            invalidateAllPlayerCaches();
             sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.all_success", 
                 "%count%", String.valueOf(count)));
         });
     }
 
     public void resetCollection(CommandSender sender, String collectionName) {
-        plugin.getCollectionManager().getCollectionByName(collectionName).ifPresentOrElse(collection -> {
+        withCollection(sender, collectionName, collection ->
             plugin.getDataRepository().resetCollectionProgress(collection.getId()).thenAccept(count -> {
-                // Clear the particle manager cache for this collection
                 plugin.getParticleManager().clearGlobalCache(collection.getId());
-                
-                // Invalidate cache for all online players
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    plugin.getPlayerManager().invalidate(p.getUniqueId());
-                }
+                invalidateAllPlayerCaches();
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.collection_success",
                     "%collection%", collection.getName(),
                     "%count%", String.valueOf(count)));
-            });
-        }, () -> {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
-        });
+            })
+        );
     }
 
     public void resetPlayer(CommandSender sender, String playerName) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_not_found"));
-            return;
-        }
+        var offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
+        if (offlinePlayerOpt.isEmpty()) return;
+        OfflinePlayer offlinePlayer = offlinePlayerOpt.get();
 
         plugin.getDataRepository().resetPlayerProgress(offlinePlayer.getUniqueId()).thenAccept(count -> {
             plugin.getParticleManager().clearAllGlobalCache();
@@ -495,13 +581,11 @@ public class AdvancedHuntCommand {
     public void resetPlayerCollection(CommandSender sender, 
                                      String playerName,
                                      String collectionName) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_not_found"));
-            return;
-        }
+        var offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
+        if (offlinePlayerOpt.isEmpty()) return;
+        OfflinePlayer offlinePlayer = offlinePlayerOpt.get();
 
-        plugin.getCollectionManager().getCollectionByName(collectionName).ifPresentOrElse(collection -> {
+        withCollection(sender, collectionName, collection ->
             plugin.getDataRepository().resetPlayerCollectionProgress(
                 offlinePlayer.getUniqueId(), 
                 collection.getId()
@@ -515,17 +599,14 @@ public class AdvancedHuntCommand {
                     "%player%", playerName,
                     "%collection%", collection.getName(),
                     "%count%", String.valueOf(count)));
-            });
-        }, () -> {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
-        });
+            })
+        );
     }
 
     public void minigame(CommandSender sender, String typeName) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.not_player"));
-            return;
-        }
+        var playerOpt = requirePlayer(sender);
+        if (playerOpt.isEmpty()) return;
+        Player player = playerOpt.get();
 
         MinigameType type;
         try {
