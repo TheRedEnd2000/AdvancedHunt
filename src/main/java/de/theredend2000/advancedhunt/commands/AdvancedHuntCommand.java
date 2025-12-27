@@ -281,6 +281,7 @@ public class AdvancedHuntCommand {
         plugin.getSoundManager().reload();
         plugin.getDataRepository().reload();
         plugin.getTreasureManager().loadTreasures();
+        plugin.getProximityManager().reloadConfig();
         sender.sendMessage(plugin.getMessageManager().getMessage("command.reload.success"));
     }
 

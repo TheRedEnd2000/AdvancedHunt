@@ -1171,3 +1171,6 @@ minigame:
     wrong: "%prefix%&cWrong sequence! Game over."
   error:
     invalid_type: "%prefix%&cInvalid minigame type. Available: REACTION, MEMORY"
+
+proximity:
+  near_treasure: "&eYou are near a treasure!"
