@@ -8,6 +8,7 @@ import de.theredend2000.advancedhunt.managers.minigame.MinigameType;
 import de.theredend2000.advancedhunt.menu.*;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -211,6 +212,15 @@ public class AdvancedHuntCommand {
                 .literal("hint")
                 .permission("advancedhunt.hint")
                 .handler(context -> hint((Player) context.sender()))
+        );
+
+        // ==================== Debug Commands ====================
+        commandManager.command(
+            playerBuilder()
+                .literal("debug")
+                .literal("hint")
+                .permission("advancedhunt.admin")
+                .handler(context -> debugHint((Player) context.sender()))
         );
 
         // ==================== Migration Commands ====================
@@ -533,6 +543,27 @@ public class AdvancedHuntCommand {
                 plugin.getHintManager().applyFailureCooldown(player.getUniqueId());
             }
         });
+    }
+
+    private void debugHint(Player player) {
+        // Debug command to test visual hints without minigame/cooldown
+        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&e[DEBUG] Searching for nearby treasure...");
+        
+        // Find a random unfound treasure in range
+        Optional<TreasureCore> treasureOpt = plugin.getHintManager().findRandomUnfoundTreasure(player);
+        
+        if (treasureOpt.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] No unfound treasures nearby in active collections!");
+            return;
+        }
+
+        TreasureCore treasure = treasureOpt.get();
+        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&a[DEBUG] Found treasure! Delivering hint...");
+        
+        // Directly deliver hint (bypasses cooldown and minigame)
+        plugin.getHintManager().deliverHint(player, treasure);
+        
+        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&e[DEBUG] Hint delivered. Visual effects active if enabled in config.");
     }
 
     private void migrate(CommandSender sender, String type, boolean force) {
