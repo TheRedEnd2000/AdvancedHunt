@@ -202,7 +202,8 @@ public class HintManager {
         // Determine which coordinate to reveal
         CoordinateRevealType actualReveal = revealType;
         if (revealType == CoordinateRevealType.RANDOM) {
-            CoordinateRevealType[] types = {CoordinateRevealType.X, CoordinateRevealType.Y, CoordinateRevealType.Z};
+            // Only reveal X or Z (Y is too easy to use)
+            CoordinateRevealType[] types = {CoordinateRevealType.X, CoordinateRevealType.Z};
             actualReveal = types[new Random().nextInt(types.length)];
         }
         
