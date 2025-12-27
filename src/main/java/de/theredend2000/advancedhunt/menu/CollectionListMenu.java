@@ -121,6 +121,12 @@ public class CollectionListMenu extends PagedMenu {
                 String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
                 if (texture != null) {
                     builder.setSkullTexture(texture);
+                } else {
+                    // Try profile name if no texture is available
+                    String profileName = HeadHelper.getProfileNameFromNbt(fullTreasure.getNbtData());
+                    if (profileName != null) {
+                        builder.setSkullOwner(profileName);
+                    }
                 }
             }
         }
