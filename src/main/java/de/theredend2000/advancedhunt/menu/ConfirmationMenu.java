@@ -37,6 +37,11 @@ public class ConfirmationMenu extends Menu {
     }
 
     @Override
+    public void addCloseOrBack() {
+        // Disable automatic back button - this menu uses explicit confirm/cancel buttons
+    }
+
+    @Override
     public void setMenuItems() {
         fillBorders(super.FILLER_GLASS);
 
