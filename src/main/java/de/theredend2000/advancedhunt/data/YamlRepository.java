@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class YamlRepository implements DataRepository {
     private final File playerDataFolder;
     private File leaderboardFile;
     private File finderIndexFile;
+    private BukkitTask flushTask;
     
     // In-memory indexes for efficient lookups (rebuilt on init, updated on save)
     // Treasure ID -> Collection ID (lightweight, only UUIDs)
@@ -64,6 +66,11 @@ public class YamlRepository implements DataRepository {
         // Build in-memory indexes
         buildTreasureToCollectionIndex();
         loadFinderIndex();
+    }
+
+    @Override
+    public void reload() {
+        init();
     }
     
     /**
@@ -176,6 +183,9 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public void shutdown() {
+        if (flushTask != null && !flushTask.isCancelled()) {
+            flushTask.cancel();
+        }
         // Save finder index if dirty
         if (finderIndexDirty) {
             saveFinderIndex();
@@ -932,7 +942,10 @@ public class YamlRepository implements DataRepository {
      */
     public void startPeriodicFlush(int intervalSeconds) {
         long intervalTicks = 20L * intervalSeconds;
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        if (flushTask != null && !flushTask.isCancelled()) {
+            flushTask.cancel();
+        }
+        flushTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             if (finderIndexDirty) {
                 saveFinderIndex();
                 plugin.getLogger().fine("Flushed finder index to disk");

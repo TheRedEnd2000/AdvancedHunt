@@ -64,6 +64,12 @@ public class SqlRepository implements DataRepository {
         checkSchema();
     }
 
+    @Override
+    public void reload() {
+        shutdown();
+        init();
+    }
+
     private void createTables() {
         try (Connection conn = dataSource.getConnection()) {
             // Schema Version Table

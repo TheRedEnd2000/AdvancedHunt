@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public interface DataRepository {
 
     void init();
+    void reload();
     void shutdown();
 
     // Player Data
