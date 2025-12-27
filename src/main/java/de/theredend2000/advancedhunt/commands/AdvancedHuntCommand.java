@@ -218,7 +218,16 @@ public class AdvancedHuntCommand {
                         .literal("migrate")
                         .literal("yaml")
                         .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "YAML"))
+                        .handler(context -> migrate(context.sender(), "YAML", false))
+        );
+
+        commandManager.command(
+                commandManager.commandBuilder("advancedhunt", "ah")
+                        .literal("migrate")
+                        .literal("yaml")
+                        .literal("--force")
+                        .permission("advancedhunt.admin.migrate")
+                        .handler(context -> migrate(context.sender(), "YAML", true))
         );
 
         commandManager.command(
@@ -226,7 +235,16 @@ public class AdvancedHuntCommand {
                         .literal("migrate")
                         .literal("sqlite")
                         .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "SQLITE"))
+                        .handler(context -> migrate(context.sender(), "SQLITE", false))
+        );
+
+        commandManager.command(
+                commandManager.commandBuilder("advancedhunt", "ah")
+                        .literal("migrate")
+                        .literal("sqlite")
+                        .literal("--force")
+                        .permission("advancedhunt.admin.migrate")
+                        .handler(context -> migrate(context.sender(), "SQLITE", true))
         );
 
         commandManager.command(
@@ -234,7 +252,16 @@ public class AdvancedHuntCommand {
                         .literal("migrate")
                         .literal("mysql")
                         .permission("advancedhunt.admin.migrate")
-                        .handler(context -> migrate(context.sender(), "MYSQL"))
+                        .handler(context -> migrate(context.sender(), "MYSQL", false))
+        );
+
+        commandManager.command(
+                commandManager.commandBuilder("advancedhunt", "ah")
+                        .literal("migrate")
+                        .literal("mysql")
+                        .literal("--force")
+                        .permission("advancedhunt.admin.migrate")
+                        .handler(context -> migrate(context.sender(), "MYSQL", true))
         );
     }
 
@@ -517,36 +544,121 @@ public class AdvancedHuntCommand {
         });
     }
 
-    private void migrate(CommandSender sender, String type) {
-        sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.started"));
-
-        DataRepository targetRepo;
-        if (type.equalsIgnoreCase("YAML")) {
-            targetRepo = new YamlRepository(plugin);
-        } else if (type.equalsIgnoreCase("SQLITE")) {
-            targetRepo = new SqlRepository(plugin, null, 0, null, null, null, true);
-        } else {
-            String host = plugin.getConfig().getString("migration.target.host");
-            int port = plugin.getConfig().getInt("migration.target.port");
-            String database = plugin.getConfig().getString("migration.target.database");
-            String username = plugin.getConfig().getString("migration.target.username");
-            String password = plugin.getConfig().getString("migration.target.password");
-            targetRepo = new SqlRepository(plugin, host, port, database, username, password, false);
+    private void migrate(CommandSender sender, String type, boolean force) {
+        // Create target repository based on type
+        DataRepository targetRepo = createTargetRepository(type, sender);
+        if (targetRepo == null) {
+            return; // Error message already sent
         }
 
+        sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.started"));
         targetRepo.init();
 
-        plugin.getMigrationService()
-                .migrate(plugin.getDataRepository(), targetRepo)
-                .thenRun(() -> {
-                    sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
-                    targetRepo.shutdown();
-                })
-                .exceptionally(e -> {
-                    sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.failed"));
-                    e.printStackTrace();
-                    targetRepo.shutdown();
-                    return null;
-                });
+        // Check for existing data and proceed with migration
+        checkExistingDataAndMigrate(sender, type, targetRepo, force);
+    }
+
+    private DataRepository createTargetRepository(String type, CommandSender sender) {
+        if (type.equalsIgnoreCase("YAML")) {
+            return new YamlRepository(plugin);
+        }
+        
+        if (type.equalsIgnoreCase("SQLITE")) {
+            return new SqlRepository(plugin, null, 0, null, null, null, true);
+        }
+        
+        if (type.equalsIgnoreCase("MYSQL")) {
+            return createMySQLRepository(sender);
+        }
+        
+        return null;
+    }
+
+    private DataRepository createMySQLRepository(CommandSender sender) {
+        String host = plugin.getConfig().getString("migration.target.host", "localhost");
+        int port = plugin.getConfig().getInt("migration.target.port", 3306);
+        String database = plugin.getConfig().getString("migration.target.database", "advancedhunt_target");
+        String username = plugin.getConfig().getString("migration.target.username", "root");
+        String password = plugin.getConfig().getString("migration.target.password", "password");
+        
+        // Check if ALL values are still at defaults (indicating no configuration was done)
+        boolean allDefaults = host.equals("localhost") &&
+                              port == 3306 &&
+                              database.equals("advancedhunt_target") &&
+                              username.equals("root") &&
+                              password.equals("password");
+        
+        if (allDefaults) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.mysql_not_configured"));
+            return null;
+        }
+        
+        return new SqlRepository(plugin, host, port, database, username, password, false);
+    }
+
+    private void checkExistingDataAndMigrate(CommandSender sender, String type, DataRepository targetRepo, boolean force) {
+        CompletableFuture.allOf(
+                targetRepo.loadCollections(),
+                targetRepo.loadTreasures(),
+                targetRepo.loadAllPlayerData()
+        ).thenCompose(v -> {
+            int existingCollections = safeGetSize(targetRepo.loadCollections());
+            int existingTreasures = safeGetSize(targetRepo.loadTreasures());
+            int existingPlayerData = safeGetSize(targetRepo.loadAllPlayerData());
+            
+            boolean hasExistingData = existingCollections > 0 || existingTreasures > 0 || existingPlayerData > 0;
+            
+            if (hasExistingData && !force) {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.existing_data_abort",
+                        "%collections%", String.valueOf(existingCollections),
+                        "%treasures%", String.valueOf(existingTreasures),
+                        "%players%", String.valueOf(existingPlayerData)));
+                targetRepo.shutdown();
+                return CompletableFuture.failedFuture(new IllegalStateException("Migration aborted - existing data"));
+            }
+            
+            if (hasExistingData) {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.warning_existing_data",
+                        "%collections%", String.valueOf(existingCollections),
+                        "%treasures%", String.valueOf(existingTreasures),
+                        "%players%", String.valueOf(existingPlayerData)));
+            }
+            
+            return plugin.getMigrationService().migrate(plugin.getDataRepository(), targetRepo);
+        }).thenRun(() -> {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
+            targetRepo.shutdown();
+            
+            if (type.equalsIgnoreCase("MYSQL")) {
+                resetMySQLConfig(sender);
+            }
+        }).exceptionally(e -> {
+            // Only show an error if it's not our intentional abort
+            if (!(e.getCause() instanceof IllegalStateException && 
+                  e.getCause().getMessage().equals("Migration aborted - existing data"))) {
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.failed"));
+                e.printStackTrace();
+            }
+            targetRepo.shutdown();
+            return null;
+        });
+    }
+
+    private int safeGetSize(CompletableFuture<? extends java.util.Collection<?>> future) {
+        try {
+            return future.join().size();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private void resetMySQLConfig(CommandSender sender) {
+        plugin.getConfig().set("migration.target.host", "localhost");
+        plugin.getConfig().set("migration.target.port", 3306);
+        plugin.getConfig().set("migration.target.database", "advancedhunt_target");
+        plugin.getConfig().set("migration.target.username", "root");
+        plugin.getConfig().set("migration.target.password", "password");
+        plugin.saveConfig();
+        sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.mysql_config_reset"));
     }
 }
