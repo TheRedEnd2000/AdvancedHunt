@@ -6,15 +6,12 @@ import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +24,7 @@ public class ItemBuilder {
     private ItemMeta meta;
     private String customId;
     private String skullTexture;
+    private String skullOwnerName;
 
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material);
@@ -110,6 +108,13 @@ public class ItemBuilder {
         }
         return this;
     }
+
+    public ItemBuilder setSkullOwner(String playerName) {
+        if (playerName != null && !playerName.isEmpty()) {
+            this.skullOwnerName = playerName;
+        }
+        return this;
+    }
     
     public ItemBuilder setLeatherColor(Color color) {
         if (meta instanceof LeatherArmorMeta) {
@@ -138,7 +143,7 @@ public class ItemBuilder {
 
     public ItemStack build() {
         item.setItemMeta(meta);
-        if (customId != null || skullTexture != null) {
+        if (customId != null || skullTexture != null || skullOwnerName != null) {
             try {
                 String version = Bukkit.getBukkitVersion().split("-")[0];
                 VersionComparator comparator = new VersionComparator();
@@ -150,6 +155,11 @@ public class ItemBuilder {
                             ReadWriteNBT properties = profile.getCompoundList("properties").addCompound();
                             properties.setString("name", "textures");
                             properties.setString("value", skullTexture);
+                        });
+                    } else if (skullOwnerName != null) {
+                        NBT.modifyComponents(item, nbt -> {
+                            ReadWriteNBT profile = nbt.getOrCreateCompound("minecraft:profile");
+                            profile.setString("name", skullOwnerName);
                         });
                     }
                     if (customId != null) {
@@ -168,6 +178,8 @@ public class ItemBuilder {
                             ReadWriteNBT properties = skullOwner.getOrCreateCompound("Properties");
                             ReadWriteNBT textures = properties.getCompoundList("textures").addCompound();
                             textures.setString("Value", skullTexture);
+                        } else if (skullOwnerName != null) {
+                            nbt.setString("SkullOwner", skullOwnerName);
                         }
                     });
                 }

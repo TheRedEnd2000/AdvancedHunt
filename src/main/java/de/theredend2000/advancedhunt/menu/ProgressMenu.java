@@ -170,6 +170,12 @@ public class ProgressMenu extends PagedMenu {
                     String texture = HeadHelper.getTextureFromNbt(treasure.getNbtData());
                     if (texture != null) {
                         builder.setSkullTexture(texture);
+                    } else {
+                        // Try profile name if no texture is available
+                        String profileName = HeadHelper.getProfileNameFromNbt(treasure.getNbtData());
+                        if (profileName != null) {
+                            builder.setSkullOwner(profileName);
+                        }
                     }
                 }
             } else {

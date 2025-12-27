@@ -28,6 +28,28 @@ public class HeadHelper {
         return null;
     }
 
+    public static String getProfileNameFromNbt(String nbtData) {
+        if (nbtData == null || nbtData.isEmpty()) return null;
+
+        try {
+            ReadWriteNBT nbt = NBT.parseNBT(nbtData);
+            ReadWriteNBT profile = getProfileCompound(nbt);
+
+            if (profile != null) {
+                // Try "name" field (most common)
+                if (profile.hasTag("name")) {
+                    return profile.getString("name");
+                }
+                // Try "Name" field (alternative)
+                if (profile.hasTag("Name")) {
+                    return profile.getString("Name");
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
     private static ReadWriteNBT getProfileCompound(ReadWriteNBT nbt) {
         if (nbt.hasTag("Owner")) return nbt.getCompound("Owner");
         if (nbt.hasTag("SkullOwner")) return nbt.getCompound("SkullOwner");
