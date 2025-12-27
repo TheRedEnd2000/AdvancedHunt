@@ -9,10 +9,15 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class ConfigUpdater {
 
     public static void update(Plugin plugin, String resourceName, File file) {
+        update(plugin, resourceName, file, null);
+    }
+
+    public static void update(Plugin plugin, String resourceName, File file, BiConsumer<FileConfiguration, Integer> migrator) {
         FileConfiguration userConfig = YamlConfiguration.loadConfiguration(file);
         
         // If the file doesn't exist, just save the default
@@ -32,6 +37,11 @@ public class ConfigUpdater {
 
         if (currentVersion >= newVersion) {
             return;
+        }
+
+        // Run migration logic if provided
+        if (migrator != null) {
+            migrator.accept(userConfig, currentVersion);
         }
 
         plugin.getLogger().info("Updating " + resourceName + " from version " + currentVersion + " to " + newVersion + "...");
