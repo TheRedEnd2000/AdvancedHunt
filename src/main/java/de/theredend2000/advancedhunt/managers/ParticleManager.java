@@ -5,9 +5,9 @@ import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.ParticleUtils;
+import de.theredend2000.advancedhunt.util.PlayerSnapshot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -160,9 +160,6 @@ public class ParticleManager {
         
         // Preload globally claimed treasures cache
         preloadGloballyClaimedTreasures();
-
-        // Use sync task - spawnParticle should be called from main thread for safety
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tickParticles, 20L, 20L);
     }
     
     /**
@@ -187,80 +184,77 @@ public class ParticleManager {
      * Main particle tick method. Iterates through players and checks nearby chunks
      * for treasures to spawn particles. This is spatially optimized for large treasure counts.
      */
-    private void tickParticles() {
-        // For legacy versions (1.8), use simplified global particles since per-player particles aren't supported
-        if (ParticleUtils.isLegacy()) {
-            tickParticlesLegacy();
+    public void processTick(List<PlayerSnapshot> snapshots, Set<UUID> availableCollections, Set<UUID> singlePlayerFindCollections) {
+        FileConfiguration config = plugin.getConfig();
+        if (!config.getBoolean("particle-settings.enabled", false)) {
             return;
         }
-        
-        // Modern version: per-player particle states
-        // Calculate chunk radius based on view distance
-        // viewDistance is in blocks, so divide by 16 to get chunks
+
+        // For legacy versions (1.8), use simplified global particles since per-player particles aren't supported
+        if (ParticleUtils.isLegacy()) {
+            tickParticlesLegacy(snapshots, availableCollections);
+            return;
+        }
+
+        List<ParticleAction> actions = new ArrayList<>();
         int chunkRadius = (int) Math.ceil(Math.sqrt(viewDistanceSq) / 16.0);
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            // Track processed treasures PER PLAYER to avoid duplicate particles for the same treasure
+        for (PlayerSnapshot snapshot : snapshots) {
             Set<UUID> processedTreasures = new HashSet<>();
-            
-            Location playerLoc = player.getLocation();
-            World world = player.getWorld();
+            Location playerLoc = snapshot.location();
             int playerChunkX = playerLoc.getBlockX() >> 4;
             int playerChunkZ = playerLoc.getBlockZ() >> 4;
             
-            // Get player data once per player for efficiency
-            PlayerData playerData = playerManager.getPlayerData(player.getUniqueId());
+            PlayerData playerData = playerManager.getPlayerData(snapshot.player().getUniqueId());
 
-            // Check chunks around the player
             for (int x = -chunkRadius; x <= chunkRadius; x++) {
                 for (int z = -chunkRadius; z <= chunkRadius; z++) {
                     int chunkX = playerChunkX + x;
                     int chunkZ = playerChunkZ + z;
 
-                    // Skip unloaded chunks
-                    if (!world.isChunkLoaded(chunkX, chunkZ)) continue;
-
-                    // Use lightweight TreasureCore - no heavy data needed for particles
                     List<TreasureCore> treasures = treasureManager.getTreasureCoresInChunk(chunkX, chunkZ);
-                    if (treasures.isEmpty()) continue;
+                    if (treasures == null || treasures.isEmpty()) continue;
 
                     for (TreasureCore treasure : treasures) {
-                        // Skip if already processed for this player in this tick
                         if (processedTreasures.contains(treasure.getId())) continue;
 
                         Location treasureLoc = treasure.getLocation();
-                        // Check world (treasureChunkMap mixes worlds)
-                        if (treasureLoc == null || treasureLoc.getWorld() == null || !treasureLoc.getWorld().getName().equals(world.getName())) continue;
+                        if (treasureLoc == null || treasureLoc.getWorld() == null || 
+                            !treasureLoc.getWorld().getName().equals(playerLoc.getWorld().getName())) continue;
 
-                        // Check exact distance
                         double dx = playerLoc.getX() - treasureLoc.getX();
                         double dy = playerLoc.getY() - treasureLoc.getY();
                         double dz = playerLoc.getZ() - treasureLoc.getZ();
                         double distSq = dx * dx + dy * dy + dz * dz;
 
                         if (distSq <= viewDistanceSq) {
-                            // Determine particle state and spawn appropriate particles
-                            ParticleConfig config = determineParticleConfig(treasure, playerData);
+                            ParticleConfig particleConfig = determineParticleConfig(treasure, playerData, 
+                                availableCollections, singlePlayerFindCollections, globallyClaimedCache);
                             
-                            if (config != null && config.enabled) {
-                                // Spawn particle visible only to this specific player
-                                Location particleLoc = new Location(
-                                    world,
-                                    treasureLoc.getBlockX() + 0.5,
-                                    treasureLoc.getBlockY() + 0.5,
-                                    treasureLoc.getBlockZ() + 0.5
-                                );
-
-                                ParticleUtils.spawnParticleForPlayer(player, particleLoc, config.particleName, 
-                                    config.count, config.offX, config.offY, config.offZ, config.speed);
+                            if (particleConfig != null && particleConfig.enabled) {
+                                actions.add(new ParticleAction(snapshot.player(), treasureLoc, particleConfig));
                             }
-                            
-                            // Mark as processed for this player
                             processedTreasures.add(treasure.getId());
                         }
                     }
                 }
             }
+        }
+
+        // Schedule sync task to spawn particles
+        if (!actions.isEmpty()) {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                for (ParticleAction action : actions) {
+                    Location loc = action.location;
+                    // Re-create location with offset for spawning
+                    Location particleLoc = new Location(loc.getWorld(), 
+                        loc.getBlockX() + 0.5, loc.getBlockY() + 0.5, loc.getBlockZ() + 0.5);
+                    
+                    ParticleUtils.spawnParticleForPlayer(action.player, particleLoc, 
+                        action.config.particleName, action.config.count, 
+                        action.config.offX, action.config.offY, action.config.offZ, action.config.speed);
+                }
+            });
         }
     }
     
@@ -268,106 +262,116 @@ public class ParticleManager {
      * Simplified particle spawning for legacy versions (1.8.x).
      * Shows basic particles for all treasures globally since per-player particles aren't supported.
      */
-    private void tickParticlesLegacy() {
-        // Track processed treasures globally to avoid duplicates
+    private void tickParticlesLegacy(List<PlayerSnapshot> snapshots, Set<UUID> availableCollections) {
         Set<UUID> processedTreasures = new HashSet<>();
-        
-        // Calculate chunk radius based on view distance
+        List<GlobalParticleAction> actions = new ArrayList<>();
         int chunkRadius = (int) Math.ceil(Math.sqrt(viewDistanceSq) / 16.0);
         
-        // Only show particles if not-found config is enabled
         if (notFoundConfig == null || !notFoundConfig.enabled) return;
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            Location playerLoc = player.getLocation();
-            World world = player.getWorld();
+        for (PlayerSnapshot snapshot : snapshots) {
+            Location playerLoc = snapshot.location();
             int playerChunkX = playerLoc.getBlockX() >> 4;
             int playerChunkZ = playerLoc.getBlockZ() >> 4;
 
-            // Check chunks around the player
             for (int x = -chunkRadius; x <= chunkRadius; x++) {
                 for (int z = -chunkRadius; z <= chunkRadius; z++) {
                     int chunkX = playerChunkX + x;
                     int chunkZ = playerChunkZ + z;
 
-                    // Skip unloaded chunks
-                    if (!world.isChunkLoaded(chunkX, chunkZ)) continue;
-
-                    // Use lightweight TreasureCore - no heavy data needed for particles
                     List<TreasureCore> treasures = treasureManager.getTreasureCoresInChunk(chunkX, chunkZ);
-                    if (treasures.isEmpty()) continue;
+                    if (treasures == null || treasures.isEmpty()) continue;
 
                     for (TreasureCore treasure : treasures) {
-                        // Skip if already processed
                         if (processedTreasures.contains(treasure.getId())) continue;
                         
-                        // Check if collection is available - skip unavailable collections
-                        boolean available = collectionManager.getCollectionById(treasure.getCollectionId())
-                            .map(collectionManager::isCollectionAvailable)
-                            .orElse(false);
-                        if (!available) continue;
+                        if (!availableCollections.contains(treasure.getCollectionId())) continue;
 
                         Location treasureLoc = treasure.getLocation();
                         if (treasureLoc == null || treasureLoc.getWorld() == null || 
-                            !treasureLoc.getWorld().getName().equals(world.getName())) continue;
+                            !treasureLoc.getWorld().getName().equals(playerLoc.getWorld().getName())) continue;
 
-                        // Check exact distance
                         double dx = playerLoc.getX() - treasureLoc.getX();
                         double dy = playerLoc.getY() - treasureLoc.getY();
                         double dz = playerLoc.getZ() - treasureLoc.getZ();
                         double distSq = dx * dx + dy * dy + dz * dz;
 
                         if (distSq <= viewDistanceSq) {
-                            // Spawn basic particle for all treasures (visible to all players)
-                            Location particleLoc = new Location(
-                                world,
-                                treasureLoc.getBlockX() + 0.5,
-                                treasureLoc.getBlockY() + 0.5,
-                                treasureLoc.getBlockZ() + 0.5
-                            );
-
-                            ParticleUtils.spawnParticle(particleLoc, notFoundConfig.particleName, 
-                                notFoundConfig.count, notFoundConfig.offX, notFoundConfig.offY, 
-                                notFoundConfig.offZ, notFoundConfig.speed);
-                            
+                            actions.add(new GlobalParticleAction(treasureLoc, notFoundConfig));
                             processedTreasures.add(treasure.getId());
                         }
                     }
                 }
             }
         }
+
+        if (!actions.isEmpty()) {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                for (GlobalParticleAction action : actions) {
+                    Location loc = action.location;
+                    Location particleLoc = new Location(loc.getWorld(), 
+                        loc.getBlockX() + 0.5, loc.getBlockY() + 0.5, loc.getBlockZ() + 0.5);
+
+                    ParticleUtils.spawnParticle(particleLoc, action.config.particleName, 
+                        action.config.count, action.config.offX, action.config.offY, 
+                        action.config.offZ, action.config.speed);
+                }
+            });
+        }
+    }
+    
+    private void tickParticles() {
+        // Deprecated - logic moved to processTick
     }
     
     /**
      * Determines which particle configuration to use based on treasure state.
      * Returns null if particles should not be shown (collection unavailable).
-     * @param treasure The treasure core to check (lightweight)
-     * @param playerData The current player's data
-     * @return The particle configuration to use, or null if no particles should be shown
      */
-    private ParticleConfig determineParticleConfig(TreasureCore treasure, PlayerData playerData) {
-        // Get collection once and check availability
-        Optional<Collection> collectionOpt = collectionManager.getCollectionById(treasure.getCollectionId());
-        if (collectionOpt.isEmpty() || !collectionManager.isCollectionAvailable(collectionOpt.get())) {
-            return null; // No particles for unavailable/disabled collections
+    private ParticleConfig determineParticleConfig(TreasureCore treasure, PlayerData playerData,
+                                                  Set<UUID> availableCollections,
+                                                  Set<UUID> singlePlayerFindCollections,
+                                                  Map<UUID, Boolean> globallyClaimedCache) {
+        // Check availability (O(1))
+        if (!availableCollections.contains(treasure.getCollectionId())) {
+            return null;
         }
         
-        Collection collection = collectionOpt.get();
-        
-        // Check if player has found this treasure
+        // Check found status (O(1))
         if (playerData.hasFound(treasure.getId())) {
             return foundByPlayerConfig;
         }
         
-        // Only check global cache for single-player-find collections
-        if (collection.isSinglePlayerFind()) {
-            // Check if treasure is globally claimed by another player
-            if (isTreasureGloballyClaimed(treasure.getId())) {
+        // Check single player find (O(1))
+        if (singlePlayerFindCollections.contains(treasure.getCollectionId())) {
+            if (globallyClaimedCache.getOrDefault(treasure.getId(), Boolean.FALSE)) {
                 return foundByOthersConfig;
             }
         }
         
-        return notFoundConfig; // Regular collection, treasure not found
+        return notFoundConfig;
+    }
+
+    private static class ParticleAction {
+        final Player player;
+        final Location location;
+        final ParticleConfig config;
+
+        ParticleAction(Player player, Location location, ParticleConfig config) {
+            this.player = player;
+            this.location = location;
+            this.config = config;
+        }
+    }
+
+    private static class GlobalParticleAction {
+        final Location location;
+        final ParticleConfig config;
+
+        GlobalParticleAction(Location location, ParticleConfig config) {
+            this.location = location;
+            this.config = config;
+        }
     }
 
     public void stop() {

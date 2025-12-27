@@ -3,29 +3,26 @@ package de.theredend2000.advancedhunt.managers;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.MessageUtils;
-import org.bukkit.Bukkit;
+import de.theredend2000.advancedhunt.util.PlayerSnapshot;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class ProximityManager {
 
     private final Main plugin;
     private final TreasureManager treasureManager;
     private final PlayerManager playerManager;
-    private final CollectionManager collectionManager;
-    private BukkitTask task;
     private boolean enabled;
     private int range;
     private int rangeSq;
 
-    public ProximityManager(Main plugin, TreasureManager treasureManager, PlayerManager playerManager, CollectionManager collectionManager) {
+    public ProximityManager(Main plugin, TreasureManager treasureManager, PlayerManager playerManager) {
         this.plugin = plugin;
         this.treasureManager = treasureManager;
         this.playerManager = playerManager;
-        this.collectionManager = collectionManager;
         reloadConfig();
     }
 
@@ -33,36 +30,18 @@ public class ProximityManager {
         this.enabled = plugin.getConfig().getBoolean("proximity-settings.enabled", false);
         this.range = plugin.getConfig().getInt("proximity-settings.range", 10);
         this.rangeSq = range * range;
-        
-        if (enabled && range > 0) {
-            start();
-        } else {
-            stop();
-        }
     }
 
-    public void start() {
-        stop();
+    public void processTick(List<PlayerSnapshot> snapshots, Set<UUID> availableCollections) {
         if (!enabled || range <= 0) return;
 
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 20L, 20L);
-    }
-
-    public void stop() {
-        if (task != null) {
-            task.cancel();
-            task = null;
+        for (PlayerSnapshot snapshot : snapshots) {
+            checkPlayer(snapshot, availableCollections);
         }
     }
 
-    private void tick() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            checkPlayer(player);
-        }
-    }
-
-    private void checkPlayer(Player player) {
-        Location playerLoc = player.getLocation();
+    private void checkPlayer(PlayerSnapshot snapshot, Set<UUID> availableCollections) {
+        Location playerLoc = snapshot.location();
         int chunkX = playerLoc.getBlockX() >> 4;
         int chunkZ = playerLoc.getBlockZ() >> 4;
         int chunkRadius = (int) Math.ceil((double) range / 16.0);
@@ -79,11 +58,9 @@ public class ProximityManager {
                     
                     if (treasure.getLocation().distanceSquared(playerLoc) <= rangeSq) {
                         // Check if player has found it
-                        if (!playerManager.getPlayerData(player.getUniqueId()).hasFound(treasure.getId())) {
-                            // Check if collection is available
-                            if (collectionManager.getCollectionById(treasure.getCollectionId())
-                                    .map(collectionManager::isCollectionAvailable)
-                                    .orElse(false)) {
+                        if (!playerManager.getPlayerData(snapshot.player().getUniqueId()).hasFound(treasure.getId())) {
+                            // Check if collection is available (O(1) lookup)
+                            if (availableCollections.contains(treasure.getCollectionId())) {
                                 foundNear = true;
                                 break;
                             }
@@ -96,7 +73,7 @@ public class ProximityManager {
         }
 
         if (foundNear) {
-            MessageUtils.sendActionBar(player, plugin.getMessageManager().getMessage("proximity.near_treasure"));
+            MessageUtils.sendActionBar(snapshot.player(), plugin.getMessageManager().getMessage("proximity.near_treasure"));
         }
     }
 }
