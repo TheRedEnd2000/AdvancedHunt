@@ -8,6 +8,7 @@ import de.theredend2000.advancedhunt.listeners.*;
 import de.theredend2000.advancedhunt.managers.*;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameManager;
 import de.theredend2000.advancedhunt.placeholder.AdvancedHuntExpansion;
+import de.theredend2000.advancedhunt.util.ConfigMigrationHandler;
 import de.theredend2000.advancedhunt.util.ConfigUpdater;
 import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
 import org.bstats.bukkit.Metrics;
@@ -48,7 +49,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"));
+        ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"), ConfigMigrationHandler::migrateConfig);
         reloadConfig();
 
         migrationService = new MigrationService(getLogger());
