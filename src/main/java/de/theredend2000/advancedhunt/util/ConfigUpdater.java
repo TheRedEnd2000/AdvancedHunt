@@ -7,17 +7,44 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
+/**
+ * Utility class for updating configuration files while preserving comments and structure.
+ */
 public class ConfigUpdater {
 
+    private static final int INDENTATION_SIZE = 2;
+
+    @FunctionalInterface
+    public interface MigrationCallback {
+        void migrate(FileConfiguration config, int currentVersion, int newVersion);
+    }
+
+    /**
+     * Updates the given configuration file to match the structure of the internal resource.
+     * Preserves user values where keys match.
+     *
+     * @param plugin       The plugin instance.
+     * @param resourceName The name of the resource in the JAR (e.g., "config.yml").
+     * @param file         The file on disk to update.
+     */
     public static void update(Plugin plugin, String resourceName, File file) {
         update(plugin, resourceName, file, null);
     }
 
-    public static void update(Plugin plugin, String resourceName, File file, BiConsumer<FileConfiguration, Integer> migrator) {
+    /**
+     * Updates the given configuration file with custom migration logic.
+     *
+     * @param plugin       The plugin instance.
+     * @param resourceName The name of the resource in the JAR.
+     * @param file         The file on disk to update.
+     * @param migrator     A callback that accepts the current user config, current version, and new version.
+     *                     Use this to modify the config in-memory before the update is applied.
+     */
+    public static void update(Plugin plugin, String resourceName, File file, MigrationCallback migrator) {
         FileConfiguration userConfig = YamlConfiguration.loadConfiguration(file);
         
         // If the file doesn't exist, just save the default
@@ -41,19 +68,12 @@ public class ConfigUpdater {
 
         // Run migration logic if provided
         if (migrator != null) {
-            migrator.accept(userConfig, currentVersion);
+            migrator.migrate(userConfig, currentVersion, newVersion);
         }
 
         plugin.getLogger().info("Updating " + resourceName + " from version " + currentVersion + " to " + newVersion + "...");
 
-        // Create backup
-        try {
-            File backup = new File(file.getParentFile(), file.getName() + ".bak");
-            if (backup.exists()) backup.delete();
-            java.nio.file.Files.copy(file.toPath(), backup.toPath());
-        } catch (IOException e) {
-            plugin.getLogger().warning("Failed to create backup for " + file.getName());
-        }
+        createBackup(plugin, file);
 
         // Perform update
         try {
@@ -61,17 +81,27 @@ public class ConfigUpdater {
             resource = plugin.getResource(resourceName);
             List<String> newLines = updateLines(resource, userConfig);
             
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
-            for (String line : newLines) {
-                writer.write(line);
-                writer.newLine();
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+                for (String line : newLines) {
+                    writer.write(line);
+                    writer.newLine();
+                }
             }
-            writer.close();
             
             plugin.getLogger().info("Successfully updated " + resourceName);
         } catch (IOException e) {
             plugin.getLogger().severe("Failed to update " + resourceName + ": " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static void createBackup(Plugin plugin, File file) {
+        try {
+            File backup = new File(file.getParentFile(), file.getName() + ".bak");
+            if (backup.exists()) backup.delete();
+            Files.copy(file.toPath(), backup.toPath());
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to create backup for " + file.getName());
         }
     }
 
@@ -81,19 +111,16 @@ public class ConfigUpdater {
         String line;
         
         // Stack to keep track of current section path
-        // Each element is a key name.
-        // Indentation level determines depth.
-        // We assume standard 2-space indentation.
         List<String> pathStack = new ArrayList<>();
         
         while ((line = reader.readLine()) != null) {
-            if (line.trim().isEmpty() || line.trim().startsWith("#")) {
+            if (shouldSkipLine(line)) {
                 lines.add(line);
                 continue;
             }
 
             int indentation = getIndentation(line);
-            int depth = indentation / 2;
+            int depth = indentation / INDENTATION_SIZE;
 
             // Adjust stack based on depth
             while (pathStack.size() > depth) {
@@ -102,7 +129,6 @@ public class ConfigUpdater {
 
             String key = getKeyFromLine(line);
             if (key == null) {
-                // Could be a list item or weird formatting, just keep it if we are not skipping
                 lines.add(line);
                 continue;
             }
@@ -114,49 +140,12 @@ public class ConfigUpdater {
                 Object userValue = userConfig.get(fullPath);
                 
                 if (userValue instanceof ConfigurationSection) {
-                    // It's a section, just write the key line and continue to process children
                     lines.add(line);
                 } else if (userValue instanceof List) {
-                    // It's a list. Write the key, then write the user's list, then skip JAR's list items
-                    lines.add(getIndentationString(indentation) + key + ":");
-                    List<?> list = (List<?>) userValue;
-                    for (Object item : list) {
-                        // Simple serialization for list items
-                        if (item instanceof String) {
-                            lines.add(getIndentationString(indentation) + "  - \"" + escapeString((String) item) + "\"");
-                        } else {
-                            lines.add(getIndentationString(indentation) + "  - " + item);
-                        }
-                    }
-                    
-                    // Skip lines in JAR that are part of this list
-                    reader.mark(1000);
-                    String nextLine;
-                    while ((nextLine = reader.readLine()) != null) {
-                        if (nextLine.trim().isEmpty() || nextLine.trim().startsWith("#")) {
-                            // Keep comments/empty lines inside lists? Maybe not if we replaced the list.
-                            // But usually comments inside lists are rare or specific to items.
-                            // Let's assume we skip everything until next key or lower indentation
-                            // Actually, safer to stop at next key or lower indentation
-                        }
-                        
-                        int nextIndent = getIndentation(nextLine);
-                        if (!nextLine.trim().isEmpty() && !nextLine.trim().startsWith("-") && nextIndent <= indentation) {
-                            // Found a line that is not a list item and has same or lower indentation -> End of list
-                            reader.reset();
-                            break;
-                        }
-                        reader.mark(1000);
-                    }
+                    writeList(lines, indentation, key, (List<?>) userValue);
+                    skipListInResource(reader, indentation);
                 } else {
-                    // Simple value
-                    String valueString;
-                    if (userValue instanceof String) {
-                        valueString = "\"" + escapeString((String) userValue) + "\"";
-                    } else {
-                        valueString = String.valueOf(userValue);
-                    }
-                    lines.add(getIndentationString(indentation) + key + ": " + valueString);
+                    lines.add(getIndentationString(indentation) + key + ": " + formatValue(userValue));
                 }
             } else {
                 // User doesn't have this key, keep JAR line (new default)
@@ -165,6 +154,43 @@ public class ConfigUpdater {
         }
         
         return lines;
+    }
+
+    private static boolean shouldSkipLine(String line) {
+        String trimmed = line.trim();
+        return trimmed.isEmpty() || trimmed.startsWith("#");
+    }
+
+    private static void writeList(List<String> lines, int indentation, String key, List<?> list) {
+        lines.add(getIndentationString(indentation) + key + ":");
+        for (Object item : list) {
+            if (item instanceof String) {
+                lines.add(getIndentationString(indentation) + "  - \"" + escapeString((String) item) + "\"");
+            } else {
+                lines.add(getIndentationString(indentation) + "  - " + item);
+            }
+        }
+    }
+
+    private static void skipListInResource(BufferedReader reader, int indentation) throws IOException {
+        reader.mark(1000);
+        String nextLine;
+        while ((nextLine = reader.readLine()) != null) {
+            int nextIndent = getIndentation(nextLine);
+            // If line is not empty, not a list item, and has same or lower indentation -> End of list
+            if (!nextLine.trim().isEmpty() && !nextLine.trim().startsWith("-") && nextIndent <= indentation) {
+                reader.reset();
+                break;
+            }
+            reader.mark(1000);
+        }
+    }
+
+    private static String formatValue(Object value) {
+        if (value instanceof String) {
+            return "\"" + escapeString((String) value) + "\"";
+        }
+        return String.valueOf(value);
     }
 
     private static int getIndentation(String line) {

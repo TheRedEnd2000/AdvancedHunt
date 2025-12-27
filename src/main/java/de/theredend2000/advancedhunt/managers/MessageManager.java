@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.managers;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.util.ConfigMigrationHandler;
 import de.theredend2000.advancedhunt.util.ConfigUpdater;
 import de.theredend2000.advancedhunt.util.HexColor;
 import org.bukkit.ChatColor;
@@ -59,10 +60,10 @@ public class MessageManager {
         // Attempt to update the messages file if a matching resource exists
         String resourcePath = "messages/messages_" + lang + ".yml";
         if (plugin.getResource(resourcePath) != null) {
-            ConfigUpdater.update(plugin, resourcePath, messagesFile);
+            ConfigUpdater.update(plugin, resourcePath, messagesFile, ConfigMigrationHandler::migrateMessages);
         } else if (messagesFile.getName().equals("messages_en.yml")) {
              // If we fell back to en, update en
-             ConfigUpdater.update(plugin, "messages/messages_en.yml", messagesFile);
+             ConfigUpdater.update(plugin, "messages/messages_en.yml", messagesFile, ConfigMigrationHandler::migrateMessages);
         }
 
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
