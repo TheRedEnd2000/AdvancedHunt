@@ -507,12 +507,19 @@ public class AdvancedHuntCommand {
         // Get minigame type from config
         String minigameTypeStr = plugin.getConfig().getString("minigames.hint.minigame-type", "REACTION");
         MinigameType minigameType;
-        try {
-            minigameType = MinigameType.valueOf(minigameTypeStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            player.sendMessage(plugin.getMessageManager().getMessage("minigame.error.invalid_type"));
-            plugin.getLogger().warning("Invalid hint minigame type in config: " + minigameTypeStr);
-            return;
+        
+        if (minigameTypeStr.equalsIgnoreCase("RANDOM")) {
+            // Randomly select between REACTION and MEMORY
+            MinigameType[] types = MinigameType.values();
+            minigameType = types[new java.util.Random().nextInt(types.length)];
+        } else {
+            try {
+                minigameType = MinigameType.valueOf(minigameTypeStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage(plugin.getMessageManager().getMessage("minigame.error.invalid_type"));
+                plugin.getLogger().warning("Invalid hint minigame type in config: " + minigameTypeStr);
+                return;
+            }
         }
 
         // Start minigame with hint delivery on success

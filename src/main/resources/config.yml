@@ -117,15 +117,15 @@ minigames:
   # Settings for the Hint minigame
   hint:
     enabled: true
-    # Which minigame to use for hints (REACTION or MEMORY)
-    minigame-type: REACTION
+    # Which minigame to use for hints (REACTION, MEMORY, or RANDOM)
+    minigame-type: RANDOM
     # Cooldown in seconds before player can request another hint
     cooldown-seconds: 300
     # Maximum distance in blocks to search for treasures
     proximity-range: 50
     # Apply cooldown if the player fails the minigame?
     apply-cooldown-on-fail: true
-    # Which coordinate to reveal: X, Y, Z, or RANDOM
+    # Which coordinate to reveal: X, Z, or RANDOM (only X or Z)
     reveal-coordinate: RANDOM
     # Visual hint settings (experimental)
     visual-hint:
