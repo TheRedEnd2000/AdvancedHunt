@@ -40,6 +40,7 @@ public final class Main extends JavaPlugin {
     private MinigameManager minigameManager;
     private SoundManager soundManager;
     private ProximityManager proximityManager;
+    private ScanManager scanManager;
 
     @Override
     public void onEnable() {
@@ -87,7 +88,10 @@ public final class Main extends JavaPlugin {
         particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
         particleManager.start();
 
-        proximityManager = new ProximityManager(this, treasureManager, playerManager, collectionManager);
+        proximityManager = new ProximityManager(this, treasureManager, playerManager);
+
+        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager);
+        scanManager.start();
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
@@ -170,6 +174,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (scanManager != null) {
+            scanManager.stop();
+        }
         if (particleManager != null) {
             particleManager.stop();
         }
@@ -232,5 +239,9 @@ public final class Main extends JavaPlugin {
 
     public ProximityManager getProximityManager() {
         return proximityManager;
+    }
+
+    public ScanManager getScanManager() {
+        return scanManager;
     }
 }
