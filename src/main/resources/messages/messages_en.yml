@@ -1,3 +1,5 @@
+config-version: 1
+
 feedback:
   gui:
     first_page: "%prefix%&cYou are already on the first page."
