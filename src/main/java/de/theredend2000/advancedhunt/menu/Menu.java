@@ -7,12 +7,14 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class Menu implements InventoryHolder {
@@ -36,6 +38,19 @@ public abstract class Menu implements InventoryHolder {
     public abstract int getSlots();
 
     public abstract void handleMenu(InventoryClickEvent e);
+
+    public void handleDrag(InventoryDragEvent event) {
+        Set<Integer> rawSlots = event.getRawSlots();
+        int topSize = event.getView().getTopInventory().getSize();
+
+        for (int slot : rawSlots) {
+            if (slot < topSize) { // Slots 0 to size-1 are the top inventory
+                event.setCancelled(true);
+                ((Player) event.getWhoClicked()).updateInventory();
+                return;
+            }
+        }
+    }
 
     public abstract void setMenuItems();
 
@@ -136,9 +151,12 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void performClick(InventoryClickEvent event) {
-        int slot = event.getSlot();
-        if (slot >= 0 && slot < buttons.length && buttons[slot] != null) {
-            buttons[slot].onClick(event);
+        // Only trigger buttons if the click is in the top inventory (the menu)
+        if (event.getClickedInventory() != null && event.getClickedInventory().equals(inventory)) {
+            int slot = event.getSlot();
+            if (slot >= 0 && slot < buttons.length && buttons[slot] != null) {
+                buttons[slot].onClick(event);
+            }
         }
         handleMenu(event); // Allow custom override logic if needed
     }

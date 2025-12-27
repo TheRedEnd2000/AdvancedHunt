@@ -14,8 +14,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Set;
-
 public class MenuListener implements Listener {
 
     private final Main plugin;
@@ -42,7 +40,9 @@ public class MenuListener implements Listener {
             menu.performClick(event);
         }
 
-        player.updateInventory();
+        if (event.isCancelled()) {
+            player.updateInventory();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -52,17 +52,7 @@ public class MenuListener implements Listener {
 
         if (!(topInventory.getHolder() instanceof Menu)) return;
 
-        // 1. CHECK AFFECTED SLOTS
-        Set<Integer> rawSlots = event.getRawSlots();
-        int topSize = topInventory.getSize();
-
-        for (int slot : rawSlots) {
-            if (slot < topSize) { // Slots 0 to size-1 are the top inventory
-                event.setCancelled(true);
-                ((Player) event.getWhoClicked()).updateInventory();
-                return;
-            }
-        }
+        ((Menu) topInventory.getHolder()).handleDrag(event);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -10,7 +10,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Set;
 
 /**
  * A menu for adding an item reward to a treasure.
@@ -48,9 +51,26 @@ public class AddItemRewardMenu extends Menu {
             e.setCancelled(false);
         }
         
-        // Allow shift-clicking from player inventory
-        if (slot >= getSlots() && e.isShiftClick()) {
+        // Allow interaction with player inventory
+        if (slot >= getSlots()) {
             e.setCancelled(false);
+        }
+    }
+
+    @Override
+    public void handleDrag(InventoryDragEvent event) {
+        Set<Integer> rawSlots = event.getRawSlots();
+        int topSize = event.getView().getTopInventory().getSize();
+
+        for (int slot : rawSlots) {
+            if (slot < topSize) { 
+                // If the slot is NOT the item slot, cancel
+                if (slot != ITEM_SLOT) {
+                    event.setCancelled(true);
+                    ((Player) event.getWhoClicked()).updateInventory();
+                    return;
+                }
+            }
         }
     }
 
