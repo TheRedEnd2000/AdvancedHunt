@@ -82,9 +82,13 @@ command:
     player_collection_success: "%prefix%&aReset &e%count% &atreasure records for player &e%player% &ain collection &e%collection%&a!"
     player_not_found: "%prefix%&cPlayer not found or has never played on this server."
   migration:
-    started: "%prefix%&aMigration started..."
-    success: "%prefix%&aMigration successful!"
-    failed: "%prefix%&cMigration failed."
+    started: "%prefix%&aStorage migration started (copying all data to target storage)..."
+    success: "%prefix%&aStorage migration successful! All data has been copied to the target storage."
+    failed: "%prefix%&cStorage migration failed. Check console for errors."
+    mysql_not_configured: "%prefix%&cMySQL migration settings not configured! Please edit config.yml under 'migration.target' section with your target database details."
+    mysql_config_reset: "%prefix%&eMySQL migration settings have been reset in config.yml. Configure them again if you need another migration."
+    existing_data_abort: "%prefix%&c&lMigration aborted! Target storage contains existing data: %collections% collections, %treasures% treasures, %players% players. Use '--force' flag to overwrite: /ah migrate <type> --force"
+    warning_existing_data: "%prefix%&e&lWARNING: Target storage contains existing data! (%collections% collections, %treasures% treasures, %players% players). Proceeding with forced migration..."
 
 treasure:
   found: "%prefix%&aYou found a treasure!"
