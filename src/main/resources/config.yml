@@ -127,6 +127,8 @@ minigames:
     proximity-range: 50
     # Apply cooldown if the player fails the minigame?
     apply-cooldown-on-fail: true
+    # Apply cooldown to operators
+    apply-cooldown-to-operators: false
     # Which coordinate to reveal: X, Z, or RANDOM (only X or Z)
     reveal-coordinate: RANDOM
     # Visual hint settings (experimental)
