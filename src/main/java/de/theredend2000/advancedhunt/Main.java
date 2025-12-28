@@ -89,7 +89,7 @@ public final class Main extends JavaPlugin {
         playerManager = new PlayerManager(this, dataRepository);
         leaderboardManager = new LeaderboardManager(this, dataRepository);
         collectionManager = new CollectionManager(this, dataRepository, treasureManager, playerManager, rewardManager);
-        placeModeManager = new PlaceModeManager();
+        placeModeManager = new PlaceModeManager(this);
         minigameManager = new MinigameManager(this);
         particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
         hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
@@ -97,7 +97,7 @@ public final class Main extends JavaPlugin {
 
         proximityManager = new ProximityManager(this, treasureManager, playerManager);
 
-        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager);
+        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager,placeModeManager);
         scanManager.start();
 
         // Register Listeners

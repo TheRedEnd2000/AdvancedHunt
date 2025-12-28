@@ -157,7 +157,7 @@ public class HintManager {
         // OP-Check
         if (player.isOp() && !applyFailCooldownOnOP) return;
 
-        applyCooldown(player);
+        applyCooldown(player.getUniqueId());
     }
     
     /**
