@@ -72,6 +72,22 @@ public class YamlRepository implements DataRepository {
     public void reload() {
         init();
     }
+
+    @Override
+    public CompletableFuture<List<UUID>> getAllPlayerUUIDs() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<UUID> uuids = new ArrayList<>();
+            File[] files = playerDataFolder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+            if (files != null) {
+                for (File file : files) {
+                    try {
+                        uuids.add(UUID.fromString(file.getName().replace(YML_EXTENSION, "")));
+                    } catch (IllegalArgumentException ignored) {}
+                }
+            }
+            return uuids;
+        });
+    }
     
     /**
      * Builds the lightweight treasure-to-collection index by scanning collection folders.

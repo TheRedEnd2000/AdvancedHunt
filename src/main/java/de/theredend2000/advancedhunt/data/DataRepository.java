@@ -26,6 +26,12 @@ public interface DataRepository {
      */
     CompletableFuture<List<PlayerData>> loadAllPlayerData();
 
+    /**
+     * Gets all player UUIDs stored in the repository.
+     * Useful for iterating over all players without loading their full data.
+     */
+    CompletableFuture<List<UUID>> getAllPlayerUUIDs();
+
     // Treasures
     CompletableFuture<List<Treasure>> loadTreasures();
     CompletableFuture<Void> saveTreasure(Treasure treasure);
