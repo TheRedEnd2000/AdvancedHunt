@@ -26,6 +26,7 @@ public class YamlRepository implements DataRepository {
     private final File playerDataFolder;
     private File leaderboardFile;
     private File finderIndexFile;
+    private File systemFile;
     private BukkitTask flushTask;
     
     // In-memory indexes for efficient lookups (rebuilt on init, updated on save)
@@ -36,10 +37,22 @@ public class YamlRepository implements DataRepository {
     // Flag to track if finder index needs saving
     private volatile boolean finderIndexDirty = false;
 
+    private final Map<Integer, Runnable> schemaMigrations = new HashMap<>();
+    private static final int LATEST_SCHEMA_VERSION = 1;
+
     public YamlRepository(JavaPlugin plugin) {
         this.plugin = plugin;
         this.collectionsFolder = new File(plugin.getDataFolder(), "collections");
         this.playerDataFolder = new File(plugin.getDataFolder(), "playerdata");
+        
+        registerMigrations();
+    }
+
+    private void registerMigrations() {
+        schemaMigrations.put(1, () -> {
+            // Initial schema version
+            // No specific actions needed for v1 as it's the baseline
+        });
     }
 
     @Override
@@ -62,15 +75,51 @@ public class YamlRepository implements DataRepository {
             }
         }
         finderIndexFile = new File(plugin.getDataFolder(), "finder-index.yml");
+        systemFile = new File(plugin.getDataFolder(), "system.yml");
         
         // Build in-memory indexes
         buildTreasureToCollectionIndex();
         loadFinderIndex();
+        upgradeSchema();
     }
 
     @Override
     public void reload() {
         init();
+    }
+
+    @Override
+    public int getSchemaVersion() {
+        if (systemFile == null || !systemFile.exists()) return 0;
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(systemFile);
+        return config.getInt("schema_version", 0);
+    }
+
+    @Override
+    public void upgradeSchema() {
+        if (systemFile == null) systemFile = new File(plugin.getDataFolder(), "system.yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(systemFile);
+        int currentVersion = config.getInt("schema_version", 0);
+        
+        for (int i = currentVersion + 1; i <= LATEST_SCHEMA_VERSION; i++) {
+            if (schemaMigrations.containsKey(i)) {
+                try {
+                    schemaMigrations.get(i).run();
+                    plugin.getLogger().info("Upgraded YAML data schema to version " + i);
+                } catch (Exception e) {
+                    plugin.getLogger().severe("Failed to apply YAML schema migration for version " + i);
+                    e.printStackTrace();
+                    break;
+                }
+            }
+            
+            config.set("schema_version", i);
+            try {
+                config.save(systemFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

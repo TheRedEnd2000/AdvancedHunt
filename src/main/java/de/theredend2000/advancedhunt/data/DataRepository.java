@@ -16,6 +16,10 @@ public interface DataRepository {
     void reload();
     void shutdown();
 
+    // Schema & Maintenance
+    int getSchemaVersion();
+    void upgradeSchema();
+
     // Player Data
     CompletableFuture<PlayerData> loadPlayerData(UUID playerUuid);
     CompletableFuture<Void> savePlayerData(PlayerData playerData);

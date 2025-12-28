@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class SqlRepository implements DataRepository {
 
@@ -30,6 +31,9 @@ public class SqlRepository implements DataRepository {
     private final boolean useSqlite;
     private final Gson gson;
 
+    private final Map<Integer, Consumer<Connection>> schemaMigrations = new HashMap<>();
+    private static final int LATEST_SCHEMA_VERSION = 5;
+
     public SqlRepository(JavaPlugin plugin, String host, int port, String database, String username, String password, boolean useSqlite) {
         this.plugin = plugin;
         this.host = host;
@@ -39,6 +43,35 @@ public class SqlRepository implements DataRepository {
         this.password = password;
         this.useSqlite = useSqlite;
         this.gson = new Gson();
+        
+        registerMigrations();
+    }
+
+    private void registerMigrations() {
+        schemaMigrations.put(1, conn -> {
+            // Initial schema version
+        });
+        
+        schemaMigrations.put(2, conn -> {
+            try {
+                conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN block_data TEXT");
+            } catch (SQLException ignored) {}
+        });
+        
+        schemaMigrations.put(3, conn -> {
+            try {
+                conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN material VARCHAR(64)");
+                conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN block_state TEXT");
+            } catch (SQLException ignored) {}
+        });
+        
+        schemaMigrations.put(4, conn -> this.createPerformanceIndexes(conn));
+        
+        schemaMigrations.put(5, conn -> {
+            try {
+                conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN progress_reset_cron VARCHAR(64)");
+            } catch (SQLException ignored) {}
+        });
     }
 
     @Override
@@ -61,7 +94,7 @@ public class SqlRepository implements DataRepository {
         dataSource = new HikariDataSource(config);
 
         createTables();
-        checkSchema();
+        upgradeSchema();
     }
 
     @Override
@@ -126,7 +159,21 @@ public class SqlRepository implements DataRepository {
         }
     }
 
-    private void checkSchema() {
+    @Override
+    public int getSchemaVersion() {
+        try (Connection conn = dataSource.getConnection();
+             ResultSet rs = conn.createStatement().executeQuery("SELECT version FROM ah_schema_version")) {
+            if (rs.next()) {
+                return rs.getInt("version");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public void upgradeSchema() {
         try (Connection conn = dataSource.getConnection()) {
             int currentVersion = 0;
             try (ResultSet rs = conn.createStatement().executeQuery("SELECT version FROM ah_schema_version")) {
@@ -137,34 +184,22 @@ public class SqlRepository implements DataRepository {
                 }
             }
             
-            if (currentVersion < 1) {
-                 conn.createStatement().execute("UPDATE ah_schema_version SET version = 1");
-            }
-            if (currentVersion < 2) {
-                try {
-                    conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN block_data TEXT");
-                } catch (SQLException ignored) {} // Column might exist if created fresh
-                conn.createStatement().execute("UPDATE ah_schema_version SET version = 2");
-            }
-            if (currentVersion < 3) {
-                try {
-                    conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN material VARCHAR(64)");
-                    conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN block_state TEXT");
-                } catch (SQLException ignored) {}
-                conn.createStatement().execute("UPDATE ah_schema_version SET version = 3");
-            }
-            if (currentVersion < 4) {
-                // Create performance indexes for leaderboard queries
-                createPerformanceIndexes(conn);
-                conn.createStatement().execute("UPDATE ah_schema_version SET version = 4");
-            }
-            if (currentVersion < 5) {
-                // Add ACT rules support
-                try {
-                    conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN progress_reset_cron VARCHAR(64)");
-                } catch (SQLException ignored) {}
-                // Create ACT rules table (already handled in createTables)
-                conn.createStatement().execute("UPDATE ah_schema_version SET version = 5");
+            for (int i = currentVersion + 1; i <= LATEST_SCHEMA_VERSION; i++) {
+                if (schemaMigrations.containsKey(i)) {
+                    try {
+                        schemaMigrations.get(i).accept(conn);
+                        plugin.getLogger().info("Upgraded database schema to version " + i);
+                    } catch (Exception e) {
+                        plugin.getLogger().severe("Failed to apply schema migration for version " + i);
+                        e.printStackTrace();
+                        break; // Stop migration on error
+                    }
+                }
+                // Update version number
+                try (PreparedStatement ps = conn.prepareStatement("UPDATE ah_schema_version SET version = ?")) {
+                    ps.setInt(1, i);
+                    ps.executeUpdate();
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
