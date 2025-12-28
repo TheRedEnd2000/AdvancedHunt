@@ -329,6 +329,56 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Void> savePlayerDataBatch(List<PlayerData> playerDataList) {
+        return CompletableFuture.runAsync(() -> {
+            if (playerDataList.isEmpty()) return;
+            
+            try (Connection conn = dataSource.getConnection()) {
+                boolean originalAutoCommit = conn.getAutoCommit();
+                conn.setAutoCommit(false);
+                
+                try {
+                    // 1. Batch save selected collections
+                    try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_players (uuid, selected_collection_id) VALUES (?, ?)")) {
+                        for (PlayerData pd : playerDataList) {
+                            ps.setString(1, pd.getPlayerUuid().toString());
+                            ps.setString(2, pd.getSelectedCollectionId() != null ? pd.getSelectedCollectionId().toString() : null);
+                            ps.addBatch();
+                        }
+                        ps.executeBatch();
+                    }
+
+                    // 2. Batch save found treasures
+                    String insertSql = useSqlite 
+                        ? "INSERT OR IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)"
+                        : "INSERT IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)";
+                    
+                    try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                        for (PlayerData pd : playerDataList) {
+                            String uuidStr = pd.getPlayerUuid().toString();
+                            for (UUID treasureId : pd.getFoundTreasures()) {
+                                ps.setString(1, uuidStr);
+                                ps.setString(2, treasureId.toString());
+                                ps.addBatch();
+                            }
+                        }
+                        ps.executeBatch();
+                    }
+                    
+                    conn.commit();
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw e;
+                } finally {
+                    conn.setAutoCommit(originalAutoCommit);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<List<Treasure>> loadTreasures() {
         return CompletableFuture.supplyAsync(() -> {
             List<Treasure> treasures = new ArrayList<>();

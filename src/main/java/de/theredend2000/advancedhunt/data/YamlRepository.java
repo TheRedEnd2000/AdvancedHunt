@@ -309,6 +309,26 @@ public class YamlRepository implements DataRepository {
             // not on every save, to avoid I/O storms on high-traffic servers
         });
     }
+
+    @Override
+    public CompletableFuture<Void> savePlayerDataBatch(List<PlayerData> playerDataList) {
+        return CompletableFuture.runAsync(() -> {
+            for (PlayerData pd : playerDataList) {
+                File file = new File(playerDataFolder, pd.getPlayerUuid() + YML_EXTENSION);
+                FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+                
+                List<String> found = new ArrayList<>();
+                for (UUID uuid : pd.getFoundTreasures()) {
+                    found.add(uuid.toString());
+                }
+                config.set("found-treasures", found);
+                config.set("selected-collection-id", pd.getSelectedCollectionId() != null ? pd.getSelectedCollectionId().toString() : null);
+                saveConfig(config, file);
+                
+                updateFinderIndex(pd);
+            }
+        });
+    }
     
     /**
      * Updates the finder index with this player's found treasures.

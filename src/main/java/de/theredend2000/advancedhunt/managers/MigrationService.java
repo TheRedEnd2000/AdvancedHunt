@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.managers;
 
 import de.theredend2000.advancedhunt.data.DataRepository;
 import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.Treasure;
 
 import java.util.ArrayList;
@@ -57,13 +58,21 @@ public class MigrationService {
             List<UUID> chunk = playerUUIDs.subList(start, end);
 
             future = future.thenCompose(v -> {
-                List<CompletableFuture<Void>> chunkFutures = new ArrayList<>();
+                List<CompletableFuture<PlayerData>> loadFutures = new ArrayList<>();
                 for (UUID uuid : chunk) {
-                    chunkFutures.add(source.loadPlayerData(uuid)
-                            .thenCompose(target::savePlayerData));
+                    loadFutures.add(source.loadPlayerData(uuid));
                 }
-                logger.info("Migrating player chunk " + currentChunk + "/" + totalChunks);
-                return CompletableFuture.allOf(chunkFutures.toArray(new CompletableFuture[0]));
+                
+                return CompletableFuture.allOf(loadFutures.toArray(new CompletableFuture[0]))
+                    .thenCompose(v2 -> {
+                        List<PlayerData> loadedData = new ArrayList<>();
+                        for (CompletableFuture<PlayerData> f : loadFutures) {
+                            loadedData.add(f.join());
+                        }
+                        
+                        logger.info("Migrating player chunk " + currentChunk + "/" + totalChunks);
+                        return target.savePlayerDataBatch(loadedData);
+                    });
             });
         }
         return future;
