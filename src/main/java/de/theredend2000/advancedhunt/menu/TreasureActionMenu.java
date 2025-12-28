@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.menu;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -63,12 +64,23 @@ public class TreasureActionMenu extends Menu {
         ItemStack viewFindersItem = new ItemBuilder(Material.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.view_finders.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.view_finders.lore", false))
+                .setSkullOwner(playerMenuUtility.getUniqueId())
                 .build();
 
         addButton(13, viewFindersItem, e -> {
             Player p = (Player) e.getWhoClicked();
             new WhoFoundMenu(p, plugin, treasureId, this).open();
         }, "advancedhunt.admin.view_finders");
+
+        ItemStack rewardsItem = new ItemBuilder(Material.CHEST)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.rewards.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.rewards.lore", false))
+                .build();
+
+        addButton(15, rewardsItem, e -> {
+            Player p = (Player) e.getWhoClicked();
+            new RewardsMenu(p, plugin, new TreasureRewardHolder(plugin, treasure)).setPreviousMenu(this).open();
+        }, "advancedhunt.admin.rewards");
     }
 
     /**

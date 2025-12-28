@@ -103,7 +103,7 @@ treasure:
   added: "%prefix%&aTreasure added to collection!"
   removed: "%prefix%&cTreasure removed from collection."
   protected: "%prefix%&cYou cannot break treasure blocks!"
-  placemode: "%prefix%&cYou cannot collection treasures in place mode!"
+  placemode: "%prefix%&cYou cannot collect treasures in place mode!"
 
 collection:
   unavailable: "%prefix%&cThe collection &e%collection% &cis not currently available!"
@@ -281,6 +281,7 @@ gui:
   collection_content:
     treasure_item:
       lore_teleport: "&eLeft-Click &7to teleport"
+      lore_reward: "&eShift+Left-Click &7to open the reward menu"
       lore_who_found: "&eRight-Click &7to see who found"
   treasure_action:
     title: "&8Treasure Actions"
@@ -294,6 +295,11 @@ gui:
       lore:
         - "&7Click to see which players"
         - "&7have found this treasure."
+    rewards:
+      name: "&6Rewards"
+      lore:
+        - "&7Click to open the rewards"
+        - "&7for that treasure."
   finders:
     title: "&8Who Found This Treasure"
     loading: "&7Loading player data..."
