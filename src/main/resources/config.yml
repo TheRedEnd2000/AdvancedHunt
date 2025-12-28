@@ -201,6 +201,16 @@ sounds:
     sound: ITEM_SHIELD_BLOCK
     volume: 0.4
     pitch: 0.9
+  place-mode-collect-denied:
+    enabled: true
+    sound: BLOCK_NOTE_BLOCK_BASS
+    volume: 1.0
+    pitch: 1.0
+  collection_unavailable:
+    enabled: true
+    sound: BLOCK_BEACON_DEACTIVATE
+    volume: 1.0
+    pitch: 1.0
 
 # Settings for data migration
 # These settings are ONLY used when running '/ah migrate mysql'

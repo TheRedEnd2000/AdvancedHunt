@@ -63,8 +63,17 @@ public class SoundManager {
     public void playBlockProtected(Player player) {
         playSound(player, "block-protected");
     }
+
     public void playPlaceModeBreakDeny(Player player) {
         playSound(player, "place-mode-break-denied");
+    }
+
+    public void playPlaceModeCollectDeny(Player player) {
+        playSound(player, "place-mode-collect-denied");
+    }
+
+    public void playCollectionUnavailable(Player player) {
+        playSound(player, "collection_unavailable");
     }
 
     private void playSound(Player player, String key) {
