@@ -84,8 +84,9 @@ particle-settings:
       y: 0.2
       z: 0.3
 
+# Shows an action bar when the placer is in range of a treasure
 proximity-settings:
-  enabled: false
+  enabled: true
   range: 10
 
 leaderboard:

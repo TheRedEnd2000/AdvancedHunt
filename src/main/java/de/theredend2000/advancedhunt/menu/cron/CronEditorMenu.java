@@ -147,7 +147,7 @@ public class CronEditorMenu extends Menu {
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     if (input.equalsIgnoreCase("cancel")) {
-                        new CronEditorMenu(playerMenuUtility, plugin, collection).open();
+                        this.open();
                         return;
                     }
                     
@@ -155,7 +155,7 @@ public class CronEditorMenu extends Menu {
                         applyCron(input);
                     } else {
                         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.cron.invalid"));
-                        reopenMenu();
+                        this.open();
                     }
                 });
             });
