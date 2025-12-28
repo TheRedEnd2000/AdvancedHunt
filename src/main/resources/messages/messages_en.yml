@@ -1165,6 +1165,7 @@ minigame:
 
 proximity:
   near_treasure: "&eYou are near a treasure!"
+  in_place_mode: "&eYou are currently in place mode!"
 
 hint:
   no_unfound_nearby: "%prefix%&cNo unfound treasures nearby in active collections!"

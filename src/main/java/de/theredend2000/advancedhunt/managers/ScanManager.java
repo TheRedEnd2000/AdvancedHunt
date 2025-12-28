@@ -15,15 +15,17 @@ public class ScanManager {
     private final CollectionManager collectionManager;
     private final ProximityManager proximityManager;
     private final ParticleManager particleManager;
+    private final PlaceModeManager placeModeManager;
     private final AtomicBoolean processing = new AtomicBoolean(false);
     private BukkitTask task;
 
     public ScanManager(Main plugin, CollectionManager collectionManager, 
-                       ProximityManager proximityManager, ParticleManager particleManager) {
+                       ProximityManager proximityManager, ParticleManager particleManager,PlaceModeManager placeModeManager) {
         this.plugin = plugin;
         this.collectionManager = collectionManager;
         this.proximityManager = proximityManager;
         this.particleManager = particleManager;
+        this.placeModeManager = placeModeManager;
     }
 
     public void start() {
@@ -64,6 +66,8 @@ public class ScanManager {
             try {
                 // Run Proximity Logic
                 proximityManager.processTick(snapshots, availableCollections);
+
+                placeModeManager.processTick(snapshots);
 
                 // Run Particle Logic
                 particleManager.processTick(snapshots, availableCollections, singlePlayerFindCollections);
