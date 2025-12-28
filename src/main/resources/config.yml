@@ -215,6 +215,58 @@ sounds:
     volume: 1.0
     pitch: 1.0
 
+
+fireworks:
+  # Enable or disable all custom fireworks
+  enabled: true
+  # Should the firework be silent (no launch/explosion sound)
+  silent: false
+  power:
+    # Minimum flight power (1 = low, 3 = very high)
+    min: 1
+    # Maximum flight power
+    max: 2
+  effects:
+    # Enable flickering effect
+    flicker: true
+    # Enable trail behind the firework
+    trail: true
+    # Possible firework effect types (used if random-type = true)
+    # Available: BALL, BALL_LARGE, STAR, BURST, CREEPER
+    # Will pick a random one
+    types:
+      - BALL
+      - BALL_LARGE
+      - STAR
+      - BURST
+      - CREEPER
+
+  colors:
+    # Main firework colors
+    # Available colors:
+    # AQUA, BLACK, BLUE, FUCHSIA, GRAY, GREEN, LIME, MAROON,
+    # NAVY, OLIVE, ORANGE, PURPLE, RED, SILVER, TEAL, WHITE, YELLOW
+    # Will pick a random one
+    list:
+      - AQUA
+      - BLUE
+      - PURPLE
+      - RED
+      - ORANGE
+      - YELLOW
+      - LIME
+      - WHITE
+
+  fade-colors:
+    # Enable fade colors after explosion
+    enabled: true
+    # Colors used for fading
+    list:
+      - WHITE
+      - SILVER
+      - GRAY
+
+
 # Settings for data migration
 # These settings are ONLY used when running '/ah migrate mysql'
 # They define the TARGET database where data will be moved TO.

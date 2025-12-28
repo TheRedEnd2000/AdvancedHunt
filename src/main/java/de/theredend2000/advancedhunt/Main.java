@@ -24,6 +24,7 @@ import org.incendo.cloud.paper.LegacyPaperCommandManager;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public final class Main extends JavaPlugin {
 
@@ -45,9 +46,13 @@ public final class Main extends JavaPlugin {
     private ProximityManager proximityManager;
     private ScanManager scanManager;
     private HintManager hintManager;
+    private FireworkManager fireworkManager;
+
+    private Random random;
 
     @Override
     public void onEnable() {
+        random = new Random();
         saveDefaultConfig();
         ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"), ConfigMigrationHandler::migrateConfig);
         reloadConfig();
@@ -91,6 +96,7 @@ public final class Main extends JavaPlugin {
         collectionManager = new CollectionManager(this, dataRepository, treasureManager, playerManager, rewardManager);
         placeModeManager = new PlaceModeManager(this);
         minigameManager = new MinigameManager(this);
+        fireworkManager = new FireworkManager(this);
         particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
         hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
         particleManager.start();
@@ -105,6 +111,7 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlaceModeListener(this), this);
         getServer().getPluginManager().registerEvents(new TreasureProtectListener(this), this);
         getServer().getPluginManager().registerEvents(new MenuListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerProtectionListener(this), this);
         chatInputListener = new ChatInputListener(this);
         getServer().getPluginManager().registerEvents(chatInputListener, this);
 
@@ -257,5 +264,13 @@ public final class Main extends JavaPlugin {
 
     public HintManager getHintManager() {
         return hintManager;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
+    public FireworkManager getFireworkManager() {
+        return fireworkManager;
     }
 }
