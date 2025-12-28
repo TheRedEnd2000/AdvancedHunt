@@ -7,6 +7,7 @@ import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -158,14 +159,20 @@ public class ProgressMenu extends PagedMenu {
     private ItemStack createTreasureItem(TreasureCore treasureCore, int index, boolean isFound) {
         ItemBuilder builder;
         String statusColor;
-        
+
         if (isFound) {
             statusColor = ChatColor.GREEN.toString();
             Treasure treasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
             if (treasure != null) {
                 XMaterial xMaterial = XMaterial.matchXMaterial(treasure.getMaterial()).orElse(XMaterial.CHEST);
-                builder = new ItemBuilder(xMaterial);
-                
+                ItemStack item = XMaterialHelper.getItemStack(xMaterial);
+
+                if (item != null) {
+                    builder = new ItemBuilder(item);
+                } else {
+                    builder = new ItemBuilder(Material.CHEST);
+                }
+
                 if (xMaterial == XMaterial.PLAYER_HEAD || xMaterial == XMaterial.PLAYER_WALL_HEAD) {
                     String texture = HeadHelper.getTextureFromNbt(treasure.getNbtData());
                     if (texture != null) {

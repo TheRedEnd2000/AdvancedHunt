@@ -1,11 +1,13 @@
 package de.theredend2000.advancedhunt.menu;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -107,11 +109,12 @@ public class CollectionListMenu extends PagedMenu {
         // For menu display, we use the material from TreasureCore
         // Only load full treasure if we need NBT data for heads
         Material material = Material.matchMaterial(treasureCore.getMaterial());
-        if (material == null) {
-            material = Material.CHEST;
-        }
-        
-        ItemStack item = new ItemStack(material);
+        if (material == null) material = Material.CHEST;
+
+        XMaterial xMaterial = XMaterial.matchXMaterial(material);
+        ItemStack item = XMaterialHelper.getItemStack(xMaterial);
+        if (item == null) item = new ItemStack(Material.CHEST);
+
         ItemBuilder builder = new ItemBuilder(item);
         
         // For player heads, we need to load full treasure for NBT data
