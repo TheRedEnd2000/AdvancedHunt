@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.listeners;
 
+import com.cryptomorin.xseries.XEntityType;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.FireworkManager;
 import de.theredend2000.advancedhunt.managers.PlaceModeManager;
@@ -9,6 +10,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -27,26 +29,20 @@ public class PlayerProtectionListener implements Listener {
         this.placeModeManager = plugin.getPlaceModeManager();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
         Entity damager = event.getDamager();
 
-        if (damager.getType().equals(EntityType.FIREWORK_ROCKET)) {
+        if (damager.getType().equals(XEntityType.FIREWORK_ROCKET.get())) {
             Firework firework = (Firework) damager;
             if (fireworkManager.getFireworkUUIDs().contains(firework.getUniqueId())) {
                 event.setCancelled(true);
+                fireworkManager.getFireworkUUIDs().remove(firework.getUniqueId());
             }
         }
     }
 
-    @EventHandler
-    public void onFireworkExplode(FireworkExplodeEvent event) {
-        Firework firework = event.getEntity();
-        // Remove firework from list after explosion
-        fireworkManager.getFireworkUUIDs().remove(firework.getUniqueId());
-    }
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player player) {
             if (placeModeManager.isInPlaceMode(player)) {
@@ -55,7 +51,7 @@ public class PlayerProtectionListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player player) {
             if (placeModeManager.isInPlaceMode(player)) {

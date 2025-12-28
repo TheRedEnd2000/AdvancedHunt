@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.managers;
 
 import com.cryptomorin.xseries.XEntityType;
 import de.theredend2000.advancedhunt.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -14,11 +15,12 @@ import java.util.*;
 public class FireworkManager {
 
     private final Main plugin;
-    private final List<UUID> fireworkUUIDs = new ArrayList<>();
+    private final List<UUID> fireworkUUIDs;
     private final Random random;
 
     public FireworkManager(Main plugin) {
         this.plugin = plugin;
+        this.fireworkUUIDs = new ArrayList<>();
         this.random = plugin.getRandom();
     }
 
