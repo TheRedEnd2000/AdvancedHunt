@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.XMaterialHelper;
@@ -151,6 +152,9 @@ public class CollectionListMenu extends PagedMenu {
         if (playerMenuUtility.hasPermission("advancedhunt.admin.view_finders")) {
             builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_who_found", false));
         }
+        if (playerMenuUtility.hasPermission("advancedhunt.admin.rewards")) {
+            builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_reward", false));
+        }
 
         return builder.build();
     }
@@ -174,13 +178,24 @@ public class CollectionListMenu extends PagedMenu {
         }
 
         // Left-click: Teleport to treasure
-        if (clickType == ClickType.LEFT || clickType == ClickType.SHIFT_LEFT) {
+        if (clickType == ClickType.LEFT) {
             if (!p.hasPermission("advancedhunt.admin.teleport")) {
                 p.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
                 return;
             }
             p.closeInventory();
             teleportToTreasure(p, treasureCore);
+            return;
+        }
+
+        if(clickType == ClickType.SHIFT_LEFT){
+            if (!p.hasPermission("advancedhunt.admin.rewards")) {
+                p.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
+                return;
+            }
+            Treasure treasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
+
+            new RewardsMenu(p, plugin, new TreasureRewardHolder(plugin, treasure)).open();
             return;
         }
 
