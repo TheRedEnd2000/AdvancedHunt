@@ -92,6 +92,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder hideTooltip(boolean tooltip) {
+        meta.setHideTooltip(tooltip);
+        return this;
+    }
+
     public ItemBuilder setUnbreakable(boolean unbreakable) {
         meta.setUnbreakable(unbreakable);
         return this;
