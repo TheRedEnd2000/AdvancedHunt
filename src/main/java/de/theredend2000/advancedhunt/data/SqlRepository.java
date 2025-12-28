@@ -526,6 +526,22 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<List<UUID>> getAllPlayerUUIDs() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<UUID> uuids = new ArrayList<>();
+            try (Connection conn = dataSource.getConnection();
+                 ResultSet rs = conn.createStatement().executeQuery("SELECT uuid FROM ah_players")) {
+                while (rs.next()) {
+                    uuids.add(UUID.fromString(rs.getString("uuid")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return uuids;
+        });
+    }
+
+    @Override
     public CompletableFuture<Integer> resetAllProgress() {
         return CompletableFuture.supplyAsync(() -> {
             try (Connection conn = dataSource.getConnection();
