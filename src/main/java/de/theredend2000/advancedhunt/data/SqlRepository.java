@@ -32,7 +32,8 @@ public class SqlRepository implements DataRepository {
     private final Gson gson;
 
     private final Map<Integer, Consumer<Connection>> schemaMigrations = new HashMap<>();
-    private static final int LATEST_SCHEMA_VERSION = 5;
+    // Cache the version to avoid repeated DB queries
+    private int cachedSchemaVersion = -1;
 
     public SqlRepository(JavaPlugin plugin, String host, int port, String database, String username, String password, boolean useSqlite) {
         this.plugin = plugin;
@@ -161,10 +162,13 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public int getSchemaVersion() {
+        if (cachedSchemaVersion != -1) return cachedSchemaVersion;
+        
         try (Connection conn = dataSource.getConnection();
              ResultSet rs = conn.createStatement().executeQuery("SELECT version FROM ah_schema_version")) {
             if (rs.next()) {
-                return rs.getInt("version");
+                cachedSchemaVersion = rs.getInt("version");
+                return cachedSchemaVersion;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -184,7 +188,9 @@ public class SqlRepository implements DataRepository {
                 }
             }
             
-            for (int i = currentVersion + 1; i <= LATEST_SCHEMA_VERSION; i++) {
+            int latestVersion = schemaMigrations.keySet().stream().mapToInt(v -> v).max().orElse(0);
+            
+            for (int i = currentVersion + 1; i <= latestVersion; i++) {
                 if (schemaMigrations.containsKey(i)) {
                     try {
                         schemaMigrations.get(i).accept(conn);
@@ -200,6 +206,7 @@ public class SqlRepository implements DataRepository {
                     ps.setInt(1, i);
                     ps.executeUpdate();
                 }
+                cachedSchemaVersion = i;
             }
         } catch (SQLException e) {
             e.printStackTrace();

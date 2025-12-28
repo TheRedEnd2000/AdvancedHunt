@@ -38,7 +38,7 @@ public class YamlRepository implements DataRepository {
     private volatile boolean finderIndexDirty = false;
 
     private final Map<Integer, Runnable> schemaMigrations = new HashMap<>();
-    private static final int LATEST_SCHEMA_VERSION = 1;
+    private int cachedSchemaVersion = -1;
 
     public YamlRepository(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -90,9 +90,11 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public int getSchemaVersion() {
+        if (cachedSchemaVersion != -1) return cachedSchemaVersion;
         if (systemFile == null || !systemFile.exists()) return 0;
         YamlConfiguration config = YamlConfiguration.loadConfiguration(systemFile);
-        return config.getInt("schema_version", 0);
+        cachedSchemaVersion = config.getInt("schema_version", 0);
+        return cachedSchemaVersion;
     }
 
     @Override
@@ -101,7 +103,9 @@ public class YamlRepository implements DataRepository {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(systemFile);
         int currentVersion = config.getInt("schema_version", 0);
         
-        for (int i = currentVersion + 1; i <= LATEST_SCHEMA_VERSION; i++) {
+        int latestVersion = schemaMigrations.keySet().stream().mapToInt(v -> v).max().orElse(0);
+        
+        for (int i = currentVersion + 1; i <= latestVersion; i++) {
             if (schemaMigrations.containsKey(i)) {
                 try {
                     schemaMigrations.get(i).run();
@@ -116,6 +120,7 @@ public class YamlRepository implements DataRepository {
             config.set("schema_version", i);
             try {
                 config.save(systemFile);
+                cachedSchemaVersion = i;
             } catch (IOException e) {
                 e.printStackTrace();
             }
