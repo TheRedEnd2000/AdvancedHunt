@@ -23,6 +23,14 @@ public interface DataRepository {
     // Player Data
     CompletableFuture<PlayerData> loadPlayerData(UUID playerUuid);
     CompletableFuture<Void> savePlayerData(PlayerData playerData);
+    
+    /**
+     * Saves a list of player data objects in a batch.
+     * Optimized for bulk operations like migration.
+     * @param playerDataList the list of player data to save
+     */
+    CompletableFuture<Void> savePlayerDataBatch(List<PlayerData> playerDataList);
+
     /**
      * Loads ALL player data into memory.
      * WARNING: This is extremely memory intensive and should ONLY be used for migration.
