@@ -2,7 +2,7 @@ name: AdvancedHunt
 version: '4.0.0-SNAPSHOT'
 main: de.theredend2000.advancedhunt.Main
 api-version: '1.21'
-authors: [ GrafterCrafter ]
+authors: [ GrafterCrafter, TheRedEnd2000 ]
 
 permissions:
   advancedhunt.help:

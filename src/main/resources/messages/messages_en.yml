@@ -48,7 +48,7 @@ error:
   
 command:
   help:
-    - "&6AdvancedHunt V3 Help:"
+    - "&6AdvancedHunt Help:"
     - "&e/ah help &7- Shows this help menu"
     - "&e/ah reload &7- Reloads the plugin"
     - "&e/ah list &7- Lists all available collections"
@@ -56,6 +56,10 @@ command:
     - "&e/ah progress <collection> &7- View your progress in a collection"
     - "&e/ah collection &7- Opens the collection editor"
     - "&e/ah rewards &7- View rewards for treasure you're looking at"
+    - "&e/ah minigame <game> &7- Play a minigame for help finding treasures"
+    - "&e/ah list <collection> &7- View all placed treasures in a collection"
+    - "&e/ah reset <all|collection|player> [player|collection] &7- Reset (special) players or collection"
+    - "&e/ah migrate <yaml|mysql|sqlite> &7- Migrate your current saving system to another"
   reload:
     success: "%prefix%&aConfiguration and messages reloaded!"
   list:
@@ -99,6 +103,7 @@ treasure:
   added: "%prefix%&aTreasure added to collection!"
   removed: "%prefix%&cTreasure removed from collection."
   protected: "%prefix%&cYou cannot break treasure blocks!"
+  placemode: "%prefix%&cYou cannot collection treasures in place mode!"
 
 collection:
   unavailable: "%prefix%&cThe collection &e%collection% &cis not currently available!"

@@ -136,7 +136,7 @@ public class CollectionListMenu extends PagedMenu {
 
         int playerFoundSize = plugin.getDataRepository().getPlayersWhoFound(treasureCore.getId()).join().size();
         builder.setDisplayName(ChatColor.GOLD + "Treasure #" + (index + 1));
-        builder.addLoreLine(ChatColor.GRAY+"Player size found: "+playerFoundSize);
+        builder.addLoreLine(ChatColor.GRAY+"Players found: "+playerFoundSize);
         builder.addLoreLine("");
         builder.addLoreLine(ChatColor.GRAY + "Location:");
         builder.addLoreLine(ChatColor.GRAY + "X: " + treasureCore.getLocation().getBlockX());

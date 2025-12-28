@@ -1,10 +1,7 @@
 package de.theredend2000.advancedhunt.listeners;
 
 import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.managers.CollectionManager;
-import de.theredend2000.advancedhunt.managers.PlayerManager;
-import de.theredend2000.advancedhunt.managers.RewardManager;
-import de.theredend2000.advancedhunt.managers.TreasureManager;
+import de.theredend2000.advancedhunt.managers.*;
 import de.theredend2000.advancedhunt.menu.RewardsMenu;
 import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
 import de.theredend2000.advancedhunt.model.PlayerData;
@@ -26,6 +23,7 @@ public class PlayerInteractListener implements Listener {
     private final PlayerManager playerManager;
     private final CollectionManager collectionManager;
     private final RewardManager rewardManager;
+    private final PlaceModeManager placeModeManager;
 
     public PlayerInteractListener(Main plugin) {
         this.plugin = plugin;
@@ -33,6 +31,7 @@ public class PlayerInteractListener implements Listener {
         this.playerManager = plugin.getPlayerManager();
         this.collectionManager = plugin.getCollectionManager();
         this.rewardManager = plugin.getRewardManager();
+        this.placeModeManager = plugin.getPlaceModeManager();
     }
 
     @EventHandler
@@ -78,18 +77,19 @@ public class PlayerInteractListener implements Listener {
             return;
         }
 
-        PlayerData data = playerManager.getPlayerData(player.getUniqueId());
-
-        if (data.hasFound(treasureCore.getId())) {
-            player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
-            plugin.getSoundManager().playTreasureAlreadyFound(player);
+        if(placeModeManager.isInPlaceMode(player)){
+            player.sendMessage(plugin.getMessageManager().getMessage("treasure.placemode"));
+            plugin.getSoundManager().playPlaceModeCollectDeny(player);
             return;
         }
+
+        PlayerData data = playerManager.getPlayerData(player.getUniqueId());
 
         // Check if collection is currently available
         collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
             if (!collectionManager.isCollectionAvailable(collection)) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
+                    plugin.getSoundManager().playCollectionUnavailable(player);
                     player.sendMessage(plugin.getMessageManager().getMessage("collection.unavailable", 
                         "%collection%", collection.getName()));
                     
@@ -100,6 +100,12 @@ public class PlayerInteractListener implements Listener {
                             "%time%", timeStr));
                     });
                 });
+                return;
+            }
+
+            if (data.hasFound(treasureCore.getId())) {
+                player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
+                plugin.getSoundManager().playTreasureAlreadyFound(player);
                 return;
             }
             
