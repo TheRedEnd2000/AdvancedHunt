@@ -40,6 +40,7 @@ public class HintManager {
     private int visualHintDuration;
     private String visualHintParticle;
     private boolean applyFailCooldown;
+    private boolean applyFailCooldownOnOP;
     private int cooldownSeconds;
     private int proximityRange;
     private CoordinateRevealType revealType;
@@ -105,6 +106,7 @@ public class HintManager {
         this.visualHintMaxDistance = Math.max(5, plugin.getConfig().getInt("minigames.hint.visual-hint.max-distance", 15));
         this.visualHintOffsetRange = Math.max(3, plugin.getConfig().getInt("minigames.hint.visual-hint.offset-range", 10));
         this.applyFailCooldown = plugin.getConfig().getBoolean("minigames.hint.apply-cooldown-on-fail", true);
+        this.applyFailCooldownOnOP = plugin.getConfig().getBoolean("minigames.hint.apply-cooldown-to-operators", false);
         this.cooldownSeconds = Math.max(0, plugin.getConfig().getInt("minigames.hint.cooldown-seconds", 300));
         this.proximityRange = Math.max(1, plugin.getConfig().getInt("minigames.hint.proximity-range", 50));
         
@@ -149,10 +151,13 @@ public class HintManager {
     /**
      * Apply cooldown on minigame failure (if configured)
      */
-    public void applyFailureCooldown(UUID playerId) {
-        if (applyFailCooldown) {
-            applyCooldown(playerId);
-        }
+    public void applyFailureCooldown(Player player) {
+        if (!applyFailCooldown) return;
+
+        // OP-Check
+        if (player.isOp() && !applyFailCooldownOnOP) return;
+
+        applyCooldown(player);
     }
     
     /**

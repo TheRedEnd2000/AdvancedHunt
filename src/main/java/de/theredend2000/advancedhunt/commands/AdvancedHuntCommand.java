@@ -508,7 +508,7 @@ public class AdvancedHuntCommand {
         if (treasureOpt.isEmpty()) {
             player.sendMessage(plugin.getMessageManager().getMessage("hint.no_unfound_nearby"));
             // Apply failure cooldown if configured
-            plugin.getHintManager().applyFailureCooldown(player.getUniqueId());
+            plugin.getHintManager().applyFailureCooldown(player);
             return;
         }
 
@@ -540,7 +540,7 @@ public class AdvancedHuntCommand {
             } else {
                 player.sendMessage(plugin.getMessageManager().getMessage("hint.minigame_failed"));
                 // Apply failure cooldown if configured
-                plugin.getHintManager().applyFailureCooldown(player.getUniqueId());
+                plugin.getHintManager().applyFailureCooldown(player);
             }
         });
     }
