@@ -85,11 +85,11 @@ public class CollectionEditorMenu extends PagedMenu {
                 plugin.getCollectionManager().createCollection(input).thenAccept(success -> {
                     if (success) {
                         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.create.success", "%name%", input));
-                        new CollectionEditorMenu(playerMenuUtility, plugin).open();
                     } else {
                         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.create.failed"));
-                        new CollectionEditorMenu(playerMenuUtility, plugin).open();
                     }
+                    this.open();
+                    //TODO FIX THE OPEN HERE!
                 });
             });
         }, "advancedhunt.admin.collection.create");
