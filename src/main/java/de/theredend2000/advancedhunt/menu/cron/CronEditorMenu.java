@@ -1,8 +1,6 @@
 package de.theredend2000.advancedhunt.menu.cron;
 
 import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.menu.ActRuleEditorMenu;
-import de.theredend2000.advancedhunt.menu.CollectionSettingsMenu;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
@@ -19,24 +17,27 @@ import java.util.List;
 
 public class CronEditorMenu extends Menu {
 
-    private final Collection collection;
-    private final ActRule actRule;
-    private final boolean isActRuleContext;
+    private final CronExpressionHolder holder;
+    private final CronEditPolicy policy;
 
     // Constructor for Collection context (progress reset cron)
     public CronEditorMenu(Player playerMenuUtility, Main plugin, Collection collection) {
         super(playerMenuUtility, plugin);
-        this.collection = collection;
-        this.actRule = null;
-        this.isActRuleContext = false;
+        this.holder = new CollectionProgressResetCronHolder(plugin, collection);
+        this.policy = CronEditPolicy.progressReset();
     }
 
     // Constructor for ActRule context (ACT rule cron component)
     public CronEditorMenu(Player playerMenuUtility, Main plugin, Collection collection, ActRule actRule) {
         super(playerMenuUtility, plugin);
-        this.collection = collection;
-        this.actRule = actRule;
-        this.isActRuleContext = true;
+        this.holder = new ActRuleCronHolder(plugin, collection, actRule);
+        this.policy = CronEditPolicy.actSchedule();
+    }
+
+    public CronEditorMenu(Player playerMenuUtility, Main plugin, CronExpressionHolder holder, CronEditPolicy policy) {
+        super(playerMenuUtility, plugin);
+        this.holder = holder;
+        this.policy = policy;
     }
 
     @Override
@@ -60,9 +61,13 @@ public class CronEditorMenu extends Menu {
 
         // Current Cron Display
         List<String> currentLore = new ArrayList<>();
-        String currentCron = getCurrentCron();
+        String currentCron = holder.getExpression();
         
-        if (currentCron != null && !currentCron.isEmpty()) {
+        if (currentCron == null || currentCron.isEmpty() || policy.isNone(currentCron)) {
+            currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.none"));
+        } else if (policy.isManual(currentCron)) {
+            currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.manual"));
+        } else {
             currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.expression") + " §f" + currentCron);
             currentLore.add("");
             
@@ -76,8 +81,6 @@ public class CronEditorMenu extends Menu {
             } else {
                 currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.invalid"));
             }
-        } else {
-            currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.none"));
         }
 
         addStaticItem(4, new ItemBuilder(Material.CLOCK)
@@ -117,7 +120,7 @@ public class CronEditorMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.more.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.more.lore").toArray(new String[0]))
                 .build(), (e) -> {
-            CronPresetMenu presetMenu = new CronPresetMenu(playerMenuUtility, plugin, collection);
+            CronPresetMenu presetMenu = new CronPresetMenu(playerMenuUtility, plugin, holder, policy);
             presetMenu.setPreviousMenu(this);
             presetMenu.open();
         });
@@ -133,9 +136,8 @@ public class CronEditorMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.custom.builder.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.custom.builder.lore").toArray(new String[0]))
                 .build(), (e) -> {
-            CronFieldMenu fieldMenu = isActRuleContext ? 
-                new CronFieldMenu(playerMenuUtility, plugin, collection, actRule, currentCron != null ? currentCron : "0 0 0 * * ? *") :
-                new CronFieldMenu(playerMenuUtility, plugin, collection, currentCron != null ? currentCron : "0 0 0 * * ? *");
+            String builderStart = getBuilderStartExpression(currentCron);
+            CronFieldMenu fieldMenu = new CronFieldMenu(playerMenuUtility, plugin, holder, policy, builderStart);
             fieldMenu.setPreviousMenu(this);
             fieldMenu.open();
         });
@@ -149,6 +151,17 @@ public class CronEditorMenu extends Menu {
                     if (input.equalsIgnoreCase("cancel")) {
                         this.open();
                         return;
+                    }
+
+                    if (policy.allowSpecialValues()) {
+                        if (policy.allowNone() && input.equalsIgnoreCase(CronEditPolicy.SPECIAL_NONE)) {
+                            applyCron(CronEditPolicy.SPECIAL_NONE);
+                            return;
+                        }
+                        if (policy.allowManual() && input.equalsIgnoreCase(CronEditPolicy.SPECIAL_MANUAL)) {
+                            applyCron(CronEditPolicy.SPECIAL_MANUAL);
+                            return;
+                        }
                     }
                     
                     if (ValidationUtil.validateCron(input)) {
@@ -175,25 +188,10 @@ public class CronEditorMenu extends Menu {
         String presetName = plugin.getMessageManager().getMessage(presetNameKey);
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.preset_applied", "%preset%", presetName));
     }
-
-    // Context-aware helper methods
-    
-    private String getCurrentCron() {
-        if (isActRuleContext) {
-            return actRule.getCronExpression();
-        } else {
-            return collection.getProgressResetCron();
-        }
-    }
     
     private void applyCron(String cronExpression) {
-        if (isActRuleContext) {
-            actRule.setCronExpression(cronExpression);
-        } else {
-            collection.setProgressResetCron(cronExpression);
-        }
-        
-        plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+        holder.setExpression(cronExpression);
+        holder.save().thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.applied"));
                 refresh();
@@ -202,34 +200,20 @@ public class CronEditorMenu extends Menu {
     }
     
     private void clearCron() {
-        if (isActRuleContext) {
-            actRule.setCronExpression("NONE");
-        } else {
-            collection.setResetCron(null);
-        }
-        
-        plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+        holder.clear();
+        holder.save().thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.cleared"));
                 refresh();
             });
         });
     }
-    
-    private void reopenMenu() {
-        if (isActRuleContext) {
-            new CronEditorMenu(playerMenuUtility, plugin, collection, actRule).open();
-        } else {
-            new CronEditorMenu(playerMenuUtility, plugin, collection).open();
+
+    private String getBuilderStartExpression(String currentCron) {
+        if (currentCron == null || currentCron.isEmpty() || policy.isSpecial(currentCron)) {
+            return policy.defaultBuilderExpression();
         }
-    }
-    
-    private void navigateBack() {
-        if (isActRuleContext) {
-            new ActRuleEditorMenu(playerMenuUtility, plugin, collection, actRule).open();
-        } else {
-            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
-        }
+        return currentCron;
     }
 
 }
