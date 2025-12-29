@@ -19,18 +19,16 @@ import java.util.Map;
 
 public class CronFieldMenu extends Menu {
 
-    private final Collection collection;
-    private final ActRule actRule;
-    private final boolean isActRuleContext;
+    private final CronExpressionHolder holder;
+    private final CronEditPolicy policy;
     private final Map<CronField, String> fieldValues;
     private CronField selectedField;
 
     // Constructor for Collection context
     public CronFieldMenu(Player playerMenuUtility, Main plugin, Collection collection, String initialExpression) {
         super(playerMenuUtility, plugin);
-        this.collection = collection;
-        this.actRule = null;
-        this.isActRuleContext = false;
+        this.holder = new CollectionProgressResetCronHolder(plugin, collection);
+        this.policy = CronEditPolicy.progressReset();
         this.fieldValues = new LinkedHashMap<>();
         this.selectedField = CronField.SECOND;
         parseExpression(initialExpression);
@@ -39,9 +37,17 @@ public class CronFieldMenu extends Menu {
     // Constructor for ActRule context
     public CronFieldMenu(Player playerMenuUtility, Main plugin, Collection collection, ActRule actRule, String initialExpression) {
         super(playerMenuUtility, plugin);
-        this.collection = collection;
-        this.actRule = actRule;
-        this.isActRuleContext = true;
+        this.holder = new ActRuleCronHolder(plugin, collection, actRule);
+        this.policy = CronEditPolicy.actSchedule();
+        this.fieldValues = new LinkedHashMap<>();
+        this.selectedField = CronField.SECOND;
+        parseExpression(initialExpression);
+    }
+
+    public CronFieldMenu(Player playerMenuUtility, Main plugin, CronExpressionHolder holder, CronEditPolicy policy, String initialExpression) {
+        super(playerMenuUtility, plugin);
+        this.holder = holder;
+        this.policy = policy;
         this.fieldValues = new LinkedHashMap<>();
         this.selectedField = CronField.SECOND;
         parseExpression(initialExpression);
@@ -228,13 +234,8 @@ public class CronFieldMenu extends Menu {
     // Context-aware helper methods
     
     private void applyCron(String expression) {
-        if (isActRuleContext) {
-            actRule.setCronExpression(expression);
-        } else {
-            collection.setResetCron(expression);
-        }
-        
-        plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+        holder.setExpression(expression);
+        holder.save().thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.applied"));
                 navigateBack();
@@ -243,20 +244,16 @@ public class CronFieldMenu extends Menu {
     }
     
     private void reopenMenu(String expression) {
-        if (isActRuleContext) {
-            new CronFieldMenu(playerMenuUtility, plugin, collection, actRule, expression).open();
-        } else {
-            new CronFieldMenu(playerMenuUtility, plugin, collection, expression).open();
-        }
+        new CronFieldMenu(playerMenuUtility, plugin, holder, policy, expression)
+                .setPreviousMenu(previousMenu)
+                .open();
     }
     
     private void navigateBack() {
         if (previousMenu != null) {
             previousMenu.open();
-        } else if (isActRuleContext) {
-            new CronEditorMenu(playerMenuUtility, plugin, collection, actRule).open();
         } else {
-            new CronEditorMenu(playerMenuUtility, plugin, collection).open();
+            new CronEditorMenu(playerMenuUtility, plugin, holder, policy).open();
         }
     }
 

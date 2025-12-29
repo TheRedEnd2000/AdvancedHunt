@@ -14,9 +14,8 @@ import java.util.List;
 
 public class CronPresetMenu extends PagedMenu {
 
-    private final Collection collection;
-    private final ActRule actRule;
-    private final boolean isActRuleContext;
+    private final CronExpressionHolder holder;
+    private final CronEditPolicy policy;
     
     // Static preset list - initialized once, shared across all menu instances
     private static final List<CronPreset> PRESETS = List.of(
@@ -41,17 +40,21 @@ public class CronPresetMenu extends PagedMenu {
     // Constructor for Collection context
     public CronPresetMenu(Player playerMenuUtility, Main plugin, Collection collection) {
         super(playerMenuUtility, plugin);
-        this.collection = collection;
-        this.actRule = null;
-        this.isActRuleContext = false;
+        this.holder = new CollectionProgressResetCronHolder(plugin, collection);
+        this.policy = CronEditPolicy.progressReset();
     }
 
     // Constructor for ActRule context
     public CronPresetMenu(Player playerMenuUtility, Main plugin, Collection collection, ActRule actRule) {
         super(playerMenuUtility, plugin);
-        this.collection = collection;
-        this.actRule = actRule;
-        this.isActRuleContext = true;
+        this.holder = new ActRuleCronHolder(plugin, collection, actRule);
+        this.policy = CronEditPolicy.actSchedule();
+    }
+
+    public CronPresetMenu(Player playerMenuUtility, Main plugin, CronExpressionHolder holder, CronEditPolicy policy) {
+        super(playerMenuUtility, plugin);
+        this.holder = holder;
+        this.policy = policy;
     }
 
     @Override
@@ -85,22 +88,14 @@ public class CronPresetMenu extends PagedMenu {
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.presets.item.name", "%name%", preset.getName(plugin)))
                     .setLore(preset.getDescription(plugin))
                     .build(), (e) -> {
-                    if (isActRuleContext) {
-                        actRule.setCronExpression(preset.expression);
-                    } else {
-                        collection.setProgressResetCron(preset.expression);
-                    }
-                    plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+                    holder.setExpression(preset.expression);
+                    holder.save().thenRun(() -> {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.preset_applied", "%preset%", preset.getName(plugin)));
                             if (previousMenu != null) {
                                 previousMenu.open();
                             } else {
-                                if (isActRuleContext) {
-                                    new CronEditorMenu(playerMenuUtility, plugin, collection, actRule).open();
-                                } else {
-                                    new CronEditorMenu(playerMenuUtility, plugin, collection).open();
-                                }
+                                new CronEditorMenu(playerMenuUtility, plugin, holder, policy).open();
                             }
                         });
                     });
