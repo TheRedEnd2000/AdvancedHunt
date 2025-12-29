@@ -213,45 +213,63 @@ public class RewardsMenu extends PagedMenu {
      */
     private ItemStack createItemRewardDisplay(Reward reward, String chanceLore, int rewardNumber) {
         ItemStack item = ItemSerializer.deserialize(reward.getValue());
-        
+
         if (item == null || item.getType() == Material.AIR) {
             // Fallback for invalid item data
             return new ItemBuilder(Material.BARRIER)
-                .setDisplayName(ChatColor.RED + "Invalid Item")
-                .setLore(
-                    ChatColor.GRAY + "This item could not be loaded",
-                    "",
-                    chanceLore
-                )
-                .build();
+                    .setDisplayName(ChatColor.RED + "Invalid Item")
+                    .setLore(
+                            ChatColor.GRAY + "This item could not be loaded",
+                            "",
+                            chanceLore
+                    )
+                    .build();
         }
-        
+
         // Clone the item and append chance to lore
         ItemBuilder builder = new ItemBuilder(item.clone());
-        
+
         // Get existing lore or create new
         List<String> lore = new ArrayList<>();
         if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
             lore.addAll(item.getItemMeta().getLore());
         }
-        
+
         // Add separator and chance info
         lore.add("");
         lore.add(ChatColor.DARK_GRAY + "─────────────");
         lore.add(plugin.getMessageManager().getMessage("gui.rewards.reward_number", false,
-            "%number%", String.valueOf(rewardNumber)));
+                "%number%", String.valueOf(rewardNumber)));
         lore.add(chanceLore);
         if (item.getAmount() > 1) {
             lore.add(plugin.getMessageManager().getMessage("gui.rewards.amount_lore", false,
-                "%amount%", String.valueOf(item.getAmount())));
+                    "%amount%", String.valueOf(item.getAmount())));
         }
-        
+
+        // Add message info
+        if (reward.getMessage() != null && !reward.getMessage().isEmpty()) {
+            String messageValue = reward.getMessage().length() > 30
+                    ? reward.getMessage().substring(0, 27) + "..."
+                    : reward.getMessage();
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.message_lore", false,
+                    "%message%", messageValue));
+        }
+
+        // Add broadcast info
+        if (reward.getBroadcast() != null && !reward.getBroadcast().isEmpty()) {
+            String broadcastValue = reward.getBroadcast().length() > 30
+                    ? reward.getBroadcast().substring(0, 27) + "..."
+                    : reward.getBroadcast();
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.broadcast_lore", false,
+                    "%broadcast%", broadcastValue));
+        }
+
         if (editMode) {
             lore.add("");
             lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
-                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
+                    "%action%", getQuickActionActionDisplay(getQuickActionMode())));
         }
-        
+
         return builder.setLore(lore).build();
     }
 
@@ -260,39 +278,57 @@ public class RewardsMenu extends PagedMenu {
      */
     private ItemStack createCommandRewardDisplay(Reward reward, String chanceLore, int rewardNumber) {
         String command = reward.getValue();
-        
+
         // Truncate long commands for display
-        String displayCommand = command.length() > 40 
-            ? command.substring(0, 37) + "..." 
-            : command;
-        
+        String displayCommand = command.length() > 40
+                ? command.substring(0, 37) + "..."
+                : command;
+
         List<String> lore = new ArrayList<>();
         lore.add("");
         lore.add(plugin.getMessageManager().getMessage("gui.rewards.command_label", false));
         lore.add(ChatColor.WHITE + "/" + displayCommand);
-        
+
         // Show full command if truncated
         if (command.length() > 40) {
             lore.add("");
             lore.add(ChatColor.DARK_GRAY + "(Command truncated)");
         }
-        
+
         lore.add("");
         lore.add(ChatColor.DARK_GRAY + "─────────────");
         lore.add(plugin.getMessageManager().getMessage("gui.rewards.reward_number", false,
-            "%number%", String.valueOf(rewardNumber)));
+                "%number%", String.valueOf(rewardNumber)));
         lore.add(chanceLore);
-        
+
+        // Add message info
+        if (reward.getMessage() != null && !reward.getMessage().isEmpty()) {
+            String messageValue = reward.getMessage().length() > 30
+                    ? reward.getMessage().substring(0, 27) + "..."
+                    : reward.getMessage();
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.message_lore", false,
+                    "%message%", messageValue));
+        }
+
+        // Add broadcast info
+        if (reward.getBroadcast() != null && !reward.getBroadcast().isEmpty()) {
+            String broadcastValue = reward.getBroadcast().length() > 30
+                    ? reward.getBroadcast().substring(0, 27) + "..."
+                    : reward.getBroadcast();
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.broadcast_lore", false,
+                    "%broadcast%", broadcastValue));
+        }
+
         if (editMode) {
             lore.add("");
             lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
-                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
+                    "%action%", getQuickActionActionDisplay(getQuickActionMode())));
         }
-        
+
         return new ItemBuilder(Material.COMMAND_BLOCK)
-            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.command_name", false))
-            .setLore(lore)
-            .build();
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.command_name", false))
+                .setLore(lore)
+                .build();
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
@@ -540,7 +576,7 @@ public class RewardsMenu extends PagedMenu {
                         return;
                     }
                     
-                    addReward(new Reward(RewardType.COMMAND, chance, command));
+                    addReward(new Reward(RewardType.COMMAND, chance,null,null, command));
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
                     open();
                 } catch (NumberFormatException ex) {
@@ -559,7 +595,34 @@ public class RewardsMenu extends PagedMenu {
         if (rewardIndex < 0 || rewardIndex >= rewards.size()) return;
         
         Reward oldReward = rewards.get(rewardIndex);
-        Reward newReward = new Reward(oldReward.getType(), newChance, oldReward.getValue());
+        Reward newReward = new Reward(oldReward.getType(), newChance,oldReward.getMessage(),oldReward.getBroadcast(), oldReward.getValue());
+        rewards.set(rewardIndex, newReward);
+        saveRewards();
+    }
+
+    public void updateRewardMessage(int rewardIndex, String message) {
+        if (rewardIndex < 0 || rewardIndex >= rewards.size()) return;
+
+        Reward oldReward = rewards.get(rewardIndex);
+        Reward newReward = new Reward(oldReward.getType(), oldReward.getChance(), message, oldReward.getBroadcast(), oldReward.getValue());
+        rewards.set(rewardIndex, newReward);
+        saveRewards();
+    }
+
+    public void updateRewardBroadcast(int rewardIndex, String broadcast) {
+        if (rewardIndex < 0 || rewardIndex >= rewards.size()) return;
+
+        Reward oldReward = rewards.get(rewardIndex);
+        Reward newReward = new Reward(oldReward.getType(), oldReward.getChance(), oldReward.getMessage(), broadcast, oldReward.getValue());
+        rewards.set(rewardIndex, newReward);
+        saveRewards();
+    }
+
+    public void updateRewardValue(int rewardIndex, String value) {
+        if (rewardIndex < 0 || rewardIndex >= rewards.size()) return;
+
+        Reward oldReward = rewards.get(rewardIndex);
+        Reward newReward = new Reward(oldReward.getType(), oldReward.getChance(), oldReward.getMessage(), oldReward.getBroadcast(), value);
         rewards.set(rewardIndex, newReward);
         saveRewards();
     }

@@ -30,12 +30,12 @@ public class RewardManager {
 
             if (reward.getType() == RewardType.COMMAND) {
                 String cmd = reward.getValue().replace("%player%", player.getName());
-                
+
                 if (plugin.getConfig().getBoolean("rewards.block-execution", true) && isCommandBlacklisted(cmd)) {
                     plugin.getLogger().warning("Blocked execution of blacklisted command reward: " + cmd);
                     continue;
                 }
-                
+
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
             } else if (reward.getType() == RewardType.ITEM) {
                 ItemStack item = ItemSerializer.deserialize(reward.getValue());
@@ -44,11 +44,30 @@ public class RewardManager {
                 }
             } else if (reward.getType() == RewardType.CHAT_MESSAGE) {
                 String message = reward.getValue().replace("%player%", player.getName());
-                player.sendMessage(HexColor.color(message,'&'));
+                player.sendMessage(HexColor.color(message, '&'));
             } else if (reward.getType() == RewardType.CHAT_MESSAGE_BROADCAST) {
                 String message = reward.getValue().replace("%player%", player.getName());
-                String formattedMessage = HexColor.color(message,'&');
+                String formattedMessage = HexColor.color(message, '&');
                 Bukkit.broadcastMessage(formattedMessage);
+            }
+
+            if (reward.getType() == RewardType.COMMAND || reward.getType() == RewardType.ITEM) {
+                if (reward.getMessage() != null && !reward.getMessage().isEmpty()) {
+                    String message = reward.getMessage()
+                            .replace("%player%", player.getName())
+                            .replace("\\n", "\n")
+                            .replaceAll("(?<!\\\\)\\n", "\n");
+                    player.sendMessage(HexColor.color(message, '&'));
+                }
+
+                if (reward.getBroadcast() != null && !reward.getBroadcast().isEmpty()) {
+                    String broadcast = reward.getBroadcast()
+                            .replace("%player%", player.getName())
+                            .replace("\\n", "\n")
+                            .replaceAll("(?<!\\\\)\\n", "\n");
+                    String formattedMessage = HexColor.color(broadcast, '&');
+                    Bukkit.broadcastMessage(formattedMessage);
+                }
             }
         }
     }
