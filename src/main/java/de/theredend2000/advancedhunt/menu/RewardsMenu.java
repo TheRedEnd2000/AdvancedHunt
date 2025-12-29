@@ -146,7 +146,7 @@ public class RewardsMenu extends PagedMenu {
         if (editMode) {
 
             // Add Reward submenu opener
-            addButton(51, new ItemBuilder(Material.HOPPER)
+            addButton(53, new ItemBuilder(Material.HOPPER)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_reward_option_menu.name", false))
                     .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_reward_option_menu.lore", false))
                     .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
@@ -213,7 +213,7 @@ public class RewardsMenu extends PagedMenu {
             Material icon = isCollection ? Material.ENDER_CHEST : Material.CHEST;
             String switchKey = isCollection ? "gui.rewards.switch_to_treasure" : "gui.rewards.switch_to_collection";
 
-            addButton(53, new ItemBuilder(icon)
+            addButton(8, new ItemBuilder(icon)
                     .setDisplayName(plugin.getMessageManager().getMessage(switchKey + ".name", false))
                     .setLore(plugin.getMessageManager().getMessageList(switchKey + ".lore", false))
                     .build(), e -> {
