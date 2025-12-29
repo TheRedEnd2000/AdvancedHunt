@@ -25,11 +25,15 @@ public class AddItemRewardMenu extends Menu {
     private final Menu lastMenu;
     private static final int ITEM_SLOT = 22; // Center slot
     private boolean confirmed = false;
+    private final boolean edit;
+    private final int rewardIndex;
 
-    public AddItemRewardMenu(Player player, Main plugin, RewardsMenu parentMenu, Menu lastMenu) {
+    public AddItemRewardMenu(Player player, Main plugin, RewardsMenu parentMenu, Menu lastMenu, boolean edit, int rewardIndex) {
         super(player, plugin);
         this.parentMenu = parentMenu;
         this.lastMenu = lastMenu;
+        this.edit = edit;
+        this.rewardIndex = rewardIndex;
     }
 
     @Override
@@ -129,6 +133,14 @@ public class AddItemRewardMenu extends Menu {
         }
         
         confirmed = true;
+
+        if(edit){
+            String serialized = ItemSerializer.serialize(item);
+            parentMenu.updateRewardValue(rewardIndex, serialized);
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.value_updated"));
+            parentMenu.open();
+            return;
+        }
         
         // Prompt for chance
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chance"));
@@ -146,7 +158,7 @@ public class AddItemRewardMenu extends Menu {
                 // Serialize item and create reward
                 String serialized = ItemSerializer.serialize(item);
                 Reward reward = new Reward(RewardType.ITEM, chance,null,null, serialized);
-                
+
                 parentMenu.addReward(reward);
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
                 parentMenu.open();
