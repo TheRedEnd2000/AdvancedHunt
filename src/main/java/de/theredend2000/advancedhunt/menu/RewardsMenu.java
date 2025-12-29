@@ -144,11 +144,12 @@ public class RewardsMenu extends PagedMenu {
 
         // Edit mode controls
         if (editMode) {
+
             // Add Reward submenu opener
-            addButton(45, new ItemBuilder(Material.HOPPER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_reward_option_menu.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_reward_option_menu.lore", false))
-                .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
+            addButton(51, new ItemBuilder(Material.HOPPER)
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_reward_option_menu.name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_reward_option_menu.lore", false))
+                    .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
 
             // Quick action mode toggle
             QuickActionMode mode = getQuickActionMode();
@@ -170,22 +171,58 @@ public class RewardsMenu extends PagedMenu {
                     .build(), null);
             }
         }
-        
+
+        // Determine if we're in treasure or collection context
+        boolean isCollection = titleKey.contains("collection");
+        String presetContext = isCollection ? "collection" : "treasure";
+
+        // Preset save button
+        addButton(45, new ItemBuilder(Material.WRITABLE_BOOK)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.save_preset_" + presetContext + ".name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.save_preset_" + presetContext + ".lore", false))
+                .build(), e -> {
+            // Prompt for preset name
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.prompt_name_" + presetContext));
+            plugin.getChatInputListener().requestInput(playerMenuUtility, presetName -> {
+                // check here if exists
+                if (presetName == null || presetName.trim().isEmpty()) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.invalid_name"));
+                    open();
+                    return;
+                }
+
+                // Save preset logic here
+
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.saved_" + presetContext,
+                        "%name%", presetName));
+                open();
+            });
+        });
+
+        // Preset load button
+        addButton(46, new ItemBuilder(Material.WRITTEN_BOOK)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.load_preset_" + presetContext + ".name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset_" + presetContext + ".lore", false))
+                .build(), e -> {
+            // Open preset selection menu
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.opening_" + presetContext));
+        });
+
         // Switch context button (treasure <-> collection)
         if (alternateHolder != null) {
-            Material icon = titleKey.contains("collection") ? Material.ENDER_CHEST : Material.CHEST;
-            String switchKey = titleKey.contains("collection") ? "gui.rewards.switch_to_treasure" : "gui.rewards.switch_to_collection";
-            
+            Material icon = isCollection ? Material.ENDER_CHEST : Material.CHEST;
+            String switchKey = isCollection ? "gui.rewards.switch_to_treasure" : "gui.rewards.switch_to_collection";
+
             addButton(53, new ItemBuilder(icon)
-                .setDisplayName(plugin.getMessageManager().getMessage(switchKey + ".name", false))
-                .setLore(plugin.getMessageManager().getMessageList(switchKey + ".lore", false))
-                .build(), e -> {
-                    // Switch to the alternate context
-                    RewardsMenu newMenu = new RewardsMenu(playerMenuUtility, plugin, alternateHolder, editMode)
+                    .setDisplayName(plugin.getMessageManager().getMessage(switchKey + ".name", false))
+                    .setLore(plugin.getMessageManager().getMessageList(switchKey + ".lore", false))
+                    .build(), e -> {
+                // Switch to the alternate context
+                RewardsMenu newMenu = new RewardsMenu(playerMenuUtility, plugin, alternateHolder, editMode)
                         .setTitleKey(alternateTitleKey)
                         .setAlternateContext(holder, titleKey);
-                    newMenu.open();
-                });
+                newMenu.open();
+            });
         }
 
     }
