@@ -951,8 +951,10 @@ public class YamlRepository implements DataRepository {
                 if (chanceObj instanceof Number) {
                     chance = ((Number) chanceObj).doubleValue();
                 }
+                String message = (String) map.get("message");
+                String broadcast = (String) map.get("broadcast");
                 String value = (String) map.get("value");
-                rewards.add(new Reward(type, chance, value));
+                rewards.add(new Reward(type, chance,message,broadcast, value));
             } catch (Exception e) {
                 plugin.getLogger().warning("Error deserializing reward: " + e.getMessage());
             }
@@ -967,6 +969,8 @@ public class YamlRepository implements DataRepository {
             Map<String, Object> map = new HashMap<>();
             map.put("type", r.getType().name());
             map.put("chance", r.getChance());
+            map.put("message",r.getMessage());
+            map.put("broadcast",r.getBroadcast());
             map.put("value", r.getValue());
             list.add(map);
         }

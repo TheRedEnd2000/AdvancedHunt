@@ -145,7 +145,7 @@ public class AddItemRewardMenu extends Menu {
                 
                 // Serialize item and create reward
                 String serialized = ItemSerializer.serialize(item);
-                Reward reward = new Reward(RewardType.ITEM, chance, serialized);
+                Reward reward = new Reward(RewardType.ITEM, chance,null,null, serialized);
                 
                 parentMenu.addReward(reward);
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));

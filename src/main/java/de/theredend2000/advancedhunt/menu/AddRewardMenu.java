@@ -86,7 +86,7 @@ public class AddRewardMenu extends Menu {
             }
 
             // Default to 100% chance for chat messages
-            parentMenu.addReward(new Reward(RewardType.CHAT_MESSAGE, 100.0, message));
+            parentMenu.addReward(new Reward(RewardType.CHAT_MESSAGE, 100.0,null,null, message));
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
             parentMenu.open();
         });
@@ -105,7 +105,7 @@ public class AddRewardMenu extends Menu {
             }
 
             // Default to 100% chance for broadcast messages
-            parentMenu.addReward(new Reward(RewardType.CHAT_MESSAGE_BROADCAST, 100.0, message));
+            parentMenu.addReward(new Reward(RewardType.CHAT_MESSAGE_BROADCAST, 100.0,null,null, message));
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
             parentMenu.open();
         });
@@ -139,7 +139,7 @@ public class AddRewardMenu extends Menu {
                         return;
                     }
 
-                    parentMenu.addReward(new Reward(RewardType.COMMAND, chance, command));
+                    parentMenu.addReward(new Reward(RewardType.COMMAND, chance,null,null, command));
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
                     parentMenu.open();
                 } catch (NumberFormatException ex) {

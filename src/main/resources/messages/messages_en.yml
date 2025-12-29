@@ -11,6 +11,9 @@ feedback:
       broadcast_message: "%prefix%&aEnter the broadcast message to send to all players (use & for colors):"
       chance: "%prefix%&aEnter the chance (0-100):"
       new_chance: "%prefix%&aEnter the new chance (current: %current%%):"
+      new_message: "%prefix%&aEnter the new message (current: %current%):"
+      new_broadcast: "%prefix%&aEnter the new broadcast (current: %current%):"
+      new_value: "%prefix%&aEnter the new value (current: %current%):"
     added: "%prefix%&aReward added successfully!"
     deleted: "%prefix%&cReward deleted."
     instance_given: "%prefix%&aAdded the reward item to your inventory."
@@ -172,6 +175,8 @@ gui:
         - "&7rewards configured."
     reward_number: "&7Reward #%number%"
     chance_lore: "&7Chance: &e%chance%%"
+    message_lore: "&7Message: &e%message%"
+    broadcast_lore: "&7Broadcast: &e%broadcast%"
     amount_lore: "&7Amount: &fx%amount%"
     command_name: "&6Command Reward"
     command_label: "&7Executes command:"
@@ -231,6 +236,11 @@ gui:
         - "&7to edit or delete it."
     # Chat prompts
     chance_updated: "%prefix%&aChance updated successfully!"
+    message_updated: "%prefix%&aMessage updated successfully!"
+    broadcast_updated: "%prefix%&aBroadcast updated successfully!"
+    value_updated: "%prefix%&aValue updated successfully!"
+    message_reset: "%prefix%&aMessage reset successfully!"
+    broadcast_reset: "%prefix%&aBroadcast reset successfully!"
     editor:
       title: "&8Reward #%number%"
       edit_chance:
@@ -240,6 +250,43 @@ gui:
           - ""
           - "&7Click to change the"
           - "&7drop chance of this reward."
+      edit_message:
+        name: "&eEdit Message"
+        lore:
+          - "&8Only for this reward!"
+          - "&7Current: &f%message%"
+          - ""
+          - "&eLeft-Click &7to change"
+          - "&eRight-Click &7to reset"
+          - ""
+          - "&8&m                    "
+          - "&7Use &f%player% &7for the player's name"
+          - "&7Use &f& &7for color codes and hex colors"
+          - "&7Use &f\\n &7for a new line"
+      edit_broadcast:
+        name: "&eEdit Broadcast"
+        lore:
+          - "&8Only for this reward!"
+          - "&7Current: &f%broadcast%"
+          - ""
+          - "&eLeft-Click &7to change"
+          - "&eRight-Click &7to reset"
+          - ""
+          - "&8&m                    "
+          - "&7Use &f%player% &7for the player's name"
+          - "&7Use &f& &7for color codes and hex colors"
+          - "&7Use &f\\n &7for a new line"
+      edit_value:
+        name: "&eEdit Value"
+        lore:
+          - "&7Current: &f%value%"
+          - ""
+          - "&7Click to change the"
+          - "&7value of this reward."
+          - ""
+          - "&8&m                    "
+          - "&7Use &f%player% &7for the player's name"
+          - "&7Use &f& &7for color codes and hex colors"
       delete:
         name: "&cDelete Reward"
         lore:

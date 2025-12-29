@@ -110,7 +110,7 @@ public class PlayerInteractListener implements Listener {
             }
 
             // Create a firework in the middle of the block and on top of it
-            plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().add(0.5,1,0.5));
+            plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().clone().add(0.5,1,0.5));
             
             // Collection is available, proceed with normal checks
             if (collection.isSinglePlayerFind()) {
