@@ -222,6 +222,13 @@ public class AdvancedHuntCommand {
                 .permission("advancedhunt.admin")
                 .handler(context -> debugHint((Player) context.sender()))
         );
+        commandManager.command(
+                playerBuilder()
+                        .literal("debug")
+                        .literal("place")
+                        .permission("advancedhunt.admin")
+                        .handler(context -> new ViewPlacePresetsMenu((Player) context.sender(),plugin).open())
+        );
 
         // ==================== Migration Commands ====================
         SuggestionProvider<CommandSender> migrationTypes = (context, input) ->

@@ -796,6 +796,31 @@ gui:
         - "&7Collection will not auto-reset"
         - ""
         - "&cClick to clear"
+  place:
+    presets:
+      title: "Place Presets"
+      list:
+        easter:
+          name: "&e&lEaster Preset"
+          lore:
+            - "&7A preset themed around Easter"
+            - "&7with colorful eggs and spring vibes"
+            - ""
+            - "&aClick to load preset"
+        halloween:
+          name: "&6&lHalloween Preset"
+          lore:
+            - "&7A spooky preset for Halloween"
+            - "&7with pumpkins and scary decorations"
+            - ""
+            - "&aClick to load preset"
+        christmas:
+          name: "&c&lChristmas Preset"
+          lore:
+            - "&7A festive preset for Christmas"
+            - "&7with snow and holiday decorations"
+            - ""
+            - "&aClick to load preset"
   act:
     editor:
       title: "ACT Rule Editor: %name%"
