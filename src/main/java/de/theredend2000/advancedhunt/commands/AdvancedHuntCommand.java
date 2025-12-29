@@ -111,6 +111,15 @@ public class AdvancedHuntCommand {
         );
 
         commandManager.command(
+                playerBuilder()
+                        .literal("collection")
+                        .literal("delete")
+                        .required("name", StringParser.stringParser(), collectionsSuggestions)
+                        .permission("advancedhunt.admin.collection.delete")
+                        .handler(context -> deleteCollection((Player) context.sender(), context.get("name")))
+        );
+
+        commandManager.command(
             baseBuilder()
                 .literal("collection")
                 .literal("rename")
@@ -376,6 +385,16 @@ public class AdvancedHuntCommand {
     public void editCollection(Player player, String name) {
         withCollection(player, name, collection ->
                 new CollectionSettingsMenu(player, plugin, collection).open()
+        );
+    }
+
+    public void deleteCollection(Player player, String name){
+        withCollection(player, name, collection ->
+                plugin.getCollectionManager().deleteCollection(collection.getId()).thenRun(() -> {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        player.sendMessage(plugin.getMessageManager().getMessage("gui.settings.delete.success", "%collection%", collection.getName()));
+                    });
+                })
         );
     }
 
