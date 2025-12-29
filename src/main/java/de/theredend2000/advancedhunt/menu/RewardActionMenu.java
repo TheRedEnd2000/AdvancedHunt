@@ -65,7 +65,11 @@ public class RewardActionMenu extends Menu {
         addButton(canHaveMessage(reward.getType()) ? 11 : 12, editChance, e -> editChance());
 
         // Truncate long values for display
-        String displayValue = truncate(reward.getValue(), 30);
+        String displayValue;
+        if(reward.getType() != RewardType.ITEM)
+            displayValue = truncate(reward.getValue(), 30);
+        else
+            displayValue = ItemSerializer.deserialize(reward.getValue()).getType().name();
         String displayMessage = truncate(formatMessage(reward.getMessage()), 30);
         String displayBroadcast = truncate(formatMessage(reward.getBroadcast()), 30);
 
@@ -75,7 +79,7 @@ public class RewardActionMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_message.lore", false,
                         "%message%", displayMessage))
                 .build();
-        addButton(canHaveMessage(reward.getType()) ? 13 : 26, message, this::editMessage);
+        addButton(canHaveMessage(reward.getType()) ? 14 : 26, message, this::editMessage);
 
         // Edit Broadcast button (item/cmd)
         ItemStack broadcast = new ItemBuilder(Material.BELL)
@@ -86,12 +90,12 @@ public class RewardActionMenu extends Menu {
         addButton(canHaveMessage(reward.getType()) ? 15 : 26, broadcast, this::editBroadcast);
 
         // Edit value button
-        ItemStack value = new ItemBuilder(reward.getType() == RewardType.CHAT_MESSAGE ? Material.WRITABLE_BOOK : Material.BELL)
+        ItemStack value = new ItemBuilder(Material.CAULDRON)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_value.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_value.lore", false,
                         "%value%", displayValue))
                 .build();
-        addButton(!canHaveMessage(reward.getType()) ? 14 : 26, value, e -> editValue());
+        addButton(canHaveMessage(reward.getType()) ? 12 : 14, value, e -> editValue());
         
         // Delete button
         ItemStack delete = new ItemBuilder(Material.RED_CONCRETE)
@@ -274,14 +278,18 @@ public class RewardActionMenu extends Menu {
     }
 
     private void editValue() {
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.new_value",
-                "%current%", formatMessage(reward.getBroadcast())));
+        if(reward.getType() != RewardType.ITEM) {
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.new_value",
+                    "%current%", reward.getValue()));
 
-        plugin.getChatInputListener().requestInput(playerMenuUtility, value -> {
-            parentMenu.updateRewardValue(rewardIndex,value);
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.value_updated"));
-            parentMenu.open();
-        });
+            plugin.getChatInputListener().requestInput(playerMenuUtility, value -> {
+                parentMenu.updateRewardValue(rewardIndex, value);
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.value_updated"));
+                parentMenu.open();
+            });
+        }else{
+            new AddItemRewardMenu(playerMenuUtility, plugin, parentMenu,this,true,rewardIndex).open();
+        }
     }
 
     /**
