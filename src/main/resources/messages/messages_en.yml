@@ -317,9 +317,15 @@ gui:
           - "&eRight-Click &7to reset"
           - ""
           - "&8&m                    "
-          - "&7Use &f%player% &7for the player's name"
-          - "&7Use &f& &7for color codes and hex colors"
-          - "&7Use &f\\n &7for a new line"
+          - "&7Available placeholders:"
+          - "&f  %player% &8- &7Player's name"
+          - "&f  %found_treasures% &8- &7Found treasures"
+          - "&f  %max_treasures% &8- &7Total treasures"
+          - "&f  %remaining_treasures% &8- &7Remaining treasures"
+          - "&f  %chance% &8- &7Reward chance"
+          - "&f  %item% &8- &7Item name &c(Item rewards only)"
+          - "&f  \\n &8- &7New line" # displays \n in menus
+          - "&f  & &8- &7Color codes and hex colors"
       edit_broadcast:
         name: "&eEdit Broadcast"
         lore:
@@ -330,9 +336,15 @@ gui:
           - "&eRight-Click &7to reset"
           - ""
           - "&8&m                    "
-          - "&7Use &f%player% &7for the player's name"
-          - "&7Use &f& &7for color codes and hex colors"
-          - "&7Use &f\\n &7for a new line"
+          - "&7Available placeholders:"
+          - "&f  %player% &8- &7Player's name"
+          - "&f  %found_treasures% &8- &7Found treasures"
+          - "&f  %max_treasures% &8- &7Total treasures"
+          - "&f  %remaining_treasures% &8- &7Remaining treasures"
+          - "&f  %chance% &8- &7Reward chance"
+          - "&f  %item% &8- &7Item name &c(Item rewards only)"
+          - "&f  \\n &8- &7New line" # displays \n in menus
+          - "&f  & &8- &7Color codes and hex colors"
       edit_value:
         name: "&eEdit Value"
         lore:
@@ -342,8 +354,14 @@ gui:
           - "&7value of this reward."
           - ""
           - "&8&m                    "
-          - "&7Use &f%player% &7for the player's name"
-          - "&7Use &f& &7for color codes and hex colors"
+          - "&7Available placeholders:"
+          - "&f  %player% &8- &7Player's name"
+          - "&f  %found_treasures% &8- &7Found treasures"
+          - "&f  %max_treasures% &8- &7Total treasures"
+          - "&f  %remaining_treasures% &8- &7Remaining treasures"
+          - "&f  %chance% &8- &7Reward chance"
+          - "&f  \\n &8- &7New line" # displays \n in menus
+          - "&f  & &8- &7Color codes and hex colors"
       delete:
         name: "&cDelete Reward"
         lore:

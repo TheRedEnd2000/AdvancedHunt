@@ -70,7 +70,7 @@ public class AddRewardMenu extends Menu {
     }
 
     public void openAddItemRewardMenu() {
-        new AddItemRewardMenu(playerMenuUtility, plugin, parentMenu,this).open();
+        new AddItemRewardMenu(playerMenuUtility, plugin, parentMenu,this,false,-1).open();
     }
 
     /**
