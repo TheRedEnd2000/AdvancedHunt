@@ -153,7 +153,9 @@ public class PlayerInteractListener implements Listener {
         treasureManager.getFullTreasureAsync(treasureCore.getId()).thenAccept(treasure -> {
             if (treasure != null && treasure.getRewards() != null) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    rewardManager.giveRewards(player, treasure.getRewards());
+                    collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(c ->
+                            rewardManager.giveRewards(player, treasure.getRewards(),c)
+                    );
                 });
             }
         });
