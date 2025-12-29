@@ -36,14 +36,14 @@ feedback:
     cleared: "%prefix%&aSchedule cleared."
     preset_applied: "%prefix%&aApplied preset: &e%preset%"
   preset:
-    prompt_name_treasure: "&eEnter a name for this treasure preset:"
-    prompt_name_collection: "&eEnter a name for this collection preset:"
-    saved_treasure: "&aSuccessfully saved treasure preset '&f%name%&a'!"
-    saved_collection: "&aSuccessfully saved collection preset '&f%name%&a'!"
-    opening_treasure: "&eOpening treasure preset selection..."
-    opening_collection: "&eOpening collection preset selection..."
-    loaded_treasure: "&aSuccessfully loaded treasure preset '&f%name%&a'!"
-    loaded_collection: "&aSuccessfully loaded collection preset '&f%name%&a'!"
+    prompt_name_treasure: "%prefix%&eEnter a name for this treasure preset:"
+    prompt_name_collection: "%prefix%&eEnter a name for this collection preset:"
+    saved_treasure: "%prefix%&aSuccessfully saved treasure preset '&f%name%&a'!"
+    saved_collection: "%prefix%&aSuccessfully saved collection preset '&f%name%&a'!"
+    opening_treasure: "%prefix%&eOpening treasure preset selection..."
+    opening_collection: "%prefix%&eOpening collection preset selection..."
+    loaded_treasure: "%prefix%&aSuccessfully loaded treasure preset '&f%name%&a'!"
+    loaded_collection: "%prefix%&aSuccessfully loaded collection preset '&f%name%&a'!"
 prefix: "&6AdvancedHunt &8>> &7"
 
 error:
@@ -58,13 +58,13 @@ error:
   cron:
     invalid: "%prefix%&cInvalid cron expression! Please check the format."
   preset:
-    invalid_name: "&cInvalid preset name! Please enter a valid name."
-    not_found_treasure: "&cTreasure preset '&f%name%&c' not found!"
-    not_found_collection: "&cCollection preset '&f%name%&c' not found!"
-    save_failed_treasure: "&cFailed to save treasure preset!"
-    save_failed_collection: "&cFailed to save collection preset!"
-    load_failed_treasure: "&cFailed to load treasure preset!"
-    load_failed_collection: "&cFailed to load collection preset!"
+    invalid_name: "%prefix%&cInvalid preset name! Please enter a valid name."
+    not_found_treasure: "%prefix%&cTreasure preset '&f%name%&c' not found!"
+    not_found_collection: "%prefix%&cCollection preset '&f%name%&c' not found!"
+    save_failed_treasure: "%prefix%&cFailed to save treasure preset!"
+    save_failed_collection: "%prefix%&cFailed to save collection preset!"
+    load_failed_treasure: "%prefix%&cFailed to load treasure preset!"
+    load_failed_collection: "%prefix%&cFailed to load collection preset!"
   
 command:
   help:
