@@ -64,11 +64,16 @@ public class RewardActionMenu extends Menu {
             .build();
         addButton(canHaveMessage(reward.getType()) ? 11 : 12, editChance, e -> editChance());
 
+        // Truncate long values for display
+        String displayValue = truncate(reward.getValue(), 30);
+        String displayMessage = truncate(formatMessage(reward.getMessage()), 30);
+        String displayBroadcast = truncate(formatMessage(reward.getBroadcast()), 30);
+
         // Edit Message button (item/cmd)
         ItemStack message = new ItemBuilder(Material.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_message.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_message.lore", false,
-                        "%message%", formatMessage(reward.getMessage())))
+                        "%message%", displayMessage))
                 .build();
         addButton(canHaveMessage(reward.getType()) ? 13 : 26, message, this::editMessage);
 
@@ -76,7 +81,7 @@ public class RewardActionMenu extends Menu {
         ItemStack broadcast = new ItemBuilder(Material.BELL)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_broadcast.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_broadcast.lore", false,
-                        "%broadcast%", formatMessage(reward.getBroadcast())))
+                        "%broadcast%", displayBroadcast))
                 .build();
         addButton(canHaveMessage(reward.getType()) ? 15 : 26, broadcast, this::editBroadcast);
 
@@ -84,7 +89,7 @@ public class RewardActionMenu extends Menu {
         ItemStack value = new ItemBuilder(reward.getType() == RewardType.CHAT_MESSAGE ? Material.WRITABLE_BOOK : Material.BELL)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_value.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_value.lore", false,
-                        "%value%", reward.getValue()))
+                        "%value%", displayValue))
                 .build();
         addButton(!canHaveMessage(reward.getType()) ? 14 : 26, value, e -> editValue());
         
@@ -312,5 +317,11 @@ public class RewardActionMenu extends Menu {
 
     private boolean canHaveMessage(RewardType rewardType){
         return rewardType == RewardType.COMMAND || rewardType == RewardType.ITEM;
+    }
+
+    // Helper method
+    private String truncate(String text, int maxLength) {
+        if (text == null || text.length() <= maxLength) return text;
+        return text.substring(0, maxLength - 3) + "...";
     }
 }
