@@ -177,7 +177,7 @@ public class HintManager {
         Location playerLoc = player.getLocation();
         
         // Get available collections (ACT rules)
-        java.util.Collection<Collection> allCollections = collectionManager.getAllCollections();
+        List<Collection> allCollections = collectionManager.getAllCollections();
         Set<UUID> availableCollections = new HashSet<>();
         for (Collection collection : allCollections) {
             if (collectionManager.isCollectionAvailable(collection)) {

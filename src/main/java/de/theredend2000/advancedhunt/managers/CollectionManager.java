@@ -4,6 +4,7 @@ import com.cronutils.model.Cron;
 import com.cronutils.model.time.ExecutionTime;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.Treasure;
@@ -124,7 +125,7 @@ public class CollectionManager {
     private boolean doesActRuleExist(UUID id) {
         for (Collection collection : cachedCollections) {
             if (collection.getActRules() != null) {
-                for (de.theredend2000.advancedhunt.model.ActRule rule : collection.getActRules()) {
+                for (ActRule rule : collection.getActRules()) {
                     if (rule.getId().equals(id)) return true;
                 }
             }
