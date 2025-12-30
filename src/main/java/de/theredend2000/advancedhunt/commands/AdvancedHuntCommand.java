@@ -22,10 +22,7 @@ import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -547,7 +544,7 @@ public class AdvancedHuntCommand {
         if (minigameTypeStr.equalsIgnoreCase("RANDOM")) {
             // Randomly select between REACTION and MEMORY
             MinigameType[] types = MinigameType.values();
-            minigameType = types[new java.util.Random().nextInt(types.length)];
+            minigameType = types[new Random().nextInt(types.length)];
         } else {
             try {
                 minigameType = MinigameType.valueOf(minigameTypeStr.toUpperCase());

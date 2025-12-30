@@ -38,12 +38,21 @@ feedback:
   preset:
     prompt_name_treasure: "%prefix%&eEnter a name for this treasure preset:"
     prompt_name_collection: "%prefix%&eEnter a name for this collection preset:"
+    prompt_rename: "%prefix%&eEnter a new name for preset '&f%name%&e':"
     saved_treasure: "%prefix%&aSuccessfully saved treasure preset '&f%name%&a'!"
     saved_collection: "%prefix%&aSuccessfully saved collection preset '&f%name%&a'!"
+    renamed: "%prefix%&aRenamed preset to '&f%name%&a'."
     opening_treasure: "%prefix%&eOpening treasure preset selection..."
     opening_collection: "%prefix%&eOpening collection preset selection..."
     loaded_treasure: "%prefix%&aSuccessfully loaded treasure preset '&f%name%&a'!"
     loaded_collection: "%prefix%&aSuccessfully loaded collection preset '&f%name%&a'!"
+    deleted: "%prefix%&cDeleted preset '&f%name%&c'."
+    set_default: "%prefix%&aSet default preset for &e%collection%&a to '&f%name%&a'."
+    override:
+      none: "%prefix%&cNo treasures found in this collection."
+      started: "%prefix%&eOverriding &f%count%&e treasures with preset '&f%name%&e'..."
+      done: "%prefix%&aOverrode &f%count%&a treasures with preset '&f%name%&a'."
+      failed: "%prefix%&cFailed to override treasure rewards. Check console for details."
 prefix: "&6AdvancedHunt &8>> &7"
 
 error:
@@ -59,6 +68,7 @@ error:
     invalid: "%prefix%&cInvalid cron expression! Please check the format."
   preset:
     invalid_name: "%prefix%&cInvalid preset name! Please enter a valid name."
+    duplicate_name: "%prefix%&cA preset with that name already exists."
     not_found_treasure: "%prefix%&cTreasure preset '&f%name%&c' not found!"
     not_found_collection: "%prefix%&cCollection preset '&f%name%&c' not found!"
     save_failed_treasure: "%prefix%&cFailed to save treasure preset!"
@@ -152,6 +162,7 @@ gui:
   rewards:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"
+    preset_title: "&8Reward Preset"
     open_reward_option_menu:
       title: "&8Reward Options"
       name: "&6+ Add Reward"
@@ -544,6 +555,26 @@ gui:
         - "&7Click to configure rewards"
         - "&7given when a player finds"
         - "&7ALL treasures in this collection."
+    default_treasure_preset:
+      name: "&eDefault Treasure Reward Preset"
+      lore:
+        - "&7Current: %preset%"
+        - ""
+        - "&7Applied to newly created treasures"
+        - "&7in this collection (place mode)."
+        - ""
+        - "&eLeft-click to set"
+        - "&eRight-click to clear"
+    override_treasure_rewards:
+      name: "&cOverride All Treasure Rewards"
+      lore:
+        - "&7Replace rewards for ALL treasures"
+        - "&7in this collection using a preset."
+        - ""
+        - "&c&lWARNING: This replaces existing rewards!"
+        - ""
+        - "&eClick to choose preset"
+      confirm_title: "Override rewards with '%name%'?"
     act_rules:
       name: "&eSchedule Rules"
       lore:
@@ -585,6 +616,92 @@ gui:
       success: "%prefix%&aSuccessfully deleted collection &e%collection%&a and all its treasures."
     reset_schedule:
       title: "Progress Reset Schedule"
+
+  presets:
+    treasure:
+      title: "Treasure Presets"
+    collection:
+      title: "Collection Presets"
+    unknown: "&cUnknown"
+    none:
+      name: "&7No Presets"
+      lore:
+        - "&7No reward presets have been created yet."
+    create:
+      name: "&aCreate Preset"
+      lore:
+        - "&7Create a new empty preset"
+        - "&7and edit its rewards."
+        - ""
+        - "&eClick to create"
+    preset:
+      name: "&6%name%"
+      lore:
+        - "&7Rewards: &f%count%"
+        - ""
+        - "&eLeft-click to %action%"
+        - "&eRight-click to edit"
+      action:
+        select: "select"
+        edit: "edit"
+
+    actions:
+      title: "Preset: %name%"
+      rename:
+        name: "&eRename"
+        lore:
+          - ""
+          - "&7Rename this preset."
+          - ""
+          - "&eClick to rename"
+      load_all:
+        name: "&eLoad For All Treasures"
+        lore:
+          - ""
+          - "&7Overwrite ALL treasures"
+          - "&7in this collection with"
+          - "&7this preset's rewards."
+          - ""
+          - "&cThis replaces existing rewards!"
+          - ""
+          - "&eClick to continue"
+        lore_disabled:
+          - ""
+          - "&7This action is only available"
+          - "&7when editing from a collection."
+        confirm_title: "Override all treasures?"
+      set_default:
+        name: "&eSet As Default"
+        lore:
+          - ""
+          - "&7Set this preset as the"
+          - "&7default treasure reward preset"
+          - "&7for this collection."
+          - ""
+          - "&eClick to set default"
+        lore_disabled:
+          - ""
+          - "&7This action is only available"
+          - "&7when editing from a collection."
+      edit_rewards:
+        name: "&aEdit Rewards"
+        lore:
+          - ""
+          - "&7Edit the rewards stored"
+          - "&7inside this preset."
+          - ""
+          - "&eClick to edit"
+      delete:
+        name: "&cDelete"
+        lore:
+          - ""
+          - "&7Permanently delete"
+          - "&7this preset."
+          - ""
+          - "&cThis cannot be undone!"
+          - ""
+          - "&eClick to delete"
+        confirm_title: "Delete preset '%name%'?"
   cron:
     editor:
       title: "Cron Schedule Editor"

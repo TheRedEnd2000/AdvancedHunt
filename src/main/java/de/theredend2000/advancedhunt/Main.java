@@ -36,6 +36,7 @@ public final class Main extends JavaPlugin {
     private CollectionManager collectionManager;
     private RewardManager rewardManager;
     private PlaceModeManager placeModeManager;
+    private RewardPresetManager rewardPresetManager;
     private ParticleManager particleManager;
     private MigrationService migrationService;
     private MessageManager messageManager;
@@ -88,6 +89,8 @@ public final class Main extends JavaPlugin {
 
         // Initialize Managers
         rewardManager = new RewardManager(this);
+        rewardPresetManager = new RewardPresetManager(this, dataRepository);
+        rewardPresetManager.reloadPresets();
         treasureManager = new TreasureManager(dataRepository);
         treasureManager.loadTreasures();
 
@@ -216,6 +219,10 @@ public final class Main extends JavaPlugin {
 
     public CollectionManager getCollectionManager() {
         return collectionManager;
+    }
+
+    public RewardPresetManager getRewardPresetManager() {
+        return rewardPresetManager;
     }
 
     public RewardManager getRewardManager() {

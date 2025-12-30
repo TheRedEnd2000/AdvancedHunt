@@ -2,13 +2,17 @@ package de.theredend2000.advancedhunt.menu;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.cron.CronEditorMenu;
-import de.theredend2000.advancedhunt.model.Collection;
-import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
+import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class CollectionSettingsMenu extends Menu {
 
@@ -26,7 +30,7 @@ public class CollectionSettingsMenu extends Menu {
 
     @Override
     public int getSlots() {
-        return 27;
+        return 36;
     }
 
     @Override
@@ -147,6 +151,104 @@ public class CollectionSettingsMenu extends Menu {
                 }
             ).setPreviousMenu(this).open();
         }, "advancedhunt.admin.collection.delete");
+
+        // Default Treasure Reward Preset (applies to newly created treasures in this collection)
+        String defaultPresetName = plugin.getMessageManager().getMessage("gui.common.none", false);
+        UUID defaultPresetId = collection.getDefaultTreasureRewardPresetId();
+        if (defaultPresetId != null) {
+            defaultPresetName = plugin.getRewardPresetManager()
+                    .getPreset(RewardPresetType.TREASURE, defaultPresetId)
+                    .map(RewardPreset::getName)
+                    .orElse(plugin.getMessageManager().getMessage("gui.presets.unknown", false));
+        }
+
+        addButton(19, new ItemBuilder(Material.WRITABLE_BOOK)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.default_treasure_preset.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.default_treasure_preset.lore", false,
+                        "%preset%", "§f" + defaultPresetName).toArray(new String[0]))
+                .build(), (e) -> {
+            if (!playerMenuUtility.hasPermission("advancedhunt.admin")) {
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
+                return;
+            }
+
+            if (e.isRightClick()) {
+                collection.setDefaultTreasureRewardPresetId(null);
+                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> Bukkit.getScheduler().runTask(plugin, this::refresh));
+                return;
+            }
+
+            new RewardPresetListMenu(playerMenuUtility, plugin, RewardPresetType.TREASURE, selected -> {
+                collection.setDefaultTreasureRewardPresetId(selected.getId());
+                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> Bukkit.getScheduler().runTask(plugin, this::refresh));
+            }, collection).setPreviousMenu(this).open();
+        });
+
+        // Override all treasures rewards with a preset
+        addButton(20, new ItemBuilder(Material.ANVIL)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.override_treasure_rewards.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.override_treasure_rewards.lore", false).toArray(new String[0]))
+                .build(), (e) -> {
+            if (!playerMenuUtility.hasPermission("advancedhunt.admin")) {
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
+                return;
+            }
+
+                new RewardPresetListMenu(playerMenuUtility, plugin, RewardPresetType.TREASURE, selected -> {
+                new ConfirmationMenu(playerMenuUtility, plugin,
+                        plugin.getMessageManager().getMessage("gui.settings.override_treasure_rewards.confirm_title", false,
+                                "%name%", selected.getName()),
+                        (confirmEvent) -> runBulkOverride(selected),
+                        (cancelEvent) -> open()
+                ).setPreviousMenu(this).open();
+                }, collection).setPreviousMenu(this).open();
+        });
+    }
+
+    private void runBulkOverride(RewardPreset preset) {
+        List<TreasureCore> cores = plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId());
+        if (cores.isEmpty()) {
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.override.none"));
+            open();
+            return;
+        }
+
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.override.started",
+                "%count%", String.valueOf(cores.size()),
+                "%name%", preset.getName()));
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (TreasureCore core : cores) {
+            CompletableFuture<Void> f = plugin.getTreasureManager().getFullTreasureAsync(core.getId()).thenCompose(oldTreasure -> {
+                if (oldTreasure == null) {
+                    return CompletableFuture.completedFuture(null);
+                }
+                Treasure newTreasure = new Treasure(
+                        oldTreasure.getId(),
+                        oldTreasure.getCollectionId(),
+                        oldTreasure.getLocation(),
+                        new ArrayList<>(preset.getRewards()),
+                        oldTreasure.getNbtData(),
+                        oldTreasure.getMaterial(),
+                        oldTreasure.getBlockState()
+                );
+                return plugin.getTreasureManager().updateTreasure(oldTreasure, newTreasure);
+            });
+            futures.add(f);
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((v, ex) -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (ex != null) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.override.failed"));
+                } else {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.override.done",
+                            "%count%", String.valueOf(cores.size()),
+                            "%name%", preset.getName()));
+                }
+                open();
+            });
+        });
     }
 
     /**
