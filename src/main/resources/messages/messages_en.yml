@@ -51,7 +51,7 @@ feedback:
     override:
       none: "%prefix%&cNo treasures found in this collection."
       started: "%prefix%&eOverriding &f%count%&e treasures with preset '&f%name%&e'..."
-      progress: "%prefix%&eOverride progress: &f%percent%%% &7(%current%/%total%)"
+      progress: "%prefix%&eOverride progress: &f%percent%% &7(%current%/%total%)"
       done: "%prefix%&aOverrode &f%count%&a treasures with preset '&f%name%&a'."
       failed: "%prefix%&cFailed to override treasure rewards. Check console for details."
 prefix: "&6AdvancedHunt &8>> &7"
