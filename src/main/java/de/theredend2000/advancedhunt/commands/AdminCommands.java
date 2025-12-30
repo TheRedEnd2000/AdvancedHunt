@@ -4,30 +4,25 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.configurations.PluginConfig;
 import de.theredend2000.advancedhunt.managers.eggmanager.EggManager;
-import de.theredend2000.advancedhunt.protocollib.BlockChangingManager;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import de.theredend2000.advancedhunt.util.enums.Permission;
 import de.theredend2000.advancedhunt.util.messages.MenuManager;
 import de.theredend2000.advancedhunt.util.messages.MessageManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AdminCommands implements TabExecutor {
@@ -97,7 +92,7 @@ public class AdminCommands implements TabExecutor {
 
     private void handleDebugEgg(Player player){
         Location location = player.getLocation();
-        Location blockCenter = location.getBlock().getLocation().add(0.5, -0.725, 0.5);
+        Location blockCenter = location.getBlock().getLocation().clone().add(0.5, -0.725, 0.5);
         ArmorStand armorStand = (ArmorStand) blockCenter.getWorld().spawnEntity(blockCenter, EntityType.ARMOR_STAND);
         armorStand.setSmall(true);
         armorStand.setVisible(true);
