@@ -13,7 +13,7 @@ export class MinecraftHeadEditor {
         // Initialize managers
         this.canvasManager = new CanvasManager(document.getElementById('skinCanvas'));
         this.tools = new Tools(this.canvasManager);
-        this.historyManager = new HistoryManager(this.canvasManager);
+        this.historyManager = new HistoryManager(this.canvasManager, () => this.render());
         this.selectionManager = new SelectionManager(this.canvasManager);
         this.preview3D = new Preview3DManager(this.canvasManager);
         this.exportManager = new ExportManager(this.canvasManager);
@@ -72,12 +72,10 @@ export class MinecraftHeadEditor {
 
     undo() {
         this.historyManager.undo();
-        this.render();
     }
 
     redo() {
         this.historyManager.redo();
-        this.render();
     }
 
     clearAll() {

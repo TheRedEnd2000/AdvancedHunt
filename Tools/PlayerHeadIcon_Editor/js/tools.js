@@ -188,6 +188,13 @@ export class Tools {
 // Shape Tools
 export class ShapeTools {
     static getLinePixels(x0, y0, x1, y1) {
+        if (![x0, y0, x1, y1].every(Number.isFinite)) return [];
+
+        x0 = Math.round(x0);
+        y0 = Math.round(y0);
+        x1 = Math.round(x1);
+        y1 = Math.round(y1);
+
         const pixels = [];
         const dx = Math.abs(x1 - x0);
         const dy = Math.abs(y1 - y0);
@@ -195,21 +202,38 @@ export class ShapeTools {
         const sy = (y0 < y1) ? 1 : -1;
         let err = dx - dy;
 
+        const maxSteps = 2048;
+        let steps = 0;
+
         while (true) {
             pixels.push({ x: x0, y: y0 });
             if (x0 === x1 && y0 === y1) break;
             const e2 = 2 * err;
             if (e2 > -dy) { err -= dy; x0 += sx; }
             if (e2 < dx) { err += dx; y0 += sy; }
+
+            steps++;
+            if (steps >= maxSteps) break;
         }
         return pixels;
     }
 
     static getCirclePixels(x0, y0, x1, y1) {
+        if (![x0, y0, x1, y1].every(Number.isFinite)) return [];
+
+        x0 = Math.round(x0);
+        y0 = Math.round(y0);
+        x1 = Math.round(x1);
+        y1 = Math.round(y1);
+
         const pixels = [];
         const radius = Math.floor(Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2)));
+        if (!Number.isFinite(radius) || radius < 0) return [];
         let x = radius;
         let y = 0;
+
+        const maxSteps = 2048;
+        let steps = 0;
         let err = 0;
 
         while (x >= y) {
@@ -230,6 +254,9 @@ export class ShapeTools {
                 x -= 1;
                 err -= 2 * x + 1;
             }
+
+            steps++;
+            if (steps >= maxSteps) break;
         }
         return pixels;
     }

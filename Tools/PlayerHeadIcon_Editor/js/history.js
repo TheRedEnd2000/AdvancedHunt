@@ -1,10 +1,16 @@
 import {MAX_HISTORY} from './constants.js';
 
 export class HistoryManager {
-    constructor(canvasManager) {
+    constructor(canvasManager, onStateRestored = null) {
         this.canvasManager = canvasManager;
         this.history = [];
         this.historyStep = -1;
+        this.onStateRestored = onStateRestored;
+        this._restoreSeq = 0;
+    }
+
+    setOnStateRestored(callback) {
+        this.onStateRestored = callback;
     }
 
     saveState() {
@@ -43,9 +49,17 @@ export class HistoryManager {
     }
 
     loadState(dataUrl) {
+        const restoreId = ++this._restoreSeq;
+
         const img = new Image();
         img.onload = () => {
+            if (restoreId !== this._restoreSeq) return;
+
             this.canvasManager.loadImage(img);
+
+            if (typeof this.onStateRestored === 'function') {
+                this.onStateRestored();
+            }
         };
         img.src = dataUrl;
     }
