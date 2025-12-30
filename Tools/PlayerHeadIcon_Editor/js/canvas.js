@@ -89,6 +89,18 @@ export class CanvasManager {
         return null;
     }
 
+    getVisualFromSource(sx, sy) {
+        for (const map of MAPPINGS) {
+            if (sx >= map.sx && sx < map.sx + map.w &&
+                sy >= map.sy && sy < map.sy + map.h) {
+                const offsetX = sx - map.sx;
+                const offsetY = sy - map.sy;
+                return { x: map.vx + offsetX, y: map.vy + offsetY };
+            }
+        }
+        return null;
+    }
+
     render(selection = null, shapePreview = null) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.imageSmoothingEnabled = false;

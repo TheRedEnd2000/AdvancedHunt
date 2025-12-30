@@ -22,6 +22,8 @@ export const state = {
     shapeStartY: 0,
     shapeCurrentX: 0,
     shapeCurrentY: 0,
+    shapeStartFace: null, // Track which 3D face the shape started on
+    shapeUpdatePending: false, // Throttle shape preview updates
 
     // 3D view state
     rotX: -30,

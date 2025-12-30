@@ -198,6 +198,11 @@ export class EventHandlers {
     handleMouseMove(e) {
         if (!state.isDrawing) return;
 
+        // In 3D view, drawing is handled by handle3DMouseMove.
+        // Letting the global 2D mousemove handler run would compute coords from the hidden 2D canvas
+        // (rect size 0 -> Infinity/NaN) and can freeze line/circle tools.
+        if (state.currentView === '3d') return;
+
         const canvas = this.app.canvasManager.canvas;
         const rect = canvas.getBoundingClientRect();
 
@@ -234,6 +239,7 @@ export class EventHandlers {
         if (state.isDrawing) {
             if (state.currentTool === 'line' || state.currentTool === 'circle') {
                 this.commitShape();
+                state.shapeStartFace = null; // Clear face tracking
             }
 
             state.isDrawing = false;
@@ -250,16 +256,69 @@ export class EventHandlers {
     }
 
     handle3DMouseDown(e) {
+        // Don't interfere with rotation control
+        if (!e.target.classList.contains('face')) return;
+
+        e.preventDefault();
         state.isDrawing = true;
+
+        const face = e.target;
+        const sx = parseInt(face.dataset.sx);
+        const sy = parseInt(face.dataset.sy);
+
+        const localX = Math.floor(e.offsetX / 10);
+        const localY = Math.floor(e.offsetY / 10);
+
+        if (localX < 0 || localX >= 8 || localY < 0 || localY >= 8) return;
+
+        const targetX = sx + localX;
+        const targetY = sy + localY;
+        const visualCoords = this.sourceToVisual(targetX, targetY);
+
+        // Handle selection tool
+        if (state.currentTool === 'select') {
+            if (visualCoords) {
+                state.isSelecting = true;
+                this.app.selectionManager.startSelection(visualCoords.x, visualCoords.y);
+                this.app.render();
+            }
+            return;
+        }
+
+        // Handle move tool
+        if (state.currentTool === 'move') {
+            this.app.selectionManager.startMove(e.clientX, e.clientY);
+            this.app.render();
+            return;
+        }
+
+        // Handle shape tools - store which face we started on
+        if (state.currentTool === 'line' || state.currentTool === 'circle') {
+            state.shapeStartX = targetX;
+            state.shapeStartY = targetY;
+            state.shapeCurrentX = targetX;
+            state.shapeCurrentY = targetY;
+            state.shapeStartFace = { sx, sy }; // Track starting face
+            // Don't update preview on mousedown, just set starting point
+            return;
+        }
+
+        // Handle color picker
+        if (state.currentTool === 'picker') {
+            const color = this.app.canvasManager.getPixelColor(targetX, targetY);
+            if (color) this.app.ui.setColor(color);
+            state.isDrawing = false;
+            return;
+        }
+
+        // Handle other drawing tools
         this.handle3DToolAction(e);
     }
 
     handle3DMouseMove(e) {
         if (!state.isDrawing) return;
-        this.handle3DToolAction(e);
-    }
+        if (!e.target.classList.contains('face')) return;
 
-    handle3DToolAction(e) {
         e.preventDefault();
 
         const face = e.target;
@@ -273,30 +332,73 @@ export class EventHandlers {
 
         const targetX = sx + localX;
         const targetY = sy + localY;
+        const visualCoords = this.sourceToVisual(targetX, targetY);
 
-        if (state.currentTool === 'line' || state.currentTool === 'circle') {
-            if (e.type === 'mousedown') {
-                state.shapeStartX = targetX;
-                state.shapeStartY = targetY;
-                state.shapeCurrentX = targetX;
-                state.shapeCurrentY = targetY;
-            } else {
-                state.shapeCurrentX = targetX;
-                state.shapeCurrentY = targetY;
+        // Handle selection tool
+        if (state.currentTool === 'select') {
+            if (visualCoords && state.isSelecting) {
+                this.app.selectionManager.updateSelection(visualCoords.x, visualCoords.y);
+                this.app.render();
             }
-            this.app.preview3D.updateFaces(state.selection, this.getShapePreview());
             return;
         }
 
-        if (state.currentTool === 'picker') {
-            const color = this.app.canvasManager.getPixelColor(targetX, targetY);
-            if (color) this.app.ui.setColor(color);
-            state.isDrawing = false;
+        // Handle move tool
+        if (state.currentTool === 'move') {
+            const canvas = this.app.canvasManager.canvas;
+            this.app.selectionManager.updateMove(e.clientX, e.clientY, canvas);
+            this.app.render();
             return;
         }
 
+        // Handle shape tools - only allow within same face to prevent freeze
+        if (state.currentTool === 'line' || state.currentTool === 'circle') {
+            // Only update if we're still on the same face we started on
+            if (state.shapeStartFace && state.shapeStartFace.sx === sx && state.shapeStartFace.sy === sy) {
+                // Only update if coordinates actually changed
+                if (state.shapeCurrentX !== targetX || state.shapeCurrentY !== targetY) {
+                    state.shapeCurrentX = targetX;
+                    state.shapeCurrentY = targetY;
+                    // Schedule render on next frame to throttle updates
+                    if (!state.shapeUpdatePending) {
+                        state.shapeUpdatePending = true;
+                        requestAnimationFrame(() => {
+                            state.shapeUpdatePending = false;
+                            const shapePreview = this.getShapePreview();
+                            this.app.preview3D.updateFaces(state.selection, shapePreview);
+                        });
+                    }
+                }
+            }
+            return;
+        }
+
+        // Handle other drawing tools
+        this.handle3DToolAction(e);
+    }
+
+    handle3DToolAction(e) {
+        const face = e.target;
+        const sx = parseInt(face.dataset.sx);
+        const sy = parseInt(face.dataset.sy);
+
+        const localX = Math.floor(e.offsetX / 10);
+        const localY = Math.floor(e.offsetY / 10);
+
+        if (localX < 0 || localX >= 8 || localY < 0 || localY >= 8) return;
+
+        const targetX = sx + localX;
+        const targetY = sy + localY;
+
+        // Only for pen, eraser, shade, bucket tools
         this.app.tools.applyToolWithMirror(targetX, targetY, false);
         this.app.render();
+    }
+
+    sourceToVisual(sourceX, sourceY) {
+        // Convert source coordinates back to visual coordinates
+        // Import MAPPINGS from constants
+        return this.app.canvasManager.getVisualFromSource(sourceX, sourceY);
     }
 
     handleToolAction(e) {
@@ -375,6 +477,9 @@ export class EventHandlers {
     }
 
     getShapePreview() {
+        if (!state.isDrawing) return null;
+        if (state.currentTool !== 'line' && state.currentTool !== 'circle') return null;
+
         let pixels = [];
 
         if (state.currentTool === 'line') {

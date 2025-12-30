@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Head Editor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+            <button class="tool-btn active" id="view-2d" title="2D View">2D</button>
+            <button class="tool-btn" id="view-3d" title="3D View">3D</button>
+        </div>
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+
+        <label class="tool-btn" title="Import Skin" style="cursor: pointer;">
+            📂
+            <input type="file" id="file-import" accept="image/png" style="display: none;">
+        </label>
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+
+        <button class="tool-btn" id="action-undo" title="Undo (Ctrl+Z)">↩️</button>
+        <button class="tool-btn" id="action-redo" title="Redo (Ctrl+Y)">↪️</button>
+
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+
+        <button class="tool-btn active" id="tool-pen" title="Pen (P)">✏️</button>
+        <button class="tool-btn" id="tool-eraser" title="Eraser (E)">🧹</button>
+        <button class="tool-btn" id="tool-bucket" title="Bucket Fill (B)">🪣</button>
+        <button class="tool-btn" id="tool-picker" title="Color Picker (I)">💉</button>
+        <button class="tool-btn" id="tool-shade" title="Shading Tool (S)">🌗</button>
+        <button class="tool-btn" id="tool-line" title="Line Tool (L)">📏</button>
+        <button class="tool-btn" id="tool-circle" title="Circle Tool (C)">⭕</button>
+
+        <div style="height: 10px; border-bottom: 1px solid #444; width: 30px; margin-bottom: 10px;"></div>
+
+        <button class="tool-btn" id="tool-select" title="Rectangular Marquee (M)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+            </svg>
+        </button>
+        <button class="tool-btn" id="tool-move" title="Move Selection (V)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M19 9l3 3-3 3M9 19l3 3 3-3M2 12h20M12 2v20" />
+            </svg>
+        </button>
+
+        <div style="flex-grow: 1;"></div>
+        <button class="tool-btn" id="action-clear" title="Clear All" style="color: #ff4444;">🗑️</button>
+        <div style="height: 10px;"></div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+        <div id="editor-container">
+            <canvas id="skinCanvas" width="720" height="240"></canvas>
+        </div>
+        <div id="editor-container-3d" style="display: none;">
+            <button id="view-reset" class="floating-btn" title="Reset View Angle">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+            </button>
+            <button id="toggle-grid-3d" class="floating-btn" title="Toggle Grid" style="bottom: 100px;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Selection Options -->
+        <div class="panel-section" id="panel-selection" style="display: none;">
+            <div class="panel-title">Selection</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <button class="btn-primary" id="sel-rotate-cw" style="padding: 8px;">↻ 90°</button>
+                <button class="btn-primary" id="sel-rotate-ccw" style="padding: 8px;">↺ -90°</button>
+                <button class="btn-primary" id="sel-flip-h" style="padding: 8px;">Flip H</button>
+                <button class="btn-primary" id="sel-flip-v" style="padding: 8px;">Flip V</button>
+            </div>
+            <button class="btn-primary" id="sel-deselect" style="margin-top: 5px; background-color: #444;">Deselect</button>
+        </div>
+
+        <!-- Tool Options -->
+        <div class="panel-section">
+            <div class="panel-title">Tool Options</div>
+
+            <div style="margin-bottom: 10px;">
+                <div style="font-size: 12px; color: #888; margin-bottom: 4px;">Brush Size: <span id="brush-size-val">1</span>px</div>
+                <input type="range" id="brush-size" min="1" max="4" value="1" style="width: 100%;">
+            </div>
+
+            <label class="layer-item">
+                <input type="checkbox" id="opt-mirror">
+                <span>Mirror Painting (X)</span>
+            </label>
+        </div>
+
+        <!-- 3D Preview -->
+        <div class="panel-section">
+            <div class="panel-title">3D Preview</div>
+            <div class="preview-container">
+                <div class="scene" id="scene">
+                    <div class="cube inner" id="cube-inner">
+                        <canvas class="face front" width="8" height="8" data-layer="inner" data-sx="8" data-sy="8"></canvas>
+                        <canvas class="face back" width="8" height="8" data-layer="inner" data-sx="24" data-sy="8"></canvas>
+                        <canvas class="face right" width="8" height="8" data-layer="inner" data-sx="16" data-sy="8"></canvas>
+                        <canvas class="face left" width="8" height="8" data-layer="inner" data-sx="0" data-sy="8"></canvas>
+                        <canvas class="face top" width="8" height="8" data-layer="inner" data-sx="8" data-sy="0"></canvas>
+                        <canvas class="face bottom" width="8" height="8" data-layer="inner" data-sx="16" data-sy="0"></canvas>
+                    </div>
+                    <div class="cube outer" id="cube-outer">
+                        <canvas class="face front" width="8" height="8" data-layer="outer" data-sx="40" data-sy="8"></canvas>
+                        <canvas class="face back" width="8" height="8" data-layer="outer" data-sx="56" data-sy="8"></canvas>
+                        <canvas class="face right" width="8" height="8" data-layer="outer" data-sx="48" data-sy="8"></canvas>
+                        <canvas class="face left" width="8" height="8" data-layer="outer" data-sx="32" data-sy="8"></canvas>
+                        <canvas class="face top" width="8" height="8" data-layer="outer" data-sx="40" data-sy="0"></canvas>
+                        <canvas class="face bottom" width="8" height="8" data-layer="outer" data-sx="48" data-sy="0"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layers -->
+        <div class="panel-section">
+            <div class="panel-title">Layers</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 10px; color: #666;">
+                <span>VISIBILITY</span>
+                <span>LOCK</span>
+            </div>
+            <div class="layer-item" style="justify-content: space-between;">
+                <label style="display: flex; align-items: center;">
+                    <input type="checkbox" id="toggle-hat" checked>
+                    <span>Outer Hat</span>
+                </label>
+                <input type="checkbox" id="lock-hat">
+            </div>
+            <div class="layer-item" style="justify-content: space-between;">
+                <label style="display: flex; align-items: center;">
+                    <input type="checkbox" id="toggle-head" checked>
+                    <span>Inner Head</span>
+                </label>
+                <input type="checkbox" id="lock-head">
+            </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="panel-section">
+            <div class="panel-title">Palette</div>
+            <div class="color-grid" id="palette"></div>
+            <div class="color-input-wrapper">
+                <input type="color" id="color-picker" value="#ff0000">
+            </div>
+        </div>
+
+        <!-- Export -->
+        <div class="panel-section">
+            <div class="panel-title">Export</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn-primary" id="btn-export">
+                    <span>⬇</span> Download Skin (.png)
+                </button>
+                <button class="btn-primary" id="btn-export-icon" style="background-color: #2d8545;">
+                    <span>🖼</span> Download Head Icon
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/standalone.js"></script>
+</body>
+</html>
