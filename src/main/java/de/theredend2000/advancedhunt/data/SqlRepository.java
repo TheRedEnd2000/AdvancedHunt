@@ -32,8 +32,8 @@ public class SqlRepository implements DataRepository {
     private final boolean useSqlite;
     private final Gson gson;
 
-    private final ExecutorService sqliteExecutor;
-    private final Executor asyncExecutor;
+    private volatile ExecutorService sqliteExecutor;
+    private volatile Executor asyncExecutor;
 
     private final Map<Integer, Consumer<Connection>> schemaMigrations = new HashMap<>();
     // Cache the version to avoid repeated DB queries
@@ -50,19 +50,32 @@ public class SqlRepository implements DataRepository {
         this.gson = new Gson();
 
         if (useSqlite) {
-            ThreadFactory threadFactory = runnable -> {
-                Thread thread = new Thread(runnable, "AdvancedHunt-SQLite");
-                thread.setDaemon(true);
-                return thread;
-            };
-            this.sqliteExecutor = Executors.newSingleThreadExecutor(threadFactory);
-            this.asyncExecutor = this.sqliteExecutor;
+            ensureSqliteExecutor();
         } else {
             this.sqliteExecutor = null;
             this.asyncExecutor = null;
         }
         
         registerMigrations();
+    }
+
+    private synchronized void ensureSqliteExecutor() {
+        if (!useSqlite) {
+            return;
+        }
+
+        ExecutorService current = this.sqliteExecutor;
+        if (current != null && !current.isShutdown() && !current.isTerminated()) {
+            return;
+        }
+
+        ThreadFactory threadFactory = runnable -> {
+            Thread thread = new Thread(runnable, "AdvancedHunt-SQLite");
+            thread.setDaemon(true);
+            return thread;
+        };
+        this.sqliteExecutor = Executors.newSingleThreadExecutor(threadFactory);
+        this.asyncExecutor = this.sqliteExecutor;
     }
 
     private <T> CompletableFuture<T> supplyAsync(Supplier<T> supplier) {
@@ -122,6 +135,11 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public void init() {
+        if (useSqlite) {
+            ensureSqliteExecutor();
+        }
+        cachedSchemaVersion = -1;
+
         HikariConfig config = new HikariConfig();
         if (useSqlite) {
             // Ensure the plugin data folder exists
@@ -330,6 +348,7 @@ public class SqlRepository implements DataRepository {
     public void shutdown() {
         if (dataSource != null) {
             dataSource.close();
+            dataSource = null;
         }
 
         if (sqliteExecutor != null) {
