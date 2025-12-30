@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.theredend2000</groupId>
-    <artifactId>advancedhuntv2</artifactId>
+    <artifactId>advancedhunt</artifactId>
     <version>4.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>advancedhuntv2</name>
+    <name>advancedhunt</name>
 
     <properties>
         <java.version>17</java.version>
