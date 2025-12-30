@@ -220,7 +220,6 @@ public class RewardsMenu extends PagedMenu {
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.load_preset_" + presetContext + ".name", false))
                     .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset_" + presetContext + ".lore", false))
                     .build(), e -> {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.opening_" + presetContext));
 
                 Collection collectionContext = null;
                 if (holder instanceof CollectionRewardHolder collectionRewardHolder) {
