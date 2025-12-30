@@ -56,7 +56,7 @@ public class ConfigLocationUtil {
         String key = collection + ":" + root;
         Location cached = locationCache.get(key);
         if (cached != null) {
-            return cached;
+            return cached.clone();
         }
         FileConfiguration config = plugin.getEggDataManager().getPlacedEggs(collection);
         if (!config.contains(root)) return null;
@@ -69,14 +69,14 @@ public class ConfigLocationUtil {
 
         Location loc = new Location(world, x, y, z);
         locationCache.put(key, loc);
-        return loc;
+        return loc.clone();
     }
 
     public Location loadLocation(UUID uuid) {
         String key = uuid.toString() + ":" + root;
         Location cached = locationCache.get(key);
         if (cached != null) {
-            return cached;
+            return cached.clone();
         }
         FileConfiguration config = plugin.getPlayerEggDataManager().getPlayerData(uuid);
         if (!config.contains(root)) return null;
@@ -88,6 +88,6 @@ public class ConfigLocationUtil {
             z = config.getInt(root + ".Z");
         Location loc = new Location(world, x, y, z);
         locationCache.put(key, loc);
-        return loc;
+        return loc.clone();
     }
 }

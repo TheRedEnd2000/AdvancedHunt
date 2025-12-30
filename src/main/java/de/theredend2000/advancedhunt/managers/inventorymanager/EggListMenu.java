@@ -13,6 +13,7 @@ import de.theredend2000.advancedhunt.util.messages.MenuMessageKey;
 import de.theredend2000.advancedhunt.util.messages.MessageKey;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -140,9 +141,10 @@ public class EggListMenu extends PaginatedInventoryMenu implements IInventoryMen
                     continue;
                 }
                 if(event.getAction() == InventoryAction.PICKUP_ALL){
-                    ConfigLocationUtil location = new ConfigLocationUtil(Main.getInstance(), "PlacedEggs." + id);
-                    if (location.loadLocation(collection) != null)
-                        player.teleport(location.loadLocation(collection).add(0.5, 0, 0.5));
+                    ConfigLocationUtil locationUtil = new ConfigLocationUtil(Main.getInstance(), "PlacedEggs." + id);
+                    Location location = locationUtil.loadLocation(collection);
+                    if (location != null)
+                        player.teleport(location.add(0.5, 0, 0.5));
                     player.closeInventory();
                     player.sendMessage(Main.getInstance().getMessageManager().getMessage(MessageKey.TELEPORT_TO_EGG).replaceAll("%ID%", id));
                     player.playSound(player.getLocation(), soundManager.playInventorySuccessSound(), soundManager.getSoundVolume(), 1);
