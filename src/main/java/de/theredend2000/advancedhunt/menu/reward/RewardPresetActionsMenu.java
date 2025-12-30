@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -51,20 +52,38 @@ public class RewardPresetActionsMenu extends Menu {
 
         addButton(10, new ItemBuilder(Material.NAME_TAG)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.rename.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.rename.lore", false).toArray(new String[0]))
+                .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.rename.lore", false,"%current%",preset.getName()).toArray(new String[0]))
                 .build(), e -> handleRename());
 
-        addButton(11, buildCollectionActionItem(
+        addButton(12, buildCollectionActionItem(
                 "gui.presets.actions.load_all",
                 Material.ANVIL,
                 isTreasurePreset() && hasCollectionContext()
         ), e -> handleLoadAll());
 
-        addButton(12, buildCollectionActionItem(
-                "gui.presets.actions.set_default",
-                Material.WRITABLE_BOOK,
-                isTreasurePreset() && hasCollectionContext()
-        ), e -> handleSetDefault());
+        boolean isCurrentDefault;
+        String defaultPresetName = plugin.getMessageManager().getMessage("gui.common.none", false);
+        if (hasCollectionContext() && isTreasurePreset()) {
+            UUID defaultPresetId = collectionContext.getDefaultTreasureRewardPresetId();
+            defaultPresetName = plugin.getRewardPresetManager()
+                    .getPreset(RewardPresetType.TREASURE, defaultPresetId)
+                    .map(RewardPreset::getName)
+                    .orElse(plugin.getMessageManager().getMessage("gui.presets.unknown", false));
+            isCurrentDefault = preset.getId().equals(defaultPresetId);
+        } else {
+            isCurrentDefault = false;
+        }
+
+        String optionKey = isCurrentDefault
+                ? "gui.presets.actions.set_default.option.already_selected"
+                : "gui.presets.actions.set_default.option.available";
+
+        addButton(13, buildSetDefaultItem(isCurrentDefault, optionKey,defaultPresetName),
+                e -> {
+                    if (!isCurrentDefault) {
+                        handleSetDefault();
+                    }
+                });
 
         addButton(14, new ItemBuilder(Material.WRITTEN_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.edit_rewards.name", false))
@@ -80,6 +99,25 @@ public class RewardPresetActionsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());
+        fillBackground(FILLER_GLASS);
+    }
+
+    private ItemStack buildSetDefaultItem(boolean isDefault, String optionKey, String defaultPresetName) {
+        if (!isTreasurePreset() || !hasCollectionContext()) {
+            return new ItemBuilder(Material.BARRIER)
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.set_default.name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.set_default.lore_disabled", false).toArray(new String[0]))
+                    .build();
+        }
+
+        Material material = isDefault ? Material.OAK_SAPLING : Material.DEAD_BUSH;
+        String optionText = plugin.getMessageManager().getMessage(optionKey, false);
+
+        return new ItemBuilder(material)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.set_default.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.set_default.lore", false,
+                        "%option%", optionText,"%current%",defaultPresetName).toArray(new String[0]))
+                .build();
     }
 
     private ItemStack buildCollectionActionItem(String baseKey, Material material, boolean enabled) {
@@ -145,7 +183,7 @@ public class RewardPresetActionsMenu extends Menu {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.set_default",
                     "%collection%", collectionContext.getName(),
                     "%name%", preset.getName()));
-            openPreviousMenu();
+            refresh();
         }));
     }
 
@@ -210,12 +248,12 @@ public class RewardPresetActionsMenu extends Menu {
                             continue;
                         }
                         int percentToSend = next;
-                        Bukkit.getScheduler().runTask(plugin, () -> playerMenuUtility.sendMessage(
-                                plugin.getMessageManager().getMessage("feedback.preset.override.progress",
-                                        "%percent%", String.valueOf(percentToSend),
-                                        "%current%", String.valueOf(done),
-                                        "%total%", String.valueOf(total))
-                        ));
+                        Bukkit.getScheduler().runTask(plugin, () -> MessageUtils.sendActionBar(
+                                playerMenuUtility,plugin.getMessageManager().getMessage("feedback.preset.override.progress",
+                                "%percent%", String.valueOf(percentToSend),
+                                "%current%", String.valueOf(done),
+                                "%total%", String.valueOf(total)))
+                        );
                         next += 10;
                     }
                 });

@@ -42,8 +42,6 @@ feedback:
     saved_treasure: "%prefix%&aSuccessfully saved treasure preset '&f%name%&a'!"
     saved_collection: "%prefix%&aSuccessfully saved collection preset '&f%name%&a'!"
     renamed: "%prefix%&aRenamed preset to '&f%name%&a'."
-    opening_treasure: "%prefix%&eOpening treasure preset selection..."
-    opening_collection: "%prefix%&eOpening collection preset selection..."
     loaded_treasure: "%prefix%&aSuccessfully loaded treasure preset '&f%name%&a'!"
     loaded_collection: "%prefix%&aSuccessfully loaded collection preset '&f%name%&a'!"
     deleted: "%prefix%&cDeleted preset '&f%name%&c'."
@@ -51,7 +49,7 @@ feedback:
     override:
       none: "%prefix%&cNo treasures found in this collection."
       started: "%prefix%&eOverriding &f%count%&e treasures with preset '&f%name%&e'..."
-      progress: "%prefix%&eOverride progress: &f%percent%% &7(%current%/%total%)"
+      progress: "&eOverride progress: &f%percent%% &7(%current%/%total%)"
       done: "%prefix%&aOverrode &f%count%&a treasures with preset '&f%name%&a'."
       failed: "%prefix%&cFailed to override treasure rewards. Check console for details."
 prefix: "&6AdvancedHunt &8>> &7"
@@ -557,6 +555,8 @@ gui:
         - "&7Click to configure rewards"
         - "&7given when a player finds"
         - "&7ALL treasures in this collection."
+        - ""
+        - "&eClick to open"
     default_treasure_preset:
       name: "&eDefault Treasure Reward Preset"
       lore:
@@ -616,8 +616,86 @@ gui:
         - "&cClick to delete"
       confirm_title: "Confirm Delete Collection"
       success: "%prefix%&aSuccessfully deleted collection &e%collection%&a and all its treasures."
+    hide_after_found:
+      name: "&eHide Found Treasures"
+      lore:
+        - "&7Current: %status%"
+        - ""
+        - "&7When enabled, treasures that"
+        - "&7you've already found will be"
+        - "&7hidden in the treasure list."
+        - ""
+        - "&8&m                    "
+        - "&7This helps you focus on"
+        - "&7treasures you haven't found yet."
+        - ""
+        - "&eClick to toggle"
+    hide_collection_disabled:
+      name: "&eHide When Collection Disabled"
+      lore:
+        - "&7Current: %status%"
+        - ""
+        - "&7When enabled, all treasures"
+        - "&7in this collection will be"
+        - "&7hidden when the collection"
+        - "&7is disabled or unavailable."
+        - ""
+        - "&8&m                    "
+        - "&7This prevents players from"
+        - "&7seeing unavailable content."
+        - ""
+        - "&eClick to toggle"
+    hide_status:
+      enabled: "&aEnabled"
+      disabled: "&cDisabled"
     reset_schedule:
       title: "Progress Reset Schedule"
+    categories:
+      basic:
+        name: "&6&lBasic Settings &8------>"
+        lore:
+          - ""
+          - "&7Configure fundamental"
+          - "&7collection properties."
+          - ""
+          - "&8&m                    "
+          - "&7• Rename collection"
+          - "&7• Enable / Disable"
+          - "&7• Single player mode"
+          - "&7• Delete collection"
+      rewards:
+        name: "&6&lSchedule Configuration &8------>"
+        lore:
+          - ""
+          - "&7Manage completion rewards"
+          - "&7and schedule of the collection."
+          - ""
+          - "&8&m                    "
+          - "&7• Collection rewards"
+          - "&7• Schedule rules"
+          - "&7• Progress reset timing"
+      presets:
+        name: "&6&lPresets &8------>"
+        lore:
+          - ""
+          - "&7Configure default preset"
+          - "&7for the collection and the"
+          - "&7loading of a preset in all"
+          - "&7treasures."
+          - ""
+          - "&8&m                    "
+          - "&7• Default preset"
+          - "&7• Bulk override rewards"
+      visibility:
+        name: "&6&lVisibility Options &8------>"
+        lore:
+          - ""
+          - "&7Control how treasures are hidden"
+          - "&7for the player or on unavailability."
+          - ""
+          - "&8&m                    "
+          - "&7• Hide found treasures"
+          - "&7• Hide when disabled"
 
   presets:
     treasure:
@@ -639,21 +717,25 @@ gui:
     preset:
       name: "&6%name%"
       lore:
-        - "&7Rewards: &f%count%"
+        - ""
+        - "&7Total rewards: &f%count%"
         - ""
         - "&eLeft-click to %action%"
         - "&eRight-click to edit"
       action:
         select: "select"
+        load: "load"
         edit: "edit"
 
     actions:
       title: "Preset: %name%"
       rename:
-        name: "&eRename"
+        name: "&eRename Preset"
         lore:
+          - "&7Current name: &f%current%"
           - ""
-          - "&7Rename this preset."
+          - "&7Change the display name of"
+          - "&7this reward preset."
           - ""
           - "&eClick to rename"
       load_all:
@@ -670,21 +752,28 @@ gui:
         lore_disabled:
           - ""
           - "&7This action is only available"
-          - "&7when editing from a collection."
+          - "&7when editing a treasure preset."
+          - "&8Not possible for collection presets!"
         confirm_title: "Override all treasures?"
       set_default:
+        option:
+          available: "&eClick to set default"
+          already_selected: "&a✓ Already set as default"
         name: "&eSet As Default"
         lore:
+          - ""
+          - "&7Current: &f%current%"
           - ""
           - "&7Set this preset as the"
           - "&7default treasure reward preset"
           - "&7for this collection."
           - ""
-          - "&eClick to set default"
+          - "%option%"
         lore_disabled:
           - ""
           - "&7This action is only available"
-          - "&7when editing from a collection."
+          - "&7when editing a treasure preset."
+          - "&8Not possible for collection presets!"
       edit_rewards:
         name: "&aEdit Rewards"
         lore:

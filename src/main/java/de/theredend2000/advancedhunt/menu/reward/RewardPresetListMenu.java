@@ -25,6 +25,7 @@ public class RewardPresetListMenu extends PagedMenu {
     private final RewardPresetType type;
     private final Consumer<RewardPreset> onSelect;
     private final Collection collectionContext;
+    private boolean fromCollection = false;
 
     public RewardPresetListMenu(Player player, Main plugin, RewardPresetType type, Consumer<RewardPreset> onSelect) {
         super(player, plugin);
@@ -32,6 +33,16 @@ public class RewardPresetListMenu extends PagedMenu {
         this.onSelect = onSelect;
         this.collectionContext = null;
         this.maxItemsPerPage = 28;
+    }
+
+    public RewardPresetListMenu(Player player, Main plugin, RewardPresetType type, Consumer<RewardPreset> onSelect,
+                                Collection collectionContext, boolean fromCollection) {
+        super(player, plugin);
+        this.type = type;
+        this.onSelect = onSelect;
+        this.collectionContext = collectionContext;
+        this.maxItemsPerPage = 28;
+        this.fromCollection = fromCollection;
     }
 
     public RewardPresetListMenu(Player player, Main plugin, RewardPresetType type, Consumer<RewardPreset> onSelect,
@@ -88,7 +99,7 @@ public class RewardPresetListMenu extends PagedMenu {
                         .setLore(plugin.getMessageManager().getMessageList("gui.presets.preset.lore", false,
                                 "%count%", String.valueOf(preset.getRewards().size()),
                                 "%action%", onSelect != null
-                                        ? plugin.getMessageManager().getMessage("gui.presets.preset.action.select", false)
+                                        ? plugin.getMessageManager().getMessage("gui.presets.preset.action."+(fromCollection ? "select": "load"), false)
                                         : plugin.getMessageManager().getMessage("gui.presets.preset.action.edit", false)))
                         .build();
 
