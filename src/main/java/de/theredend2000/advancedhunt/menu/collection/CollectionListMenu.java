@@ -1,7 +1,11 @@
-package de.theredend2000.advancedhunt.menu;
+package de.theredend2000.advancedhunt.menu.collection;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.PagedMenu;
+import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
+import de.theredend2000.advancedhunt.menu.treasure.TreasureActionMenu;
+import de.theredend2000.advancedhunt.menu.treasure.WhoFoundMenu;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;

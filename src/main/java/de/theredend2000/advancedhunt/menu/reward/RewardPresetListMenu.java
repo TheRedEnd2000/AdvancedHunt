@@ -1,6 +1,7 @@
-package de.theredend2000.advancedhunt.menu;
+package de.theredend2000.advancedhunt.menu.reward;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.RewardPreset;
 import de.theredend2000.advancedhunt.model.RewardPresetType;

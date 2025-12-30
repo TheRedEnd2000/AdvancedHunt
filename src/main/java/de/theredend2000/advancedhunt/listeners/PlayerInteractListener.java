@@ -2,7 +2,7 @@ package de.theredend2000.advancedhunt.listeners;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.*;
-import de.theredend2000.advancedhunt.menu.RewardsMenu;
+import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;

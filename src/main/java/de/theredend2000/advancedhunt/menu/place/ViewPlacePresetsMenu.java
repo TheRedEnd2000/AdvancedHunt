@@ -1,19 +1,14 @@
-package de.theredend2000.advancedhunt.menu;
+package de.theredend2000.advancedhunt.menu.place;
 
-import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Displays a paged list of players who have found a specific treasure.

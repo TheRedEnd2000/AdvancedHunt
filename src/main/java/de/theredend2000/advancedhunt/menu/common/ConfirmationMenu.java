@@ -1,6 +1,7 @@
-package de.theredend2000.advancedhunt.menu;
+package de.theredend2000.advancedhunt.menu.common;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -1,6 +1,7 @@
-package de.theredend2000.advancedhunt.menu;
+package de.theredend2000.advancedhunt.menu.act;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ActFormatParser;
