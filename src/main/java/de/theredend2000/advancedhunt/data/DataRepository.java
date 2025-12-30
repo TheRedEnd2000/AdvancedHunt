@@ -1,8 +1,6 @@
 package de.theredend2000.advancedhunt.data;
 
-import de.theredend2000.advancedhunt.model.Collection;
-import de.theredend2000.advancedhunt.model.PlayerData;
-import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -79,6 +77,11 @@ public interface DataRepository {
      * @return set of treasure UUIDs the player has found in the collection
      */
     CompletableFuture<Set<UUID>> getPlayerFoundInCollection(UUID playerUuid, UUID collectionId);
+
+    // Reward Presets
+    CompletableFuture<List<RewardPreset>> loadRewardPresets(RewardPresetType type);
+    CompletableFuture<Void> saveRewardPreset(RewardPreset preset);
+    CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId);
     
     /**
      * Flushes any pending index data to persistent storage.

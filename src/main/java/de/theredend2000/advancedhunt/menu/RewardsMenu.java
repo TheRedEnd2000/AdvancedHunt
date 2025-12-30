@@ -1,11 +1,10 @@
 package de.theredend2000.advancedhunt.menu;
 
 import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.model.Reward;
-import de.theredend2000.advancedhunt.model.RewardHolder;
-import de.theredend2000.advancedhunt.model.RewardType;
+import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -173,40 +172,64 @@ public class RewardsMenu extends PagedMenu {
         }
 
         // Determine if we're in treasure or collection context
-        boolean isCollection = titleKey.contains("collection");
-        String presetContext = isCollection ? "collection" : "treasure";
+        RewardPresetType presetType = titleKey.contains("collection") ? RewardPresetType.COLLECTION : RewardPresetType.TREASURE;
+        boolean isCollection = presetType == RewardPresetType.COLLECTION;
+        String presetContext = presetType == RewardPresetType.COLLECTION ? "collection" : "treasure";
 
-        // Preset save button
-        addButton(45, new ItemBuilder(Material.WRITABLE_BOOK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.save_preset_" + presetContext + ".name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.save_preset_" + presetContext + ".lore", false))
-                .build(), e -> {
-            // Prompt for preset name
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.prompt_name_" + presetContext));
-            plugin.getChatInputListener().requestInput(playerMenuUtility, presetName -> {
-                // check here if exists
-                if (presetName == null || presetName.trim().isEmpty()) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.invalid_name"));
-                    open();
-                    return;
-                }
+        // Preset save/load buttons (edit mode only, and not when already editing a preset)
+        if (editMode && !(holder instanceof PresetRewardHolder)) {
+            // Preset save button
+            addButton(45, new ItemBuilder(Material.WRITABLE_BOOK)
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.save_preset_" + presetContext + ".name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.save_preset_" + presetContext + ".lore", false))
+                    .build(), e -> {
+                // Prompt for preset name
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.prompt_name_" + presetContext));
+                plugin.getChatInputListener().requestInput(playerMenuUtility, presetName -> {
+                    if (presetName == null || presetName.trim().isEmpty()) {
+                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.invalid_name"));
+                        open();
+                        return;
+                    }
 
-                // Save preset logic here
+                    String trimmed = presetName.trim();
+                    if (plugin.getRewardPresetManager().hasPresetName(presetType, trimmed)) {
+                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.duplicate_name"));
+                        open();
+                        return;
+                    }
 
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.saved_" + presetContext,
-                        "%name%", presetName));
-                open();
+                    plugin.getRewardPresetManager().createPreset(presetType, trimmed, new ArrayList<>(rewards)).thenAccept(success -> {
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            if (!success) {
+                                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.save_failed_" + presetContext));
+                                open();
+                                return;
+                            }
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.saved_" + presetContext,
+                                    "%name%", trimmed));
+                            open();
+                        });
+                    });
+                });
             });
-        });
 
-        // Preset load button
-        addButton(46, new ItemBuilder(Material.WRITTEN_BOOK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.load_preset_" + presetContext + ".name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset_" + presetContext + ".lore", false))
-                .build(), e -> {
-            // Open preset selection menu
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.opening_" + presetContext));
-        });
+            // Preset load button
+            addButton(46, new ItemBuilder(Material.WRITTEN_BOOK)
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.load_preset_" + presetContext + ".name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset_" + presetContext + ".lore", false))
+                    .build(), e -> {
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.opening_" + presetContext));
+                new RewardPresetListMenu(playerMenuUtility, plugin, presetType, selected -> {
+                    rewards.clear();
+                    rewards.addAll(selected.getRewards());
+                    holder.saveRewards(new ArrayList<>(rewards));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.loaded_" + presetContext,
+                            "%name%", selected.getName()));
+                    Bukkit.getScheduler().runTask(plugin, RewardsMenu.this::open);
+                }).setPreviousMenu(this).open();
+            });
+        }
 
         // Switch context button (treasure <-> collection)
         if (alternateHolder != null) {

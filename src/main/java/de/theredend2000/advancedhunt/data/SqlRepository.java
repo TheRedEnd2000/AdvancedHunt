@@ -73,6 +73,20 @@ public class SqlRepository implements DataRepository {
                 conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN progress_reset_cron VARCHAR(64)");
             } catch (SQLException ignored) {}
         });
+
+        schemaMigrations.put(6, conn -> {
+            try {
+                conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN default_treasure_reward_preset_id VARCHAR(36)");
+            } catch (SQLException ignored) {}
+
+            try {
+                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
+                        "id VARCHAR(36) PRIMARY KEY, " +
+                        "type VARCHAR(16) NOT NULL, " +
+                        "name VARCHAR(64) NOT NULL, " +
+                        "rewards TEXT)");
+            } catch (SQLException ignored) {}
+        });
     }
 
     @Override
@@ -120,6 +134,14 @@ public class SqlRepository implements DataRepository {
                     "active_end VARCHAR(32), " +
                     "progress_reset_cron VARCHAR(64), " +
                     "single_player_find BOOLEAN, " +
+                    "rewards TEXT, " +
+                    "default_treasure_reward_preset_id VARCHAR(36))");
+
+                // Reward Presets Table
+                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
+                    "id VARCHAR(36) PRIMARY KEY, " +
+                    "type VARCHAR(16) NOT NULL, " +
+                    "name VARCHAR(64) NOT NULL, " +
                     "rewards TEXT)");
 
             // ACT Rules Table
@@ -496,6 +518,15 @@ public class SqlRepository implements DataRepository {
                     Collection c = new Collection(id, name, enabled);
                     c.setProgressResetCron(rs.getString("progress_reset_cron"));
                     c.setSinglePlayerFind(rs.getBoolean("single_player_find"));
+
+                    String defaultPreset = rs.getString("default_treasure_reward_preset_id");
+                    if (defaultPreset != null && !defaultPreset.isBlank()) {
+                        try {
+                            c.setDefaultTreasureRewardPresetId(UUID.fromString(defaultPreset));
+                        } catch (IllegalArgumentException ignored) {
+                            c.setDefaultTreasureRewardPresetId(null);
+                        }
+                    }
                     
                     String rewardsJson = rs.getString("rewards");
                     List<Reward> rewards = gson.fromJson(rewardsJson, REWARD_LIST_TYPE);
@@ -519,13 +550,14 @@ public class SqlRepository implements DataRepository {
         return CompletableFuture.runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
                 // Save collection
-                try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards) VALUES (?, ?, ?, ?, ?, ?)")) {
+                try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
                     ps.setString(1, collection.getId().toString());
                     ps.setString(2, collection.getName());
                     ps.setBoolean(3, collection.isEnabled());
                     ps.setString(4, collection.getProgressResetCron());
                     ps.setBoolean(5, collection.isSinglePlayerFind());
                     ps.setString(6, gson.toJson(collection.getCompletionRewards()));
+                    ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
                     ps.executeUpdate();
                 }
                 
@@ -548,6 +580,58 @@ public class SqlRepository implements DataRepository {
                         ps.executeUpdate();
                     }
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<RewardPreset>> loadRewardPresets(RewardPresetType type) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<RewardPreset> presets = new ArrayList<>();
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_reward_presets WHERE type = ?")) {
+                ps.setString(1, type.name());
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    UUID id = UUID.fromString(rs.getString("id"));
+                    String name = rs.getString("name");
+                    String rewardsJson = rs.getString("rewards");
+                    List<Reward> rewards = gson.fromJson(rewardsJson, REWARD_LIST_TYPE);
+                    presets.add(new RewardPreset(id, type, name, rewards));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return presets;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveRewardPreset(RewardPreset preset) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_reward_presets (id, type, name, rewards) VALUES (?, ?, ?, ?)")) {
+                ps.setString(1, preset.getId().toString());
+                ps.setString(2, preset.getType().name());
+                ps.setString(3, preset.getName());
+                ps.setString(4, gson.toJson(preset.getRewards()));
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_reward_presets WHERE id = ? AND type = ?")) {
+                ps.setString(1, presetId.toString());
+                ps.setString(2, type.name());
+                ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

@@ -124,13 +124,13 @@ public class TreasureManager {
      * Updates an existing treasure by replacing it with a new instance.
      * Used when modifying rewards or other treasure properties.
      */
-    public void updateTreasure(Treasure oldTreasure, Treasure newTreasure) {
+    public CompletableFuture<Void> updateTreasure(Treasure oldTreasure, Treasure newTreasure) {
         // Remove old from cache first
         removeCoreFromCache(oldTreasure.getId(), oldTreasure.getCollectionId(), oldTreasure.getLocation());
         fullTreasureCache.invalidate(oldTreasure.getId());
         
         // Save new treasure and add to cache
-        repository.saveTreasure(newTreasure).thenRun(() -> {
+        return repository.saveTreasure(newTreasure).thenRun(() -> {
             TreasureCore core = TreasureCore.from(newTreasure);
             addCoreToCache(core);
             fullTreasureCache.put(newTreasure.getId(), newTreasure);

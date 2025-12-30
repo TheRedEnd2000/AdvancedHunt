@@ -27,6 +27,7 @@ public class YamlRepository implements DataRepository {
     private File leaderboardFile;
     private File finderIndexFile;
     private File systemFile;
+    private File rewardPresetsFile;
     private BukkitTask flushTask;
     
     // In-memory indexes for efficient lookups (rebuilt on init, updated on save)
@@ -76,6 +77,14 @@ public class YamlRepository implements DataRepository {
         }
         finderIndexFile = new File(plugin.getDataFolder(), "finder-index.yml");
         systemFile = new File(plugin.getDataFolder(), "system.yml");
+        rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
+        if (!rewardPresetsFile.exists()) {
+            try {
+                rewardPresetsFile.createNewFile();
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to create reward-presets.yml", e);
+            }
+        }
         
         // Build in-memory indexes
         buildTreasureToCollectionIndex();
@@ -513,6 +522,15 @@ public class YamlRepository implements DataRepository {
                             Collection c = new Collection(id, name, enabled);
                             c.setProgressResetCron(config.getString("progress-reset-cron"));
                             c.setSinglePlayerFind(config.getBoolean("single-player-find"));
+
+                            String defaultPresetId = config.getString("default-treasure-reward-preset-id");
+                            if (defaultPresetId != null && !defaultPresetId.isBlank()) {
+                                try {
+                                    c.setDefaultTreasureRewardPresetId(UUID.fromString(defaultPresetId));
+                                } catch (IllegalArgumentException ignored) {
+                                    c.setDefaultTreasureRewardPresetId(null);
+                                }
+                            }
                             
                             // Load ACT rules
                             List<Map<?, ?>> rulesList = config.getMapList("act-rules");
@@ -564,6 +582,8 @@ public class YamlRepository implements DataRepository {
             config.set("enabled", collection.isEnabled());
             config.set("progress-reset-cron", collection.getProgressResetCron());
             config.set("single-player-find", collection.isSinglePlayerFind());
+                config.set("default-treasure-reward-preset-id",
+                    collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
             
             // Save ACT rules
             List<Map<String, Object>> rulesList = new ArrayList<>();
@@ -582,6 +602,67 @@ public class YamlRepository implements DataRepository {
             config.set("rewards", serializeRewards(collection.getCompletionRewards()));
             
             saveConfig(config, file);
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<RewardPreset>> loadRewardPresets(RewardPresetType type) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (rewardPresetsFile == null) {
+                rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
+            }
+            FileConfiguration config = YamlConfiguration.loadConfiguration(rewardPresetsFile);
+            String rootKey = type == RewardPresetType.COLLECTION ? "collection" : "treasure";
+
+            var section = config.getConfigurationSection(rootKey);
+            if (section == null) {
+                return new ArrayList<>();
+            }
+
+            List<RewardPreset> presets = new ArrayList<>();
+            for (String idStr : section.getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(idStr);
+                    String name = section.getString(idStr + ".name");
+                    List<Map<?, ?>> rewardList = section.getMapList(idStr + ".rewards");
+                    List<Reward> rewards = deserializeRewards(rewardList);
+                    if (name != null) {
+                        presets.add(new RewardPreset(id, type, name, rewards));
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to load reward preset " + idStr + ": " + e.getMessage());
+                }
+            }
+            return presets;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveRewardPreset(RewardPreset preset) {
+        return CompletableFuture.runAsync(() -> {
+            if (rewardPresetsFile == null) {
+                rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
+            }
+            FileConfiguration config = YamlConfiguration.loadConfiguration(rewardPresetsFile);
+            String rootKey = preset.getType() == RewardPresetType.COLLECTION ? "collection" : "treasure";
+            String base = rootKey + "." + preset.getId();
+
+            config.set(base + ".name", preset.getName());
+            config.set(base + ".rewards", serializeRewards(preset.getRewards()));
+            saveConfig(config, rewardPresetsFile);
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId) {
+        return CompletableFuture.runAsync(() -> {
+            if (rewardPresetsFile == null) {
+                rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
+            }
+            FileConfiguration config = YamlConfiguration.loadConfiguration(rewardPresetsFile);
+            String rootKey = type == RewardPresetType.COLLECTION ? "collection" : "treasure";
+            config.set(rootKey + "." + presetId, null);
+            saveConfig(config, rewardPresetsFile);
         });
     }
 
