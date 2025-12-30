@@ -17,8 +17,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SqlRepository implements DataRepository {
 
@@ -30,6 +31,9 @@ public class SqlRepository implements DataRepository {
     private final int port;
     private final boolean useSqlite;
     private final Gson gson;
+
+    private final ExecutorService sqliteExecutor;
+    private final Executor asyncExecutor;
 
     private final Map<Integer, Consumer<Connection>> schemaMigrations = new HashMap<>();
     // Cache the version to avoid repeated DB queries
@@ -44,8 +48,35 @@ public class SqlRepository implements DataRepository {
         this.password = password;
         this.useSqlite = useSqlite;
         this.gson = new Gson();
+
+        if (useSqlite) {
+            ThreadFactory threadFactory = runnable -> {
+                Thread thread = new Thread(runnable, "AdvancedHunt-SQLite");
+                thread.setDaemon(true);
+                return thread;
+            };
+            this.sqliteExecutor = Executors.newSingleThreadExecutor(threadFactory);
+            this.asyncExecutor = this.sqliteExecutor;
+        } else {
+            this.sqliteExecutor = null;
+            this.asyncExecutor = null;
+        }
         
         registerMigrations();
+    }
+
+    private <T> CompletableFuture<T> supplyAsync(Supplier<T> supplier) {
+        if (asyncExecutor == null) {
+            return CompletableFuture.supplyAsync(supplier);
+        }
+        return CompletableFuture.supplyAsync(supplier, asyncExecutor);
+    }
+
+    private CompletableFuture<Void> runAsync(Runnable runnable) {
+        if (asyncExecutor == null) {
+            return CompletableFuture.runAsync(runnable);
+        }
+        return CompletableFuture.runAsync(runnable, asyncExecutor);
     }
 
     private void registerMigrations() {
@@ -100,12 +131,18 @@ public class SqlRepository implements DataRepository {
             }
             File dbFile = new File(dataFolder, "database.db");
             config.setJdbcUrl("jdbc:sqlite:" + dbFile.getAbsolutePath());
+
+            // SQLite is single-writer; using a pool > 1 causes frequent SQLITE_BUSY during concurrent writes.
+            // Serialize access and let SQLite wait a bit for locks.
+            config.setMaximumPoolSize(1);
+            config.setMinimumIdle(1);
+            config.setConnectionInitSql("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; PRAGMA busy_timeout=5000;");
         } else {
             config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
             config.setUsername(username);
             config.setPassword(password);
+            config.setMaximumPoolSize(10);
         }
-        config.setMaximumPoolSize(10);
         dataSource = new HikariDataSource(config);
 
         createTables();
@@ -294,11 +331,15 @@ public class SqlRepository implements DataRepository {
         if (dataSource != null) {
             dataSource.close();
         }
+
+        if (sqliteExecutor != null) {
+            sqliteExecutor.shutdownNow();
+        }
     }
 
     @Override
     public CompletableFuture<PlayerData> loadPlayerData(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             PlayerData data = new PlayerData(playerUuid);
             try (Connection conn = dataSource.getConnection()) {
                 // Load found treasures
@@ -329,7 +370,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> savePlayerData(PlayerData playerData) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
                 // Save selected collection
                 try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_players (uuid, selected_collection_id) VALUES (?, ?)")) {
@@ -359,7 +400,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> savePlayerDataBatch(List<PlayerData> playerDataList) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             if (playerDataList.isEmpty()) return;
             
             try (Connection conn = dataSource.getConnection()) {
@@ -409,7 +450,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<Treasure>> loadTreasures() {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             List<Treasure> treasures = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_treasures")) {
@@ -440,7 +481,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> saveTreasure(Treasure treasure) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_treasures (id, collection_id, world, x, y, z, rewards, block_data, material, block_state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 ps.setString(1, treasure.getId().toString());
@@ -462,7 +503,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> deleteTreasure(UUID treasureId) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_treasures WHERE id = ?")) {
                 ps.setString(1, treasureId.toString());
@@ -475,7 +516,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Treasure> loadTreasure(UUID treasureId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_treasures WHERE id = ?")) {
                 ps.setString(1, treasureId.toString());
@@ -506,7 +547,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<Collection>> loadCollections() {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             List<Collection> collections = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_collections")) {
@@ -547,7 +588,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> saveCollection(Collection collection) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
                 // Save collection
                 try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
@@ -588,7 +629,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<RewardPreset>> loadRewardPresets(RewardPresetType type) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             List<RewardPreset> presets = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_reward_presets WHERE type = ?")) {
@@ -610,7 +651,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> saveRewardPreset(RewardPreset preset) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_reward_presets (id, type, name, rewards) VALUES (?, ?, ?, ?)")) {
                 ps.setString(1, preset.getId().toString());
@@ -626,7 +667,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_reward_presets WHERE id = ? AND type = ?")) {
                 ps.setString(1, presetId.toString());
@@ -640,7 +681,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> deleteCollection(UUID id) {
-        return CompletableFuture.runAsync(() -> {
+        return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
                 // Delete collection
                 try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_collections WHERE id = ?")) {
@@ -660,7 +701,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Boolean> renameCollection(UUID id, String newName) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
                 // Check if new name exists
                 try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM ah_collections WHERE name = ?")) {
@@ -682,7 +723,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<PlayerData>> loadAllPlayerData() {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             List<PlayerData> allData = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT player_uuid, treasure_id FROM ah_player_found")) {
@@ -703,7 +744,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<UUID>> getAllPlayerUUIDs() {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             List<UUID> uuids = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  ResultSet rs = conn.createStatement().executeQuery("SELECT uuid FROM ah_players")) {
@@ -719,7 +760,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Integer> resetAllProgress() {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_player_found")) {
                 return ps.executeUpdate();
@@ -732,7 +773,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Integer> resetCollectionProgress(UUID collectionId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             String sql = "DELETE FROM ah_player_found WHERE treasure_id IN (SELECT id FROM ah_treasures WHERE collection_id = ?)";
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -747,7 +788,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Integer> resetPlayerProgress(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_player_found WHERE player_uuid = ?")) {
                 ps.setString(1, playerUuid.toString());
@@ -761,7 +802,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Integer> resetPlayerCollectionProgress(UUID playerUuid, UUID collectionId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             String sql = "DELETE FROM ah_player_found WHERE player_uuid = ? AND treasure_id IN (SELECT id FROM ah_treasures WHERE collection_id = ?)";
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -777,7 +818,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Map<UUID, Integer>> getLeaderboard(UUID collectionId, int limit) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             Map<UUID, Integer> leaderboard = new LinkedHashMap<>();
             String sql = "SELECT player_uuid, COUNT(*) as count FROM ah_player_found " +
                     "JOIN ah_treasures ON ah_player_found.treasure_id = ah_treasures.id " +
@@ -800,7 +841,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<UUID>> getPlayersWhoFound(UUID treasureId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             List<UUID> players = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT player_uuid FROM ah_player_found WHERE treasure_id = ?")) {
@@ -818,7 +859,7 @@ public class SqlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Set<UUID>> getPlayerFoundInCollection(UUID playerUuid, UUID collectionId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return supplyAsync(() -> {
             Set<UUID> treasures = new HashSet<>();
             String sql = "SELECT pf.treasure_id FROM ah_player_found pf " +
                     "JOIN ah_treasures t ON pf.treasure_id = t.id " +
