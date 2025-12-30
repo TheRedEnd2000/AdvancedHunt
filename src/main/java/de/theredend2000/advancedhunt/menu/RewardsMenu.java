@@ -220,6 +220,14 @@ public class RewardsMenu extends PagedMenu {
                     .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset_" + presetContext + ".lore", false))
                     .build(), e -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.opening_" + presetContext));
+
+                Collection collectionContext = null;
+                if (holder instanceof CollectionRewardHolder collectionRewardHolder) {
+                    collectionContext = collectionRewardHolder.getCollection();
+                } else if (alternateHolder instanceof CollectionRewardHolder collectionRewardHolder) {
+                    collectionContext = collectionRewardHolder.getCollection();
+                }
+
                 new RewardPresetListMenu(playerMenuUtility, plugin, presetType, selected -> {
                     rewards.clear();
                     rewards.addAll(selected.getRewards());
@@ -227,7 +235,7 @@ public class RewardsMenu extends PagedMenu {
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.loaded_" + presetContext,
                             "%name%", selected.getName()));
                     Bukkit.getScheduler().runTask(plugin, RewardsMenu.this::open);
-                }).setPreviousMenu(this).open();
+                }, collectionContext).setPreviousMenu(this).open();
             });
         }
 

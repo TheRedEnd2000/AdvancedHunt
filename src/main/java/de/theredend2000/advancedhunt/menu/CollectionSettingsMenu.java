@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CollectionSettingsMenu extends Menu {
 
@@ -217,27 +218,50 @@ public class CollectionSettingsMenu extends Menu {
                 "%count%", String.valueOf(cores.size()),
                 "%name%", preset.getName()));
 
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        for (TreasureCore core : cores) {
-            CompletableFuture<Void> f = plugin.getTreasureManager().getFullTreasureAsync(core.getId()).thenCompose(oldTreasure -> {
-                if (oldTreasure == null) {
-                    return CompletableFuture.completedFuture(null);
+        final int total = cores.size();
+        final AtomicInteger completed = new AtomicInteger(0);
+        final AtomicInteger nextPercentToReport = new AtomicInteger(10);
+
+        final int batchSize = 50;
+        final List<de.theredend2000.advancedhunt.model.Reward> rewardSnapshot =
+                preset.getRewards() == null ? java.util.Collections.emptyList() : java.util.List.copyOf(preset.getRewards());
+
+        CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
+        for (int i = 0; i < cores.size(); i += batchSize) {
+            final int start = i;
+            final int end = Math.min(i + batchSize, cores.size());
+            chain = chain.thenCompose(v -> {
+                List<CompletableFuture<Void>> batch = new ArrayList<>(end - start);
+                for (int j = start; j < end; j++) {
+                    batch.add(plugin.getTreasureManager().updateTreasureRewards(cores.get(j).getId(), rewardSnapshot));
                 }
-                Treasure newTreasure = new Treasure(
-                        oldTreasure.getId(),
-                        oldTreasure.getCollectionId(),
-                        oldTreasure.getLocation(),
-                        new ArrayList<>(preset.getRewards()),
-                        oldTreasure.getNbtData(),
-                        oldTreasure.getMaterial(),
-                        oldTreasure.getBlockState()
-                );
-                return plugin.getTreasureManager().updateTreasure(oldTreasure, newTreasure);
+                return CompletableFuture.allOf(batch.toArray(new CompletableFuture[0])).thenRun(() -> {
+                    int done = completed.addAndGet(end - start);
+                    if (total <= 0) return;
+                    int percent = (int) Math.floor((done * 100.0) / total);
+
+                    int next = nextPercentToReport.get();
+                    if (percent < next) return;
+
+                    while (percent >= next && next < 100) {
+                        if (!nextPercentToReport.compareAndSet(next, next + 10)) {
+                            next = nextPercentToReport.get();
+                            continue;
+                        }
+                        int percentToSend = next;
+                        Bukkit.getScheduler().runTask(plugin, () -> playerMenuUtility.sendMessage(
+                                plugin.getMessageManager().getMessage("feedback.preset.override.progress",
+                                        "%percent%", String.valueOf(percentToSend),
+                                        "%current%", String.valueOf(done),
+                                        "%total%", String.valueOf(total))
+                        ));
+                        next += 10;
+                    }
+                });
             });
-            futures.add(f);
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((v, ex) -> {
+        chain.whenComplete((v, ex) -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (ex != null) {
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.override.failed"));

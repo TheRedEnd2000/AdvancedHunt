@@ -480,6 +480,31 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<List<TreasureCore>> loadTreasureCores() {
+        return supplyAsync(() -> {
+            List<TreasureCore> cores = new ArrayList<>();
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT id, collection_id, world, x, y, z, material FROM ah_treasures")) {
+                var rs = ps.executeQuery();
+                while (rs.next()) {
+                    UUID id = UUID.fromString(rs.getString("id"));
+                    UUID collectionId = UUID.fromString(rs.getString("collection_id"));
+                    String world = rs.getString("world");
+                    int x = rs.getInt("x");
+                    int y = rs.getInt("y");
+                    int z = rs.getInt("z");
+                    Location loc = new Location(Bukkit.getWorld(world), x, y, z);
+                    String material = rs.getString("material");
+                    cores.add(new TreasureCore(id, collectionId, loc, material));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return cores;
+        });
+    }
+
+    @Override
     public CompletableFuture<Void> saveTreasure(Treasure treasure) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
@@ -542,6 +567,20 @@ public class SqlRepository implements DataRepository {
                 e.printStackTrace();
             }
             return null;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<Reward> rewards) {
+        return runAsync(() -> {
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("UPDATE ah_treasures SET rewards = ? WHERE id = ?")) {
+                ps.setString(1, gson.toJson(rewards));
+                ps.setString(2, treasureId.toString());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
     }
 

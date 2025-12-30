@@ -51,6 +51,7 @@ feedback:
     override:
       none: "%prefix%&cNo treasures found in this collection."
       started: "%prefix%&eOverriding &f%count%&e treasures with preset '&f%name%&e'..."
+      progress: "%prefix%&eOverride progress: &f%percent%%% &7(%current%/%total%)"
       done: "%prefix%&aOverrode &f%count%&a treasures with preset '&f%name%&a'."
       failed: "%prefix%&cFailed to override treasure rewards. Check console for details."
 prefix: "&6AdvancedHunt &8>> &7"
@@ -119,6 +120,7 @@ command:
     player_not_found: "%prefix%&cPlayer not found or has never played on this server."
   migration:
     started: "%prefix%&aStorage migration started (copying all data to target storage)..."
+    progress: "%prefix%&eMigration progress: &f%percent%%% &7(%current%/%total%) &8- &7%stage%"
     success: "%prefix%&aStorage migration successful! All data has been copied to the target storage."
     failed: "%prefix%&cStorage migration failed. Check console for errors."
     mysql_not_configured: "%prefix%&cMySQL migration settings not configured! Please edit config.yml under 'migration.target' section with your target database details."

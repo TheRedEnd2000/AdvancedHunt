@@ -6,10 +6,8 @@ import de.theredend2000.advancedhunt.data.SqlRepository;
 import de.theredend2000.advancedhunt.data.YamlRepository;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameType;
 import de.theredend2000.advancedhunt.menu.*;
+import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
-import de.theredend2000.advancedhunt.model.Treasure;
-import de.theredend2000.advancedhunt.model.TreasureCore;
-import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -24,6 +22,7 @@ import org.incendo.cloud.suggestion.SuggestionProvider;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -645,13 +644,21 @@ public class AdvancedHuntCommand {
         CompletableFuture.allOf(
                 targetRepo.loadCollections(),
                 targetRepo.loadTreasures(),
-                targetRepo.loadAllPlayerData()
+            targetRepo.loadAllPlayerData(),
+            targetRepo.loadRewardPresets(RewardPresetType.TREASURE),
+            targetRepo.loadRewardPresets(RewardPresetType.COLLECTION)
         ).thenCompose(v -> {
             int existingCollections = safeGetSize(targetRepo.loadCollections());
             int existingTreasures = safeGetSize(targetRepo.loadTreasures());
             int existingPlayerData = safeGetSize(targetRepo.loadAllPlayerData());
+            int existingTreasurePresets = safeGetSize(targetRepo.loadRewardPresets(RewardPresetType.TREASURE));
+            int existingCollectionPresets = safeGetSize(targetRepo.loadRewardPresets(RewardPresetType.COLLECTION));
 
-            boolean hasExistingData = existingCollections > 0 || existingTreasures > 0 || existingPlayerData > 0;
+            boolean hasExistingData = existingCollections > 0
+                || existingTreasures > 0
+                || existingPlayerData > 0
+                || existingTreasurePresets > 0
+                || existingCollectionPresets > 0;
 
             if (hasExistingData && !force) {
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.existing_data_abort",
@@ -669,7 +676,18 @@ public class AdvancedHuntCommand {
                         "%players%", String.valueOf(existingPlayerData)));
             }
 
-            return plugin.getMigrationService().migrate(plugin.getDataRepository(), targetRepo);
+            final AtomicInteger lastPercentSent = new AtomicInteger(-1);
+            return plugin.getMigrationService().migrate(plugin.getDataRepository(), targetRepo, progress -> {
+                int percent = progress.percent();
+                if (lastPercentSent.getAndSet(percent) == percent) return;
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(
+                        plugin.getMessageManager().getMessage("command.migration.progress",
+                                "%percent%", String.valueOf(progress.percent()),
+                                "%current%", String.valueOf(progress.current()),
+                                "%total%", String.valueOf(progress.total()),
+                                "%stage%", String.valueOf(progress.stage()))
+                ));
+            });
         }).thenRun(() -> {
             sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
             targetRepo.shutdown();
