@@ -56,18 +56,19 @@ public class TreasureManager {
     }
 
     public void loadTreasures() {
-        repository.loadTreasures().thenAccept(treasures -> {
+        repository.loadTreasureCores().thenAccept(cores -> {
             treasureChunkMap.clear();
             collectionTreasureMap.clear();
             treasureToCollectionIndex.clear();
             treasureCoreById.clear();
             fullTreasureCache.invalidateAll();
             
-            for (Treasure t : treasures) {
-                TreasureCore core = TreasureCore.from(t);
+            if (cores == null) {
+                return;
+            }
+
+            for (TreasureCore core : cores) {
                 addCoreToCache(core);
-                // Also cache the full treasure since we just loaded it
-                fullTreasureCache.put(t.getId(), t);
             }
         });
     }
@@ -134,6 +135,31 @@ public class TreasureManager {
             TreasureCore core = TreasureCore.from(newTreasure);
             addCoreToCache(core);
             fullTreasureCache.put(newTreasure.getId(), newTreasure);
+        });
+    }
+
+    /**
+     * Updates only the rewards of a treasure.
+     *
+     * This avoids loading/saving heavy treasure data and is intended for bulk operations.
+     */
+    public CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<de.theredend2000.advancedhunt.model.Reward> rewards) {
+        return repository.updateTreasureRewards(treasureId, rewards).thenRun(() -> {
+            Treasure cached = fullTreasureCache.getIfPresent(treasureId);
+            if (cached == null) {
+                return;
+            }
+
+            Treasure updated = new Treasure(
+                    cached.getId(),
+                    cached.getCollectionId(),
+                    cached.getLocation(),
+                    rewards,
+                    cached.getNbtData(),
+                    cached.getMaterial(),
+                    cached.getBlockState()
+            );
+            fullTreasureCache.put(treasureId, updated);
         });
     }
 

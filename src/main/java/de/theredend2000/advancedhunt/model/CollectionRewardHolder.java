@@ -29,4 +29,8 @@ public class CollectionRewardHolder implements RewardHolder {
     public String getDisplayName() {
         return collection.getName();
     }
+
+    public Collection getCollection() {
+        return collection;
+    }
 }

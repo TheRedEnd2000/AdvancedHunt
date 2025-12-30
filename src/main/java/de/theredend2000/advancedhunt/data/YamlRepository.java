@@ -408,6 +408,47 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<List<TreasureCore>> loadTreasureCores() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<TreasureCore> cores = new ArrayList<>();
+            File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
+            if (collectionDirs != null) {
+                for (File collectionDir : collectionDirs) {
+                    File treasuresDir = new File(collectionDir, "treasures");
+                    if (treasuresDir.exists() && treasuresDir.isDirectory()) {
+                        File[] files = treasuresDir.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+                        if (files != null) {
+                            for (File file : files) {
+                                try {
+                                    String fileName = file.getName().replace(YML_EXTENSION, "");
+                                    UUID id = UUID.fromString(fileName);
+                                    FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+                                    String collectionIdStr = config.getString("collection-id");
+                                    if (collectionIdStr == null) continue;
+
+                                    UUID collectionId = UUID.fromString(collectionIdStr);
+                                    String worldName = config.getString("world");
+                                    int x = config.getInt("x");
+                                    int y = config.getInt("y");
+                                    int z = config.getInt("z");
+                                    Location loc = new Location(Bukkit.getWorld(worldName), x, y, z);
+
+                                    String material = config.getString("material");
+                                    cores.add(new TreasureCore(id, collectionId, loc, material));
+                                } catch (Exception e) {
+                                    plugin.getLogger().warning("Failed to load treasure core " + file.getName() + ": " + e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return cores;
+        });
+    }
+
+    @Override
     public CompletableFuture<Void> saveTreasure(Treasure treasure) {
         return CompletableFuture.runAsync(() -> {
             File collectionDir = new File(collectionsFolder, treasure.getCollectionId().toString());
@@ -436,6 +477,47 @@ public class YamlRepository implements DataRepository {
             
             // Update treasure-to-collection index
             treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<Reward> rewards) {
+        return CompletableFuture.runAsync(() -> {
+            UUID collectionId = treasureToCollectionIndex.get(treasureId);
+            File treasureFile = null;
+
+            if (collectionId != null) {
+                File treasuresDir = new File(new File(collectionsFolder, collectionId.toString()), "treasures");
+                treasureFile = new File(treasuresDir, treasureId.toString() + YML_EXTENSION);
+                if (!treasureFile.exists()) {
+                    treasureFile = null;
+                }
+            }
+
+            // Fallback scan if index is missing/outdated
+            if (treasureFile == null) {
+                File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
+                if (collectionDirs != null) {
+                    for (File collectionDir : collectionDirs) {
+                        File treasuresDir = new File(collectionDir, "treasures");
+                        if (treasuresDir.exists()) {
+                            File candidate = new File(treasuresDir, treasureId.toString() + YML_EXTENSION);
+                            if (candidate.exists()) {
+                                treasureFile = candidate;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (treasureFile == null) {
+                return;
+            }
+
+            FileConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
+            config.set("rewards", serializeRewards(rewards));
+            saveConfig(config, treasureFile);
         });
     }
 

@@ -44,6 +44,15 @@ public interface DataRepository {
 
     // Treasures
     CompletableFuture<List<Treasure>> loadTreasures();
+
+    /**
+     * Loads lightweight treasure cores (no rewards, no NBT/block state).
+     *
+     * This is the preferred startup/indexing API for memory and performance.
+     * Use {@link #loadTreasure(UUID)} when full treasure data is required.
+     */
+    CompletableFuture<List<TreasureCore>> loadTreasureCores();
+
     CompletableFuture<Void> saveTreasure(Treasure treasure);
     CompletableFuture<Void> deleteTreasure(UUID treasureId);
     
@@ -54,6 +63,13 @@ public interface DataRepository {
      * @return the full treasure object, or null if not found
      */
     CompletableFuture<Treasure> loadTreasure(UUID treasureId);
+
+    /**
+     * Updates only the rewards of a treasure.
+     *
+     * This avoids loading/saving full treasure data (e.g. NBT) for bulk operations.
+     */
+    CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<Reward> rewards);
 
     // Collections
     CompletableFuture<List<Collection>> loadCollections();
