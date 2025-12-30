@@ -1,7 +1,9 @@
-package de.theredend2000.advancedhunt.menu;
+package de.theredend2000.advancedhunt.menu.treasure;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.Menu;
+import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
