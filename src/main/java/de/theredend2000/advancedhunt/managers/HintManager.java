@@ -257,10 +257,6 @@ public class HintManager {
                 messageKey = "hint.coordinate_x";
                 coordinateValue = String.valueOf(treasureLoc.getBlockX());
                 break;
-            case Y:
-                messageKey = "hint.coordinate_y";
-                coordinateValue = String.valueOf(treasureLoc.getBlockY());
-                break;
             case Z:
                 messageKey = "hint.coordinate_z";
                 coordinateValue = String.valueOf(treasureLoc.getBlockZ());
@@ -292,7 +288,7 @@ public class HintManager {
             return revealType;
         }
         
-        // Only reveal X or Z (Y is too hard to use)
+        // Only reveal X or Z
         return ThreadLocalRandom.current().nextBoolean() ? CoordinateRevealType.X : CoordinateRevealType.Z;
     }
 
