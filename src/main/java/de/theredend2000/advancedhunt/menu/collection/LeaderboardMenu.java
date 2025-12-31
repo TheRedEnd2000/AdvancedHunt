@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.menu.collection;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.LeaderboardManager;
+import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.Treasure;
@@ -57,9 +58,20 @@ public class LeaderboardMenu extends PagedMenu {
 
     @Override
     public void setMenuItems() {
+        int displaylimit = plugin.getConfig().getInt("leaderboard.display-limit");
+        int refresh = plugin.getConfig().getInt("leaderboard.cache-refresh-interval");
+        double minutes = Math.round((refresh / 60.0) * 10.0) / 10.0;
+
+        addStaticItem(8,new ItemBuilder(Material.PLAYER_HEAD)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.info.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.info.lore", false
+                        , "%display_limit%", String.valueOf(displaylimit), "%refresh_interval%",String.valueOf(refresh), "%minutes%",String.valueOf(minutes)))
+                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0=")
+                .build()
+        );
+        addMenuBorder();
         if (isLoading) {
             // Show loading indicator
-            addMenuBorder();
             ItemStack loadingItem = new ItemBuilder(Material.HOPPER)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.loading.name", false))
                     .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.loading.lore", false))
@@ -70,8 +82,6 @@ public class LeaderboardMenu extends PagedMenu {
             fetchLeaderboardData();
             return;
         }
-
-        addMenuBorder();
         
         // Add "Your Rank" indicator at slot 4
         addYourRankIndicator();

@@ -486,6 +486,13 @@ gui:
         - "&7Click to view the top players"
         - "&7who have found the most"
         - "&7treasures in this collection."
+    info:
+      name: "&bLeaderboard Info"
+      lore:
+        - "&7Max entries shown: &f%display_limit%"
+        - "&7Cache refresh: &f%refresh_interval%s &8(%minutes%m)"
+        - ""
+        - "&8Leaderboard updates automatically"
   progress:
     title: "&8Progress: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
     loading: "&7Loading your progress..."

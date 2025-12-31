@@ -263,7 +263,8 @@ public class AdvancedHuntCommand {
     // ==================== Helper Methods ====================
 
     private Command.Builder<CommandSender> baseBuilder() {
-        return commandManager.commandBuilder("advancedhunt", "ah");
+        String[] parts = plugin.getConfig().getString("command.name", "advancedhunt|ah").split("\\|");
+        return commandManager.commandBuilder(parts[0], Arrays.copyOfRange(parts, 1, parts.length));
     }
 
     private Command.Builder<CommandSender> playerBuilder() {
