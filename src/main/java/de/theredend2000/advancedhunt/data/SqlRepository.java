@@ -546,6 +546,48 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Void> saveTreasuresBatch(List<Treasure> treasures) {
+        return runAsync(() -> {
+            if (treasures == null || treasures.isEmpty()) {
+                return;
+            }
+
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(
+                         "REPLACE INTO ah_treasures (id, collection_id, world, x, y, z, rewards, block_data, material, block_state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+
+                boolean originalAutoCommit = conn.getAutoCommit();
+                conn.setAutoCommit(false);
+                try {
+                    for (Treasure treasure : treasures) {
+                        ps.setString(1, treasure.getId().toString());
+                        ps.setString(2, treasure.getCollectionId().toString());
+                        ps.setString(3, treasure.getLocation().getWorld().getName());
+                        ps.setInt(4, treasure.getLocation().getBlockX());
+                        ps.setInt(5, treasure.getLocation().getBlockY());
+                        ps.setInt(6, treasure.getLocation().getBlockZ());
+                        ps.setString(7, gson.toJson(treasure.getRewards()));
+                        ps.setString(8, treasure.getNbtData());
+                        ps.setString(9, treasure.getMaterial());
+                        ps.setString(10, treasure.getBlockState());
+                        ps.addBatch();
+                    }
+
+                    ps.executeBatch();
+                    conn.commit();
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw e;
+                } finally {
+                    conn.setAutoCommit(originalAutoCommit);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<Void> deleteTreasure(UUID treasureId) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();

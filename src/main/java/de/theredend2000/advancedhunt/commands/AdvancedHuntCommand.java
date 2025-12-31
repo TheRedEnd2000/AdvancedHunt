@@ -696,6 +696,11 @@ public class AdvancedHuntCommand {
         final AtomicInteger saved = new AtomicInteger(0);
         final AtomicInteger saveFailed = new AtomicInteger(0);
 
+        final int saveBatchSize = 200;
+        final int maxInFlightBatches = 2;
+        final AtomicInteger inFlightBatches = new AtomicInteger(0);
+        final List<Treasure> pendingSaveBatch = new ArrayList<>(saveBatchSize);
+
         new BukkitRunnable() {
             int placed = 0;
             int attempts = 0;
@@ -711,7 +716,7 @@ public class AdvancedHuntCommand {
                     placingDone = true;
                 }
 
-                if (placingDone && saved.get() + saveFailed.get() >= placed) {
+                if (placingDone && pendingSaveBatch.isEmpty() && inFlightBatches.get() == 0 && saved.get() + saveFailed.get() >= placed) {
                     sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
                             + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures.&7 Attempts: &f" + attempts + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
@@ -722,9 +727,30 @@ public class AdvancedHuntCommand {
                     return;
                 }
 
+                // Flush any remaining batch once placement is done.
+                if (placingDone && !pendingSaveBatch.isEmpty() && inFlightBatches.get() < maxInFlightBatches) {
+                    List<Treasure> batch = new ArrayList<>(pendingSaveBatch);
+                    pendingSaveBatch.clear();
+                    inFlightBatches.incrementAndGet();
+                    plugin.getTreasureManager().addTreasuresBatchAsync(batch)
+                            .thenRun(() -> {
+                                saved.addAndGet(batch.size());
+                                inFlightBatches.decrementAndGet();
+                            })
+                            .exceptionally(ex -> {
+                                saveFailed.addAndGet(batch.size());
+                                inFlightBatches.decrementAndGet();
+                                return null;
+                            });
+                }
+
                 int placedThisTick = 0;
                 int attemptsThisTick = 0;
                 while (!placingDone && placedThisTick < batchSize && attemptsThisTick < maxAttemptsPerTick && placed < amount && attempts < maxAttempts) {
+                    // Backpressure: don't generate unlimited queued saves.
+                    if (pendingSaveBatch.size() >= saveBatchSize && inFlightBatches.get() >= maxInFlightBatches) {
+                        break;
+                    }
                     attempts++;
                     attemptsThisTick++;
 
@@ -772,12 +798,23 @@ public class AdvancedHuntCommand {
                             chosen.materialName(),
                             chosen.blockState()
                     );
-                        plugin.getTreasureManager().addTreasureAsync(treasure)
-                            .thenRun(saved::incrementAndGet)
-                            .exceptionally(ex -> {
-                            saveFailed.incrementAndGet();
-                            return null;
-                            });
+                    pendingSaveBatch.add(treasure);
+
+                    if (pendingSaveBatch.size() >= saveBatchSize && inFlightBatches.get() < maxInFlightBatches) {
+                        List<Treasure> batch = new ArrayList<>(pendingSaveBatch);
+                        pendingSaveBatch.clear();
+                        inFlightBatches.incrementAndGet();
+                        plugin.getTreasureManager().addTreasuresBatchAsync(batch)
+                                .thenRun(() -> {
+                                    saved.addAndGet(batch.size());
+                                    inFlightBatches.decrementAndGet();
+                                })
+                                .exceptionally(ex -> {
+                                    saveFailed.addAndGet(batch.size());
+                                    inFlightBatches.decrementAndGet();
+                                    return null;
+                                });
+                    }
 
                     placed++;
                     placedThisTick++;
@@ -844,6 +881,11 @@ public class AdvancedHuntCommand {
         final AtomicInteger saved = new AtomicInteger(0);
         final AtomicInteger saveFailed = new AtomicInteger(0);
 
+        final int saveBatchSize = 200;
+        final int maxInFlightBatches = 2;
+        final AtomicInteger inFlightBatches = new AtomicInteger(0);
+        final List<Treasure> pendingSaveBatch = new ArrayList<>(saveBatchSize);
+
         new BukkitRunnable() {
             int placed = 0;
             int checked = 0;
@@ -861,7 +903,7 @@ public class AdvancedHuntCommand {
                     placingDone = true;
                 }
 
-                if (placingDone && saved.get() + saveFailed.get() >= placed) {
+                if (placingDone && pendingSaveBatch.isEmpty() && inFlightBatches.get() == 0 && saved.get() + saveFailed.get() >= placed) {
                     sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
                             + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures on a plane.&7 Checked: &f" + checked + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
@@ -872,8 +914,27 @@ public class AdvancedHuntCommand {
                     return;
                 }
 
+                if (placingDone && !pendingSaveBatch.isEmpty() && inFlightBatches.get() < maxInFlightBatches) {
+                    List<Treasure> batch = new ArrayList<>(pendingSaveBatch);
+                    pendingSaveBatch.clear();
+                    inFlightBatches.incrementAndGet();
+                    plugin.getTreasureManager().addTreasuresBatchAsync(batch)
+                            .thenRun(() -> {
+                                saved.addAndGet(batch.size());
+                                inFlightBatches.decrementAndGet();
+                            })
+                            .exceptionally(ex -> {
+                                saveFailed.addAndGet(batch.size());
+                                inFlightBatches.decrementAndGet();
+                                return null;
+                            });
+                }
+
                 int placedThisTick = 0;
                 while (!placingDone && placedThisTick < batchSize && placed < amount && dz < side) {
+                    if (pendingSaveBatch.size() >= saveBatchSize && inFlightBatches.get() >= maxInFlightBatches) {
+                        break;
+                    }
                     int x = base.getBlockX() + start + dx;
                     int z = base.getBlockZ() + start + dz;
                     Block block = base.getWorld().getBlockAt(x, y, z);
@@ -905,12 +966,23 @@ public class AdvancedHuntCommand {
                                 chosen.materialName(),
                                 chosen.blockState()
                         );
-                        plugin.getTreasureManager().addTreasureAsync(treasure)
-                            .thenRun(saved::incrementAndGet)
-                            .exceptionally(ex -> {
-                                saveFailed.incrementAndGet();
-                                return null;
-                            });
+                        pendingSaveBatch.add(treasure);
+
+                        if (pendingSaveBatch.size() >= saveBatchSize && inFlightBatches.get() < maxInFlightBatches) {
+                            List<Treasure> batch = new ArrayList<>(pendingSaveBatch);
+                            pendingSaveBatch.clear();
+                            inFlightBatches.incrementAndGet();
+                            plugin.getTreasureManager().addTreasuresBatchAsync(batch)
+                                    .thenRun(() -> {
+                                        saved.addAndGet(batch.size());
+                                        inFlightBatches.decrementAndGet();
+                                    })
+                                    .exceptionally(ex -> {
+                                        saveFailed.addAndGet(batch.size());
+                                        inFlightBatches.decrementAndGet();
+                                        return null;
+                                    });
+                        }
                         placed++;
                         placedThisTick++;
                     }

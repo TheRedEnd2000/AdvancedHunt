@@ -54,6 +54,22 @@ public interface DataRepository {
     CompletableFuture<List<TreasureCore>> loadTreasureCores();
 
     CompletableFuture<Void> saveTreasure(Treasure treasure);
+
+    /**
+     * Saves a list of treasures in a batch.
+     *
+     * Implementations may use JDBC batch/transactions or optimized IO.
+     * Default implementation falls back to saving each treasure individually.
+     */
+    default CompletableFuture<Void> saveTreasuresBatch(List<Treasure> treasures) {
+        if (treasures == null || treasures.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        CompletableFuture<?>[] futures = treasures.stream()
+                .map(this::saveTreasure)
+                .toArray(CompletableFuture[]::new);
+        return CompletableFuture.allOf(futures);
+    }
     CompletableFuture<Void> deleteTreasure(UUID treasureId);
     
     /**
