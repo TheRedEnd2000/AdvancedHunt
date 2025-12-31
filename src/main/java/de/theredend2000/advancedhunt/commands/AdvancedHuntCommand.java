@@ -10,11 +10,20 @@ import de.theredend2000.advancedhunt.menu.place.ViewPlacePresetsMenu;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
+import org.bukkit.block.TileState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
@@ -29,6 +38,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AdvancedHuntCommand {
+
+    private static final String DEBUG_PLACED_MARKER = "AH_DEBUG_PLACED";
+
+    private record PaletteEntry(Material type, PlayerProfile ownerProfile, String materialName, String blockState, String nbtData) {
+    }
 
     private final Main plugin;
     private LegacyPaperCommandManager<CommandSender> commandManager;
@@ -235,6 +249,47 @@ public class AdvancedHuntCommand {
                         .literal("place")
                         .permission("advancedhunt.admin")
                         .handler(context -> new ViewPlacePresetsMenu((Player) context.sender(),plugin).open())
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("debug")
+                .literal("placecollection")
+                .required(collectionArg)
+                .required("amount", StringParser.stringParser())
+                .permission("advancedhunt.admin")
+                .handler(context -> debugPlaceCollectionRandom((Player) context.sender(), context.get("collection"), context.get("amount")))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("debug")
+                .literal("placecollection")
+                .required(collectionArg)
+                .required("amount", StringParser.stringParser())
+                .literal("random")
+                .permission("advancedhunt.admin")
+                .handler(context -> debugPlaceCollectionRandom((Player) context.sender(), context.get("collection"), context.get("amount")))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("debug")
+                .literal("placecollection")
+                .required(collectionArg)
+                .required("amount", StringParser.stringParser())
+                .literal("plane")
+                .permission("advancedhunt.admin")
+                .handler(context -> debugPlaceCollectionPlane((Player) context.sender(), context.get("collection"), context.get("amount")))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("debug")
+                .literal("removecollectionplaced")
+                .required(collectionArg)
+                .permission("advancedhunt.admin")
+                .handler(context -> debugRemoveCollectionPlaced((Player) context.sender(), context.get("collection")))
         );
 
         // ==================== Migration Commands ====================
@@ -589,6 +644,385 @@ public class AdvancedHuntCommand {
         plugin.getHintManager().deliverHint(player, treasure);
         
         player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&e[DEBUG] Hint delivered. Visual effects active if enabled in config.");
+    }
+
+    private void debugPlaceCollectionRandom(Player player, String collectionName, String amountRaw) {
+        int amount;
+        try {
+            amount = Integer.parseInt(amountRaw);
+        } catch (NumberFormatException e) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be a number.");
+            return;
+        }
+
+        if (amount <= 0) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be >= 1.");
+            return;
+        }
+
+        List<PaletteEntry> palette = getHotbarPaletteEntries(player);
+        if (palette.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                    + "&c[DEBUG] Put at least one placeable block in your hotbar (slots 1-9). ");
+            return;
+        }
+
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+        if (collectionOpt.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Unknown collection: &f" + collectionName);
+            return;
+        }
+        Collection collection = collectionOpt.get();
+
+        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                + "&e[DEBUG] Placing &f" + amount + "&e treasures (random) for collection &f" + collection.getName() + "&e...");
+
+        final int radius = 12;
+        final int verticalRadius = 8;
+        final long maxAttemptsLong = Math.max((long) amount * 25L, 50L);
+        final int maxAttempts = (int) Math.min(Integer.MAX_VALUE, maxAttemptsLong);
+        final Random random = new Random();
+        final NamespacedKey debugPlacedKey = new NamespacedKey(plugin, "debug_placed");
+        final Location base = player.getLocation().clone();
+
+        final List<Reward> defaultRewards = new ArrayList<>();
+        Optional.ofNullable(collection.getDefaultTreasureRewardPresetId())
+                .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
+                .ifPresent(preset -> defaultRewards.addAll(preset.getRewards()));
+        final List<Reward> sharedRewards = defaultRewards.isEmpty() ? Collections.emptyList() : List.copyOf(defaultRewards);
+
+        final int batchSize = 250; // tuned to avoid long single-tick stalls
+        final int maxAttemptsPerTick = Math.max(batchSize * 30, 500);
+        final Set<String> reserved = new HashSet<>(Math.min(amount * 2, 32_768));
+
+        new BukkitRunnable() {
+            int placed = 0;
+            int attempts = 0;
+
+            @Override
+            public void run() {
+                if (!player.isOnline() || player.getWorld() == null) {
+                    cancel();
+                    return;
+                }
+                if (placed >= amount || attempts >= maxAttempts) {
+                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount + "&7 (Attempts: " + attempts + ")");
+                    player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                            + "&a[DEBUG] Placed &f" + placed + "&a/" + amount + " treasures.&7 Attempts: " + attempts + ".");
+                    if (placed < amount) {
+                        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                                + "&e[DEBUG] Not enough valid spots found near you. Try moving to a flatter/open area.");
+                    }
+                    cancel();
+                    return;
+                }
+
+                int placedThisTick = 0;
+                int attemptsThisTick = 0;
+                while (placedThisTick < batchSize && attemptsThisTick < maxAttemptsPerTick && placed < amount && attempts < maxAttempts) {
+                    attempts++;
+                    attemptsThisTick++;
+
+                    int dx = random.nextInt(radius * 2 + 1) - radius;
+                    int dz = random.nextInt(radius * 2 + 1) - radius;
+                    int dy = random.nextInt(verticalRadius * 2 + 1) - verticalRadius;
+                    int x = base.getBlockX() + dx;
+                    int y = base.getBlockY() + dy;
+                    int z = base.getBlockZ() + dz;
+
+                    int minY = base.getWorld().getMinHeight();
+                    int maxY = base.getWorld().getMaxHeight() - 1;
+                    if (y < minY || y > maxY) continue;
+
+                    Block block = base.getWorld().getBlockAt(x, y, z);
+                    if (!block.getType().isAir()) continue;
+
+                    Location loc = block.getLocation();
+                    String key = loc.getWorld().getUID() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
+                    if (!reserved.add(key)) continue;
+                    if (plugin.getTreasureManager().getTreasureCoreAt(loc) != null) continue;
+
+                    PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
+                    block.setType(chosen.type(), false);
+
+                    if (chosen.type() == Material.PLAYER_HEAD && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
+                        try {
+                            skullState.setOwnerProfile(chosen.ownerProfile());
+                        } catch (Throwable ignored) {
+                        }
+                        skullState.update(true, false);
+                    }
+
+                    if (block.getState() instanceof TileState tileState) {
+                        tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
+                        tileState.update(true, false);
+                    }
+
+                    Treasure treasure = new Treasure(
+                            plugin.getTreasureManager().generateUniqueTreasureId(),
+                            collection.getId(),
+                            loc,
+                            sharedRewards,
+                            chosen.nbtData(),
+                            chosen.materialName(),
+                            chosen.blockState()
+                    );
+                    plugin.getTreasureManager().addTreasure(treasure);
+
+                    placed++;
+                    placedThisTick++;
+                }
+
+                if ((placedThisTick > 0 || attemptsThisTick > 0) && amount > 0) {
+                    sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount + "&7 (Attempts: " + attempts + ")");
+                }
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
+    }
+
+    private void debugPlaceCollectionPlane(Player player, String collectionName, String amountRaw) {
+        int amount;
+        try {
+            amount = Integer.parseInt(amountRaw);
+        } catch (NumberFormatException e) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be a number.");
+            return;
+        }
+
+        if (amount <= 0) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be >= 1.");
+            return;
+        }
+
+        List<PaletteEntry> palette = getHotbarPaletteEntries(player);
+        if (palette.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                    + "&c[DEBUG] Put at least one placeable block in your hotbar (slots 1-9). ");
+            return;
+        }
+
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+        if (collectionOpt.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Unknown collection: &f" + collectionName);
+            return;
+        }
+        Collection collection = collectionOpt.get();
+
+        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                + "&e[DEBUG] Placing &f" + amount + "&e treasures (plane) for collection &f" + collection.getName() + "&e...");
+
+        final List<Reward> defaultRewards = new ArrayList<>();
+        Optional.ofNullable(collection.getDefaultTreasureRewardPresetId())
+                .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
+                .ifPresent(preset -> defaultRewards.addAll(preset.getRewards()));
+        final List<Reward> sharedRewards = defaultRewards.isEmpty() ? Collections.emptyList() : List.copyOf(defaultRewards);
+
+        final NamespacedKey debugPlacedKey = new NamespacedKey(plugin, "debug_placed");
+        final Random random = new Random();
+
+        final Location base = player.getLocation().clone();
+        final int y = Math.min(base.getWorld().getMaxHeight() - 1, base.getBlockY() + 1);
+        final int side = (int) Math.ceil(Math.sqrt(amount));
+        final int start = -side / 2;
+
+        final int batchSize = 400;
+
+        new BukkitRunnable() {
+            int placed = 0;
+            int checked = 0;
+            int dx = 0;
+            int dz = 0;
+
+            @Override
+            public void run() {
+                if (!player.isOnline() || player.getWorld() == null) {
+                    cancel();
+                    return;
+                }
+                if (placed >= amount || dz >= side) {
+                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount + "&7 (Checked: " + checked + ")");
+                    player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                            + "&a[DEBUG] Placed &f" + placed + "&a/" + amount + " treasures on a plane. Checked: " + checked + ".");
+                    if (placed < amount) {
+                        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                                + "&e[DEBUG] Plane had blocked cells. Try an emptier area.");
+                    }
+                    cancel();
+                    return;
+                }
+
+                int placedThisTick = 0;
+                while (placedThisTick < batchSize && placed < amount && dz < side) {
+                    int x = base.getBlockX() + start + dx;
+                    int z = base.getBlockZ() + start + dz;
+                    Block block = base.getWorld().getBlockAt(x, y, z);
+                    checked++;
+
+                    if (block.getType().isAir() && plugin.getTreasureManager().getTreasureCoreAt(block.getLocation()) == null) {
+                        PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
+                        block.setType(chosen.type(), false);
+
+                        if (chosen.type() == Material.PLAYER_HEAD && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
+                            try {
+                                skullState.setOwnerProfile(chosen.ownerProfile());
+                            } catch (Throwable ignored) {
+                            }
+                            skullState.update(true, false);
+                        }
+
+                        if (block.getState() instanceof TileState tileState) {
+                            tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
+                            tileState.update(true, false);
+                        }
+
+                        Treasure treasure = new Treasure(
+                                plugin.getTreasureManager().generateUniqueTreasureId(),
+                                collection.getId(),
+                                block.getLocation(),
+                                sharedRewards,
+                                chosen.nbtData(),
+                                chosen.materialName(),
+                                chosen.blockState()
+                        );
+                        plugin.getTreasureManager().addTreasure(treasure);
+                        placed++;
+                        placedThisTick++;
+                    }
+
+                    dx++;
+                    if (dx >= side) {
+                        dx = 0;
+                        dz++;
+                    }
+                }
+
+                if (amount > 0) {
+                    sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount + "&7 (Checked: " + checked + ")");
+                }
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
+    }
+
+    private void sendActionBar(Player player, String message) {
+        try {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+        } catch (Throwable ignored) {
+            // Best-effort only; don't fail debug commands if action bar isn't supported.
+        }
+    }
+
+    private List<PaletteEntry> getHotbarPaletteEntries(Player player) {
+        List<PaletteEntry> entries = new ArrayList<>();
+        ItemStack[] contents = player.getInventory().getContents();
+        for (int slot = 0; slot <= 8; slot++) {
+            if (contents.length <= slot) break;
+            ItemStack item = contents[slot];
+            if (item == null) continue;
+            Material type = item.getType();
+            if (type.isAir()) continue;
+            if (!type.isBlock()) continue;
+
+            if (type == Material.PLAYER_WALL_HEAD) {
+                type = Material.PLAYER_HEAD;
+            }
+
+            PlayerProfile ownerProfile = null;
+            if (type == Material.PLAYER_HEAD) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta instanceof SkullMeta skullMeta) {
+                    try {
+                        ownerProfile = skullMeta.getOwnerProfile();
+                    } catch (Throwable ignored) {
+                    }
+                }
+            }
+
+            String blockState;
+            try {
+                blockState = type.createBlockData().getAsString();
+            } catch (Throwable ignored) {
+                // Fallback: if something goes wrong, keep old behavior by computing later.
+                blockState = "";
+            }
+
+            String nbtData = DEBUG_PLACED_MARKER;
+            if (type == Material.PLAYER_HEAD) {
+                try {
+                    String headNbt = de.tr7zw.nbtapi.NBT.get(item, de.tr7zw.nbtapi.iface.ReadableNBT::toString);
+                    if (headNbt != null && !headNbt.isEmpty()) {
+                        nbtData = DEBUG_PLACED_MARKER + "\n" + headNbt;
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+
+            entries.add(new PaletteEntry(type, ownerProfile, type.name(), blockState, nbtData));
+        }
+        return entries;
+    }
+
+    private void debugRemoveCollectionPlaced(Player player, String collectionName) {
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+        if (collectionOpt.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Unknown collection: &f" + collectionName);
+            return;
+        }
+        Collection collection = collectionOpt.get();
+
+        NamespacedKey debugPlacedKey = new NamespacedKey(plugin, "debug_placed");
+
+        List<TreasureCore> cores = new ArrayList<>(plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId()));
+        int removedTreasures = 0;
+        int removedBlocks = 0;
+        int matchedByPdc = 0;
+        int matchedByNbt = 0;
+
+        for (TreasureCore core : cores) {
+            Location loc = core.getLocation();
+            if (loc.getWorld() == null) continue;
+            Block block = loc.getBlock();
+
+            boolean isTaggedByPdc = false;
+            if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
+                if (block.getState() instanceof TileState tileState) {
+                    Byte value = tileState.getPersistentDataContainer().get(debugPlacedKey, PersistentDataType.BYTE);
+                    isTaggedByPdc = value != null && value == (byte) 1;
+                }
+            }
+
+            boolean isDebugTreasure = isTaggedByPdc;
+            if (isTaggedByPdc) {
+                matchedByPdc++;
+            } else {
+                // Fallback: check stored treasure NBT marker.
+                Treasure fullTreasure = plugin.getTreasureManager().getFullTreasure(core.getId());
+                String nbt = fullTreasure != null ? fullTreasure.getNbtData() : null;
+                if (nbt != null) {
+                    if (nbt.contains(DEBUG_PLACED_MARKER) || nbt.contains("advancedhunt:debug_placed") || nbt.contains("debug_placed")) {
+                        isDebugTreasure = true;
+                        matchedByNbt++;
+                    }
+                }
+            }
+
+            if (!isDebugTreasure) continue;
+
+            // Remove the physical block at the stored location (debug cleanup).
+            if (!block.getType().isAir()) {
+                block.setType(Material.AIR, false);
+                removedBlocks++;
+            }
+
+            // Remove from repository + caches
+            plugin.getTreasureManager().deleteTreasure(core);
+            removedTreasures++;
+        }
+
+        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                + "&a[DEBUG] Removed &f" + removedTreasures + "&a treasures and &f" + removedBlocks + "&a blocks for collection &f" + collection.getName() + "&a.");
+
+        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
+                + "&7[DEBUG] Matched by PDC: " + matchedByPdc + ", matched by stored NBT: " + matchedByNbt + ", scanned: " + cores.size() + ".");
     }
 
     private void migrate(CommandSender sender, String type, boolean force) {
