@@ -591,6 +591,43 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Integer> deleteTreasuresInCollection(UUID collectionId) {
+        return CompletableFuture.supplyAsync(() -> {
+            int deleted = 0;
+            File collectionDir = new File(collectionsFolder, collectionId.toString());
+            File treasuresDir = new File(collectionDir, "treasures");
+
+            // Collect ids from files (authoritative) so we can clean indexes reliably.
+            if (treasuresDir.exists() && treasuresDir.isDirectory()) {
+                File[] files = treasuresDir.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+                if (files != null) {
+                    for (File file : files) {
+                        try {
+                            String fileName = file.getName();
+                            if (!fileName.endsWith(YML_EXTENSION)) continue;
+                            UUID treasureId = UUID.fromString(fileName.substring(0, fileName.length() - YML_EXTENSION.length()));
+
+                            if (file.delete()) {
+                                deleted++;
+                            }
+
+                            treasureToCollectionIndex.remove(treasureId);
+                            treasureToFindersIndex.remove(treasureId);
+                        } catch (Exception ignored) {
+                            // Ignore malformed filenames; best-effort cleanup.
+                        }
+                    }
+                }
+            }
+
+            // Also purge any remaining index entries pointing to this collection.
+            treasureToCollectionIndex.entrySet().removeIf(e -> collectionId.equals(e.getValue()));
+            finderIndexDirty = true;
+            return deleted;
+        });
+    }
+
+    @Override
     public CompletableFuture<Treasure> loadTreasure(UUID treasureId) {
         return CompletableFuture.supplyAsync(() -> {
             // Use the collection index to find the treasure quickly

@@ -1074,65 +1074,93 @@ public class AdvancedHuntCommand {
     private void debugRemoveCollectionPlaced(Player player, String collectionName) {
         Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
         if (collectionOpt.isEmpty()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Unknown collection: &f" + collectionName);
+            sendDebugChat(player, "&c[DEBUG] Unknown collection: &f" + collectionName);
             return;
         }
         Collection collection = collectionOpt.get();
 
-        NamespacedKey debugPlacedKey = new NamespacedKey(plugin, "debug_placed");
-
         List<TreasureCore> cores = new ArrayList<>(plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId()));
-        int removedTreasures = 0;
-        int removedBlocks = 0;
-        int matchedByPdc = 0;
-        int matchedByNbt = 0;
+        int total = cores.size();
 
-        for (TreasureCore core : cores) {
-            Location loc = core.getLocation();
-            if (loc.getWorld() == null) continue;
-            Block block = loc.getBlock();
+        sendDebugChat(player, "&e[DEBUG] Removing &f" + total + "&e treasures for collection &b" + collection.getName() + "&e...");
 
-            boolean isTaggedByPdc = false;
-            if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
-                if (block.getState() instanceof TileState tileState) {
-                    Byte value = tileState.getPersistentDataContainer().get(debugPlacedKey, PersistentDataType.BYTE);
-                    isTaggedByPdc = value != null && value == (byte) 1;
+        // Remove from in-memory caches immediately to avoid lookups seeing deleted treasures.
+        plugin.getTreasureManager().removeCollection(collection.getId());
+
+        AtomicInteger blocksProcessed = new AtomicInteger(0);
+        AtomicInteger blocksRemoved = new AtomicInteger(0);
+        AtomicInteger blocksSkippedUnloaded = new AtomicInteger(0);
+        AtomicInteger dbDeleted = new AtomicInteger(-1);
+        AtomicInteger dbFailed = new AtomicInteger(0);
+
+        // Kick off repository-side bulk delete (fast for SQL; directory delete for YAML).
+        plugin.getDataRepository().deleteTreasuresInCollection(collection.getId())
+                .thenAccept(dbDeleted::set)
+                .exceptionally(ex -> {
+                    dbFailed.incrementAndGet();
+                    dbDeleted.set(0);
+                    return null;
+                });
+
+        final int batchSize = 600;
+        new BukkitRunnable() {
+            int index = 0;
+
+            @Override
+            public void run() {
+                if (!player.isOnline()) {
+                    cancel();
+                    return;
                 }
-            }
 
-            boolean isDebugTreasure = isTaggedByPdc;
-            if (isTaggedByPdc) {
-                matchedByPdc++;
-            } else {
-                // Fallback: check stored treasure NBT marker.
-                Treasure fullTreasure = plugin.getTreasureManager().getFullTreasure(core.getId());
-                String nbt = fullTreasure != null ? fullTreasure.getNbtData() : null;
-                if (nbt != null) {
-                    if (nbt.contains(DEBUG_PLACED_MARKER) || nbt.contains("advancedhunt:debug_placed") || nbt.contains("debug_placed")) {
-                        isDebugTreasure = true;
-                        matchedByNbt++;
+                int processedThisTick = 0;
+                while (index < total && processedThisTick < batchSize) {
+                    TreasureCore core = cores.get(index++);
+                    processedThisTick++;
+                    blocksProcessed.incrementAndGet();
+
+                    Location loc = core.getLocation();
+                    World world = loc.getWorld();
+                    if (world == null) {
+                        continue;
+                    }
+
+                    int cx = loc.getBlockX() >> 4;
+                    int cz = loc.getBlockZ() >> 4;
+                    if (!world.isChunkLoaded(cx, cz)) {
+                        blocksSkippedUnloaded.incrementAndGet();
+                        continue;
+                    }
+
+                    Block block = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    if (!block.getType().isAir()) {
+                        block.setType(Material.AIR, false);
+                        blocksRemoved.incrementAndGet();
                     }
                 }
+
+                int deletedCount = dbDeleted.get();
+                int deletedClamped = deletedCount < 0 ? 0 : Math.min(deletedCount, total);
+                String deletePart = deletedCount >= 0
+                    ? "&7 Deleted: &f" + deletedClamped + "&7/&f" + total
+                    : "&7 Deleted: &f0&7/&f" + total + " &e(deleting...)";
+
+                sendActionBar(player, "&e[DEBUG] Removing: &f" + blocksProcessed.get() + "&e/" + total
+                    + "&7 (Blocks: " + blocksRemoved.get() + ", Skipped: " + blocksSkippedUnloaded.get() + ") " + deletePart);
+
+                if (index >= total && dbDeleted.get() >= 0) {
+                    sendActionBar(player, "&a[DEBUG] Done: &f" + total + "&a treasures" + "&7 (Deleted: " + dbDeleted.get() + ")");
+                    sendDebugChat(player, "&a[DEBUG] Removed collection treasures.&7 Total: &f" + total
+                            + "&7, Blocks removed: &f" + blocksRemoved.get()
+                            + "&7, Skipped (unloaded): &f" + blocksSkippedUnloaded.get()
+                            + "&7, DB deleted: &f" + dbDeleted.get() + "&7.");
+                    if (dbFailed.get() > 0) {
+                        sendDebugChat(player, "&c[DEBUG] Note: DB delete reported an error; check console logs.");
+                    }
+                    cancel();
+                }
             }
-
-            if (!isDebugTreasure) continue;
-
-            // Remove the physical block at the stored location (debug cleanup).
-            if (!block.getType().isAir()) {
-                block.setType(Material.AIR, false);
-                removedBlocks++;
-            }
-
-            // Remove from repository + caches
-            plugin.getTreasureManager().deleteTreasure(core);
-            removedTreasures++;
-        }
-
-        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                + "&a[DEBUG] Removed &f" + removedTreasures + "&a treasures and &f" + removedBlocks + "&a blocks for collection &f" + collection.getName() + "&a.");
-
-        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                + "&7[DEBUG] Matched by PDC: " + matchedByPdc + ", matched by stored NBT: " + matchedByNbt + ", scanned: " + cores.size() + ".");
+        }.runTaskTimer(plugin, 1L, 1L);
     }
 
     private void migrate(CommandSender sender, String type, boolean force) {

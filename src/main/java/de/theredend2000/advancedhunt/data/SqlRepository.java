@@ -601,6 +601,20 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Integer> deleteTreasuresInCollection(UUID collectionId) {
+        return supplyAsync(() -> {
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_treasures WHERE collection_id = ?")) {
+                ps.setString(1, collectionId.toString());
+                return ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<Treasure> loadTreasure(UUID treasureId) {
         return supplyAsync(() -> {
             try (Connection conn = dataSource.getConnection();
