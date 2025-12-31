@@ -11,6 +11,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +29,10 @@ public class YamlRepository implements DataRepository {
     private File leaderboardFile;
     private File finderIndexFile;
     private File systemFile;
-    private File rewardPresetsFile;
+    private File legacyRewardPresetsFile;
+    private File rewardPresetsFolder;
+    private File treasureRewardPresetsFolder;
+    private File collectionRewardPresetsFolder;
     private BukkitTask flushTask;
     
     // In-memory indexes for efficient lookups (rebuilt on init, updated on save)
@@ -54,6 +59,16 @@ public class YamlRepository implements DataRepository {
             // Initial schema version
             // No specific actions needed for v1 as it's the baseline
         });
+
+        schemaMigrations.put(2, () -> {
+            // Migrate reward presets from legacy reward-presets.yml into per-preset files
+            try {
+                migrateLegacyRewardPresetsIfNeeded();
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to migrate legacy reward presets", e);
+                throw e;
+            }
+        });
     }
 
     @Override
@@ -77,19 +92,136 @@ public class YamlRepository implements DataRepository {
         }
         finderIndexFile = new File(plugin.getDataFolder(), "finder-index.yml");
         systemFile = new File(plugin.getDataFolder(), "system.yml");
-        rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
-        if (!rewardPresetsFile.exists()) {
-            try {
-                rewardPresetsFile.createNewFile();
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to create reward-presets.yml", e);
-            }
+
+        // Reward presets are stored as individual files (v2+)
+        rewardPresetsFolder = new File(plugin.getDataFolder(), "reward-presets");
+        treasureRewardPresetsFolder = new File(rewardPresetsFolder, "treasure");
+        collectionRewardPresetsFolder = new File(rewardPresetsFolder, "collection");
+        if (!treasureRewardPresetsFolder.exists()) {
+            treasureRewardPresetsFolder.mkdirs();
         }
+        if (!collectionRewardPresetsFolder.exists()) {
+            collectionRewardPresetsFolder.mkdirs();
+        }
+
+        // Keep legacy file reference for migration/back-compat reads
+        legacyRewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
         
         // Build in-memory indexes
         buildTreasureToCollectionIndex();
         loadFinderIndex();
         upgradeSchema();
+    }
+
+    private File getPresetFolder(RewardPresetType type) {
+        return type == RewardPresetType.COLLECTION ? collectionRewardPresetsFolder : treasureRewardPresetsFolder;
+    }
+
+    private File getPresetFile(RewardPresetType type, UUID presetId) {
+        return new File(getPresetFolder(type), presetId.toString() + YML_EXTENSION);
+    }
+
+    private void saveConfigAtomic(FileConfiguration config, File file) {
+        // Bukkit's YamlConfiguration writes directly to the file.
+        // We reduce corruption risk by writing to a temp file and then replacing.
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+
+        File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
+        try {
+            config.save(tmp);
+            try {
+                Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (Exception atomicMoveNotSupported) {
+                Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Could not save " + file.getName(), e);
+        } finally {
+            if (tmp.exists()) {
+                // Best-effort cleanup
+                //noinspection ResultOfMethodCallIgnored
+                tmp.delete();
+            }
+        }
+    }
+
+    private boolean isPresetFolderEmpty(File folder) {
+        File[] files = folder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+        return files == null || files.length == 0;
+    }
+
+    private void migrateLegacyRewardPresetsIfNeeded() {
+        // Only migrate if legacy file exists and new folders are currently empty.
+        if (legacyRewardPresetsFile == null || !legacyRewardPresetsFile.exists()) {
+            return;
+        }
+        if (rewardPresetsFolder == null) {
+            rewardPresetsFolder = new File(plugin.getDataFolder(), "reward-presets");
+        }
+        if (treasureRewardPresetsFolder == null) {
+            treasureRewardPresetsFolder = new File(rewardPresetsFolder, "treasure");
+        }
+        if (collectionRewardPresetsFolder == null) {
+            collectionRewardPresetsFolder = new File(rewardPresetsFolder, "collection");
+        }
+        treasureRewardPresetsFolder.mkdirs();
+        collectionRewardPresetsFolder.mkdirs();
+
+        if (!isPresetFolderEmpty(treasureRewardPresetsFolder) || !isPresetFolderEmpty(collectionRewardPresetsFolder)) {
+            // Already migrated or user already has new-format presets.
+            return;
+        }
+
+        FileConfiguration legacy = YamlConfiguration.loadConfiguration(legacyRewardPresetsFile);
+        int migrated = 0;
+
+        migrated += migrateLegacySection(legacy, "treasure", RewardPresetType.TREASURE);
+        migrated += migrateLegacySection(legacy, "collection", RewardPresetType.COLLECTION);
+
+        if (migrated > 0) {
+            // Keep legacy file as a backup to be safe; rename it to avoid future confusion.
+            File backup = new File(plugin.getDataFolder(), "reward-presets.legacy.yml");
+            if (!backup.exists()) {
+                try {
+                    Files.copy(legacyRewardPresetsFile.toPath(), backup.toPath());
+                } catch (IOException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to create reward-presets.legacy.yml backup", e);
+                }
+            }
+            plugin.getLogger().info("Migrated " + migrated + " reward preset(s) to per-file YAML storage");
+        }
+    }
+
+    private int migrateLegacySection(FileConfiguration legacy, String rootKey, RewardPresetType type) {
+        var section = legacy.getConfigurationSection(rootKey);
+        if (section == null) {
+            return 0;
+        }
+
+        int migrated = 0;
+        for (String idStr : section.getKeys(false)) {
+            try {
+                UUID id = UUID.fromString(idStr);
+                String name = section.getString(idStr + ".name");
+                List<Map<?, ?>> rewardList = section.getMapList(idStr + ".rewards");
+                List<Reward> rewards = deserializeRewards(rewardList);
+                if (name == null || name.isBlank()) {
+                    continue;
+                }
+
+                FileConfiguration out = new YamlConfiguration();
+                out.set("name", name);
+                out.set("rewards", serializeRewards(rewards));
+                saveConfigAtomic(out, getPresetFile(type, id));
+                migrated++;
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to migrate legacy preset " + rootKey + "/" + idStr + ": " + e.getMessage());
+            }
+        }
+        return migrated;
     }
 
     @Override
@@ -771,31 +903,54 @@ public class YamlRepository implements DataRepository {
     @Override
     public CompletableFuture<List<RewardPreset>> loadRewardPresets(RewardPresetType type) {
         return CompletableFuture.supplyAsync(() -> {
-            if (rewardPresetsFile == null) {
-                rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
-            }
-            FileConfiguration config = YamlConfiguration.loadConfiguration(rewardPresetsFile);
-            String rootKey = type == RewardPresetType.COLLECTION ? "collection" : "treasure";
-
-            var section = config.getConfigurationSection(rootKey);
-            if (section == null) {
-                return new ArrayList<>();
-            }
-
             List<RewardPreset> presets = new ArrayList<>();
-            for (String idStr : section.getKeys(false)) {
-                try {
-                    UUID id = UUID.fromString(idStr);
-                    String name = section.getString(idStr + ".name");
-                    List<Map<?, ?>> rewardList = section.getMapList(idStr + ".rewards");
-                    List<Reward> rewards = deserializeRewards(rewardList);
-                    if (name != null) {
-                        presets.add(new RewardPreset(id, type, name, rewards));
+
+            File folder = getPresetFolder(type);
+            if (folder != null && folder.exists() && folder.isDirectory()) {
+                File[] files = folder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+                if (files != null) {
+                    for (File file : files) {
+                        String idStr = file.getName().replace(YML_EXTENSION, "");
+                        try {
+                            UUID id = UUID.fromString(idStr);
+                            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+                            String name = config.getString("name");
+                            List<Map<?, ?>> rewardList = config.getMapList("rewards");
+                            List<Reward> rewards = deserializeRewards(rewardList);
+                            if (name != null && !name.isBlank()) {
+                                presets.add(new RewardPreset(id, type, name, rewards));
+                            }
+                        } catch (Exception e) {
+                            plugin.getLogger().warning("Failed to load reward preset file " + file.getName() + ": " + e.getMessage());
+                        }
                     }
-                } catch (Exception e) {
-                    plugin.getLogger().warning("Failed to load reward preset " + idStr + ": " + e.getMessage());
                 }
             }
+
+            // Back-compat: if folder is empty and legacy file exists, try reading legacy format.
+            if (presets.isEmpty() && legacyRewardPresetsFile != null && legacyRewardPresetsFile.exists()) {
+                FileConfiguration legacy = YamlConfiguration.loadConfiguration(legacyRewardPresetsFile);
+                String rootKey = type == RewardPresetType.COLLECTION ? "collection" : "treasure";
+                var section = legacy.getConfigurationSection(rootKey);
+                if (section != null) {
+                    for (String idStr : section.getKeys(false)) {
+                        try {
+                            UUID id = UUID.fromString(idStr);
+                            String name = section.getString(idStr + ".name");
+                            List<Map<?, ?>> rewardList = section.getMapList(idStr + ".rewards");
+                            List<Reward> rewards = deserializeRewards(rewardList);
+                            if (name != null && !name.isBlank()) {
+                                presets.add(new RewardPreset(id, type, name, rewards));
+                            }
+                        } catch (Exception e) {
+                            plugin.getLogger().warning("Failed to load legacy reward preset " + idStr + ": " + e.getMessage());
+                        }
+                    }
+                }
+            }
+
+            // Stable ordering for menus
+            presets.sort(Comparator.comparing(RewardPreset::getName, String.CASE_INSENSITIVE_ORDER));
             return presets;
         });
     }
@@ -803,29 +958,22 @@ public class YamlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> saveRewardPreset(RewardPreset preset) {
         return CompletableFuture.runAsync(() -> {
-            if (rewardPresetsFile == null) {
-                rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
-            }
-            FileConfiguration config = YamlConfiguration.loadConfiguration(rewardPresetsFile);
-            String rootKey = preset.getType() == RewardPresetType.COLLECTION ? "collection" : "treasure";
-            String base = rootKey + "." + preset.getId();
-
-            config.set(base + ".name", preset.getName());
-            config.set(base + ".rewards", serializeRewards(preset.getRewards()));
-            saveConfig(config, rewardPresetsFile);
+            File file = getPresetFile(preset.getType(), preset.getId());
+            FileConfiguration config = new YamlConfiguration();
+            config.set("name", preset.getName());
+            config.set("rewards", serializeRewards(preset.getRewards()));
+            saveConfigAtomic(config, file);
         });
     }
 
     @Override
     public CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId) {
         return CompletableFuture.runAsync(() -> {
-            if (rewardPresetsFile == null) {
-                rewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
+            File file = getPresetFile(type, presetId);
+            if (file.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
-            FileConfiguration config = YamlConfiguration.loadConfiguration(rewardPresetsFile);
-            String rootKey = type == RewardPresetType.COLLECTION ? "collection" : "treasure";
-            config.set(rootKey + "." + presetId, null);
-            saveConfig(config, rewardPresetsFile);
         });
     }
 
