@@ -6,7 +6,6 @@ import de.theredend2000.advancedhunt.managers.LeaderboardManager;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.Collection;
-import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -136,14 +135,11 @@ public class LeaderboardMenu extends PagedMenu {
             // Get player's data
             plugin.getDataRepository().loadPlayerData(playerMenuUtility.getUniqueId()).thenAccept(playerData -> {
                 if (playerData != null) {
-                    // Get treasures from this collection via TreasureManager
-                    List<Treasure> treasures = plugin.getTreasureManager().getTreasuresInCollection(collection.getId());
-                    this.totalTreasures = treasures.size();
-                    
-                    // Count found treasures
-                    this.playerScore = (int) treasures.stream()
-                            .filter(treasure -> playerData.getFoundTreasures().contains(treasure.getId()))
-                            .count();
+                    // Use lightweight TreasureCore indexes for counting; avoid loading full treasures (NBT/rewards).
+                    this.totalTreasures = plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId()).size();
+                    this.playerScore = plugin.getTreasureManager()
+                        .filterFoundByCollection(playerData.getFoundTreasures(), collection.getId())
+                        .size();
                     
                     // Find player's rank
                     calculatePlayerRank();
