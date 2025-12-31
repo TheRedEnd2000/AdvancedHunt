@@ -74,10 +74,35 @@ public class TreasureManager {
     }
 
     public void addTreasure(Treasure t) {
-        repository.saveTreasure(t).thenRun(() -> {
+        addTreasureAsync(t);
+    }
+
+    /**
+     * Adds a treasure and returns a future that completes when it has been persisted
+     * and added to the in-memory indexes/cache.
+     */
+    public CompletableFuture<Void> addTreasureAsync(Treasure t) {
+        return repository.saveTreasure(t).thenRun(() -> {
             TreasureCore core = TreasureCore.from(t);
             addCoreToCache(core);
             fullTreasureCache.put(t.getId(), t);
+        });
+    }
+
+    /**
+     * Adds many treasures using repository-level batching when available.
+     * Completes when all have been persisted and added to indexes/caches.
+     */
+    public CompletableFuture<Void> addTreasuresBatchAsync(List<Treasure> treasures) {
+        if (treasures == null || treasures.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return repository.saveTreasuresBatch(treasures).thenRun(() -> {
+            for (Treasure t : treasures) {
+                TreasureCore core = TreasureCore.from(t);
+                addCoreToCache(core);
+                fullTreasureCache.put(t.getId(), t);
+            }
         });
     }
 

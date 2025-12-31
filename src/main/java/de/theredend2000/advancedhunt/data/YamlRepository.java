@@ -461,7 +461,8 @@ public class YamlRepository implements DataRepository {
             }
             
             File file = new File(treasuresDir, treasure.getId().toString() + YML_EXTENSION);
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+            // For new saves, avoid reading an existing file from disk.
+            FileConfiguration config = new YamlConfiguration();
             
             config.set("collection-id", treasure.getCollectionId().toString());
             config.set("world", treasure.getLocation().getWorld().getName());
@@ -477,6 +478,49 @@ public class YamlRepository implements DataRepository {
             
             // Update treasure-to-collection index
             treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveTreasuresBatch(List<Treasure> treasures) {
+        return CompletableFuture.runAsync(() -> {
+            if (treasures == null || treasures.isEmpty()) {
+                return;
+            }
+
+            // Group by collection to reduce repeated directory checks.
+            Map<UUID, File> treasuresDirByCollection = new HashMap<>();
+
+            for (Treasure treasure : treasures) {
+                File treasuresDir = treasuresDirByCollection.computeIfAbsent(treasure.getCollectionId(), collectionId -> {
+                    File collectionDir = new File(collectionsFolder, collectionId.toString());
+                    if (!collectionDir.exists()) {
+                        collectionDir.mkdirs();
+                    }
+                    File dir = new File(collectionDir, "treasures");
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+                    return dir;
+                });
+
+                File file = new File(treasuresDir, treasure.getId().toString() + YML_EXTENSION);
+                FileConfiguration config = new YamlConfiguration();
+
+                config.set("collection-id", treasure.getCollectionId().toString());
+                config.set("world", treasure.getLocation().getWorld().getName());
+                config.set("x", treasure.getLocation().getBlockX());
+                config.set("y", treasure.getLocation().getBlockY());
+                config.set("z", treasure.getLocation().getBlockZ());
+                config.set("rewards", serializeRewards(treasure.getRewards()));
+                config.set("nbt-data", treasure.getNbtData());
+                config.set("material", treasure.getMaterial());
+                config.set("block-state", treasure.getBlockState());
+
+                saveConfig(config, file);
+
+                treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
+            }
         });
     }
 
