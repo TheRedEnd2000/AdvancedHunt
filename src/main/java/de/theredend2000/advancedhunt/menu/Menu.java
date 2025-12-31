@@ -25,6 +25,7 @@ public abstract class Menu implements InventoryHolder {
     protected Button[] buttons;
     protected boolean preventClose = false;
     protected ItemStack FILLER_GLASS = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).hideTooltip(true).build();
+    protected ItemStack EXTRA_GLASS = new ItemBuilder(Material.WHITE_STAINED_GLASS_PANE).hideTooltip(true).build();
     protected final Button FILLER_BUTTON = new Button(FILLER_GLASS, null);
     protected Menu previousMenu;
 
