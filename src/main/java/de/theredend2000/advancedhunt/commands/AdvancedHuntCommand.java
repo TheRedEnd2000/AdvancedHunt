@@ -627,23 +627,23 @@ public class AdvancedHuntCommand {
 
     private void debugHint(Player player) {
         // Debug command to test visual hints without minigame/cooldown
-        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&e[DEBUG] Searching for nearby treasure...");
+        sendDebugChat(player, "&e[DEBUG] Searching for nearby treasure...");
         
         // Find a random unfound treasure in range
         Optional<TreasureCore> treasureOpt = plugin.getHintManager().findRandomUnfoundTreasure(player);
         
         if (treasureOpt.isEmpty()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] No unfound treasures nearby in active collections!");
+            sendDebugChat(player, "&c[DEBUG] No unfound treasures nearby in active collections!");
             return;
         }
 
         TreasureCore treasure = treasureOpt.get();
-        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&a[DEBUG] Found treasure! Delivering hint...");
+        sendDebugChat(player, "&a[DEBUG] Found treasure! Delivering hint...");
         
         // Directly deliver hint (bypasses cooldown and minigame)
         plugin.getHintManager().deliverHint(player, treasure);
         
-        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&e[DEBUG] Hint delivered. Visual effects active if enabled in config.");
+        sendDebugChat(player, "&e[DEBUG] Hint delivered. Visual effects active if enabled in config.");
     }
 
     private void debugPlaceCollectionRandom(Player player, String collectionName, String amountRaw) {
@@ -651,31 +651,29 @@ public class AdvancedHuntCommand {
         try {
             amount = Integer.parseInt(amountRaw);
         } catch (NumberFormatException e) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be a number.");
+            sendDebugChat(player, "&c[DEBUG] Amount must be a number.");
             return;
         }
 
         if (amount <= 0) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be >= 1.");
+            sendDebugChat(player, "&c[DEBUG] Amount must be >= 1.");
             return;
         }
 
         List<PaletteEntry> palette = getHotbarPaletteEntries(player);
         if (palette.isEmpty()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                    + "&c[DEBUG] Put at least one placeable block in your hotbar (slots 1-9). ");
+            sendDebugChat(player, "&c[DEBUG] Put at least one placeable block in your hotbar (slots 1-9). ");
             return;
         }
 
         Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
         if (collectionOpt.isEmpty()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Unknown collection: &f" + collectionName);
+            sendDebugChat(player, "&c[DEBUG] Unknown collection: &f" + collectionName);
             return;
         }
         Collection collection = collectionOpt.get();
 
-        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                + "&e[DEBUG] Placing &f" + amount + "&e treasures (random) for collection &f" + collection.getName() + "&e...");
+        sendDebugChat(player, "&e[DEBUG] Placing &f" + amount + "&e treasures &7(random)&e for collection &b" + collection.getName() + "&e...");
 
         final int radius = 12;
         final int verticalRadius = 8;
@@ -695,9 +693,13 @@ public class AdvancedHuntCommand {
         final int maxAttemptsPerTick = Math.max(batchSize * 30, 500);
         final Set<String> reserved = new HashSet<>(Math.min(amount * 2, 32_768));
 
+        final AtomicInteger saved = new AtomicInteger(0);
+        final AtomicInteger saveFailed = new AtomicInteger(0);
+
         new BukkitRunnable() {
             int placed = 0;
             int attempts = 0;
+            boolean placingDone = false;
 
             @Override
             public void run() {
@@ -705,13 +707,16 @@ public class AdvancedHuntCommand {
                     cancel();
                     return;
                 }
-                if (placed >= amount || attempts >= maxAttempts) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount + "&7 (Attempts: " + attempts + ")");
-                    player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                            + "&a[DEBUG] Placed &f" + placed + "&a/" + amount + " treasures.&7 Attempts: " + attempts + ".");
+                if (!placingDone && (placed >= amount || attempts >= maxAttempts)) {
+                    placingDone = true;
+                }
+
+                if (placingDone && saved.get() + saveFailed.get() >= placed) {
+                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
+                            + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
+                    sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures.&7 Attempts: &f" + attempts + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
                     if (placed < amount) {
-                        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                                + "&e[DEBUG] Not enough valid spots found near you. Try moving to a flatter/open area.");
+                    sendDebugChat(player, "&e[DEBUG] Not enough valid spots found near you. Try moving to a flatter/open area.");
                     }
                     cancel();
                     return;
@@ -719,7 +724,7 @@ public class AdvancedHuntCommand {
 
                 int placedThisTick = 0;
                 int attemptsThisTick = 0;
-                while (placedThisTick < batchSize && attemptsThisTick < maxAttemptsPerTick && placed < amount && attempts < maxAttempts) {
+                while (!placingDone && placedThisTick < batchSize && attemptsThisTick < maxAttemptsPerTick && placed < amount && attempts < maxAttempts) {
                     attempts++;
                     attemptsThisTick++;
 
@@ -767,14 +772,25 @@ public class AdvancedHuntCommand {
                             chosen.materialName(),
                             chosen.blockState()
                     );
-                    plugin.getTreasureManager().addTreasure(treasure);
+                        plugin.getTreasureManager().addTreasureAsync(treasure)
+                            .thenRun(saved::incrementAndGet)
+                            .exceptionally(ex -> {
+                            saveFailed.incrementAndGet();
+                            return null;
+                            });
 
                     placed++;
                     placedThisTick++;
                 }
 
-                if ((placedThisTick > 0 || attemptsThisTick > 0) && amount > 0) {
-                    sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount + "&7 (Attempts: " + attempts + ")");
+                if (amount > 0) {
+                    if (!placingDone) {
+                        sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
+                                + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ", Attempts: " + attempts + ")");
+                    } else {
+                        sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
+                                + "&7 (Failed: " + saveFailed.get() + ")");
+                    }
                 }
             }
         }.runTaskTimer(plugin, 1L, 1L);
@@ -785,31 +801,29 @@ public class AdvancedHuntCommand {
         try {
             amount = Integer.parseInt(amountRaw);
         } catch (NumberFormatException e) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be a number.");
+            sendDebugChat(player, "&c[DEBUG] Amount must be a number.");
             return;
         }
 
         if (amount <= 0) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Amount must be >= 1.");
+            sendDebugChat(player, "&c[DEBUG] Amount must be >= 1.");
             return;
         }
 
         List<PaletteEntry> palette = getHotbarPaletteEntries(player);
         if (palette.isEmpty()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                    + "&c[DEBUG] Put at least one placeable block in your hotbar (slots 1-9). ");
+            sendDebugChat(player, "&c[DEBUG] Put at least one placeable block in your hotbar (slots 1-9). ");
             return;
         }
 
         Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
         if (collectionOpt.isEmpty()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("prefix", false) + "&c[DEBUG] Unknown collection: &f" + collectionName);
+            sendDebugChat(player, "&c[DEBUG] Unknown collection: &f" + collectionName);
             return;
         }
         Collection collection = collectionOpt.get();
 
-        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                + "&e[DEBUG] Placing &f" + amount + "&e treasures (plane) for collection &f" + collection.getName() + "&e...");
+        sendDebugChat(player, "&e[DEBUG] Placing &f" + amount + "&e treasures &7(plane)&e for collection &b" + collection.getName() + "&e...");
 
         final List<Reward> defaultRewards = new ArrayList<>();
         Optional.ofNullable(collection.getDefaultTreasureRewardPresetId())
@@ -827,11 +841,15 @@ public class AdvancedHuntCommand {
 
         final int batchSize = 400;
 
+        final AtomicInteger saved = new AtomicInteger(0);
+        final AtomicInteger saveFailed = new AtomicInteger(0);
+
         new BukkitRunnable() {
             int placed = 0;
             int checked = 0;
             int dx = 0;
             int dz = 0;
+            boolean placingDone = false;
 
             @Override
             public void run() {
@@ -839,20 +857,23 @@ public class AdvancedHuntCommand {
                     cancel();
                     return;
                 }
-                if (placed >= amount || dz >= side) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount + "&7 (Checked: " + checked + ")");
-                    player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                            + "&a[DEBUG] Placed &f" + placed + "&a/" + amount + " treasures on a plane. Checked: " + checked + ".");
+                if (!placingDone && (placed >= amount || dz >= side)) {
+                    placingDone = true;
+                }
+
+                if (placingDone && saved.get() + saveFailed.get() >= placed) {
+                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
+                            + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
+                    sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures on a plane.&7 Checked: &f" + checked + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
                     if (placed < amount) {
-                        player.sendMessage(plugin.getMessageManager().getMessage("prefix", false)
-                                + "&e[DEBUG] Plane had blocked cells. Try an emptier area.");
+                    sendDebugChat(player, "&e[DEBUG] Plane had blocked cells. Try an emptier area.");
                     }
                     cancel();
                     return;
                 }
 
                 int placedThisTick = 0;
-                while (placedThisTick < batchSize && placed < amount && dz < side) {
+                while (!placingDone && placedThisTick < batchSize && placed < amount && dz < side) {
                     int x = base.getBlockX() + start + dx;
                     int z = base.getBlockZ() + start + dz;
                     Block block = base.getWorld().getBlockAt(x, y, z);
@@ -884,7 +905,12 @@ public class AdvancedHuntCommand {
                                 chosen.materialName(),
                                 chosen.blockState()
                         );
-                        plugin.getTreasureManager().addTreasure(treasure);
+                        plugin.getTreasureManager().addTreasureAsync(treasure)
+                            .thenRun(saved::incrementAndGet)
+                            .exceptionally(ex -> {
+                                saveFailed.incrementAndGet();
+                                return null;
+                            });
                         placed++;
                         placedThisTick++;
                     }
@@ -897,7 +923,13 @@ public class AdvancedHuntCommand {
                 }
 
                 if (amount > 0) {
-                    sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount + "&7 (Checked: " + checked + ")");
+                    if (!placingDone) {
+                        sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
+                                + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ", Checked: " + checked + ")");
+                    } else {
+                        sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
+                                + "&7 (Failed: " + saveFailed.get() + ")");
+                    }
                 }
             }
         }.runTaskTimer(plugin, 1L, 1L);
@@ -905,10 +937,16 @@ public class AdvancedHuntCommand {
 
     private void sendActionBar(Player player, String message) {
         try {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+            String colored = ChatColor.translateAlternateColorCodes('&', message);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(colored));
         } catch (Throwable ignored) {
             // Best-effort only; don't fail debug commands if action bar isn't supported.
         }
+    }
+
+    private void sendDebugChat(Player player, String message) {
+        String prefix = plugin.getMessageManager().getMessage("prefix", false);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
     }
 
     private List<PaletteEntry> getHotbarPaletteEntries(Player player) {
