@@ -71,6 +71,14 @@ public interface DataRepository {
         return CompletableFuture.allOf(futures);
     }
     CompletableFuture<Void> deleteTreasure(UUID treasureId);
+
+    /**
+     * Deletes all treasures belonging to a collection.
+     *
+     * Implementations should prefer a single SQL statement / directory delete.
+     * @return number of deleted treasures (best-effort for some backends)
+     */
+    CompletableFuture<Integer> deleteTreasuresInCollection(UUID collectionId);
     
     /**
      * Loads a single treasure by ID.
