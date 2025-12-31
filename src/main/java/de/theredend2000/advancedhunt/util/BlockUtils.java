@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 
 import java.lang.reflect.Method;
 
@@ -46,13 +47,19 @@ public class BlockUtils {
                     return String.valueOf(data);
                 }
             } else {
-                if (GET_BLOCK_DATA_METHOD != null && GET_AS_STRING_METHOD != null) {
+                // Modern servers (1.13+) - avoid reflection for hot paths.
+                BlockData data = block.getBlockData();
+                return data != null ? data.getAsString() : "";
+            }
+        } catch (Exception e) {
+            // Fallback to reflective path if a fork behaves unexpectedly.
+            try {
+                if (!IS_LEGACY && GET_BLOCK_DATA_METHOD != null && GET_AS_STRING_METHOD != null) {
                     Object blockData = GET_BLOCK_DATA_METHOD.invoke(block);
                     return (String) GET_AS_STRING_METHOD.invoke(blockData);
                 }
+            } catch (Exception ignored) {
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return IS_LEGACY ? "0" : "";
     }
