@@ -247,23 +247,29 @@ public class YamlRepository implements DataRepository {
         int latestVersion = schemaMigrations.keySet().stream().mapToInt(v -> v).max().orElse(0);
         
         for (int i = currentVersion + 1; i <= latestVersion; i++) {
-            if (schemaMigrations.containsKey(i)) {
-                try {
-                    schemaMigrations.get(i).run();
-                    plugin.getLogger().info("Upgraded YAML data schema to version " + i);
-                } catch (Exception e) {
-                    plugin.getLogger().severe("Failed to apply YAML schema migration for version " + i);
-                    e.printStackTrace();
-                    break;
-                }
+            Runnable migration = schemaMigrations.get(i);
+            if (migration == null) {
+                plugin.getLogger().severe("Missing YAML schema migration for version " + i + "; aborting upgrade");
+                break;
             }
-            
+
+            try {
+                migration.run();
+                plugin.getLogger().info("Upgraded YAML data schema to version " + i);
+            } catch (Exception e) {
+                plugin.getLogger().severe("Failed to apply YAML schema migration for version " + i);
+                e.printStackTrace();
+                break;
+            }
+
             config.set("schema_version", i);
             try {
                 config.save(systemFile);
                 cachedSchemaVersion = i;
             } catch (IOException e) {
+                plugin.getLogger().severe("Failed to persist YAML schema version " + i + " to system.yml; aborting upgrade");
                 e.printStackTrace();
+                break;
             }
         }
     }
@@ -318,10 +324,11 @@ public class YamlRepository implements DataRepository {
      */
     private void loadFinderIndex() {
         treasureToFindersIndex.clear();
-        if (finderIndexFile.exists()) {
+        if (finderIndexFile != null && finderIndexFile.exists()) {
             FileConfiguration config = YamlConfiguration.loadConfiguration(finderIndexFile);
-            if (config.contains("treasures")) {
-                for (String treasureIdStr : config.getConfigurationSection("treasures").getKeys(false)) {
+            var treasuresSection = config.getConfigurationSection("treasures");
+            if (treasuresSection != null) {
+                for (String treasureIdStr : treasuresSection.getKeys(false)) {
                     try {
                         UUID treasureId = UUID.fromString(treasureIdStr);
                         List<String> finderStrs = config.getStringList("treasures." + treasureIdStr);
@@ -388,7 +395,7 @@ public class YamlRepository implements DataRepository {
             }
             config.set("treasures." + entry.getKey().toString(), finderStrs);
         }
-        saveConfig(config, finderIndexFile);
+        saveConfigAtomic(config, finderIndexFile);
         finderIndexDirty = false;
     }
 
@@ -877,8 +884,8 @@ public class YamlRepository implements DataRepository {
             config.set("enabled", collection.isEnabled());
             config.set("progress-reset-cron", collection.getProgressResetCron());
             config.set("single-player-find", collection.isSinglePlayerFind());
-                config.set("default-treasure-reward-preset-id",
-                    collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
+            config.set("default-treasure-reward-preset-id",
+                collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
             
             // Save ACT rules
             List<Map<String, Object>> rulesList = new ArrayList<>();
@@ -1427,7 +1434,8 @@ public class YamlRepository implements DataRepository {
      * @param intervalSeconds how often to flush indexes (in seconds)
      */
     public void startPeriodicFlush(int intervalSeconds) {
-        long intervalTicks = 20L * intervalSeconds;
+        int safeIntervalSeconds = Math.max(1, intervalSeconds);
+        long intervalTicks = 20L * safeIntervalSeconds;
         if (flushTask != null && !flushTask.isCancelled()) {
             flushTask.cancel();
         }
