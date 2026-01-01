@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.data.DataRepository;
 import de.theredend2000.advancedhunt.model.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class LeaderboardManager {
     private final Cache<UUID, String> nameCache;
     private final int displayLimit;
     private final int refreshInterval;
+    private BukkitTask updateTask;
 
     public LeaderboardManager(JavaPlugin plugin, DataRepository repository) {
         this.plugin = plugin;
@@ -37,7 +39,14 @@ public class LeaderboardManager {
         
         // Update leaderboards based on config interval
         long intervalTicks = 20L * refreshInterval;
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateLeaderboards, 0L, intervalTicks);
+        updateTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateLeaderboards, 0L, intervalTicks);
+    }
+
+    public void stop() {
+        if (updateTask != null) {
+            updateTask.cancel();
+            updateTask = null;
+        }
     }
 
     private void updateLeaderboards() {

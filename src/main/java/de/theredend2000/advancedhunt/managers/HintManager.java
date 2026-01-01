@@ -34,6 +34,8 @@ public class HintManager {
     // Active visual hints: playerId -> task
     private final Map<UUID, BukkitTask> activeVisualHints = new ConcurrentHashMap<>();
 
+    private BukkitTask cleanupTask;
+
     // Configuration cache
     private boolean visualHintEnabled;
     private VisualHintType visualHintType;
@@ -81,12 +83,20 @@ public class HintManager {
         reloadConfig();
         
         // Periodic cleanup of expired cooldowns (every 5 minutes)
-        new BukkitRunnable() {
+        cleanupTask = new BukkitRunnable() {
             @Override
             public void run() {
                 cleanupExpiredCooldowns();
             }
         }.runTaskTimerAsynchronously(plugin, 6000L, 6000L);
+    }
+
+    public void stop() {
+        cancelAllVisualHints();
+        if (cleanupTask != null) {
+            cleanupTask.cancel();
+            cleanupTask = null;
+        }
     }
 
     /**
