@@ -55,10 +55,10 @@ public class HintManager {
     private static final int BEACON_HEIGHT = 20;
     private static final double EYE_LEVEL_OFFSET = 1.0;
     
-    // Cardinal direction lookup (optimized)
-    private static final String[] DIRECTIONS = {
-        "East", "Southeast", "South", "Southwest", 
-        "West", "Northwest", "North", "Northeast"
+    // Cardinal direction message keys (index matches getCardinalDirection mapping)
+    private static final String[] DIRECTION_KEYS = {
+        "direction.east", "direction.southeast", "direction.south", "direction.southwest",
+        "direction.west", "direction.northwest", "direction.north", "direction.northeast"
     };
 
     public enum VisualHintType {
@@ -318,7 +318,7 @@ public class HintManager {
         
         // Map to 8 cardinal directions (45 degrees each)
         int directionIndex = (int) Math.round(angle / 45.0) % 8;
-        return DIRECTIONS[directionIndex];
+        return messageManager.getMessage(DIRECTION_KEYS[directionIndex], false);
     }
 
     /**
