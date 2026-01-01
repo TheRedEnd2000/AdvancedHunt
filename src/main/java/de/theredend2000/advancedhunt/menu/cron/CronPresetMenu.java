@@ -59,7 +59,12 @@ public class CronPresetMenu extends PagedMenu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.cron.presets.title");
+        return plugin.getMessageManager().getMessage(
+                "gui.cron.presets.title",
+                false,
+                "%cron_type%",
+                plugin.getMessageManager().getMessage(policy.cronTypeMessageKey(), false)
+        );
     }
 
     @Override

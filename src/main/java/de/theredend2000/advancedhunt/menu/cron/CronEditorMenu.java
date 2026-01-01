@@ -42,7 +42,12 @@ public class CronEditorMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.cron.editor.title");
+        return plugin.getMessageManager().getMessage(
+                "gui.cron.editor.title",
+                false,
+                "%cron_type%",
+                plugin.getMessageManager().getMessage(policy.cronTypeMessageKey(), false)
+        );
     }
 
     @Override
@@ -91,7 +96,12 @@ public class CronEditorMenu extends Menu {
         // Quick Presets Row
         addStaticItem(10,new ItemBuilder(Material.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.information.name"))
-                .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.information.lore"))
+            .setLore(plugin.getMessageManager().getMessageList(
+                "gui.cron.preset.information.lore",
+                false,
+                "%cron_type%",
+                plugin.getMessageManager().getMessage(policy.cronTypeMessageKey(), false)
+            ))
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJmOGI2Mjc3Y2QzNjI2NjI4M2NiNWE5ZTY5NDM5NTNjNzgzZTZmZjdkNmEyZDU5ZDE1YWQwNjk3ZTkxZDQzYyJ9fX0=")
                 .build());
 

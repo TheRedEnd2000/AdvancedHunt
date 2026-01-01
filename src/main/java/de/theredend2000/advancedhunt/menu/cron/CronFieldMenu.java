@@ -55,7 +55,12 @@ public class CronFieldMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.cron.builder.title");
+        return plugin.getMessageManager().getMessage(
+                "gui.cron.builder.title",
+                false,
+                "%cron_type%",
+                plugin.getMessageManager().getMessage(policy.cronTypeMessageKey(), false)
+        );
     }
 
     @Override

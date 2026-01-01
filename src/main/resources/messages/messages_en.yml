@@ -809,8 +809,11 @@ gui:
           - "&eClick to delete"
         confirm_title: "Delete preset '%name%'?"
   cron:
+    type:
+      act: "ACT"
+      reset: "Progress Reset"
     editor:
-      title: "Cron Schedule Editor"
+      title: "%cron_type% Cron Schedule Editor"
       current:
         name: "&e&lCurrent Schedule"
         expression: "&7Expression:"
@@ -825,7 +828,7 @@ gui:
           - "&6⏰ Quick Presets"
           - ""
           - "&7Pre-configured scheduling templates"
-          - "&7for common reset intervals."
+          - "&7for common %cron_type% schedules."
           - ""
           - "&e► Daily &7- Every day at 00:00"
           - "&e► Weekly &7- Every Monday at 00:00"
@@ -836,30 +839,30 @@ gui:
           - "&a✓ &7Safe and easy to use"
           - "&8Perfect for beginners!"
       daily:
-        name: "&eDaily Reset"
+        name: "&eDaily"
         lore:
-          - "&7Resets every day at midnight"
+          - "&7Runs every day at midnight"
           - "&7Expression: &f0 0 0 * * ? *"
           - ""
           - "&aClick to apply"
       weekly:
-        name: "&eWeekly Reset"
+        name: "&eWeekly"
         lore:
-          - "&7Resets every Monday at midnight"
+          - "&7Runs every Monday at midnight"
           - "&7Expression: &f0 0 0 ? * MON *"
           - ""
           - "&aClick to apply"
       monthly:
-        name: "&eMonthly Reset"
+        name: "&eMonthly"
         lore:
-          - "&7Resets on the 1st of each month"
+          - "&7Runs on the 1st of each month"
           - "&7Expression: &f0 0 0 1 * ? *"
           - ""
           - "&aClick to apply"
       yearly:
-        name: "&eYearly Reset"
+        name: "&eYearly"
         lore:
-          - "&7Resets on January 1st"
+          - "&7Runs on January 1st"
           - "&7Expression: &f0 0 0 1 1 ? *"
           - ""
           - "&aClick to apply"
@@ -872,7 +875,7 @@ gui:
           - ""
           - "&eClick to browse"
     presets:
-      title: "Cron Presets"
+      title: "%cron_type% Cron Presets"
       item:
         name: "&e%name%"
       list:
@@ -925,7 +928,7 @@ gui:
         monday_midnight:
           name: "Every Monday at Midnight"
           lore:
-            - "&7Weekly reset on Mondays"
+            - "&7Weekly schedule on Mondays"
             - "&7Runs at 00:00 on Monday"
             - ""
             - "&aClick to apply"
@@ -939,35 +942,35 @@ gui:
         sunday_midnight:
           name: "Every Sunday at Midnight"
           lore:
-            - "&7Weekly reset on Sundays"
+            - "&7Weekly schedule on Sundays"
             - "&7Runs at 00:00 on Sunday"
             - ""
             - "&aClick to apply"
         first_day_month:
           name: "First Day of Month"
           lore:
-            - "&7Monthly reset"
+            - "&7Monthly schedule"
             - "&7Runs at 00:00 on the 1st"
             - ""
             - "&aClick to apply"
         last_day_month:
           name: "Last Day of Month"
           lore:
-            - "&7End of month reset"
+            - "&7End of month schedule"
             - "&7Runs at 00:00 on last day"
             - ""
             - "&aClick to apply"
         first_monday_month:
           name: "First Monday of Month"
           lore:
-            - "&7First Monday monthly reset"
+            - "&7First Monday monthly schedule"
             - "&7Runs at 00:00"
             - ""
             - "&aClick to apply"
         new_year:
           name: "New Year (Jan 1st)"
           lore:
-            - "&7Annual reset on New Year"
+            - "&7Annual schedule on New Year"
             - "&7Runs at 00:00 on January 1st"
             - ""
             - "&aClick to apply"
@@ -981,7 +984,7 @@ gui:
         quarterly:
           name: "Quarterly (1st of Jan/Apr/Jul/Oct)"
           lore:
-            - "&7Seasonal resets"
+            - "&7Seasonal schedules"
             - "&7Runs at 00:00 on the 1st"
             - "&7of Jan, Apr, Jul, and Oct"
             - ""
@@ -1020,7 +1023,7 @@ gui:
           - ""
           - "&eClick to type expression"
     builder:
-      title: "Cron Expression Builder"
+      title: "%cron_type% Cron Expression Builder"
       fields:
         second:
           name: "Second"
