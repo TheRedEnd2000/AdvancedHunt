@@ -4,12 +4,15 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.data.DataRepository;
 import de.theredend2000.advancedhunt.data.SqlRepository;
 import de.theredend2000.advancedhunt.data.YamlRepository;
+import de.theredend2000.advancedhunt.managers.MigrationService;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameType;
 import de.theredend2000.advancedhunt.menu.collection.*;
 import de.theredend2000.advancedhunt.menu.place.ViewPlacePresetsMenu;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.iface.ReadableNBT;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -1082,7 +1085,7 @@ public class AdvancedHuntCommand {
             String nbtData = DEBUG_PLACED_MARKER;
             if (type == Material.PLAYER_HEAD) {
                 try {
-                    String headNbt = de.tr7zw.nbtapi.NBT.get(item, de.tr7zw.nbtapi.iface.ReadableNBT::toString);
+                    String headNbt = NBT.get(item, ReadableNBT::toString);
                     if (headNbt != null && !headNbt.isEmpty()) {
                         nbtData = DEBUG_PLACED_MARKER + "\n" + headNbt;
                     }
@@ -1278,8 +1281,8 @@ public class AdvancedHuntCommand {
             final AtomicInteger lastPercentSent = new AtomicInteger(-1);
             final AtomicReference<String> lastStageSent = new AtomicReference<>("");
             final AtomicLong lastUpdateMs = new AtomicLong(System.currentTimeMillis());
-            final AtomicReference<de.theredend2000.advancedhunt.managers.MigrationService.MigrationProgress> lastProgress
-                = new AtomicReference<>(new de.theredend2000.advancedhunt.managers.MigrationService.MigrationProgress(0, "loading", 0, 0));
+            final AtomicReference<MigrationService.MigrationProgress> lastProgress
+                = new AtomicReference<>(new MigrationService.MigrationProgress(0, "loading", 0, 0));
 
             final BukkitRunnable heartbeat;
             if (sender instanceof Player player) {
