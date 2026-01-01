@@ -381,10 +381,33 @@ public class AdvancedHuntCommand {
         plugin.getMessageManager().reloadMessages();
         plugin.getParticleManager().reload();
         plugin.getSoundManager().reload();
-        plugin.getDataRepository().reload();
-        plugin.getTreasureManager().loadTreasures();
+
+        // Config-backed managers
+        plugin.getHintManager().cancelAllVisualHints();
+        plugin.getHintManager().reloadConfig();
         plugin.getProximityManager().reloadConfig();
-        sender.sendMessage(plugin.getMessageManager().getMessage("command.reload.success"));
+
+        // Storage backend (note: storage type changes still require restart)
+        plugin.getDataRepository().reload();
+
+        // Rebuild in-memory indexes/caches
+        plugin.getTreasureManager().loadTreasures();
+        CompletableFuture<Void> collectionsReload = plugin.getCollectionManager().reloadCollections();
+        CompletableFuture<Void> presetsReload = plugin.getRewardPresetManager().reloadPresets();
+        plugin.getLeaderboardManager().forceUpdate();
+
+        // Ensure cached player progress is refreshed after backend edits
+        Bukkit.getOnlinePlayers().forEach(p -> plugin.getPlayerManager().invalidate(p.getUniqueId()));
+
+        CompletableFuture.allOf(collectionsReload, presetsReload).whenComplete((v, ex) -> {
+            if (ex != null) {
+                plugin.getLogger().warning("Reload failed: " + ex.getMessage());
+            }
+
+            Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(
+                    plugin.getMessageManager().getMessage(ex == null ? "command.reload.success" : "command.reload.failed")
+            ));
+        });
     }
 
     public void list(Player player, String collectionName) {
