@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.managers;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.*;
+import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.HexColor;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import org.bukkit.Bukkit;
@@ -10,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -22,6 +23,9 @@ public class RewardManager {
 
     private final Main plugin;
     private final Random random = new Random();
+
+    // Cache für deserialisierte Items um wiederholte Deserialisierung zu vermeiden
+    private final Map<String, ItemStack> itemCache = new ConcurrentHashMap<>();
 
     public RewardManager(Main plugin) {
         this.plugin = plugin;
@@ -96,16 +100,40 @@ public class RewardManager {
 
     /**
      * Gives an item reward to the player.
+     * Uses caching to avoid repeated deserialization of complex items.
      *
      * @return The display name of the item
      */
     private String giveItem(Player player, Reward reward) {
-        ItemStack item = ItemSerializer.deserialize(reward.getValue());
-        if (item != null) {
-            player.getInventory().addItem(item);
-            return getItemDisplayName(item);
+        // Hole Item aus Cache oder deserialisiere es
+        ItemStack cachedItem = itemCache.computeIfAbsent(
+                reward.getValue(),
+                value -> {
+                    ItemStack item = ItemSerializer.deserialize(value);
+                    if (item == null) {
+                        plugin.getLogger().warning("Failed to deserialize item reward: " + value);
+                    }
+                    return item;
+                }
+        );
+
+        if (cachedItem == null) return null;
+
+        // Clone das Item bevor es gegeben wird (wichtig für cached items)
+        ItemStack item = cachedItem.clone();
+
+        // Bukkit's addItem gibt automatisch eine HashMap mit übrigen Items zurück
+        // wenn das Inventory voll ist - viel effizienter als manuelles Durchlaufen
+        HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(item);
+
+        // Wenn Items übrig sind (Inventory voll), droppe sie am Spieler
+        if (!leftover.isEmpty()) {
+            for (ItemStack drop : leftover.values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), drop);
+            }
         }
-        return null;
+
+        return getItemDisplayName(cachedItem);
     }
 
     /**
@@ -175,6 +203,7 @@ public class RewardManager {
 
     /**
      * Calculates collection statistics for placeholder replacement.
+     * OPTIMIZED: Uses lightweight TreasureCore instead of loading full Treasure objects.
      */
     private CollectionStats calculateCollectionStats(Player player, Collection collection) {
         if (collection == null) {
@@ -182,14 +211,15 @@ public class RewardManager {
         }
 
         try {
-            List<Treasure> treasures = plugin.getTreasureManager().getTreasuresInCollection(collection.getId());
+            List<TreasureCore> treasureCores = plugin.getTreasureManager()
+                    .getTreasureCoresInCollection(collection.getId());
             PlayerData playerData = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
 
-            int foundTreasures = (int) treasures.stream()
-                    .filter(treasure -> playerData.getFoundTreasures().contains(treasure.getId()))
+            int foundTreasures = (int) treasureCores.stream()
+                    .filter(core -> playerData.getFoundTreasures().contains(core.getId()))
                     .count();
 
-            int maxTreasures = treasures.size();
+            int maxTreasures = treasureCores.size();
             int remainingTreasures = maxTreasures - foundTreasures;
 
             return new CollectionStats(foundTreasures, maxTreasures, remainingTreasures);
@@ -271,6 +301,21 @@ public class RewardManager {
             }
         }
         return false;
+    }
+
+    /**
+     * Clears the item cache. Useful for reloading or memory management.
+     */
+    public void clearItemCache() {
+        itemCache.clear();
+        plugin.getLogger().info("Item reward cache cleared (" + itemCache.size() + " items)");
+    }
+
+    /**
+     * Gets the current size of the item cache.
+     */
+    public int getCacheSize() {
+        return itemCache.size();
     }
 
     /**

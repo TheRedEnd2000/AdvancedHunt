@@ -193,7 +193,7 @@ public class CollectionSettingsMenu extends Menu {
         addButton(30, new ItemBuilder(Material.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.default_treasure_preset.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.default_treasure_preset.lore", false,
-                        "%preset%", "Â§f" + defaultPresetName).toArray(new String[0]))
+                        "%preset%", "§f" + defaultPresetName).toArray(new String[0]))
                 .build(), (e) -> {
             if (!playerMenuUtility.hasPermission("advancedhunt.admin")) {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
