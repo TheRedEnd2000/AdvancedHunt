@@ -306,17 +306,14 @@ public class AdvancedHuntCommand {
             baseBuilder()
                 .literal("migrate")
                 .required("type", StringParser.stringParser(), migrationTypes)
+                .flag(commandManager.flagBuilder("force"))
+                .flag(commandManager.flagBuilder("purge"))
                 .permission("advancedhunt.admin.migrate")
-                .handler(context -> migrate(context.sender(), context.<String>get("type").toUpperCase(), false))
-        );
-
-        commandManager.command(
-            baseBuilder()
-                .literal("migrate")
-                .required("type", StringParser.stringParser(), migrationTypes)
-                .literal("--force")
-                .permission("advancedhunt.admin.migrate")
-                .handler(context -> migrate(context.sender(), context.<String>get("type").toUpperCase(), true))
+                .handler(context -> {
+                    boolean force = context.flags().isPresent("force");
+                    boolean purge = context.flags().isPresent("purge");
+                    migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
+                })
         );
     }
 
@@ -1190,7 +1187,7 @@ public class AdvancedHuntCommand {
         }.runTaskTimer(plugin, 1L, 1L);
     }
 
-    private void migrate(CommandSender sender, String type, boolean force) {
+    private void migrate(CommandSender sender, String type, boolean force, boolean purge) {
         // Create target repository based on type
         DataRepository targetRepo = createTargetRepository(type, sender);
         if (targetRepo == null) {
@@ -1201,7 +1198,7 @@ public class AdvancedHuntCommand {
         targetRepo.init();
 
         // Check for existing data and proceed with migration
-        checkExistingDataAndMigrate(sender, type, targetRepo, force);
+        checkExistingDataAndMigrate(sender, type, targetRepo, force, purge);
     }
 
     private DataRepository createTargetRepository(String type, CommandSender sender) {
@@ -1242,7 +1239,7 @@ public class AdvancedHuntCommand {
         return new SqlRepository(plugin, host, port, database, username, password, false);
     }
 
-    private void checkExistingDataAndMigrate(CommandSender sender, String type, DataRepository targetRepo, boolean force) {
+    private void checkExistingDataAndMigrate(CommandSender sender, String type, DataRepository targetRepo, boolean force, boolean purge) {
         CompletableFuture.allOf(
                 targetRepo.loadCollections(),
                 targetRepo.getAllTreasureUUIDs(),
@@ -1262,7 +1259,7 @@ public class AdvancedHuntCommand {
                 || existingTreasurePresets > 0
                 || existingCollectionPresets > 0;
 
-            if (hasExistingData && !force) {
+            if (hasExistingData && !force && !purge) {
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.existing_data_abort",
                         "%collections%", String.valueOf(existingCollections),
                         "%treasures%", String.valueOf(existingTreasures),
@@ -1278,84 +1275,92 @@ public class AdvancedHuntCommand {
                         "%players%", String.valueOf(existingPlayerData)));
             }
 
-            final AtomicInteger lastPercentSent = new AtomicInteger(-1);
-            final AtomicReference<String> lastStageSent = new AtomicReference<>("");
-            final AtomicLong lastUpdateMs = new AtomicLong(System.currentTimeMillis());
-            final AtomicReference<MigrationService.MigrationProgress> lastProgress
-                = new AtomicReference<>(new MigrationService.MigrationProgress(0, "loading", 0, 0));
-
-            final BukkitRunnable heartbeat;
-            if (sender instanceof Player player) {
-                heartbeat = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        long now = System.currentTimeMillis();
-                        if (now - lastUpdateMs.get() < 4000L) {
-                            return;
-                        }
-                        var p = lastProgress.get();
-                        sendActionBar(player, plugin.getMessageManager().getMessage(
-                                "command.migration.progress_actionbar",
-                                false,
-                                "%percent%", String.valueOf(p.percent()),
-                                "%current%", String.valueOf(p.current()),
-                                "%total%", String.valueOf(p.total()),
-                                "%stage%", String.valueOf(p.stage())));
-                    }
-                };
-                heartbeat.runTaskTimer(plugin, 40L, 40L);
+            CompletableFuture<Void> prepareTarget;
+            if (purge && hasExistingData) {
+                prepareTarget = purgeTargetRepository(targetRepo);
             } else {
-                heartbeat = null;
+                prepareTarget = CompletableFuture.completedFuture(null);
             }
 
-            return plugin.getMigrationService().migrate(plugin.getDataRepository(), targetRepo, progress -> {
-                lastProgress.set(progress);
+            return prepareTarget.thenCompose(v2 -> {
+                final AtomicInteger lastPercentSent = new AtomicInteger(-1);
+                final AtomicReference<String> lastStageSent = new AtomicReference<>("");
+                final AtomicLong lastUpdateMs = new AtomicLong(System.currentTimeMillis());
+                final AtomicReference<MigrationService.MigrationProgress> lastProgress = new AtomicReference<>(new MigrationService.MigrationProgress(0, "loading", 0, 0));
 
-                int percent = progress.percent();
-                String stage = String.valueOf(progress.stage());
-                long now = System.currentTimeMillis();
-
-                boolean shouldSend = false;
-                if (lastPercentSent.get() != percent) {
-                    shouldSend = true;
-                } else if (!stage.equals(lastStageSent.get())) {
-                    // Important for long 0% phases (e.g., scanning large SQL tables)
-                    shouldSend = true;
-                } else if (now - lastUpdateMs.get() > 2000L) {
-                    // Heartbeat for console (players get ActionBar heartbeat too)
-                    shouldSend = true;
+                final BukkitRunnable heartbeat;
+                if (sender instanceof Player player) {
+                    heartbeat = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            long now = System.currentTimeMillis();
+                            if (now - lastUpdateMs.get() < 4000L) {
+                                return;
+                            }
+                            var p = lastProgress.get();
+                            sendActionBar(player, plugin.getMessageManager().getMessage(
+                                    "command.migration.progress_actionbar",
+                                    false,
+                                    "%percent%", String.valueOf(p.percent()),
+                                    "%current%", String.valueOf(p.current()),
+                                    "%total%", String.valueOf(p.total()),
+                                    "%stage%", String.valueOf(p.stage())));
+                        }
+                    };
+                    heartbeat.runTaskTimer(plugin, 40L, 40L);
+                } else {
+                    heartbeat = null;
                 }
 
-                if (!shouldSend) {
-                    return;
-                }
+                return plugin.getMigrationService().migrate(plugin.getDataRepository(), targetRepo, progress -> {
+                    lastProgress.set(progress);
 
-                lastPercentSent.set(percent);
-                lastStageSent.set(stage);
-                lastUpdateMs.set(now);
+                    int percent = progress.percent();
+                    String stage = String.valueOf(progress.stage());
+                    long now = System.currentTimeMillis();
 
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (sender instanceof Player player) {
-                        sendActionBar(player, plugin.getMessageManager().getMessage(
-                                "command.migration.progress_actionbar",
-                                false,
+                    boolean shouldSend = false;
+                    if (lastPercentSent.get() != percent) {
+                        shouldSend = true;
+                    } else if (!stage.equals(lastStageSent.get())) {
+                        // Important for long 0% phases (e.g., scanning large SQL tables)
+                        shouldSend = true;
+                    } else if (now - lastUpdateMs.get() > 2000L) {
+                        // Heartbeat for console (players get ActionBar heartbeat too)
+                        shouldSend = true;
+                    }
+
+                    if (!shouldSend) {
+                        return;
+                    }
+
+                    lastPercentSent.set(percent);
+                    lastStageSent.set(stage);
+                    lastUpdateMs.set(now);
+
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (sender instanceof Player player) {
+                            sendActionBar(player, plugin.getMessageManager().getMessage(
+                                    "command.migration.progress_actionbar",
+                                    false,
+                                    "%percent%", String.valueOf(progress.percent()),
+                                    "%current%", String.valueOf(progress.current()),
+                                    "%total%", String.valueOf(progress.total()),
+                                    "%stage%", String.valueOf(progress.stage())));
+                            return;
+                        }
+
+                        sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.progress",
                                 "%percent%", String.valueOf(progress.percent()),
                                 "%current%", String.valueOf(progress.current()),
                                 "%total%", String.valueOf(progress.total()),
                                 "%stage%", String.valueOf(progress.stage())));
-                        return;
+                    });
+                }).whenComplete((v3, t) -> {
+                    if (heartbeat != null) {
+                        Bukkit.getScheduler().runTask(plugin, heartbeat::cancel);
                     }
-
-                    sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.progress",
-                            "%percent%", String.valueOf(progress.percent()),
-                            "%current%", String.valueOf(progress.current()),
-                            "%total%", String.valueOf(progress.total()),
-                            "%stage%", String.valueOf(progress.stage())));
                 });
-            }).whenComplete((v3, t) -> {
-                if (heartbeat != null) {
-                    Bukkit.getScheduler().runTask(plugin, heartbeat::cancel);
-                }
             });
         }).thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> {
             // Close the migration target repository before switching the live backend.
@@ -1394,6 +1399,57 @@ public class AdvancedHuntCommand {
             targetRepo.shutdown();
             return null;
         });
+    }
+
+    private CompletableFuture<Void> purgeTargetRepository(DataRepository targetRepo) {
+        CompletableFuture<Void> deletePresets = targetRepo.loadRewardPresets(RewardPresetType.TREASURE)
+            .thenCompose(presets -> {
+                if (presets == null || presets.isEmpty()) {
+                    return CompletableFuture.completedFuture(null);
+                }
+                CompletableFuture<?>[] futures = presets.stream()
+                    .map(preset -> targetRepo.deleteRewardPreset(RewardPresetType.TREASURE, preset.getId()))
+                    .toArray(CompletableFuture[]::new);
+                return CompletableFuture.allOf(futures);
+            }).thenCompose(v -> targetRepo.loadRewardPresets(RewardPresetType.COLLECTION)
+                .thenCompose(presets -> {
+                    if (presets == null || presets.isEmpty()) {
+                        return CompletableFuture.completedFuture(null);
+                    }
+                    CompletableFuture<?>[] futures = presets.stream()
+                        .map(preset -> targetRepo.deleteRewardPreset(RewardPresetType.COLLECTION, preset.getId()))
+                        .toArray(CompletableFuture[]::new);
+                    return CompletableFuture.allOf(futures);
+                }));
+
+        CompletableFuture<Void> deleteCollections = targetRepo.loadCollections()
+            .thenCompose(collections -> {
+                if (collections == null || collections.isEmpty()) {
+                    return CompletableFuture.completedFuture(null);
+                }
+                CompletableFuture<?>[] futures = collections.stream()
+                    .map(collection -> targetRepo.deleteCollection(collection.getId()))
+                    .toArray(CompletableFuture[]::new);
+                return CompletableFuture.allOf(futures);
+            });
+
+        CompletableFuture<Void> deleteRemainingTreasures = targetRepo.getAllTreasureUUIDs()
+            .thenCompose(treasureIds -> {
+                if (treasureIds == null || treasureIds.isEmpty()) {
+                    return CompletableFuture.completedFuture(null);
+                }
+                CompletableFuture<?>[] futures = treasureIds.stream()
+                    .map(targetRepo::deleteTreasure)
+                    .toArray(CompletableFuture[]::new);
+                return CompletableFuture.allOf(futures);
+            });
+
+        CompletableFuture<Void> resetProgress = targetRepo.resetAllProgress().thenApply(v -> null);
+
+        return deletePresets
+            .thenCompose(v -> deleteCollections)
+            .thenCompose(v -> deleteRemainingTreasures)
+            .thenCompose(v -> resetProgress);
     }
 
     private int safeGetSize(CompletableFuture<? extends java.util.Collection<?>> future) {
