@@ -129,25 +129,9 @@ public class AddRewardMenu extends Menu {
                 return;
             }
 
-            // Now ask for chance
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chance"));
-            plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
-                try {
-                    double chance = Double.parseDouble(chanceStr);
-                    if (chance < 0 || chance > 100) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
-                        open();
-                        return;
-                    }
-
-                    parentMenu.addReward(new Reward(RewardType.COMMAND, chance,null,null, command));
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
-                    parentMenu.open();
-                } catch (NumberFormatException ex) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
-                    open();
-                }
-            });
+            parentMenu.addReward(new Reward(RewardType.COMMAND, 100.0, null, null, command));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
+            parentMenu.open();
         });
     }
 }

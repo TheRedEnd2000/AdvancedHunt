@@ -9,7 +9,6 @@ feedback:
       command: "%prefix%&aEnter the command to execute (without /):"
       chat_message: "%prefix%&aEnter the chat message to send (use & for colors):"
       broadcast_message: "%prefix%&aEnter the broadcast message to send to all players (use & for colors):"
-      chance: "%prefix%&aEnter the chance (0-100):"
       new_chance: "%prefix%&aEnter the new chance (current: %current%%):"
       new_message: "%prefix%&aEnter the new message (current: %current%):"
       new_broadcast: "%prefix%&aEnter the new broadcast (current: %current%):"

@@ -142,35 +142,12 @@ public class AddItemRewardMenu extends Menu {
             parentMenu.open();
             return;
         }
-        
-        // Prompt for chance
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chance"));
-        plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
-            try {
-                double chance = Double.parseDouble(chanceStr);
-                if (chance < 0 || chance > 100) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
-                    // Return item to player
-                    giveItemBack(item);
-                    lastMenu.open();
-                    return;
-                }
-                
-                // Serialize item and create reward
-                String serialized = ItemSerializer.serialize(item);
-                Reward reward = new Reward(RewardType.ITEM, chance,null,null, serialized);
 
-                parentMenu.addReward(reward);
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
-                parentMenu.open();
-                
-            } catch (NumberFormatException ex) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
-                // Return item to player
-                giveItemBack(item);
-                lastMenu.open();
-            }
-        });
+        String serialized = ItemSerializer.serialize(item);
+        Reward reward = new Reward(RewardType.ITEM, 100.0, null, null, serialized);
+        parentMenu.addReward(reward);
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
+        parentMenu.open();
     }
 
     /**

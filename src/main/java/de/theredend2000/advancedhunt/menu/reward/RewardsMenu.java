@@ -632,26 +632,10 @@ public class RewardsMenu extends PagedMenu {
                 open();
                 return;
             }
-            
-            // Now ask for chance
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.prompt.chance"));
-            plugin.getChatInputListener().requestInput(playerMenuUtility, chanceStr -> {
-                try {
-                    double chance = Double.parseDouble(chanceStr);
-                    if (chance < 0 || chance > 100) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
-                        open();
-                        return;
-                    }
-                    
-                    addReward(new Reward(RewardType.COMMAND, chance,null,null, command));
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
-                    open();
-                } catch (NumberFormatException ex) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
-                    open();
-                }
-            });
+
+            addReward(new Reward(RewardType.COMMAND, 100.0, null, null, command));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.added"));
+            open();
         });
     }
 
