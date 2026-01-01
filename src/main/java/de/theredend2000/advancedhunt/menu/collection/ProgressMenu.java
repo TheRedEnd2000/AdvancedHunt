@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.PlayerData;
-import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
@@ -111,12 +110,53 @@ public class ProgressMenu extends PagedMenu {
             // Page index ist relativ zur aktuellen Seite
             int pageIndex = i - startIndex;
 
-            ItemStack item = createTreasureItem(treasureCore, i, isFound);
-            addPagedItem(pageIndex, item, e -> handleTreasureClick(e, treasureCore, isFound));
+            int slot = getSlotForPagedIndex(pageIndex);
+            ItemStack item = createTreasureItem(treasureCore, i, isFound, null);
+            addButton(slot, item, e -> handleTreasureClick(e, treasureCore, isFound));
+
+            if (isFound && HeadHelper.isPlayerHead(item)) {
+                UUID treasureId = treasureCore.getId();
+                int finalI = i;
+                plugin.getTreasureManager().getFullTreasureAsync(treasureId)
+                        .thenApply(fullTreasure -> {
+                            if (fullTreasure == null) {
+                                return null;
+                            }
+                            String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
+                            if (texture != null) {
+                                return new SkullInfo(texture, null);
+                            }
+                            String profileName = HeadHelper.getProfileNameFromNbt(fullTreasure.getNbtData());
+                            if (profileName != null) {
+                                return new SkullInfo(null, profileName);
+                            }
+                            return null;
+                        })
+                        .thenAccept(skullInfo -> {
+                            if (skullInfo == null) {
+                                return;
+                            }
+                            Bukkit.getScheduler().runTask(plugin, () -> {
+                                if (!isViewingThisMenu()) {
+                                    return;
+                                }
+                                ItemStack updated = createTreasureItem(treasureCore, finalI, true, skullInfo);
+                                updateSlot(slot, updated);
+                            });
+                        });
+            }
         }
 
         // Update index for pagination
         this.index = endIndex - 1;
+    }
+
+    private boolean isViewingThisMenu() {
+        if (playerMenuUtility == null) return false;
+        if (!playerMenuUtility.isOnline()) return false;
+        if (playerMenuUtility.getOpenInventory() == null) return false;
+        if (playerMenuUtility.getOpenInventory().getTopInventory() == null) return false;
+        return playerMenuUtility.getOpenInventory().getTopInventory().getHolder() == this;
     }
 
     private void fetchData() {
@@ -157,37 +197,29 @@ public class ProgressMenu extends PagedMenu {
         addStaticItem(8, statsItem);
     }
 
-    private ItemStack createTreasureItem(TreasureCore treasureCore, int index, boolean isFound) {
+    private ItemStack createTreasureItem(TreasureCore treasureCore, int index, boolean isFound, SkullInfo skullInfo) {
         ItemBuilder builder;
         String statusColor;
 
         if (isFound) {
             statusColor = ChatColor.GREEN.toString();
-            Treasure treasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
-            if (treasure != null) {
-                XMaterial xMaterial = XMaterial.matchXMaterial(treasure.getMaterial()).orElse(XMaterial.CHEST);
-                ItemStack item = XMaterialHelper.getItemStack(xMaterial);
+            Material material = Material.matchMaterial(treasureCore.getMaterial());
+            if (material == null) material = Material.CHEST;
 
-                if (item != null) {
-                    builder = new ItemBuilder(item);
-                } else {
-                    builder = new ItemBuilder(Material.CHEST);
-                }
-
-                if (xMaterial == XMaterial.PLAYER_HEAD || xMaterial == XMaterial.PLAYER_WALL_HEAD) {
-                    String texture = HeadHelper.getTextureFromNbt(treasure.getNbtData());
-                    if (texture != null) {
-                        builder.setSkullTexture(texture);
-                    } else {
-                        // Try profile name if no texture is available
-                        String profileName = HeadHelper.getProfileNameFromNbt(treasure.getNbtData());
-                        if (profileName != null) {
-                            builder.setSkullOwner(profileName);
-                        }
-                    }
-                }
+            XMaterial xMaterial = XMaterial.matchXMaterial(material);
+            ItemStack item = XMaterialHelper.getItemStack(xMaterial);
+            if (item != null) {
+                builder = new ItemBuilder(item);
             } else {
-                builder = new ItemBuilder(Material.LIME_STAINED_GLASS_PANE);
+                builder = new ItemBuilder(Material.CHEST);
+            }
+
+            if (HeadHelper.isPlayerHead(item) && skullInfo != null) {
+                if (skullInfo.texture() != null) {
+                    builder.setSkullTexture(skullInfo.texture());
+                } else if (skullInfo.ownerName() != null) {
+                    builder.setSkullOwner(skullInfo.ownerName());
+                }
             }
         } else {
             statusColor = ChatColor.RED.toString();
@@ -216,6 +248,8 @@ public class ProgressMenu extends PagedMenu {
 
         return builder.build();
     }
+
+    private record SkullInfo(String texture, String ownerName) {}
 
     private void handleTreasureClick(InventoryClickEvent e, TreasureCore treasureCore, boolean isFound) {
         // Optional: Add click functionality here, such as teleportation or showing more details

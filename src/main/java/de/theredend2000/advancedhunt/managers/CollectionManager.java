@@ -7,7 +7,7 @@ import de.theredend2000.advancedhunt.data.DataRepository;
 import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.PlayerData;
-import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.CronUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -71,13 +71,13 @@ public class CollectionManager {
     public void checkCompletion(Player player, Collection collection) {
         CompletableFuture.runAsync(() -> {
             PlayerData data = playerManager.getPlayerData(player.getUniqueId());
-            List<Treasure> allTreasures = treasureManager.getTreasuresInCollection(collection.getId());
-            
-            if (allTreasures.isEmpty()) return;
+
+            List<TreasureCore> allCores = treasureManager.getTreasureCoresInCollection(collection.getId());
+            if (allCores.isEmpty()) return;
 
             boolean allFound = true;
-            for (Treasure t : allTreasures) {
-                if (!data.hasFound(t.getId())) {
+            for (TreasureCore core : allCores) {
+                if (!data.hasFound(core.getId())) {
                     allFound = false;
                     break;
                 }

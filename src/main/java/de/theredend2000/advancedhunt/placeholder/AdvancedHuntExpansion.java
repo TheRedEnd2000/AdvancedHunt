@@ -7,7 +7,6 @@ import de.theredend2000.advancedhunt.managers.PlayerManager;
 import de.theredend2000.advancedhunt.managers.TreasureManager;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.PlayerData;
-import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -109,26 +108,20 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             
             UUID selectedId = data.getSelectedCollectionId();
             if (selectedId == null) return "0";
-            
-            List<Treasure> allTreasures = treasureManager.getTreasuresInCollection(selectedId);
-            if (allTreasures.isEmpty()) return "0";
+
+            List<TreasureCore> allCores = treasureManager.getTreasureCoresInCollection(selectedId);
+            if (allCores.isEmpty()) return "0";
+
+            int total = allCores.size();
+            int foundCount = treasureManager.countFoundInCollection(data.getFoundTreasures(), selectedId);
 
             if (params.equalsIgnoreCase("max_treasures")) {
-                return String.valueOf(allTreasures.size());
+                return String.valueOf(total);
             }
-
-            int foundCount = 0;
-            for (Treasure t : allTreasures) {
-                if (data.hasFound(t.getId())) {
-                    foundCount++;
-                }
-            }
-
             if (params.equalsIgnoreCase("found_treasures")) {
                 return String.valueOf(foundCount);
             }
-            // remaining_treasures
-            return String.valueOf(allTreasures.size() - foundCount);
+            return String.valueOf(total - foundCount);
         }
 
         // %advancedhunt_has_found_<treasure_id>%
@@ -147,7 +140,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             String collectionName = params.substring("max_treasures_".length());
             Optional<Collection> collectionOpt = collectionManager.getCollectionByName(collectionName);
             if (collectionOpt.isEmpty()) return "0";
-            return String.valueOf(treasureManager.getTreasuresInCollection(collectionOpt.get().getId()).size());
+            return String.valueOf(treasureManager.getTreasureCoresInCollection(collectionOpt.get().getId()).size());
         }
 
         // %advancedhunt_found_treasures_<collection>%
@@ -157,7 +150,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             if (collectionOpt.isEmpty()) return "0";
 
             UUID collectionId = collectionOpt.get().getId();
-            return String.valueOf(treasureManager.filterFoundByCollection(data.getFoundTreasures(), collectionId).size());
+            return String.valueOf(treasureManager.countFoundInCollection(data.getFoundTreasures(), collectionId));
         }
 
         // %advancedhunt_remaining_count_<collection>% OR %advancedhunt_remaining_treasures_<collection>%
@@ -172,7 +165,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             UUID collectionId = collectionOpt.get().getId();
             List<TreasureCore> allCores = treasureManager.getTreasureCoresInCollection(collectionId);
             if (allCores.isEmpty()) return "0";
-            int foundCount = treasureManager.filterFoundByCollection(data.getFoundTreasures(), collectionId).size();
+            int foundCount = treasureManager.countFoundInCollection(data.getFoundTreasures(), collectionId);
             return String.valueOf(allCores.size() - foundCount);
         }
 

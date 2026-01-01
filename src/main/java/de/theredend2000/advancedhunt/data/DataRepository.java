@@ -108,6 +108,16 @@ public interface DataRepository {
     CompletableFuture<Integer> resetPlayerCollectionProgress(UUID playerUuid, UUID collectionId);
     CompletableFuture<Map<UUID, Integer>> getLeaderboard(UUID collectionId, int limit);
     CompletableFuture<List<UUID>> getPlayersWhoFound(UUID treasureId);
+
+    /**
+     * Gets the number of players who have found a treasure.
+     *
+     * This avoids allocating and transferring the full UUID list when callers only need the count.
+     * Implementations should prefer an efficient COUNT(*) query / O(1) index lookup.
+     */
+    default CompletableFuture<Integer> getFoundPlayerCount(UUID treasureId) {
+        return getPlayersWhoFound(treasureId).thenApply(list -> list == null ? 0 : list.size());
+    }
     
     /**
      * Gets all treasure IDs that a player has found within a specific collection.

@@ -7,7 +7,6 @@ import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.menu.treasure.TreasureActionMenu;
 import de.theredend2000.advancedhunt.menu.treasure.WhoFoundMenu;
 import de.theredend2000.advancedhunt.model.Collection;
-import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import de.theredend2000.advancedhunt.util.HeadHelper;
@@ -25,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class CollectionListMenu extends PagedMenu {
 
@@ -74,13 +74,54 @@ public class CollectionListMenu extends PagedMenu {
         for (int i = startIndex; i < endIndex; i++) {
             TreasureCore treasureCore = treasures.get(i);
             int displayIndex = i - startIndex;
-            ItemStack item = createTreasureItem(treasureCore, i);
 
-            addPagedItem(displayIndex, item, e -> handleTreasureClick(e, treasureCore));
+            int slot = getSlotForPagedIndex(displayIndex);
+            ItemStack item = createTreasureItem(treasureCore, i, null, null);
+            addButton(slot, item, e -> handleTreasureClick(e, treasureCore));
+
+            UUID treasureId = treasureCore.getId();
+            CompletableFuture<Integer> foundCountFuture = plugin.getDataRepository().getFoundPlayerCount(treasureId);
+
+            boolean isHead = HeadHelper.isPlayerHead(item);
+            CompletableFuture<SkullInfo> skullInfoFuture = isHead
+                    ? plugin.getTreasureManager().getFullTreasureAsync(treasureId).thenApply(fullTreasure -> {
+                        if (fullTreasure == null) {
+                            return null;
+                        }
+                        String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
+                        if (texture != null) {
+                            return new SkullInfo(texture, null);
+                        }
+                        String profileName = HeadHelper.getProfileNameFromNbt(fullTreasure.getNbtData());
+                        if (profileName != null) {
+                            return new SkullInfo(null, profileName);
+                        }
+                        return null;
+                    })
+                    : CompletableFuture.completedFuture(null);
+
+            int finalI = i;
+            foundCountFuture
+                    .thenCombine(skullInfoFuture, (count, skullInfo) -> new TreasureItemData(count, skullInfo))
+                    .thenAccept(data -> Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (!isViewingThisMenu()) {
+                            return;
+                        }
+                        ItemStack updated = createTreasureItem(treasureCore, finalI, data.foundCount(), data.skullInfo());
+                        updateSlot(slot, updated);
+                    }));
         }
         
         // Update index for pagination buttons
         this.index = endIndex - 1;
+    }
+
+    private boolean isViewingThisMenu() {
+        if (playerMenuUtility == null) return false;
+        if (!playerMenuUtility.isOnline()) return false;
+        if (playerMenuUtility.getOpenInventory() == null) return false;
+        if (playerMenuUtility.getOpenInventory().getTopInventory() == null) return false;
+        return playerMenuUtility.getOpenInventory().getTopInventory().getHolder() == this;
     }
     
     /**
@@ -110,7 +151,7 @@ public class CollectionListMenu extends PagedMenu {
         });
     }
 
-    private ItemStack createTreasureItem(TreasureCore treasureCore, int index) {
+    private ItemStack createTreasureItem(TreasureCore treasureCore, int index, Integer playerFoundSize, SkullInfo skullInfo) {
         // For menu display, we use the material from TreasureCore
         // Only load full treasure if we need NBT data for heads
         Material material = Material.matchMaterial(treasureCore.getMaterial());
@@ -121,27 +162,18 @@ public class CollectionListMenu extends PagedMenu {
         if (item == null) item = new ItemStack(Material.CHEST);
 
         ItemBuilder builder = new ItemBuilder(item);
-        
-        // For player heads, we need to load full treasure for NBT data
-        if (HeadHelper.isPlayerHead(item)) {
-            Treasure fullTreasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
-            if (fullTreasure != null) {
-                String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
-                if (texture != null) {
-                    builder.setSkullTexture(texture);
-                } else {
-                    // Try profile name if no texture is available
-                    String profileName = HeadHelper.getProfileNameFromNbt(fullTreasure.getNbtData());
-                    if (profileName != null) {
-                        builder.setSkullOwner(profileName);
-                    }
-                }
+
+        if (HeadHelper.isPlayerHead(item) && skullInfo != null) {
+            if (skullInfo.texture() != null) {
+                builder.setSkullTexture(skullInfo.texture());
+            } else if (skullInfo.ownerName() != null) {
+                builder.setSkullOwner(skullInfo.ownerName());
             }
         }
 
-        int playerFoundSize = plugin.getDataRepository().getPlayersWhoFound(treasureCore.getId()).join().size();
+        String foundLine = playerFoundSize == null ? ChatColor.GRAY + "Players found: ..." : (ChatColor.GRAY + "Players found: " + playerFoundSize);
         builder.setDisplayName(ChatColor.GOLD + "Treasure #" + (index + 1));
-        builder.addLoreLine(ChatColor.GRAY+"Players found: "+playerFoundSize);
+        builder.addLoreLine(foundLine);
         builder.addLoreLine("");
         builder.addLoreLine(ChatColor.GRAY + "Location:");
         builder.addLoreLine(ChatColor.GRAY + "X: " + treasureCore.getLocation().getBlockX());
@@ -162,6 +194,10 @@ public class CollectionListMenu extends PagedMenu {
 
         return builder.build();
     }
+
+    private record SkullInfo(String texture, String ownerName) {}
+
+    private record TreasureItemData(int foundCount, SkullInfo skullInfo) {}
 
     /**
      * Handles clicks on treasure items with support for left/ right-click actions
@@ -197,17 +233,22 @@ public class CollectionListMenu extends PagedMenu {
                 p.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
                 return;
             }
-            Treasure treasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
-
-            new RewardsMenu(p, plugin, new TreasureRewardHolder(plugin, treasure)).open();
+            plugin.getTreasureManager().getFullTreasureAsync(treasureCore.getId()).thenAccept(treasure -> {
+                if (treasure == null) {
+                    return;
+                }
+                Bukkit.getScheduler().runTask(plugin, () -> new RewardsMenu(p, plugin, new TreasureRewardHolder(plugin, treasure)).open());
+            });
             return;
         }
 
         // Other click types (Bedrock fallback): Open an action menu - need full treasure
-        Treasure fullTreasure = plugin.getTreasureManager().getFullTreasure(treasureCore.getId());
-        if (fullTreasure != null) {
-            new TreasureActionMenu(p, plugin, fullTreasure, this).open();
-        }
+        plugin.getTreasureManager().getFullTreasureAsync(treasureCore.getId()).thenAccept(fullTreasure -> {
+            if (fullTreasure == null) {
+                return;
+            }
+            Bukkit.getScheduler().runTask(plugin, () -> new TreasureActionMenu(p, plugin, fullTreasure, this).open());
+        });
     }
 
     /**
