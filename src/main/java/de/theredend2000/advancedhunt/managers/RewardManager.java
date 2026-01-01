@@ -1,8 +1,10 @@
 package de.theredend2000.advancedhunt.managers;
 
 import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
+import de.theredend2000.advancedhunt.model.Reward;
+import de.theredend2000.advancedhunt.model.RewardType;
 import de.theredend2000.advancedhunt.util.HexColor;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import org.bukkit.Bukkit;
@@ -26,6 +28,10 @@ public class RewardManager {
 
     // Cache für deserialisierte Items um wiederholte Deserialisierung zu vermeiden
     private final Map<String, ItemStack> itemCache = new ConcurrentHashMap<>();
+
+    // Cache compiled command blacklist patterns to avoid recompiling on every reward.
+    private volatile List<String> cachedCommandBlacklist = Collections.emptyList();
+    private volatile List<Pattern> cachedCommandBlacklistPatterns = Collections.emptyList();
 
     public RewardManager(Main plugin) {
         this.plugin = plugin;
@@ -203,7 +209,6 @@ public class RewardManager {
 
     /**
      * Calculates collection statistics for placeholder replacement.
-     * OPTIMIZED: Uses lightweight TreasureCore instead of loading full Treasure objects.
      */
     private CollectionStats calculateCollectionStats(Player player, Collection collection) {
         if (collection == null) {
@@ -211,22 +216,47 @@ public class RewardManager {
         }
 
         try {
-            List<TreasureCore> treasureCores = plugin.getTreasureManager()
-                    .getTreasureCoresInCollection(collection.getId());
+            int maxTreasures = plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId()).size();
             PlayerData playerData = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
 
-            int foundTreasures = (int) treasureCores.stream()
-                    .filter(core -> playerData.getFoundTreasures().contains(core.getId()))
-                    .count();
+            int foundTreasures = plugin.getTreasureManager()
+                    .countFoundInCollection(playerData.getFoundTreasures(), collection.getId());
 
-            int maxTreasures = treasureCores.size();
-            int remainingTreasures = maxTreasures - foundTreasures;
+            int remainingTreasures = Math.max(0, maxTreasures - foundTreasures);
 
             return new CollectionStats(foundTreasures, maxTreasures, remainingTreasures);
         } catch (Exception e) {
             plugin.getLogger().warning("Failed to calculate collection stats: " + e.getMessage());
             return new CollectionStats(0, 0, 0);
         }
+    }
+
+    private List<Pattern> getCommandBlacklistPatterns() {
+        List<String> blacklist = plugin.getConfig().getStringList("rewards.command-blacklist");
+        if (blacklist == null || blacklist.isEmpty()) {
+            cachedCommandBlacklist = Collections.emptyList();
+            cachedCommandBlacklistPatterns = Collections.emptyList();
+            return cachedCommandBlacklistPatterns;
+        }
+
+        // Fast path: unchanged config.
+        if (blacklist.equals(cachedCommandBlacklist)) {
+            return cachedCommandBlacklistPatterns;
+        }
+
+        List<Pattern> compiled = new ArrayList<>(blacklist.size());
+        for (String regex : blacklist) {
+            if (regex == null || regex.isBlank()) continue;
+            try {
+                compiled.add(Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Invalid regex pattern in command-blacklist: " + regex);
+            }
+        }
+
+        cachedCommandBlacklist = List.copyOf(blacklist);
+        cachedCommandBlacklistPatterns = List.copyOf(compiled);
+        return cachedCommandBlacklistPatterns;
     }
 
     /**
@@ -284,20 +314,15 @@ public class RewardManager {
      * @return true if the command is blacklisted, false otherwise
      */
     public boolean isCommandBlacklisted(String command) {
-        List<String> blacklist = plugin.getConfig().getStringList("rewards.command-blacklist");
-        if (blacklist.isEmpty()) return false;
+        List<Pattern> patterns = getCommandBlacklistPatterns();
+        if (patterns.isEmpty()) return false;
 
         // Remove leading slash if present for consistent matching
         String checkCmd = command.startsWith("/") ? command.substring(1) : command;
 
-        for (String regex : blacklist) {
-            try {
-                Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-                if (pattern.matcher(checkCmd).find()) {
-                    return true;
-                }
-            } catch (Exception e) {
-                plugin.getLogger().warning("Invalid regex pattern in command-blacklist: " + regex);
+        for (Pattern pattern : patterns) {
+            if (pattern.matcher(checkCmd).find()) {
+                return true;
             }
         }
         return false;
