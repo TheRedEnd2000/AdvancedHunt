@@ -46,6 +46,21 @@ public interface DataRepository {
     CompletableFuture<List<Treasure>> loadTreasures();
 
     /**
+     * Gets all treasure UUIDs stored in the repository.
+     *
+     * This is the preferred API for migration/indexing because it avoids constructing
+     * full treasure objects or Bukkit Locations.
+     */
+    default CompletableFuture<List<UUID>> getAllTreasureUUIDs() {
+        return loadTreasureCores().thenApply(cores -> {
+            if (cores == null || cores.isEmpty()) {
+                return List.of();
+            }
+            return cores.stream().map(TreasureCore::getId).toList();
+        });
+    }
+
+    /**
      * Loads lightweight treasure cores (no rewards, no NBT/block state).
      *
      * This is the preferred startup/indexing API for memory and performance.
@@ -150,6 +165,22 @@ public interface DataRepository {
     CompletableFuture<List<RewardPreset>> loadRewardPresets(RewardPresetType type);
     CompletableFuture<Void> saveRewardPreset(RewardPreset preset);
     CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId);
+
+    /**
+     * Saves multiple reward presets in a batch.
+     *
+     * Implementations should prefer a single transaction / shared IO work.
+     * Default implementation saves each preset individually.
+     */
+    default CompletableFuture<Void> saveRewardPresetsBatch(List<RewardPreset> presets) {
+        if (presets == null || presets.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        CompletableFuture<?>[] futures = presets.stream()
+            .map(this::saveRewardPreset)
+            .toArray(CompletableFuture[]::new);
+        return CompletableFuture.allOf(futures);
+    }
     
     /**
      * Flushes any pending index data to persistent storage.
