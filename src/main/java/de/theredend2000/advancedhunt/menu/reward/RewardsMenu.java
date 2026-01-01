@@ -32,7 +32,6 @@ public class RewardsMenu extends PagedMenu {
 
     private final RewardHolder holder;
     private final List<Reward> rewards;
-    private final boolean editMode;
     private String titleKey = "gui.rewards.title";
     
     // Optional context for switching between treasure and collection rewards
@@ -40,20 +39,12 @@ public class RewardsMenu extends PagedMenu {
     private String alternateTitleKey;
 
     /**
-     * Creates a reward menu with automatic edit mode based on permissions.
+     * Creates a reward menu.
      */
     public RewardsMenu(Player player, Main plugin, RewardHolder holder) {
-        this(player, plugin, holder, player.hasPermission("advancedhunt.admin"));
-    }
-
-    /**
-     * Creates a reward menu with explicit edit mode control.
-     */
-    public RewardsMenu(Player player, Main plugin, RewardHolder holder, boolean editMode) {
         super(player, plugin);
         this.holder = holder;
-        this.editMode = editMode;
-        // Create mutable copy for editing
+        // Create a mutable copy for editing
         this.rewards = holder.getRewards() != null ? new ArrayList<>(holder.getRewards()) : new ArrayList<>();
         this.maxItemsPerPage = 28; // 4 rows × 7 columns
     }
@@ -115,12 +106,8 @@ public class RewardsMenu extends PagedMenu {
                 Reward reward = rewards.get(i);
                 final int rewardIndex = i;
                 ItemStack displayItem = createRewardDisplay(reward, i + 1);
-                
-                if (editMode) {
-                    addPagedItem(index++, displayItem, e -> handleRewardClick(e, rewardIndex));
-                } else {
-                    addPagedItem(index++, displayItem, null);
-                }
+
+                addPagedItem(index++, displayItem, e -> handleRewardClick(e, rewardIndex));
             }
             
             addMenuBorder();
@@ -142,43 +129,31 @@ public class RewardsMenu extends PagedMenu {
     public void addMenuBorder() {
         super.addMenuBorder();
 
-        // Edit mode controls
-        if (editMode) {
+        // Reward controls
+        addButton(53, new ItemBuilder(Material.HOPPER)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_reward_option_menu.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_reward_option_menu.lore", false))
+                .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
 
-            // Add Reward submenu opener
-            addButton(53, new ItemBuilder(Material.HOPPER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_reward_option_menu.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_reward_option_menu.lore", false))
-                    .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
-
-            // Quick action mode toggle
-            QuickActionMode mode = getQuickActionMode();
-            addButton(52, new ItemBuilder(Material.LEVER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.quick_mode.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.quick_mode.lore", false,
-                    "%mode%", getQuickActionModeDisplay(mode),
-                    "%action%", getQuickActionActionDisplay(mode)))
-                .build(), e -> {
-                    setQuickActionMode(getNextQuickActionMode(getQuickActionMode()));
-                    updateQuickActionDisplay();
-                });
-            
-            // Info/Help button (only if no alternate context)
-            if (alternateHolder == null) {
-                addButton(53, new ItemBuilder(Material.BOOK)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.edit_info.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.edit_info.lore", false))
-                    .build(), null);
-            }
-        }
+        // Quick action mode toggle
+        QuickActionMode mode = getQuickActionMode();
+        addButton(52, new ItemBuilder(Material.LEVER)
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.quick_mode.name", false))
+            .setLore(plugin.getMessageManager().getMessageList("gui.rewards.quick_mode.lore", false,
+                "%mode%", getQuickActionModeDisplay(mode),
+                "%action%", getQuickActionActionDisplay(mode)))
+            .build(), e -> {
+                setQuickActionMode(getNextQuickActionMode(getQuickActionMode()));
+                updateQuickActionDisplay();
+            });
 
         // Determine if we're in treasure or collection context
         RewardPresetType presetType = titleKey.contains("collection") ? RewardPresetType.COLLECTION : RewardPresetType.TREASURE;
         boolean isCollection = presetType == RewardPresetType.COLLECTION;
         String presetContext = presetType == RewardPresetType.COLLECTION ? "collection" : "treasure";
 
-        // Preset save/load buttons (edit mode only, and not when already editing a preset)
-        if (editMode && !(holder instanceof PresetRewardHolder)) {
+        // Preset save/load buttons (not when already editing a preset)
+        if (!(holder instanceof PresetRewardHolder)) {
             // Preset save button
             addButton(45, new ItemBuilder(Material.WRITABLE_BOOK)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.save_preset_" + presetContext + ".name", false))
@@ -249,7 +224,7 @@ public class RewardsMenu extends PagedMenu {
                     .setLore(plugin.getMessageManager().getMessageList(switchKey + ".lore", false))
                     .build(), e -> {
                 // Switch to the alternate context
-                RewardsMenu newMenu = new RewardsMenu(playerMenuUtility, plugin, alternateHolder, editMode)
+                RewardsMenu newMenu = new RewardsMenu(playerMenuUtility, plugin, alternateHolder)
                         .setTitleKey(alternateTitleKey)
                         .setAlternateContext(holder, titleKey);
                 newMenu.open();
@@ -332,11 +307,9 @@ public class RewardsMenu extends PagedMenu {
                     "%broadcast%", broadcastValue));
         }
 
-        if (editMode) {
-            lore.add("");
-            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
-                    "%action%", getQuickActionActionDisplay(getQuickActionMode())));
-        }
+        lore.add("");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+            "%action%", getQuickActionActionDisplay(getQuickActionMode())));
 
         return builder.setLore(lore).build();
     }
@@ -387,11 +360,9 @@ public class RewardsMenu extends PagedMenu {
                     "%broadcast%", broadcastValue));
         }
 
-        if (editMode) {
-            lore.add("");
-            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
-                    "%action%", getQuickActionActionDisplay(getQuickActionMode())));
-        }
+        lore.add("");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+            "%action%", getQuickActionActionDisplay(getQuickActionMode())));
 
         return new ItemBuilder(Material.COMMAND_BLOCK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.command_name", false))
@@ -408,7 +379,7 @@ public class RewardsMenu extends PagedMenu {
      * Opens the action menu for Bedrock compatibility.
      */
     private void handleRewardClick(InventoryClickEvent e, int rewardIndex) {
-        if (!editMode || rewardIndex >= rewards.size()) return;
+        if (rewardIndex >= rewards.size()) return;
 
         ClickType clickType = e.getClick();
         if (clickType == ClickType.RIGHT || clickType == ClickType.SHIFT_RIGHT) {
@@ -564,11 +535,9 @@ public class RewardsMenu extends PagedMenu {
             "%number%", String.valueOf(rewardNumber)));
         lore.add(chanceLore);
         
-        if (editMode) {
-            lore.add("");
-            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
-                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
-        }
+        lore.add("");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+            "%action%", getQuickActionActionDisplay(getQuickActionMode())));
         
         return new ItemBuilder(Material.BELL)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.broadcast_message_name", false))
@@ -604,11 +573,9 @@ public class RewardsMenu extends PagedMenu {
             "%number%", String.valueOf(rewardNumber)));
         lore.add(chanceLore);
         
-        if (editMode) {
-            lore.add("");
-            lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
-                "%action%", getQuickActionActionDisplay(getQuickActionMode())));
-        }
+        lore.add("");
+        lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
+            "%action%", getQuickActionActionDisplay(getQuickActionMode())));
         
         return new ItemBuilder(Material.WRITABLE_BOOK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.chat_message_name", false))

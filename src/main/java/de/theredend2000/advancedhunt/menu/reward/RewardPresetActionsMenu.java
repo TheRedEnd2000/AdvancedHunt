@@ -87,7 +87,7 @@ public class RewardPresetActionsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.edit_rewards.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.edit_rewards.lore", false).toArray(new String[0]))
                 .build(), e -> {
-            new RewardsMenu(playerMenuUtility, plugin, new PresetRewardHolder(plugin, preset), true)
+            new RewardsMenu(playerMenuUtility, plugin, new PresetRewardHolder(plugin, preset))
                     .setTitleKey("gui.rewards.preset_title")
                     .setPreviousMenu(this)
                     .open();
