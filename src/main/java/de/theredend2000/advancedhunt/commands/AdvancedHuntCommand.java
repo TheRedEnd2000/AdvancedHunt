@@ -1354,17 +1354,31 @@ public class AdvancedHuntCommand {
                     Bukkit.getScheduler().runTask(plugin, heartbeat::cancel);
                 }
             });
-        }).thenRun(() -> {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
-            if (sender instanceof Player player) {
-                Bukkit.getScheduler().runTask(plugin, () -> sendActionBar(player, ""));
+        }).thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> {
+            // Close the migration target repository before switching the live backend.
+            // This is important for SQLite and some JDBC drivers to release file/connection locks.
+            try {
+                targetRepo.shutdown();
+            } catch (Exception ignored) {
             }
-            targetRepo.shutdown();
 
-            if (type.equalsIgnoreCase("MYSQL")) {
+            // Persist the new backend choice to config (delegated to Main).
+            plugin.applyMigratedStorageConfig(type);
+
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
+
+            if (sender instanceof Player player) {
+                sendActionBar(player, "");
+            }
+
+            // Reuse the plugin's existing reload routine to swap repository + refresh caches.
+            reload(sender);
+
+            if (type != null && type.equalsIgnoreCase("MYSQL")) {
+                // Reset migration-only config section to defaults now that live storage is configured.
                 resetMySQLConfig(sender);
             }
-        }).exceptionally(e -> {
+        })).exceptionally(e -> {
             // Only show an error if it's not our intentional abort
             if (!(e.getCause() instanceof IllegalStateException &&
                     e.getCause().getMessage().equals("Migration aborted - existing data"))) {

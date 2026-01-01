@@ -268,6 +268,28 @@ public final class Main extends JavaPlugin {
         return true;
     }
 
+    /**
+     * Applies the result of a successful migration to the plugin configuration.
+     *
+     * This updates {@code storage.type} and, when migrating to MySQL, copies {@code migration.target.*}
+     * into {@code storage.mysql.*}. This method only writes config; callers should run the plugin's
+     * reload routine afterwards.
+     */
+    public synchronized void applyMigratedStorageConfig(String targetType) {
+        String normalizedType = normalizeStorageType(targetType);
+        getConfig().set("storage.type", normalizedType);
+
+        if (normalizedType.equals("MYSQL")) {
+            getConfig().set("storage.mysql.host", getConfig().getString("migration.target.host", "localhost"));
+            getConfig().set("storage.mysql.port", getConfig().getInt("migration.target.port", 3306));
+            getConfig().set("storage.mysql.database", getConfig().getString("migration.target.database", "advancedhunt_target"));
+            getConfig().set("storage.mysql.username", getConfig().getString("migration.target.username", "root"));
+            getConfig().set("storage.mysql.password", getConfig().getString("migration.target.password", "password"));
+        }
+
+        saveConfig();
+    }
+
     private void setupCommands() {
         ExecutionCoordinator<CommandSender> executionCoordinator = ExecutionCoordinator.simpleCoordinator();
 
