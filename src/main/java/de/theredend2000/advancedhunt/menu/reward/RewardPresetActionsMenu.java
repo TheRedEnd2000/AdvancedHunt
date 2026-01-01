@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -214,8 +215,8 @@ public class RewardPresetActionsMenu extends Menu {
                 "%count%", String.valueOf(cores.size()),
                 "%name%", preset.getName()));
 
-        final List<de.theredend2000.advancedhunt.model.Reward> rewardSnapshot =
-                preset.getRewards() == null ? java.util.Collections.emptyList() : java.util.List.copyOf(preset.getRewards());
+        final List<Reward> rewardSnapshot =
+                preset.getRewards() == null ? Collections.emptyList() : List.copyOf(preset.getRewards());
 
         plugin.getTreasureManager().overrideTreasureRewardsInCollection(
                 collectionContext.getId(),

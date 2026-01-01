@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.managers;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.model.Reward;
 import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import org.bukkit.Location;
@@ -169,7 +170,7 @@ public class TreasureManager {
      *
      * This avoids loading/saving heavy treasure data and is intended for bulk operations.
      */
-    public CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<de.theredend2000.advancedhunt.model.Reward> rewards) {
+    public CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<Reward> rewards) {
         return repository.updateTreasureRewards(treasureId, rewards).thenRun(() -> {
             Treasure cached = fullTreasureCache.getIfPresent(treasureId);
             if (cached == null) {
@@ -202,7 +203,7 @@ public class TreasureManager {
      */
     public CompletableFuture<Integer> overrideTreasureRewardsInCollection(
             UUID collectionId,
-            List<de.theredend2000.advancedhunt.model.Reward> rewards,
+            List<Reward> rewards,
             int batchSize,
             BiConsumer<Integer, Integer> progressCallback
     ) {
