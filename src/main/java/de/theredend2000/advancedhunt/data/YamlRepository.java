@@ -666,34 +666,7 @@ public class YamlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<Reward> rewards) {
         return CompletableFuture.runAsync(() -> {
-            UUID collectionId = treasureToCollectionIndex.get(treasureId);
-            File treasureFile = null;
-
-            if (collectionId != null) {
-                File treasuresDir = new File(new File(collectionsFolder, collectionId.toString()), "treasures");
-                treasureFile = new File(treasuresDir, treasureId.toString() + YML_EXTENSION);
-                if (!treasureFile.exists()) {
-                    treasureFile = null;
-                }
-            }
-
-            // Fallback scan if index is missing/outdated
-            if (treasureFile == null) {
-                File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
-                if (collectionDirs != null) {
-                    for (File collectionDir : collectionDirs) {
-                        File treasuresDir = new File(collectionDir, "treasures");
-                        if (treasuresDir.exists()) {
-                            File candidate = new File(treasuresDir, treasureId.toString() + YML_EXTENSION);
-                            if (candidate.exists()) {
-                                treasureFile = candidate;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
+            File treasureFile = resolveTreasureFile(treasureId);
             if (treasureFile == null) {
                 return;
             }
@@ -702,6 +675,61 @@ public class YamlRepository implements DataRepository {
             config.set("rewards", serializeRewards(rewards));
             saveConfig(config, treasureFile);
         });
+    }
+
+    @Override
+    public CompletableFuture<Void> updateTreasureRewardsBatch(List<UUID> treasureIds, List<Reward> rewards) {
+        return CompletableFuture.runAsync(() -> {
+            if (treasureIds == null || treasureIds.isEmpty()) {
+                return;
+            }
+
+            // Serialize once for the whole batch to reduce allocations.
+            Object serializedRewards = serializeRewards(rewards);
+
+            for (UUID treasureId : treasureIds) {
+                File treasureFile = resolveTreasureFile(treasureId);
+                if (treasureFile == null) {
+                    continue;
+                }
+
+                FileConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
+                config.set("rewards", serializedRewards);
+                saveConfig(config, treasureFile);
+            }
+        });
+    }
+
+    private File resolveTreasureFile(UUID treasureId) {
+        UUID collectionId = treasureToCollectionIndex.get(treasureId);
+        File treasureFile = null;
+
+        if (collectionId != null) {
+            File treasuresDir = new File(new File(collectionsFolder, collectionId.toString()), "treasures");
+            treasureFile = new File(treasuresDir, treasureId.toString() + YML_EXTENSION);
+            if (!treasureFile.exists()) {
+                treasureFile = null;
+            }
+        }
+
+        // Fallback scan if index is missing/outdated
+        if (treasureFile == null) {
+            File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
+            if (collectionDirs != null) {
+                for (File collectionDir : collectionDirs) {
+                    File treasuresDir = new File(collectionDir, "treasures");
+                    if (treasuresDir.exists()) {
+                        File candidate = new File(treasuresDir, treasureId.toString() + YML_EXTENSION);
+                        if (candidate.exists()) {
+                            treasureFile = candidate;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return treasureFile;
     }
 
     @Override

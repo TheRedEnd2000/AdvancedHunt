@@ -95,6 +95,24 @@ public interface DataRepository {
      */
     CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<Reward> rewards);
 
+    /**
+     * Updates the rewards of multiple treasures in a single bulk operation.
+     *
+     * Implementations should prefer a single connection/transaction (SQL) or
+     * shared serialization work (YAML) to reduce overhead.
+     */
+    default CompletableFuture<Void> updateTreasureRewardsBatch(List<UUID> treasureIds, List<Reward> rewards) {
+        if (treasureIds == null || treasureIds.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        CompletableFuture<?>[] futures = new CompletableFuture[treasureIds.size()];
+        for (int i = 0; i < treasureIds.size(); i++) {
+            futures[i] = updateTreasureRewards(treasureIds.get(i), rewards);
+        }
+        return CompletableFuture.allOf(futures);
+    }
+
     // Collections
     CompletableFuture<List<Collection>> loadCollections();
     CompletableFuture<Void> saveCollection(Collection collection);

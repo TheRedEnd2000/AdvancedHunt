@@ -660,6 +660,45 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Void> updateTreasureRewardsBatch(List<UUID> treasureIds, List<Reward> rewards) {
+        return runAsync(() -> {
+            if (treasureIds == null || treasureIds.isEmpty()) {
+                return;
+            }
+
+            String rewardsJson = gson.toJson(rewards);
+
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("UPDATE ah_treasures SET rewards = ? WHERE id = ?")) {
+                boolean oldAutoCommit = conn.getAutoCommit();
+                conn.setAutoCommit(false);
+                try {
+                    for (UUID treasureId : treasureIds) {
+                        ps.setString(1, rewardsJson);
+                        ps.setString(2, treasureId.toString());
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                    conn.commit();
+                } catch (SQLException e) {
+                    try {
+                        conn.rollback();
+                    } catch (SQLException ignored) {
+                    }
+                    throw e;
+                } finally {
+                    try {
+                        conn.setAutoCommit(oldAutoCommit);
+                    } catch (SQLException ignored) {
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<List<Collection>> loadCollections() {
         return supplyAsync(() -> {
             List<Collection> collections = new ArrayList<>();
