@@ -972,6 +972,23 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Integer> getFoundPlayerCount(UUID treasureId) {
+        return supplyAsync(() -> {
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS cnt FROM ah_player_found WHERE treasure_id = ?")) {
+                ps.setString(1, treasureId.toString());
+                var rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt("cnt");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        });
+    }
+
+    @Override
     public CompletableFuture<Set<UUID>> getPlayerFoundInCollection(UUID playerUuid, UUID collectionId) {
         return supplyAsync(() -> {
             Set<UUID> treasures = new HashSet<>();

@@ -1308,6 +1308,14 @@ public class YamlRepository implements DataRepository {
             return new ArrayList<>(finders);
         });
     }
+
+    @Override
+    public CompletableFuture<Integer> getFoundPlayerCount(UUID treasureId) {
+        return CompletableFuture.supplyAsync(() -> {
+            Set<UUID> finders = treasureToFindersIndex.get(treasureId);
+            return finders == null ? 0 : finders.size();
+        });
+    }
     
     @Override
     public CompletableFuture<Set<UUID>> getPlayerFoundInCollection(UUID playerUuid, UUID collectionId) {
