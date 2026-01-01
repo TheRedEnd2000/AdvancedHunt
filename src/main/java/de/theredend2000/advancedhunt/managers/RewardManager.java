@@ -128,6 +128,7 @@ public class RewardManager {
         HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(item);
 
         if (!leftover.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.instance_dropped"));
             for (ItemStack drop : leftover.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), drop);
             }

@@ -158,7 +158,7 @@ public class CollectionSettingsMenu extends Menu {
 
         // Progress Reset Cron
         String cron = collection.getProgressResetCron() != null ?
-                "Â§f" + collection.getProgressResetCron() :
+                "§f" + collection.getProgressResetCron() :
                 plugin.getMessageManager().getMessage("gui.common.none", false);
 
         addButton(23, new ItemBuilder(Material.CLOCK)
@@ -246,7 +246,7 @@ public class CollectionSettingsMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
                         "%status%", disabled).toArray(new String[0]))
                 .build(), (e) -> {
-            playerMenuUtility.sendMessage("Â§4Â§lCOMING SOON");
+            playerMenuUtility.sendMessage("§4§lCOMING SOON");
         });
 
         // Hide Collection Disabled
@@ -255,7 +255,7 @@ public class CollectionSettingsMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_collection_disabled.lore", false,
                         "%status%", disabled).toArray(new String[0]))
                 .build(), (e) -> {
-            playerMenuUtility.sendMessage("Â§4Â§lCOMING SOON");
+            playerMenuUtility.sendMessage("§4§lCOMING SOON");
         });
     }
 
