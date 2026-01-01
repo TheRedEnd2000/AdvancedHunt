@@ -7,6 +7,7 @@ import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.menu.treasure.TreasureActionMenu;
 import de.theredend2000.advancedhunt.menu.treasure.WhoFoundMenu;
 import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import de.theredend2000.advancedhunt.util.HeadHelper;
@@ -237,7 +238,17 @@ public class CollectionListMenu extends PagedMenu {
                 if (treasure == null) {
                     return;
                 }
-                Bukkit.getScheduler().runTask(plugin, () -> new RewardsMenu(p, plugin, new TreasureRewardHolder(plugin, treasure)).open());
+                Collection collectionContext = plugin.getCollectionManager().getCollectionById(collectionId).orElse(null);
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    RewardsMenu menu = (RewardsMenu) new RewardsMenu(p, plugin, new TreasureRewardHolder(plugin, treasure))
+                            .setPreviousMenu(this);
+
+                    if (collectionContext != null) {
+                        menu.setAlternateContext(new CollectionRewardHolder(plugin, collectionContext), "gui.rewards.collection_title");
+                    }
+
+                    menu.open();
+                });
             });
             return;
         }
