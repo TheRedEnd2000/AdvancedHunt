@@ -588,6 +588,40 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<List<UUID>> getAllTreasureUUIDs() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<UUID> ids = new ArrayList<>();
+            File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
+            if (collectionDirs == null) {
+                return ids;
+            }
+
+            for (File collectionDir : collectionDirs) {
+                File treasuresDir = new File(collectionDir, "treasures");
+                if (!treasuresDir.exists() || !treasuresDir.isDirectory()) {
+                    continue;
+                }
+
+                File[] files = treasuresDir.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+                if (files == null) {
+                    continue;
+                }
+
+                for (File file : files) {
+                    try {
+                        String fileName = file.getName();
+                        String uuidStr = fileName.substring(0, fileName.length() - YML_EXTENSION.length());
+                        ids.add(UUID.fromString(uuidStr));
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+
+            return ids;
+        });
+    }
+
+    @Override
     public CompletableFuture<Void> saveTreasure(Treasure treasure) {
         return CompletableFuture.runAsync(() -> {
             File collectionDir = new File(collectionsFolder, treasure.getCollectionId().toString());
@@ -998,6 +1032,23 @@ public class YamlRepository implements DataRepository {
             config.set("name", preset.getName());
             config.set("rewards", serializeRewards(preset.getRewards()));
             saveConfigAtomic(config, file);
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveRewardPresetsBatch(List<RewardPreset> presets) {
+        return CompletableFuture.runAsync(() -> {
+            if (presets == null || presets.isEmpty()) {
+                return;
+            }
+
+            for (RewardPreset preset : presets) {
+                File file = getPresetFile(preset.getType(), preset.getId());
+                FileConfiguration config = new YamlConfiguration();
+                config.set("name", preset.getName());
+                config.set("rewards", serializeRewards(preset.getRewards()));
+                saveConfigAtomic(config, file);
+            }
         });
     }
 

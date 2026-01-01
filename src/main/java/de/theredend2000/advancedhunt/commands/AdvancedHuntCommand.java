@@ -34,6 +34,8 @@ import org.incendo.cloud.suggestion.SuggestionProvider;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -1218,14 +1220,14 @@ public class AdvancedHuntCommand {
     private void checkExistingDataAndMigrate(CommandSender sender, String type, DataRepository targetRepo, boolean force) {
         CompletableFuture.allOf(
                 targetRepo.loadCollections(),
-                targetRepo.loadTreasures(),
-            targetRepo.loadAllPlayerData(),
+                targetRepo.getAllTreasureUUIDs(),
+            targetRepo.getAllPlayerUUIDs(),
             targetRepo.loadRewardPresets(RewardPresetType.TREASURE),
             targetRepo.loadRewardPresets(RewardPresetType.COLLECTION)
         ).thenCompose(v -> {
             int existingCollections = safeGetSize(targetRepo.loadCollections());
-            int existingTreasures = safeGetSize(targetRepo.loadTreasures());
-            int existingPlayerData = safeGetSize(targetRepo.loadAllPlayerData());
+            int existingTreasures = safeGetSize(targetRepo.getAllTreasureUUIDs());
+            int existingPlayerData = safeGetSize(targetRepo.getAllPlayerUUIDs());
             int existingTreasurePresets = safeGetSize(targetRepo.loadRewardPresets(RewardPresetType.TREASURE));
             int existingCollectionPresets = safeGetSize(targetRepo.loadRewardPresets(RewardPresetType.COLLECTION));
 
@@ -1252,19 +1254,89 @@ public class AdvancedHuntCommand {
             }
 
             final AtomicInteger lastPercentSent = new AtomicInteger(-1);
+            final AtomicReference<String> lastStageSent = new AtomicReference<>("");
+            final AtomicLong lastUpdateMs = new AtomicLong(System.currentTimeMillis());
+            final AtomicReference<de.theredend2000.advancedhunt.managers.MigrationService.MigrationProgress> lastProgress
+                = new AtomicReference<>(new de.theredend2000.advancedhunt.managers.MigrationService.MigrationProgress(0, "loading", 0, 0));
+
+            final BukkitRunnable heartbeat;
+            if (sender instanceof Player player) {
+                heartbeat = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        long now = System.currentTimeMillis();
+                        if (now - lastUpdateMs.get() < 4000L) {
+                            return;
+                        }
+                        var p = lastProgress.get();
+                        sendActionBar(player, plugin.getMessageManager().getMessage(
+                                "command.migration.progress_actionbar",
+                                false,
+                                "%percent%", String.valueOf(p.percent()),
+                                "%current%", String.valueOf(p.current()),
+                                "%total%", String.valueOf(p.total()),
+                                "%stage%", String.valueOf(p.stage())));
+                    }
+                };
+                heartbeat.runTaskTimer(plugin, 40L, 40L);
+            } else {
+                heartbeat = null;
+            }
+
             return plugin.getMigrationService().migrate(plugin.getDataRepository(), targetRepo, progress -> {
+                lastProgress.set(progress);
+
                 int percent = progress.percent();
-                if (lastPercentSent.getAndSet(percent) == percent) return;
-                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(
-                        plugin.getMessageManager().getMessage("command.migration.progress",
+                String stage = String.valueOf(progress.stage());
+                long now = System.currentTimeMillis();
+
+                boolean shouldSend = false;
+                if (lastPercentSent.get() != percent) {
+                    shouldSend = true;
+                } else if (!stage.equals(lastStageSent.get())) {
+                    // Important for long 0% phases (e.g., scanning large SQL tables)
+                    shouldSend = true;
+                } else if (now - lastUpdateMs.get() > 2000L) {
+                    // Heartbeat for console (players get ActionBar heartbeat too)
+                    shouldSend = true;
+                }
+
+                if (!shouldSend) {
+                    return;
+                }
+
+                lastPercentSent.set(percent);
+                lastStageSent.set(stage);
+                lastUpdateMs.set(now);
+
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (sender instanceof Player player) {
+                        sendActionBar(player, plugin.getMessageManager().getMessage(
+                                "command.migration.progress_actionbar",
+                                false,
                                 "%percent%", String.valueOf(progress.percent()),
                                 "%current%", String.valueOf(progress.current()),
                                 "%total%", String.valueOf(progress.total()),
-                                "%stage%", String.valueOf(progress.stage()))
-                ));
+                                "%stage%", String.valueOf(progress.stage())));
+                        return;
+                    }
+
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.progress",
+                            "%percent%", String.valueOf(progress.percent()),
+                            "%current%", String.valueOf(progress.current()),
+                            "%total%", String.valueOf(progress.total()),
+                            "%stage%", String.valueOf(progress.stage())));
+                });
+            }).whenComplete((v3, t) -> {
+                if (heartbeat != null) {
+                    Bukkit.getScheduler().runTask(plugin, heartbeat::cancel);
+                }
             });
         }).thenRun(() -> {
             sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
+            if (sender instanceof Player player) {
+                Bukkit.getScheduler().runTask(plugin, () -> sendActionBar(player, ""));
+            }
             targetRepo.shutdown();
 
             if (type.equalsIgnoreCase("MYSQL")) {
@@ -1276,6 +1348,9 @@ public class AdvancedHuntCommand {
                     e.getCause().getMessage().equals("Migration aborted - existing data"))) {
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.failed"));
                 e.printStackTrace();
+            }
+            if (sender instanceof Player player) {
+                Bukkit.getScheduler().runTask(plugin, () -> sendActionBar(player, ""));
             }
             targetRepo.shutdown();
             return null;

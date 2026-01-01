@@ -524,6 +524,26 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<List<UUID>> getAllTreasureUUIDs() {
+        return supplyAsync(() -> {
+            List<UUID> ids = new ArrayList<>();
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT id FROM ah_treasures")) {
+                var rs = ps.executeQuery();
+                while (rs.next()) {
+                    try {
+                        ids.add(UUID.fromString(rs.getString("id")));
+                    } catch (IllegalArgumentException ignored) {
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return ids;
+        });
+    }
+
+    @Override
     public CompletableFuture<Void> saveTreasure(Treasure treasure) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
@@ -812,6 +832,42 @@ public class SqlRepository implements DataRepository {
                 ps.setString(3, preset.getName());
                 ps.setString(4, gson.toJson(preset.getRewards()));
                 ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveRewardPresetsBatch(List<RewardPreset> presets) {
+        return runAsync(() -> {
+            if (presets == null || presets.isEmpty()) {
+                return;
+            }
+
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(
+                     "REPLACE INTO ah_reward_presets (id, type, name, rewards) VALUES (?, ?, ?, ?)")) {
+
+                boolean originalAutoCommit = conn.getAutoCommit();
+                conn.setAutoCommit(false);
+                try {
+                    for (RewardPreset preset : presets) {
+                        ps.setString(1, preset.getId().toString());
+                        ps.setString(2, preset.getType().name());
+                        ps.setString(3, preset.getName());
+                        ps.setString(4, gson.toJson(preset.getRewards()));
+                        ps.addBatch();
+                    }
+
+                    ps.executeBatch();
+                    conn.commit();
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw e;
+                } finally {
+                    conn.setAutoCommit(originalAutoCommit);
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }

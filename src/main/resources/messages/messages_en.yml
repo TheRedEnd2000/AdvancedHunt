@@ -1,4 +1,4 @@
-config-version: 1
+config-version: 2
 
 feedback:
   gui:
@@ -117,7 +117,8 @@ command:
     player_not_found: "%prefix%&cPlayer not found or has never played on this server."
   migration:
     started: "%prefix%&aStorage migration started (copying all data to target storage)..."
-    progress: "%prefix%&eMigration progress: &f%percent%%% &7(%current%/%total%) &8- &7%stage%"
+    progress: "%prefix%&eMigration progress: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    progress_actionbar: "&eMigration: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
     success: "%prefix%&aStorage migration successful! All data has been copied to the target storage."
     failed: "%prefix%&cStorage migration failed. Check console for errors."
     mysql_not_configured: "%prefix%&cMySQL migration settings not configured! Please edit config.yml under 'migration.target' section with your target database details."
