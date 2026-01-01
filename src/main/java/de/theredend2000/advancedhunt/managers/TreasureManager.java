@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 /**
  * Manages treasure data with lazy loading for memory efficiency.
@@ -186,6 +187,80 @@ public class TreasureManager {
             );
             fullTreasureCache.put(treasureId, updated);
         });
+    }
+
+    /**
+     * Overrides rewards for all treasures in a collection.
+     *
+     * Uses repository batching to reduce IO/connection overhead.
+     *
+     * @param collectionId target collection
+     * @param rewards new rewards to apply
+     * @param batchSize repository batch size (50 is a good default)
+     * @param percentCallback optional callback fired at 10% increments (10..90)
+     * @return number of treasures processed
+     */
+    public CompletableFuture<Integer> overrideTreasureRewardsInCollection(
+            UUID collectionId,
+            List<de.theredend2000.advancedhunt.model.Reward> rewards,
+            int batchSize,
+            BiConsumer<Integer, Integer> progressCallback
+    ) {
+        List<TreasureCore> cores = getTreasureCoresInCollection(collectionId);
+        if (cores.isEmpty()) {
+            return CompletableFuture.completedFuture(0);
+        }
+
+        final int total = cores.size();
+        final int effectiveBatchSize = Math.max(1, batchSize);
+        final int[] completed = {0};
+        final int[] nextPercentToReport = {10};
+
+        CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
+        for (int i = 0; i < cores.size(); i += effectiveBatchSize) {
+            final int start = i;
+            final int end = Math.min(i + effectiveBatchSize, cores.size());
+
+            chain = chain.thenCompose(v -> {
+                int size = end - start;
+                List<UUID> batchIds = new ArrayList<>(size);
+                for (int j = start; j < end; j++) {
+                    batchIds.add(cores.get(j).getId());
+                }
+
+                return repository.updateTreasureRewardsBatch(batchIds, rewards).thenRun(() -> {
+                    // Update full treasure cache entries without loading anything.
+                    for (UUID treasureId : batchIds) {
+                        Treasure cached = fullTreasureCache.getIfPresent(treasureId);
+                        if (cached == null) continue;
+
+                        Treasure updated = new Treasure(
+                                cached.getId(),
+                                cached.getCollectionId(),
+                                cached.getLocation(),
+                                rewards,
+                                cached.getNbtData(),
+                                cached.getMaterial(),
+                                cached.getBlockState()
+                        );
+                        fullTreasureCache.put(treasureId, updated);
+                    }
+
+                    completed[0] += size;
+                    if (progressCallback == null || total <= 0) {
+                        return;
+                    }
+
+                    int percent = (int) ((completed[0] * 100L) / total);
+                    while (percent >= nextPercentToReport[0] && nextPercentToReport[0] < 100) {
+                        progressCallback.accept(nextPercentToReport[0], completed[0]);
+                        nextPercentToReport[0] += 10;
+                    }
+                });
+            });
+        }
+
+        return chain.thenApply(v -> total);
     }
 
     private void addCoreToCache(TreasureCore core) {
