@@ -56,6 +56,8 @@ prefix: "&6AdvancedHunt &8>> &7"
 error:
   no_permission: "%prefix%&cYou do not have permission to do this!"
 
+  feature_disabled: "%prefix%&cThat feature is currently disabled."
+
   validation:
     date_range: "%prefix%&cInvalid date range! Use ISO dates (2024-01-01:2024-12-31) or * for always."
     duration: "%prefix%&cInvalid duration! Use format like 2h, 30m, or * for always active."
@@ -97,6 +99,16 @@ command:
     hint: "&eUse /ah list <collection> to view treasures."
   not_player: "%prefix%&cOnly players can use this command."
   collection_not_found: "%prefix%&cCollection not found."
+
+  direction:
+    east: "East"
+    southeast: "Southeast"
+    south: "South"
+    southwest: "Southwest"
+    west: "West"
+    northwest: "Northwest"
+    north: "North"
+    northeast: "Northeast"
   rewards:
     no_block: "%prefix%&cYou must be looking at a block!"
     not_treasure: "%prefix%&cThat block is not a treasure!"
