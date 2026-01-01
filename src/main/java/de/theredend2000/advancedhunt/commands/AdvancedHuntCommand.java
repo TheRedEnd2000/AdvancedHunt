@@ -379,16 +379,15 @@ public class AdvancedHuntCommand {
     public void reload(CommandSender sender) {
         plugin.reloadConfig();
         plugin.getMessageManager().reloadMessages();
-        plugin.getParticleManager().reload();
         plugin.getSoundManager().reload();
 
-        // Config-backed managers
+        // Storage backend (supports storage.type swap)
+        plugin.reloadStorageBackend();
+
+        plugin.getParticleManager().reload();
         plugin.getHintManager().cancelAllVisualHints();
         plugin.getHintManager().reloadConfig();
         plugin.getProximityManager().reloadConfig();
-
-        // Storage backend (note: storage type changes still require restart)
-        plugin.getDataRepository().reload();
 
         // Rebuild in-memory indexes/caches
         plugin.getTreasureManager().loadTreasures();

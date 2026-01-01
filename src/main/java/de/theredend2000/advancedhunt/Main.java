@@ -15,6 +15,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
@@ -23,6 +24,7 @@ import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -51,6 +53,8 @@ public final class Main extends JavaPlugin {
 
     private Random random;
 
+    private String currentStorageType;
+
     @Override
     public void onEnable() {
         random = new Random();
@@ -75,10 +79,13 @@ public final class Main extends JavaPlugin {
                     getConfig().getString("storage.mysql.password"),
                     false
             );
+            currentStorageType = "MYSQL";
         } else if (storageType.equalsIgnoreCase("SQLITE")) {
             dataRepository = new SqlRepository(this, null, 0, null, null, null, true);
+            currentStorageType = "SQLITE";
         } else {
             dataRepository = new YamlRepository(this);
+            currentStorageType = "YAML";
         }
         dataRepository.init();
         
@@ -170,6 +177,103 @@ public final class Main extends JavaPlugin {
             // Check for updates asynchronously
             getServer().getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
         }
+    }
+
+    private static String normalizeStorageType(String rawType) {
+        if (rawType == null) {
+            return "YAML";
+        }
+        String normalized = rawType.trim().toUpperCase(Locale.ROOT);
+        return switch (normalized) {
+            case "MYSQL", "SQLITE", "YAML" -> normalized;
+            default -> "YAML";
+        };
+    }
+
+    /**
+     * Reloads the data repository.
+     *
+     * If storage.type changed, swaps the repository instance and rebuilds dependent managers/tasks.
+     * @return true if the storage backend was swapped, false if it was only reloaded.
+     */
+    public synchronized boolean reloadStorageBackend() {
+        String desiredType = normalizeStorageType(getConfig().getString("storage.type", "YAML"));
+        String existingType = normalizeStorageType(currentStorageType);
+
+        // If the type didn't change, keep existing instance and use its reload hook.
+        if (desiredType.equals(existingType)) {
+            if (dataRepository != null) {
+                dataRepository.reload();
+            }
+            return false;
+        }
+
+        // Stop tasks that would keep using old managers/repository
+        try {
+            if (hintManager != null) {
+                hintManager.stop();
+            }
+        } catch (Exception ignored) {
+        }
+
+        if (scanManager != null) {
+            scanManager.stop();
+        }
+        if (particleManager != null) {
+            particleManager.stop();
+        }
+        if (leaderboardManager != null) {
+            leaderboardManager.stop();
+        }
+        if (collectionManager != null) {
+            collectionManager.stop();
+        }
+        if (playerManager != null) {
+            HandlerList.unregisterAll(playerManager);
+        }
+
+        if (dataRepository != null) {
+            dataRepository.shutdown();
+        }
+
+        // Create and init the new repository
+        if (desiredType.equals("MYSQL")) {
+            dataRepository = new SqlRepository(
+                    this,
+                    getConfig().getString("storage.mysql.host"),
+                    getConfig().getInt("storage.mysql.port"),
+                    getConfig().getString("storage.mysql.database"),
+                    getConfig().getString("storage.mysql.username"),
+                    getConfig().getString("storage.mysql.password"),
+                    false
+            );
+        } else if (desiredType.equals("SQLITE")) {
+            dataRepository = new SqlRepository(this, null, 0, null, null, null, true);
+        } else {
+            dataRepository = new YamlRepository(this);
+        }
+        currentStorageType = desiredType;
+        dataRepository.init();
+        if (dataRepository instanceof YamlRepository) {
+            ((YamlRepository) dataRepository).startPeriodicFlush(60);
+        }
+
+        // Rebuild managers that depend on the repository and/or each other
+        rewardPresetManager = new RewardPresetManager(this, dataRepository);
+        treasureManager = new TreasureManager(dataRepository);
+        playerManager = new PlayerManager(this, dataRepository);
+        leaderboardManager = new LeaderboardManager(this, dataRepository);
+        collectionManager = new CollectionManager(this, dataRepository, treasureManager, playerManager, rewardManager);
+
+        particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
+        hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
+        proximityManager = new ProximityManager(this, treasureManager, playerManager);
+        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
+
+        particleManager.start();
+        scanManager.start();
+
+        return true;
     }
 
     private void setupCommands() {

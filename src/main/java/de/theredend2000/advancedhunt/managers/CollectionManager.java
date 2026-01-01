@@ -12,6 +12,7 @@ import de.theredend2000.advancedhunt.util.CronUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -28,6 +29,7 @@ public class CollectionManager {
     private final ActRuleEvaluator actRuleEvaluator;
     private List<Collection> cachedCollections;
     private final Map<UUID, Map<UUID, ZonedDateTime>> ruleActivationTimes; // Collection ID -> Rule ID -> Last Activation Time
+    private BukkitTask resetTask;
 
     public CollectionManager(JavaPlugin plugin, DataRepository repository, TreasureManager treasureManager, PlayerManager playerManager, RewardManager rewardManager) {
         this.plugin = plugin;
@@ -42,7 +44,14 @@ public class CollectionManager {
         reloadCollections();
 
         // Check for resets and availability every minute
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::checkResets, 20L * 60, 20L * 60);
+        resetTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::checkResets, 20L * 60, 20L * 60);
+    }
+
+    public void stop() {
+        if (resetTask != null) {
+            resetTask.cancel();
+            resetTask = null;
+        }
     }
 
     public CompletableFuture<Void> reloadCollections() {
