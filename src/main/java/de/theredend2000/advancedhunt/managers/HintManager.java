@@ -50,10 +50,16 @@ public class HintManager {
     private int visualHintOffsetRange;
     
     // Constants for visual effects
-    private static final long VISUAL_UPDATE_INTERVAL = 10L; // 0.5 seconds
-    private static final double PARTICLE_SPACING = 0.5;
+    private static final long VISUAL_UPDATE_INTERVAL = 20L; // 1 second (less spammy / less in-your-face)
+    private static final double PARTICLE_SPACING = 1.25;
     private static final int BEACON_HEIGHT = 20;
     private static final double EYE_LEVEL_OFFSET = 1.0;
+
+    private static final double TRAIL_START_DISTANCE = 1.5; // start a bit in front of the player
+    private static final double TRAIL_Y_OFFSET = -0.35;     // slightly below eye-level
+    private static final double TRAIL_OFFSET = 0.03;        // subtle spread so it's not a laser line
+    private static final double BEACON_OFFSET = 0.06;       // subtle spread, avoids a harsh column
+    private static final int BEACON_Y_STEP = 2;             // reduces particle density
     
     // Cardinal direction message keys (index matches getCardinalDirection mapping)
     private static final String[] DIRECTION_KEYS = {
@@ -353,8 +359,12 @@ public class HintManager {
      * Updates every 0.5 seconds to reduce performance impact.
      */
     private BukkitTask startParticleTrail(Player player, TreasureCore treasure) {
-        // Pre-calculate treasure center (immutable)
-        final Location treasureCenter = treasure.getLocation().clone().add(0.5, 0.5, 0.5);
+        // Aim at an approximate target (offset-range), not the exact treasure location.
+        // This keeps the hint helpful without giving away the exact spot.
+        Location treasureLoc = treasure.getLocation();
+        int offsetX = ThreadLocalRandom.current().nextInt(-visualHintOffsetRange, visualHintOffsetRange + 1);
+        int offsetZ = ThreadLocalRandom.current().nextInt(-visualHintOffsetRange, visualHintOffsetRange + 1);
+        final Location targetCenter = treasureLoc.clone().add(offsetX + 0.5, 0.5, offsetZ + 0.5);
         
         return new BukkitRunnable() {
             int ticksRemaining = visualHintDuration * 20;
@@ -371,19 +381,22 @@ public class HintManager {
                 Location playerEye = player.getEyeLocation();
                 
                 // Calculate direction vector to treasure
-                Vector direction = treasureCenter.toVector().subtract(playerEye.toVector());
+                Vector direction = targetCenter.toVector().subtract(playerEye.toVector());
                 double actualDistance = direction.length();
                 direction.normalize();
                 
                 // Only show particles for max-distance blocks (partial hint, not full path)
                 double hintDistance = Math.min(actualDistance, visualHintMaxDistance);
+
+                // Don't spawn right in the player's face
+                double startDistance = Math.min(TRAIL_START_DISTANCE, hintDistance);
                 
                 // Spawn particles along the limited direction
-                double steps = Math.ceil(hintDistance / PARTICLE_SPACING);
+                double steps = Math.ceil((hintDistance - startDistance) / PARTICLE_SPACING);
                 for (int i = 0; i < steps; i++) {
-                    double offset = i * PARTICLE_SPACING;
-                    Location particleLoc = playerEye.clone().add(direction.clone().multiply(offset));
-                    ParticleUtils.spawnParticleForPlayer(player, particleLoc, visualHintParticle, 1, 0, 0, 0, 0);
+                    double offset = startDistance + (i * PARTICLE_SPACING);
+                    Location particleLoc = playerEye.clone().add(direction.clone().multiply(offset)).add(0, TRAIL_Y_OFFSET, 0);
+                    ParticleUtils.spawnParticleForPlayer(player, particleLoc, visualHintParticle, 1, TRAIL_OFFSET, TRAIL_OFFSET, TRAIL_OFFSET, 0);
                 }
                 
                 ticksRemaining -= VISUAL_UPDATE_INTERVAL;
@@ -442,9 +455,9 @@ public class HintManager {
                 }
                 
                 // Spawn vertical beam of particles in approximate area
-                for (int y = 0; y < maxHeight; y++) {
+                for (int y = 0; y < maxHeight; y += BEACON_Y_STEP) {
                     Location particleLoc = baseLoc.clone().add(0, y, 0);
-                    ParticleUtils.spawnParticleForPlayer(player, particleLoc, visualHintParticle, 2, 0.1, 0.1, 0.1, 0);
+                    ParticleUtils.spawnParticleForPlayer(player, particleLoc, visualHintParticle, 1, BEACON_OFFSET, BEACON_OFFSET, BEACON_OFFSET, 0);
                 }
                 
                 ticksRemaining -= VISUAL_UPDATE_INTERVAL;

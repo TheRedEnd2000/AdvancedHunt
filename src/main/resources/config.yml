@@ -143,12 +143,12 @@ minigames:
       # BEACON: Vertical particle beam in general vicinity (not exact location)
       type: NONE
       # Duration of visual hint in seconds
-      duration-seconds: 15
+      duration-seconds: 8
       # Particle type for TRAIL and BEACON (see: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html)
       particle: END_ROD
       # Maximum distance in blocks to show TRAIL particles (shows direction, not full path)
       max-distance: 15
-      # Random offset range in blocks for COMPASS and BEACON (±blocks from actual treasure)
+      # Random offset range in blocks for TRAIL, COMPASS and BEACON (±blocks from actual treasure)
       offset-range: 10
 
 updater:
