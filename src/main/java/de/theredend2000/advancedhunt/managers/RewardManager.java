@@ -111,7 +111,6 @@ public class RewardManager {
      * @return The display name of the item
      */
     private String giveItem(Player player, Reward reward) {
-        // Hole Item aus Cache oder deserialisiere es
         ItemStack cachedItem = itemCache.computeIfAbsent(
                 reward.getValue(),
                 value -> {
@@ -124,15 +123,10 @@ public class RewardManager {
         );
 
         if (cachedItem == null) return null;
-
-        // Clone das Item bevor es gegeben wird (wichtig für cached items)
         ItemStack item = cachedItem.clone();
 
-        // Bukkit's addItem gibt automatisch eine HashMap mit übrigen Items zurück
-        // wenn das Inventory voll ist - viel effizienter als manuelles Durchlaufen
         HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(item);
 
-        // Wenn Items übrig sind (Inventory voll), droppe sie am Spieler
         if (!leftover.isEmpty()) {
             for (ItemStack drop : leftover.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), drop);
@@ -165,7 +159,7 @@ public class RewardManager {
                 player.getName(),
                 stats,
                 reward.getChance(),
-                null // No item for broadcasts
+                null
         );
         Bukkit.broadcastMessage(HexColor.color(message, '&'));
     }
