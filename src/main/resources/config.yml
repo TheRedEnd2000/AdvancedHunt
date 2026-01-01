@@ -19,12 +19,6 @@ language: en
 command:
   # Defines the main command and its aliases for the plugin.
   # The first value is used as the primary command, all following values (separated by "|") are registered as aliases.
-  #
-  # Example:
-  # advancedhunt  -> main command
-  # ah, ahunt, treasure, treasures    -> aliases
-  # Usage:
-  # /advancedhunt /ah /treasure
   name: advancedhunt|ah|ahunt|treasure|treasures
 
 rewards:
