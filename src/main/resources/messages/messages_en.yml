@@ -90,6 +90,7 @@ command:
     - "&e/ah migrate <yaml|mysql|sqlite> &7- Migrate your current saving system to another"
   reload:
     success: "%prefix%&aConfiguration and messages reloaded!"
+    failed: "%prefix%&cReload failed. Check console for details."
   list:
     header: "&6Available Collections:"
     format: "&7- &e%collection%"
