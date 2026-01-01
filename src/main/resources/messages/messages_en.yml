@@ -136,8 +136,8 @@ command:
     failed: "%prefix%&cStorage migration failed. Check console for errors."
     mysql_not_configured: "%prefix%&cMySQL migration settings not configured! Please edit config.yml under 'migration.target' section with your target database details."
     mysql_config_reset: "%prefix%&eMySQL migration settings have been reset in config.yml. Configure them again if you need another migration."
-    existing_data_abort: "%prefix%&c&lMigration aborted! Target storage contains existing data: %collections% collections, %treasures% treasures, %players% players. Use '--force' flag to overwrite: /ah migrate <type> --force"
-    warning_existing_data: "%prefix%&e&lWARNING: Target storage contains existing data! (%collections% collections, %treasures% treasures, %players% players). Proceeding with forced migration..."
+    existing_data_abort: "%prefix%&c&lMigration aborted! Target storage contains existing data: %collections% collections, %treasures% treasures, %players% players. Use '--purge' to delete target data first, or '--force' (not recommended) to overwrite: /ah migrate <type> --purge"
+    warning_existing_data: "%prefix%&e&lWARNING: Target storage contains existing data! (%collections% collections, %treasures% treasures, %players% players). Proceeding with migration... (--force is not recommended)"
 
 treasure:
   found: "%prefix%&aYou found a treasure!"

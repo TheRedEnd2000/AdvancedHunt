@@ -137,8 +137,9 @@ minigames:
     # Visual hint settings (experimental)
     visual-hint:
       enabled: false
-      # Type of visual hint: NONE, TRAIL, COMPASS, or BEACON
+      # Type of visual hint: NONE, TRAIL, SNAKE, COMPASS, or BEACON
       # TRAIL: Particle line showing direction for limited distance (not full path)
+      # SNAKE: Wavy particle trail showing general direction (not an exact line)
       # COMPASS: Point player's compass to approximate area (not exact location)
       # BEACON: Vertical particle beam in general vicinity (not exact location)
       type: NONE
