@@ -310,11 +310,6 @@ gui:
         - ""
         - "&7Use &f%player% &7for the player's name."
         - "&7Use &f& &7for color codes and hex colors."
-    edit_info:
-      name: "&eEdit Controls"
-      lore:
-        - "&7Click on any reward"
-        - "&7to edit or delete it."
     # Chat prompts
     chance_updated: "%prefix%&aChance updated successfully!"
     message_updated: "%prefix%&aMessage updated successfully!"
