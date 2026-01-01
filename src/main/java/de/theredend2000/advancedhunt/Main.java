@@ -30,6 +30,9 @@ import java.util.Random;
 
 public final class Main extends JavaPlugin {
 
+    private record RepoSetup(DataRepository repository, String storageType) {
+    }
+
     private LegacyPaperCommandManager<CommandSender> commandManager;
     private DataRepository dataRepository;
     private TreasureManager treasureManager;
@@ -55,6 +58,68 @@ public final class Main extends JavaPlugin {
 
     private String currentStorageType;
 
+    private static String normalizeStorageType(String rawType) {
+        if (rawType == null) {
+            return "YAML";
+        }
+        String normalized = rawType.trim().toUpperCase(Locale.ROOT);
+        return switch (normalized) {
+            case "MYSQL", "SQLITE", "YAML" -> normalized;
+            default -> "YAML";
+        };
+    }
+
+    private RepoSetup createRepositoryFromType(String normalizedType) {
+        if (normalizedType.equals("MYSQL")) {
+            return new RepoSetup(
+                    new SqlRepository(
+                            this,
+                            getConfig().getString("storage.mysql.host"),
+                            getConfig().getInt("storage.mysql.port"),
+                            getConfig().getString("storage.mysql.database"),
+                            getConfig().getString("storage.mysql.username"),
+                            getConfig().getString("storage.mysql.password"),
+                            false
+                    ),
+                    "MYSQL"
+            );
+        }
+        if (normalizedType.equals("SQLITE")) {
+            return new RepoSetup(new SqlRepository(this, null, 0, null, null, null, true), "SQLITE");
+        }
+        return new RepoSetup(new YamlRepository(this), "YAML");
+    }
+
+    private RepoSetup createRepositoryFromConfig() {
+        String desiredType = normalizeStorageType(getConfig().getString("storage.type", "YAML"));
+        return createRepositoryFromType(desiredType);
+    }
+
+    private void initRepository(DataRepository repository) {
+        repository.init();
+
+        // Start periodic index flush for YAML backend (every 60 seconds)
+        if (repository instanceof YamlRepository) {
+            ((YamlRepository) repository).startPeriodicFlush(60);
+        }
+    }
+
+    private void rebuildRepositoryDependentManagers() {
+        rewardPresetManager = new RewardPresetManager(this, dataRepository);
+        treasureManager = new TreasureManager(dataRepository);
+        playerManager = new PlayerManager(this, dataRepository);
+        leaderboardManager = new LeaderboardManager(this, dataRepository);
+        collectionManager = new CollectionManager(this, dataRepository, treasureManager, playerManager, rewardManager);
+
+        particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
+        hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
+        proximityManager = new ProximityManager(this, treasureManager, playerManager);
+        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
+
+        particleManager.start();
+        scanManager.start();
+    }
+
     @Override
     public void onEnable() {
         random = new Random();
@@ -68,53 +133,19 @@ public final class Main extends JavaPlugin {
         soundManager = new SoundManager(this);
 
         // Initialize Data Repository
-        String storageType = getConfig().getString("storage.type", "YAML");
-        if (storageType.equalsIgnoreCase("MYSQL")) {
-            dataRepository = new SqlRepository(
-                    this,
-                    getConfig().getString("storage.mysql.host"),
-                    getConfig().getInt("storage.mysql.port"),
-                    getConfig().getString("storage.mysql.database"),
-                    getConfig().getString("storage.mysql.username"),
-                    getConfig().getString("storage.mysql.password"),
-                    false
-            );
-            currentStorageType = "MYSQL";
-        } else if (storageType.equalsIgnoreCase("SQLITE")) {
-            dataRepository = new SqlRepository(this, null, 0, null, null, null, true);
-            currentStorageType = "SQLITE";
-        } else {
-            dataRepository = new YamlRepository(this);
-            currentStorageType = "YAML";
-        }
-        dataRepository.init();
-        
-        // Start periodic index flush for YAML backend (every 60 seconds)
-        if (dataRepository instanceof YamlRepository) {
-            ((YamlRepository) dataRepository).startPeriodicFlush(60);
-        }
+        RepoSetup repoSetup = createRepositoryFromConfig();
+        dataRepository = repoSetup.repository();
+        currentStorageType = repoSetup.storageType();
+        initRepository(dataRepository);
 
         // Initialize Managers
         rewardManager = new RewardManager(this);
-        rewardPresetManager = new RewardPresetManager(this, dataRepository);
+        rebuildRepositoryDependentManagers();
         rewardPresetManager.reloadPresets();
-        treasureManager = new TreasureManager(dataRepository);
         treasureManager.loadTreasures();
-
-        playerManager = new PlayerManager(this, dataRepository);
-        leaderboardManager = new LeaderboardManager(this, dataRepository);
-        collectionManager = new CollectionManager(this, dataRepository, treasureManager, playerManager, rewardManager);
         placeModeManager = new PlaceModeManager(this);
         minigameManager = new MinigameManager(this);
         fireworkManager = new FireworkManager(this);
-        particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
-        hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
-        particleManager.start();
-
-        proximityManager = new ProximityManager(this, treasureManager, playerManager);
-
-        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager,placeModeManager);
-        scanManager.start();
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
@@ -179,17 +210,6 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    private static String normalizeStorageType(String rawType) {
-        if (rawType == null) {
-            return "YAML";
-        }
-        String normalized = rawType.trim().toUpperCase(Locale.ROOT);
-        return switch (normalized) {
-            case "MYSQL", "SQLITE", "YAML" -> normalized;
-            default -> "YAML";
-        };
-    }
-
     /**
      * Reloads the data repository.
      *
@@ -237,41 +257,13 @@ public final class Main extends JavaPlugin {
         }
 
         // Create and init the new repository
-        if (desiredType.equals("MYSQL")) {
-            dataRepository = new SqlRepository(
-                    this,
-                    getConfig().getString("storage.mysql.host"),
-                    getConfig().getInt("storage.mysql.port"),
-                    getConfig().getString("storage.mysql.database"),
-                    getConfig().getString("storage.mysql.username"),
-                    getConfig().getString("storage.mysql.password"),
-                    false
-            );
-        } else if (desiredType.equals("SQLITE")) {
-            dataRepository = new SqlRepository(this, null, 0, null, null, null, true);
-        } else {
-            dataRepository = new YamlRepository(this);
-        }
-        currentStorageType = desiredType;
-        dataRepository.init();
-        if (dataRepository instanceof YamlRepository) {
-            ((YamlRepository) dataRepository).startPeriodicFlush(60);
-        }
+        RepoSetup repoSetup = createRepositoryFromType(desiredType);
+        dataRepository = repoSetup.repository();
+        currentStorageType = repoSetup.storageType();
+        initRepository(dataRepository);
 
         // Rebuild managers that depend on the repository and/or each other
-        rewardPresetManager = new RewardPresetManager(this, dataRepository);
-        treasureManager = new TreasureManager(dataRepository);
-        playerManager = new PlayerManager(this, dataRepository);
-        leaderboardManager = new LeaderboardManager(this, dataRepository);
-        collectionManager = new CollectionManager(this, dataRepository, treasureManager, playerManager, rewardManager);
-
-        particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
-        hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
-        proximityManager = new ProximityManager(this, treasureManager, playerManager);
-        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
-
-        particleManager.start();
-        scanManager.start();
+        rebuildRepositoryDependentManagers();
 
         return true;
     }
