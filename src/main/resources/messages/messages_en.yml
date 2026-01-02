@@ -373,7 +373,11 @@ gui:
       message: "&8(Message truncated)"
     invalid_item:
       name: "&cInvalid Item"
-      lore: "&7This item could not be loaded"
+      lore:
+        - "&7This item could not be loaded"
+        - ""
+        - "&8─────────────"
+        - "&7Chance: &e%chance%%"
     # Edit mode
     click_to_edit: "&e&lLeft-Click &7to edit  &8|  &e&lRight-Click &7to %action%"
     save_preset:
@@ -542,13 +546,15 @@ gui:
     title: "&8Collection Content"
     treasure_item:
       name: "&6Treasure #%number%"
-      players_found_loading: "&7Players found: ..."
-      players_found: "&7Players found: &f%count%"
-      location_header: "&7Location:"
-      location_x: "&7X: &f%x%"
-      location_y: "&7Y: &f%y%"
-      location_z: "&7Z: &f%z%"
-      location_world: "&7World: &f%world%"
+      lore:
+        - "&7Players found: &f%count%"
+        - ""
+        - "&7Location:"
+        - "&7X: &f%x%"
+        - "&7Y: &f%y%"
+        - "&7Z: &f%z%"
+        - "&7World: &f%world%"
+        - ""
       lore_teleport: "&eLeft-Click &7to teleport"
       lore_reward: "&eShift+Left-Click &7to open the reward menu"
       lore_who_found: "&eRight-Click &7to see who found"
@@ -557,7 +563,8 @@ gui:
       title: "&8Reaction Game"
       click:
         name: "&aClick Me!"
-        lore: "&6%current%&7/&6%required%"
+        lore:
+          - "&6%current%&7/&6%required%"
     memory:
       title: "&8Memory Game"
       button:
