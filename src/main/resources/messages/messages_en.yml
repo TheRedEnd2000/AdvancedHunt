@@ -69,12 +69,8 @@ error:
   preset:
     invalid_name: "%prefix%&cInvalid preset name! Please enter a valid name."
     duplicate_name: "%prefix%&cA preset with that name already exists."
-    not_found_treasure: "%prefix%&cTreasure preset '&f%name%&c' not found!"
-    not_found_collection: "%prefix%&cCollection preset '&f%name%&c' not found!"
     save_failed_treasure: "%prefix%&cFailed to save treasure preset!"
     save_failed_collection: "%prefix%&cFailed to save collection preset!"
-    load_failed_treasure: "%prefix%&cFailed to load treasure preset!"
-    load_failed_collection: "%prefix%&cFailed to load collection preset!"
   
 command:
   help:
@@ -97,7 +93,6 @@ command:
     header: "&6Available Collections:"
     format: "&7- &e%collection%"
     hint: "&eUse /ah list <collection> to view treasures."
-  not_player: "%prefix%&cOnly players can use this command."
   collection_not_found: "%prefix%&cCollection not found."
 
   direction:
@@ -722,13 +717,6 @@ gui:
       name: "&7No Presets"
       lore:
         - "&7No reward presets have been created yet."
-    create:
-      name: "&aCreate Preset"
-      lore:
-        - "&7Create a new empty preset"
-        - "&7and edit its rewards."
-        - ""
-        - "&eClick to create"
     preset:
       name: "&6%name%"
       lore:
@@ -1147,7 +1135,6 @@ gui:
         - "&cClick to clear"
   place:
     presets:
-      title: "Place Presets"
       list:
         easter:
           name: "&e&lEaster Preset"
