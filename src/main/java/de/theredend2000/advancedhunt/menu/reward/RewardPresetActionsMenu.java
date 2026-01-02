@@ -100,35 +100,51 @@ public class RewardPresetActionsMenu extends Menu {
     }
 
     private ItemStack buildSetDefaultItem(boolean isDefault, String optionKey, String defaultPresetName) {
-        if (!isTreasurePreset() || !hasCollectionContext()) {
-            return new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.set_default.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.set_default.lore_disabled", false).toArray(new String[0]))
-                    .build();
-        }
+        boolean enabled = isTreasurePreset() && hasCollectionContext();
+        Material enabledMaterial = isDefault ? Material.OAK_SAPLING : Material.DEAD_BUSH;
 
-        Material material = isDefault ? Material.OAK_SAPLING : Material.DEAD_BUSH;
-        String optionText = plugin.getMessageManager().getMessage(optionKey, false);
-
-        return new ItemBuilder(material)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.set_default.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.set_default.lore", false,
-                        "%option%", optionText,"%current%",defaultPresetName).toArray(new String[0]))
-                .build();
+        return buildActionItem(
+            enabledMaterial,
+            enabled,
+            "gui.presets.actions.set_default.name",
+            "gui.presets.actions.set_default.lore",
+            "gui.presets.actions.set_default.lore_disabled",
+            "%option%", plugin.getMessageManager().getMessage(optionKey, false),
+            "%current%", defaultPresetName
+        );
     }
 
     private ItemStack buildCollectionActionItem(String baseKey, Material material, boolean enabled) {
-        if (enabled) {
-            return new ItemBuilder(material)
-                    .setDisplayName(plugin.getMessageManager().getMessage(baseKey + ".name", false))
-                    .setLore(plugin.getMessageManager().getMessageList(baseKey + ".lore", false).toArray(new String[0]))
-                    .build();
+        return buildActionItem(
+            material,
+            enabled,
+            baseKey + ".name",
+            baseKey + ".lore",
+            baseKey + ".lore_disabled"
+        );
+    }
+
+    private ItemStack buildActionItem(
+        Material enabledMaterial,
+        boolean enabled,
+        String nameKey,
+        String loreKeyEnabled,
+        String loreKeyDisabled,
+        String... loreArgsEnabled
+    ) {
+        Material material = enabled ? enabledMaterial : Material.BARRIER;
+        String loreKey = enabled ? loreKeyEnabled : loreKeyDisabled;
+
+        ItemBuilder builder = new ItemBuilder(material)
+                .setDisplayName(plugin.getMessageManager().getMessage(nameKey, false));
+
+        if (enabled && loreArgsEnabled != null && loreArgsEnabled.length > 0) {
+            builder.setLore(plugin.getMessageManager().getMessageList(loreKey, false, loreArgsEnabled).toArray(new String[0]));
+        } else {
+            builder.setLore(plugin.getMessageManager().getMessageList(loreKey, false).toArray(new String[0]));
         }
 
-        return new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage(baseKey + ".name", false))
-                .setLore(plugin.getMessageManager().getMessageList(baseKey + ".lore_disabled", false).toArray(new String[0]))
-                .build();
+        return builder.build();
     }
 
     private void handleRename() {
