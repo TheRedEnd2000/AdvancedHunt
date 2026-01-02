@@ -34,6 +34,7 @@ public class YamlRepository implements DataRepository {
     private File treasureRewardPresetsFolder;
     private File collectionRewardPresetsFolder;
     private File placePresetsFolder;
+    private File placePresetGroupsFile;
     private BukkitTask flushTask;
     
     // In-memory indexes for efficient lookups (rebuilt on init, updated on save)
@@ -109,6 +110,15 @@ public class YamlRepository implements DataRepository {
         placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
         if (!placePresetsFolder.exists()) {
             placePresetsFolder.mkdirs();
+        }
+
+        placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+        if (!placePresetGroupsFile.exists()) {
+            try {
+                placePresetGroupsFile.createNewFile();
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.SEVERE, "Could not create place-preset-groups.yml", e);
+            }
         }
 
         // Keep legacy file reference for migration/back-compat reads
@@ -1163,6 +1173,55 @@ public class YamlRepository implements DataRepository {
                     file.delete();
                     break;
                 }
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Set<String>> loadPlacePresetGroups() {
+        return CompletableFuture.supplyAsync(() -> {
+            if (placePresetGroupsFile == null) {
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+            }
+            if (!placePresetGroupsFile.exists()) {
+                return Set.of();
+            }
+
+            FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
+            List<String> groups = config.getStringList("groups");
+            if (groups == null || groups.isEmpty()) {
+                return Set.of();
+            }
+
+            LinkedHashSet<String> result = new LinkedHashSet<>();
+            for (String group : groups) {
+                if (group != null && !group.isBlank()) {
+                    result.add(group.trim());
+                }
+            }
+            return result;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> createPlacePresetGroup(String group) {
+        return CompletableFuture.runAsync(() -> {
+            if (group == null || group.isBlank()) {
+                return;
+            }
+            if (placePresetGroupsFile == null) {
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+            }
+
+            FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
+            List<String> groups = new ArrayList<>(config.getStringList("groups"));
+
+            String trimmed = group.trim();
+            boolean exists = groups.stream().anyMatch(g -> g != null && g.equalsIgnoreCase(trimmed));
+            if (!exists) {
+                groups.add(trimmed);
+                config.set("groups", groups);
+                saveConfigAtomic(config, placePresetGroupsFile);
             }
         });
     }

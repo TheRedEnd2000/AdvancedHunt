@@ -3,7 +3,6 @@ package de.theredend2000.advancedhunt.menu.place;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import de.theredend2000.advancedhunt.util.ItemSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -72,7 +71,7 @@ public class PlacePresetGroupMenu extends PagedMenu {
             addMenuBorder();
         }
 
-        // Create preset (group is prompted)
+        // Create group
         addButton(52, new ItemBuilder(Material.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.create.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.create.lore", false).toArray(new String[0]))
@@ -81,15 +80,6 @@ public class PlacePresetGroupMenu extends PagedMenu {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
                 return;
             }
-
-            ItemStack held = playerMenuUtility.getInventory().getItemInMainHand();
-            if (held == null || held.getType() == Material.AIR) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.no_item"));
-                Bukkit.getScheduler().runTask(plugin, this::open);
-                return;
-            }
-
-            ItemStack heldSnapshot = held.clone();
 
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.prompt_group"));
             plugin.getChatInputListener().requestInput(playerMenuUtility, groupInput -> {
@@ -100,40 +90,21 @@ public class PlacePresetGroupMenu extends PagedMenu {
                     return;
                 }
 
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.prompt_name"));
-                plugin.getChatInputListener().requestInput(playerMenuUtility, nameInput -> {
-                    String name = nameInput == null ? null : nameInput.trim();
-                    if (name == null || name.isEmpty()) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.invalid_name"));
-                        Bukkit.getScheduler().runTask(plugin, this::open);
-                        return;
-                    }
-
-                    if (plugin.getPlacePresetManager().hasPresetNameInGroup(group, name)) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.duplicate_name"));
-                        Bukkit.getScheduler().runTask(plugin, this::open);
-                        return;
-                    }
-
-                    String itemData = ItemSerializer.serialize(heldSnapshot);
-                    if (itemData == null || itemData.isBlank()) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.serialize_failed"));
-                        Bukkit.getScheduler().runTask(plugin, this::open);
-                        return;
-                    }
-
-                    plugin.getPlacePresetManager().createPreset(group, name, itemData).whenComplete((ok, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (ex != null || !Boolean.TRUE.equals(ok)) {
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.create_failed"));
-                            open();
-                            return;
+                plugin.getPlacePresetManager().createGroup(group).whenComplete((ok, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (ex != null || !Boolean.TRUE.equals(ok)) {
+                        if (plugin.getPlacePresetManager().hasGroup(group)) {
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.duplicate_group"));
+                        } else {
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.create_group_failed"));
                         }
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.created",
-                                "%group%", group,
-                                "%name%", name));
-                        new PlacePresetListMenu(playerMenuUtility, plugin, group).setPreviousMenu(this).open();
-                    }));
-                });
+                        open();
+                        return;
+                    }
+
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.group_created",
+                            "%group%", group));
+                    open();
+                }));
             });
         }, "advancedhunt.admin.place_presets");
     }

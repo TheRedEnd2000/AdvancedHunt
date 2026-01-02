@@ -88,9 +88,9 @@ feedback:
 
   place_presets:
     prompt_group: "%prefix%&7Type the &egroup name&7 in chat (or 'cancel')."
-    prompt_name: "%prefix%&7Type the &epreset name&7 in chat (or 'cancel')."
     prompt_rename: "%prefix%&7Type a new name for &e%name%&7 (or 'cancel')."
     prompt_move_group: "%prefix%&7Type a new group for this preset (current: &e%group%&7)."
+    group_created: "%prefix%&aCreated group &e%group%&a."
     created: "%prefix%&aCreated place preset &e%name%&a in group &e%group%&a."
     given: "%prefix%&aGiven preset &e%name%&a (&7%group%&a)."
     renamed: "%prefix%&aRenamed preset to &e%name%&a (&7%group%&a)."
@@ -104,11 +104,13 @@ error:
   place_presets:
     no_item: "%prefix%&cHold the item you want to save in your main hand."
     invalid_group: "%prefix%&cInvalid group name."
+    duplicate_group: "%prefix%&cThat group already exists."
     invalid_name: "%prefix%&cInvalid preset name."
     duplicate_name: "%prefix%&cA preset with that name already exists in that group."
     serialize_failed: "%prefix%&cFailed to save that item as a preset."
     deserialize_failed: "%prefix%&cFailed to load that preset item."
     create_failed: "%prefix%&cFailed to create the place preset."
+    create_group_failed: "%prefix%&cFailed to create the group."
     save_failed: "%prefix%&cFailed to save the place preset."
 
   feature_disabled: "%prefix%&cThat feature is currently disabled."
@@ -233,7 +235,7 @@ gui:
       none:
         name: "&cNo groups"
         lore:
-          - "&7No place presets exist yet."
+          - "&7No groups exist yet."
           - "&7Create one with the button below."
       group:
         name: "&e%group%"
@@ -281,10 +283,9 @@ gui:
         confirm_title: "&8Delete preset &c%name%&8?"
 
     create:
-      name: "&aCreate preset"
+      name: "&aCreate group"
       lore:
-        - "&7Creates a new place preset"
-        - "&7from the item in your main hand."
+        - "&7Creates a new empty group."
     create_in_group:
       name: "&aAdd preset"
       lore:

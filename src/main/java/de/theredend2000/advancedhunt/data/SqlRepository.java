@@ -141,6 +141,13 @@ public class SqlRepository implements DataRepository {
                             "item TEXT)");
                 } catch (SQLException ignored) {}
             });
+
+        schemaMigrations.put(8, conn -> {
+            try {
+                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_preset_groups (" +
+                        "grp VARCHAR(64) PRIMARY KEY)");
+            } catch (SQLException ignored) {}
+        });
     }
 
     @Override
@@ -226,6 +233,10 @@ public class SqlRepository implements DataRepository {
                         "grp VARCHAR(64) NOT NULL, " +
                         "name VARCHAR(64) NOT NULL, " +
                         "item TEXT)");
+
+                    // Place Preset Groups Table
+                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_preset_groups (" +
+                        "grp VARCHAR(64) PRIMARY KEY)");
 
 
             // Treasures Table
@@ -948,6 +959,46 @@ public class SqlRepository implements DataRepository {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_presets WHERE id = ?")) {
                 ps.setString(1, presetId.toString());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Set<String>> loadPlacePresetGroups() {
+        return supplyAsync(() -> {
+            LinkedHashSet<String> groups = new LinkedHashSet<>();
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT grp FROM ah_place_preset_groups");
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String group = rs.getString("grp");
+                    if (group != null && !group.isBlank()) {
+                        groups.add(group.trim());
+                    }
+                }
+            } catch (SQLException e) {
+                // Table may not exist yet on older schemas; treat as no persisted groups.
+            }
+            return groups;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> createPlacePresetGroup(String group) {
+        return runAsync(() -> {
+            if (group == null || group.isBlank()) {
+                return;
+            }
+            String sql = useSqlite
+                    ? "INSERT OR IGNORE INTO ah_place_preset_groups (grp) VALUES (?)"
+                    : "INSERT IGNORE INTO ah_place_preset_groups (grp) VALUES (?)";
+
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, group.trim());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();

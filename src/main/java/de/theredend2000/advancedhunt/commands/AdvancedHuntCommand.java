@@ -7,6 +7,7 @@ import de.theredend2000.advancedhunt.data.YamlRepository;
 import de.theredend2000.advancedhunt.managers.MigrationService;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameType;
 import de.theredend2000.advancedhunt.menu.collection.*;
+import de.theredend2000.advancedhunt.menu.place.PlacePresetGroupMenu;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
@@ -98,6 +99,13 @@ public class AdvancedHuntCommand {
                 .literal("rewards")
                 .permission("advancedhunt.admin.rewards")
                 .handler(context -> rewards((Player) context.sender()))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("placepresets")
+                .permission("advancedhunt.admin.place_presets")
+                .handler(context -> new PlacePresetGroupMenu((Player) context.sender(), plugin).open())
         );
 
         // ==================== Collection Management ====================
