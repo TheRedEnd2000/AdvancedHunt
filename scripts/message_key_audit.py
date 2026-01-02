@@ -141,6 +141,64 @@ def extract_message_leaf_keys_from_yaml(text: str) -> set[str]:
     return keys
 
 
+def extract_message_leaf_key_types_from_yaml(text: str) -> dict[str, str]:
+    """Extract leaf message key types from a messages YAML.
+
+    Returns a mapping of full key -> type, where type is:
+    - 'scalar' for keys whose value is a scalar on the same line
+    - 'list' for keys whose value is a YAML list (dash items)
+
+    Only includes leaf keys (same selection criteria as extract_message_leaf_keys_from_yaml).
+    """
+
+    lines = text.splitlines()
+    types: dict[str, str] = {}
+
+    stack: list[str] = []
+    indents: list[int] = []
+
+    for i, raw_line in enumerate(lines):
+        line = raw_line.rstrip("\r\n").expandtabs(2)
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped.startswith("-"):
+            continue
+
+        indent = len(line) - len(line.lstrip(" "))
+        match = YAML_KEY_RE.match(stripped)
+        if not match:
+            continue
+
+        key = _normalize_yaml_key_segment(match.group("key"))
+        colon_index = stripped.find(":")
+        value_part = stripped[colon_index + 1 :].strip() if colon_index >= 0 else ""
+
+        while indents and indent <= indents[-1]:
+            indents.pop()
+            stack.pop()
+
+        stack.append(key)
+        indents.append(indent)
+        full_key = ".".join(stack)
+
+        if value_part:
+            types[full_key] = "scalar"
+            continue
+
+        nxt = _next_significant_yaml_line(lines, i + 1)
+        if nxt is None:
+            continue
+
+        _, nxt_stripped, nxt_indent = nxt
+        if nxt_indent <= indent:
+            continue
+        if nxt_stripped.startswith("-"):
+            types[full_key] = "list"
+
+    return types
+
+
 ###############################################################################
 # Ignore config
 ###############################################################################
@@ -1350,6 +1408,19 @@ def _print_key_sites_section(title: str, key_to_sites: dict[str, list[UsageSite]
         print(f"{k}  [{preview}]{suffix}")
 
 
+def _print_type_mismatch_section(title: str, mismatches: list[dict[str, Any]]) -> None:
+    print(f"\n== {title} ({len(mismatches)}) ==")
+    for m in mismatches:
+        key = m["key"]
+        expected = m["expected"]
+        actual = m["actual"]
+        site = m.get("example_site") or {}
+        where = ""
+        if site.get("file") and site.get("line"):
+            where = f"  ({site['file']}:{site['line']})"
+        print(f"{key}  expected={expected} actual={actual}{where}")
+
+
 def _compile_safe_pattern_regex(pattern: str) -> Optional[re.Pattern[str]]:
     """Compile a safe '*' pattern into a regex.
 
@@ -1408,7 +1479,7 @@ def main(argv: list[str]) -> int:
     )
     parser.add_argument(
         "--only",
-        choices=("all", "missing", "unused", "dynamic", "gui-sent"),
+        choices=("all", "missing", "unused", "dynamic", "gui-sent", "type"),
         default="all",
         help="Only print one category",
     )
@@ -1443,7 +1514,9 @@ def main(argv: list[str]) -> int:
     ignore_unused_exact, ignore_unused_patterns = _compile_matchers(ignore_cfg.ignore_unused)
     ignore_dynamic_exact, ignore_dynamic_patterns = _compile_matchers(ignore_cfg.ignore_dynamic_sites)
 
-    yaml_keys = extract_message_leaf_keys_from_yaml(_read_text(yaml_path))
+    yaml_text = _read_text(yaml_path)
+    yaml_keys = extract_message_leaf_keys_from_yaml(yaml_text)
+    yaml_key_types = extract_message_leaf_key_types_from_yaml(yaml_text)
     literal_usages, dynamic_usages = scan_java_for_message_usages(java_root, root=root)
     literal_keys = {u.key for u in literal_usages}
 
@@ -1486,6 +1559,33 @@ def main(argv: list[str]) -> int:
     dyn_gui = [d for d in dynamic_usages if d.group_hint == "gui"]
     dyn_player = [d for d in dynamic_usages if d.group_hint == "player"]
 
+    # YAML type mismatches: expected list vs scalar based on usage method.
+    # (Only considers literal usages so we have a method/site.)
+    type_mismatches: list[dict[str, Any]] = []
+    key_to_usages: dict[str, list[LiteralKeyUsage]] = {}
+    for u in literal_usages:
+        key_to_usages.setdefault(u.key, []).append(u)
+    for key, usages in key_to_usages.items():
+        actual = yaml_key_types.get(key)
+        if actual is None:
+            continue
+        expected = "list" if any(s.site.method == "getMessageList" for s in usages) else "scalar"
+        if expected != actual:
+            ex = usages[0].site
+            type_mismatches.append(
+                {
+                    "key": key,
+                    "expected": expected,
+                    "actual": actual,
+                    "example_site": {
+                        "file": ex.file,
+                        "line": ex.line,
+                        "method": ex.method,
+                    },
+                }
+            )
+    type_mismatches.sort(key=lambda d: d["key"])
+
     print(f"YAML keys: {len(yaml_keys)}")
     print(f"Literal keys used in code: {len(literal_keys)} (gui={len(used_gui)}, player={len(used_player)})")
     print(f"Dynamic usage sites: {len(dynamic_usages)} (gui_hint={len(dyn_gui)}, player_hint={len(dyn_player)})")
@@ -1517,6 +1617,9 @@ def main(argv: list[str]) -> int:
     if args.only in ("all", "gui-sent"):
         _print_key_sites_section("GUI keys sent to player", gui_sent_to_player)
 
+    if args.only in ("all", "type"):
+        _print_type_mismatch_section("YAML type mismatches", type_mismatches)
+
     if args.json_out:
         out_path = Path(args.json_out)
         if not out_path.is_absolute():
@@ -1539,6 +1642,10 @@ def main(argv: list[str]) -> int:
                     k: [f"{s.file}:{s.line}" for s in v]
                     for k, v in sorted(gui_sent_to_player.items(), key=lambda kv: kv[0])
                 },
+            },
+            "typeMismatches": {
+                "count": len(type_mismatches),
+                "items": type_mismatches,
             },
             "missing": {
                 "count": len(missing),
