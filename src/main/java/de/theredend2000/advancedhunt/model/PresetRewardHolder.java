@@ -34,7 +34,7 @@ public class PresetRewardHolder implements RewardHolder {
     }
 
     @Override
-    public String getDisplayName() {
-        return preset.getName();
+    public String getRewardsTitleKey() {
+        return "gui.rewards.preset_title";
     }
 }

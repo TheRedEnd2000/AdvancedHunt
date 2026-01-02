@@ -141,7 +141,6 @@ public class CollectionSettingsMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.rewards.lore").toArray(new String[0]))
                 .build(), (e) -> {
             new RewardsMenu(playerMenuUtility, plugin, new CollectionRewardHolder(plugin, collection))
-                    .setTitleKey("gui.rewards.collection_title")
                     .setPreviousMenu(this)
                     .open();
         });

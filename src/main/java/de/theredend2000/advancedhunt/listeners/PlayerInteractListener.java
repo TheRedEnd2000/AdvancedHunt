@@ -66,8 +66,7 @@ public class PlayerInteractListener implements Listener {
                     // Add collection context if available, allowing switch between treasure and collection rewards
                     collectionManager.getCollectionById(treasure.getCollectionId()).ifPresent(collection -> {
                         menu.setAlternateContext(
-                            new CollectionRewardHolder(plugin, collection),
-                            "gui.rewards.collection_title"
+                            new CollectionRewardHolder(plugin, collection)
                         );
                     });
                     

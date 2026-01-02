@@ -18,8 +18,5 @@ public interface RewardHolder {
      */
     void saveRewards(List<Reward> rewards);
 
-    /**
-     * Gets a display name for the holder (e.g., "Treasure" or "Collection Name").
-     */
-    String getDisplayName();
+    String getRewardsTitleKey();
 }

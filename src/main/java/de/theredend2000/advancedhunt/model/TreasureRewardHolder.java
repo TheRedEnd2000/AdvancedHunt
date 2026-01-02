@@ -35,7 +35,7 @@ public class TreasureRewardHolder implements RewardHolder {
     }
 
     @Override
-    public String getDisplayName() {
-        return "Treasure";
+    public String getRewardsTitleKey() {
+        return "gui.rewards.title";
     }
 }
