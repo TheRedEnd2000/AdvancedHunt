@@ -1236,6 +1236,248 @@ def _extract_noarg_string_method_return_literals(masked_lines: list[str]) -> dic
     return out
 
 
+@dataclass(frozen=True)
+class _HelperKeyTemplate:
+    method_name: str
+    param_index: int
+    param_name: str
+    prefix: str
+    suffix: str
+    expected_method: str  # getMessage|getMessageList
+    apply_prefix: Optional[bool]
+    method_start_line: int
+    method_end_line: int
+
+
+def _strip_outer_parens(expr: str) -> str:
+    s = expr.strip()
+    # Strip a single layer of wrapping parentheses.
+    if s.startswith("(") and s.endswith(")"):
+        inner = s[1:-1].strip()
+        # Only strip if parentheses look balanced-ish (conservative).
+        if inner.count("(") == inner.count(")"):
+            return inner
+    return s
+
+
+def _parse_param_concat_with_literals(expr: str, param_names: set[str]) -> Optional[tuple[str, str, str]]:
+    """Parse key expressions that are parameter concatenations with string literals.
+
+    Supports:
+      - param + "suffix"
+      - "prefix" + param
+      - "prefix" + param + "suffix"
+    """
+    s = _strip_outer_parens(expr)
+
+    # Direct pass-through: param
+    m = re.match(r"^\s*(?P<param>[A-Za-z_][A-Za-z0-9_]*)\s*$", s)
+    if m and m.group("param") in param_names:
+        return m.group("param"), "", ""
+
+    # "prefix" + param + "suffix"
+    m = re.match(
+        r"^\s*(?P<p1>\"(?:\\.|[^\"\\])*\")\s*\+\s*(?P<param>[A-Za-z_][A-Za-z0-9_]*)\s*\+\s*(?P<p2>\"(?:\\.|[^\"\\])*\")\s*$",
+        s,
+    )
+    if m and m.group("param") in param_names:
+        pfx = _parse_java_string_literal(m.group("p1"))
+        sfx = _parse_java_string_literal(m.group("p2"))
+        if pfx is not None and sfx is not None:
+            return m.group("param"), pfx, sfx
+
+    # param + "suffix"
+    m = re.match(
+        r"^\s*(?P<param>[A-Za-z_][A-Za-z0-9_]*)\s*\+\s*(?P<p2>\"(?:\\.|[^\"\\])*\")\s*$",
+        s,
+    )
+    if m and m.group("param") in param_names:
+        sfx = _parse_java_string_literal(m.group("p2"))
+        if sfx is not None:
+            return m.group("param"), "", sfx
+
+    # "prefix" + param
+    m = re.match(
+        r"^\s*(?P<p1>\"(?:\\.|[^\"\\])*\")\s*\+\s*(?P<param>[A-Za-z_][A-Za-z0-9_]*)\s*$",
+        s,
+    )
+    if m and m.group("param") in param_names:
+        pfx = _parse_java_string_literal(m.group("p1"))
+        if pfx is not None:
+            return m.group("param"), pfx, ""
+
+    return None
+
+
+def _extract_helper_key_templates(masked: str, *, line_starts: list[int]) -> list[_HelperKeyTemplate]:
+    """Extract key-building templates from helper methods in a file.
+
+    A helper template is a getMessage/getMessageList call inside a method where
+    the key expression is built by concatenating a String parameter with one or
+    two string literals.
+    """
+    templates: list[_HelperKeyTemplate] = []
+
+    # Method signature heuristic (single-class file-local scan).
+    sig_re = re.compile(
+        r"\b(?:public|protected|private)\s+[^;{}]+?\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\((?P<params>[^)]*)\)\s*(?:throws\s+[^\{]+)?\{",
+        flags=re.DOTALL,
+    )
+
+    call_re = re.compile(r"\b(?P<method>getMessage|getMessageList)\s*\(")
+
+    for m_sig in sig_re.finditer(masked):
+        method_name = m_sig.group("name")
+        params_raw = m_sig.group("params")
+        # Parse parameter list.
+        params = [p.strip() for p in _split_top_level_args(params_raw) if p.strip()]
+        string_params: list[tuple[int, str]] = []
+        for idx, p in enumerate(params):
+            # e.g. "String baseKey" or "final String baseKey"
+            p2 = " ".join(p.replace("\n", " ").split())
+            tokens = p2.split(" ")
+            if len(tokens) < 2:
+                continue
+            name = tokens[-1]
+            typ = tokens[-2]
+            if typ == "String":
+                string_params.append((idx, name))
+
+        if not string_params:
+            continue
+
+        open_brace = m_sig.end() - 1
+        body = _extract_brace_block(masked, open_brace)
+        if body is None:
+            continue
+
+        method_start_line = _line_of_offset(line_starts, m_sig.start())
+        method_end_line = _line_of_offset(line_starts, open_brace + len(body))
+        param_name_set = {name for _, name in string_params}
+        param_index_by_name = {name: idx for idx, name in string_params}
+
+        # Track simple local aliases so we can resolve e.g.
+        #   String loreKey = enabled ? loreKeyEnabled : loreKeyDisabled;
+        #   getMessageList(loreKey, ...)
+        local_aliases: dict[str, tuple[str, ...]] = {}
+        for m_assign in re.finditer(
+            r"\b(?:String|var)\s+(?P<var>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<expr>[^;]+);",
+            body,
+        ):
+            var_name = m_assign.group("var")
+            expr = " ".join(m_assign.group("expr").split())
+            # Direct alias: var = param;
+            m_id = re.match(r"^(?P<id>[A-Za-z_][A-Za-z0-9_]*)$", expr)
+            if m_id and m_id.group("id") in param_name_set:
+                local_aliases[var_name] = (m_id.group("id"),)
+                continue
+
+            # Ternary of params: cond ? a : b
+            m_tern = re.match(
+                r"^[^?]+\?\s*(?P<t>[A-Za-z_][A-Za-z0-9_]*)\s*:\s*(?P<f>[A-Za-z_][A-Za-z0-9_]*)$",
+                expr,
+            )
+            if m_tern:
+                t_id = m_tern.group("t")
+                f_id = m_tern.group("f")
+                if t_id in param_name_set and f_id in param_name_set:
+                    local_aliases[var_name] = (t_id, f_id)
+                    continue
+
+        for m_call in call_re.finditer(body):
+            expected_method = m_call.group("method")
+            open_paren = m_call.end() - 1
+            extracted = _extract_call_args(body, open_paren)
+            if extracted is None:
+                continue
+            raw_args, _close = extracted
+            args = _split_top_level_args(raw_args)
+            if not args:
+                continue
+
+            key_expr = args[0].strip()
+
+            # Try parameter concat/pass-through.
+            parsed = _parse_param_concat_with_literals(key_expr, param_name_set)
+            param_names_to_emit: list[tuple[str, str, str]] = []
+            if parsed is not None:
+                pname, prefix, suffix = parsed
+                param_names_to_emit.append((pname, prefix, suffix))
+            else:
+                # Try simple local alias (including ternary of params).
+                m_var = re.match(r"^\s*(?P<var>[A-Za-z_][A-Za-z0-9_]*)\s*$", key_expr)
+                if m_var:
+                    var = m_var.group("var")
+                    aliased = local_aliases.get(var)
+                    if aliased:
+                        for pname in aliased:
+                            param_names_to_emit.append((pname, "", ""))
+
+            if not param_names_to_emit:
+                continue
+
+            apply_prefix: Optional[bool] = None
+            if len(args) >= 2:
+                second = args[1].strip()
+                if second == "false":
+                    apply_prefix = False
+                elif second == "true":
+                    apply_prefix = True
+
+            for param_name, prefix, suffix in param_names_to_emit:
+                p_index = param_index_by_name.get(param_name)
+                if p_index is None:
+                    continue
+                tpl = _HelperKeyTemplate(
+                    method_name=method_name,
+                    param_index=p_index,
+                    param_name=param_name,
+                    prefix=prefix,
+                    suffix=suffix,
+                    expected_method=expected_method,
+                    apply_prefix=apply_prefix,
+                    method_start_line=method_start_line,
+                    method_end_line=method_end_line,
+                )
+                if tpl not in templates:
+                    templates.append(tpl)
+
+    return templates
+
+
+def _extract_brace_block(text: str, open_brace_index: int) -> Optional[str]:
+    """Return substring starting at '{' through the matching '}' inclusive."""
+    if open_brace_index < 0 or open_brace_index >= len(text) or text[open_brace_index] != "{":
+        return None
+    i = open_brace_index
+    depth = 0
+    in_str = False
+    esc = False
+    while i < len(text):
+        ch = text[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            i += 1
+            continue
+        if ch == '"':
+            in_str = True
+            i += 1
+            continue
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[open_brace_index : i + 1]
+        i += 1
+    return None
+
+
 def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[LiteralKeyUsage], list[DynamicKeyUsage]]:
     literals: list[LiteralKeyUsage] = []
     dynamics: list[DynamicKeyUsage] = []
@@ -1257,6 +1499,24 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
     )
     array_index_expr_re = re.compile(r"^(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\[.+\]$")
 
+    # Build helper templates project-wide so call sites in other files (or subclasses)
+    # can be expanded (e.g., Menu.buildActionItem(...)).
+    global_helper_by_name: dict[str, list[_HelperKeyTemplate]] = {}
+    for p in java_files:
+        if p.name == "MessageManager.java" and "advancedhunt/managers" in p.as_posix():
+            continue
+        try:
+            t_text = _read_text(p)
+        except Exception:
+            continue
+        t_masked = _mask_java_comments(t_text)
+        t_line_starts = _build_line_starts(t_text)
+        for t in _extract_helper_key_templates(t_masked, line_starts=t_line_starts):
+            global_helper_by_name.setdefault(t.method_name, []).append(t)
+
+    # Avoid compiling a huge alternation regex; just scan for identifier calls and filter by name.
+    helper_call_re = re.compile(r"\b(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(")
+
     for path in java_files:
         # Do not treat MessageManager method declarations as usage sites.
         if path.name == "MessageManager.java" and "advancedhunt/managers" in path.as_posix():
@@ -1267,29 +1527,59 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
         line_starts = _build_line_starts(text)
         rel = path.relative_to(root).as_posix()
 
-        # Special-case: helper method buildCollectionActionItem(baseKey, ...) is called with a literal baseKey,
-        # but the underlying lookups are baseKey + ".name" / ".lore" / ".lore_disabled".
-        # Expand those call sites into concrete key usages so they aren't lost as disallowed "*.suffix" dynamics.
-        expanded_collection_action_base_keys: list[tuple[str, int]] = []
-        for m in re.finditer(r"\bbuildCollectionActionItem\s*\(\s*(\"(?:\\.|[^\"\\])*\")\s*,", masked):
-            lit = _parse_java_string_literal(m.group(1))
-            if lit is None:
+        # File-local templates are used only for suppressing internal helper lookups in this file.
+        helper_templates = _extract_helper_key_templates(masked, line_starts=line_starts)
+
+        expanded_helper_methods: set[str] = set()
+        expanded_helper_dedupe: set[tuple[str, int, str]] = set()  # (key, line, expected_method)
+
+        # Expand helper call sites using global templates.
+        for m_callsite in helper_call_re.finditer(masked):
+            helper_name = m_callsite.group("name")
+            templates = global_helper_by_name.get(helper_name)
+            if not templates:
                 continue
-            call_line = _line_of_offset(line_starts, m.start())
-            expanded_collection_action_base_keys.append((lit, call_line))
-            for suffix in (".name", ".lore", ".lore_disabled"):
-                # Preserve the expected YAML type by tagging the synthetic usage as getMessage (scalar)
-                # or getMessageList (list), matching buildCollectionActionItem's implementation.
-                expected_method = "getMessage" if suffix == ".name" else "getMessageList"
+            open_paren = m_callsite.end() - 1
+            extracted = _extract_call_args(masked, open_paren)
+            if extracted is None:
+                continue
+            raw_args, close_idx = extracted
+            args = _split_top_level_args(raw_args)
+
+            # Skip method definitions (after the close paren, next non-space is '{').
+            j = close_idx
+            while j < len(masked) and masked[j].isspace():
+                j += 1
+            if j < len(masked) and masked[j] == "{":
+                continue
+
+            call_line = _line_of_offset(line_starts, m_callsite.start())
+            for t in templates:
+                if t.param_index >= len(args):
+                    continue
+                arg_expr = args[t.param_index].strip()
+                arg_lit = _parse_java_string_literal(arg_expr)
+                if arg_lit is None:
+                    continue
+
+                key = t.prefix + arg_lit + t.suffix
+                dkey = (key, call_line, t.expected_method)
+                if dkey in expanded_helper_dedupe:
+                    continue
+                expanded_helper_dedupe.add(dkey)
+                expanded_helper_methods.add(t.method_name)
+
+                delivery = "gui" if t.apply_prefix is False or "/menu/" in rel.replace("\\", "/") else "unknown"
                 site = UsageSite(
                     file=rel,
                     line=call_line,
-                    method=expected_method,
-                    key_expr=m.group(1) + " + \"" + suffix + "\"",
-                    apply_prefix=False,
-                    delivery="gui",
+                    method=t.expected_method,
+                    key_expr=f"{helper_name}(...)" ,
+                    apply_prefix=t.apply_prefix,
+                    delivery=delivery,
                 )
-                literals.append(LiteralKeyUsage(key=lit + suffix, site=site, group="gui"))
+                group = _infer_group_for_literal(key, t.apply_prefix)
+                literals.append(LiteralKeyUsage(key=key, site=site, group=group))
 
         # Special-case: applyPreset(cronExpr, "some.key") results in getMessage(presetNameKey)
         # inside applyPreset(...). Expand those call sites into concrete key usages.
@@ -1403,12 +1693,34 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
             if expanded_apply_preset_keys and key_expr.strip() == "presetNameKey":
                 continue
 
-            # Suppress the internal helper lookups for buildCollectionActionItem(...)
-            # when we already expanded the literal call sites.
-            if expanded_collection_action_base_keys and (
-                key_expr.replace(" ", "") in ("baseKey+\".name\"", "baseKey+\".lore\"", "baseKey+\".lore_disabled\"")
-            ):
-                continue
+            # Suppress internal helper getMessage/getMessageList calls that are covered by templates
+            # when we expanded at least one call site for that helper method.
+            if expanded_helper_methods and helper_templates:
+                for t in helper_templates:
+                    if t.method_name not in expanded_helper_methods:
+                        continue
+                    if not (t.method_start_line <= line <= t.method_end_line):
+                        continue
+                    if t.expected_method != method:
+                        continue
+                    parsed = _parse_param_concat_with_literals(key_expr, {t.param_name})
+                    if parsed is None:
+                        continue
+                    _pname, pfx, sfx = parsed
+                    if pfx == t.prefix and sfx == t.suffix:
+                        # This is the internal helper lookup; skip it.
+                        key_literal = None
+                        break
+                else:
+                    pass
+                if key_literal is None and any(
+                    t.method_name in expanded_helper_methods and t.method_start_line <= line <= t.method_end_line
+                    for t in helper_templates
+                ) and '"' in key_expr and "+" in key_expr:
+                    # If we matched a templated internal call, skip.
+                    # (Key literal already cleared above.)
+                    if parsed is not None and pfx == t.prefix and sfx == t.suffix:
+                        continue
 
             if key_literal is not None:
                 group = _infer_group_for_literal(key_literal, apply_prefix)
