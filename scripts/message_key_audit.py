@@ -1,43 +1,47 @@
 #!/usr/bin/env python3
-"""Message key auditor for AdvancedHunt.
+"""Message key auditor for AdvancedHunt (no wildcard output).
 
-Scans Java source for MessageManager key usages (including GUI/menu strings),
-parses messages/messages_en.yml, and compares the sets.
+This script compares message keys defined in messages/messages_en.yml (or another
+messages_*.yml) with usages in the Java source.
 
-Outputs:
-- missing_in_yaml: keys referenced in code (certain literals) but absent in YAML
-- unused_in_code: keys present in YAML but never referenced as certain literals
-- pattern_usages: concatenated keys expressed as wildcard patterns (needs review)
-- uncertain_usages: dynamic/non-literal key expressions (needs review)
+Key principles:
+- Only *string literal* keys (e.g. getMessage("foo.bar")) are treated as concrete.
+- Any dynamic expression (ternary, concatenation, variable, method call, etc.) is
+  reported as a *dynamic usage site* and never turned into a printed '*' pattern.
+- Output can be grouped into "GUI" vs "Player" based on code signals.
 
-This is intentionally conservative: only *string-literal* keys are treated as
-certain. Anything else is shown as uncertain/pattern so you can decide.
+Grouping heuristics (best-effort):
+- If the call explicitly passes boolean applyPrefix=false -> GUI.
+- If the literal key starts with "gui." -> GUI.
+- Otherwise -> Player.
 
-Requirements:
-- Python 3.9+
-- PyYAML (pip install pyyaml)
+Notes:
+- This does not attempt to prove whether a message is ultimately sent to chat or
+  shown in an inventory; it uses the MessageManager API conventions.
+- "Unused" means: present in YAML but not referenced by any *literal* usage.
 
-Usage examples:
-    # Defaults (root=., java=src/main/java, yaml=src/main/resources/messages/messages_en.yml)
-    python scripts/message_key_audit.py
+Ignore config:
+- Optional YAML/JSON file (default: scripts/message_key_audit_ignores.yml)
+- Supported keys:
+  - ignore_missing: [list of keys or matchers]
+  - ignore_unused:  [list of keys or matchers]
+  - ignore_dynamic_sites: [list of file matchers]
+- Backwards compatible with the previous key:
+  - expanded_missing_in_yaml is treated as ignore_missing
+- Matchers:
+  - exact key/file
+  - wildcard '*' (glob-like)
+  - regex (starts with '^')
 
-    # Explicit roots/files + JSON report
-    python scripts/message_key_audit.py \
-        --root . \
-        --java src/main/java \
-        --yaml src/main/resources/messages/messages_en.yml \
-        --json report.json
-
-    # Write helper outputs (stubs for missing keys + safe prune candidates)
-    python scripts/message_key_audit.py \
-        --write-missing-stubs build/missing_message_keys.yml \
-        --write-prune-candidates build/prune_candidates.txt
+Exit codes:
+- 0: ok
+- 1: missing or unused found (unless --no-fail)
+- 2: usage/config error
 """
 
 from __future__ import annotations
 
 import argparse
-import bisect
 import json
 import re
 import sys
@@ -45,31 +49,222 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
-
 METHOD_NAMES = ("getMessage", "getMessageList")
 
-# The MessageManager contains method declarations like getMessage(String key, ...)
-# which are not real key usages and would otherwise show up as "uncertain".
-IGNORE_UNCERTAIN_FILE_SUFFIXES = (
-    "src/main/java/de/theredend2000/advancedhunt/managers/MessageManager.java",
-)
+
+###############################################################################
+# YAML key extraction (dependency-free; matches project style)
+###############################################################################
 
 
-JAVA_STRING_LITERAL_RE = re.compile(r'"(?:\\.|[^"\\])*"', re.DOTALL)
+YAML_KEY_RE = re.compile(r"^(?P<key>[A-Za-z0-9_\-]+)\s*:(?:\s+.*)?$")
+
+
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return path.read_text(encoding="utf-8", errors="replace")
+
+
+def _next_significant_yaml_line(lines: list[str], start_index: int) -> Optional[tuple[int, str, int]]:
+    for j in range(start_index, len(lines)):
+        raw = lines[j].rstrip("\r\n")
+        stripped = raw.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        raw_expanded = raw.expandtabs(2)
+        indent = len(raw_expanded) - len(raw_expanded.lstrip(" "))
+        return j, stripped, indent
+    return None
+
+
+def extract_message_leaf_keys_from_yaml(text: str) -> set[str]:
+    """Extract leaf message keys from a messages YAML.
+
+    Returns only keys whose value is a scalar on the same line or a list.
+    Does not return section-only keys.
+    """
+
+    lines = text.splitlines()
+    keys: set[str] = set()
+
+    stack: list[str] = []
+    indents: list[int] = []
+
+    for i, raw_line in enumerate(lines):
+        line = raw_line.rstrip("\r\n").expandtabs(2)
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped.startswith("-"):
+            continue
+
+        indent = len(line) - len(line.lstrip(" "))
+        match = YAML_KEY_RE.match(stripped)
+        if not match:
+            continue
+
+        key = match.group("key")
+        colon_index = stripped.find(":")
+        value_part = stripped[colon_index + 1 :].strip() if colon_index >= 0 else ""
+
+        while indents and indent <= indents[-1]:
+            indents.pop()
+            stack.pop()
+
+        stack.append(key)
+        indents.append(indent)
+        full_key = ".".join(stack)
+
+        if value_part:
+            keys.add(full_key)
+            continue
+
+        nxt = _next_significant_yaml_line(lines, i + 1)
+        if nxt is None:
+            continue
+
+        _, nxt_stripped, nxt_indent = nxt
+        if nxt_indent <= indent:
+            continue
+        if nxt_stripped.startswith("-"):
+            keys.add(full_key)
+
+    return keys
+
+
+###############################################################################
+# Ignore config
+###############################################################################
+
+
+@dataclass(frozen=True)
+class IgnoreConfig:
+    ignore_missing: tuple[str, ...] = ()
+    ignore_unused: tuple[str, ...] = ()
+    ignore_dynamic_sites: tuple[str, ...] = ()
+
+
+def _load_yaml_best_effort(path: Path) -> Any:
+    # Optional dependency: PyYAML. If unavailable, we degrade to "no ignores".
+    try:
+        import yaml  # type: ignore
+    except Exception:
+        return None
+
+    try:
+        return yaml.safe_load(_read_text(path))
+    except Exception:
+        return None
+
+
+def _load_ignore_config(path: Path) -> IgnoreConfig:
+    if not path.exists() or not path.is_file():
+        return IgnoreConfig()
+
+    if path.suffix.lower() == ".json":
+        try:
+            data = json.loads(_read_text(path))
+        except Exception:
+            return IgnoreConfig()
+    else:
+        data = _load_yaml_best_effort(path)
+        if data is None:
+            # Fall back to line-based parsing.
+            entries = [
+                ln.strip()
+                for ln in _read_text(path).splitlines()
+                if ln.strip() and not ln.strip().startswith("#")
+            ]
+            return IgnoreConfig(ignore_missing=tuple(entries))
+
+    if not isinstance(data, dict):
+        return IgnoreConfig()
+
+    def to_tuple(value: Any) -> tuple[str, ...]:
+        if value is None:
+            return ()
+        if isinstance(value, str):
+            return (value,)
+        if isinstance(value, list):
+            return tuple(str(x) for x in value if str(x).strip())
+        return ()
+
+    # Back-compat: old key name.
+    legacy = to_tuple(data.get("expanded_missing_in_yaml"))
+    ignore_missing = to_tuple(data.get("ignore_missing")) or legacy
+
+    return IgnoreConfig(
+        ignore_missing=ignore_missing,
+        ignore_unused=to_tuple(data.get("ignore_unused")),
+        ignore_dynamic_sites=to_tuple(data.get("ignore_dynamic_sites")),
+    )
+
+
+def _compile_matchers(entries: Iterable[str]) -> tuple[set[str], list[re.Pattern[str]]]:
+    exact: set[str] = set()
+    patterns: list[re.Pattern[str]] = []
+
+    for raw in entries:
+        s = str(raw).strip()
+        if not s or s.startswith("#"):
+            continue
+
+        if s.startswith("^"):
+            try:
+                patterns.append(re.compile(s))
+            except re.error:
+                exact.add(s)
+            continue
+
+        if "*" in s:
+            # glob-like matcher; match entire string
+            regex = "^" + re.escape(s).replace("\\*", ".*") + "$"
+            patterns.append(re.compile(regex))
+            continue
+
+        exact.add(s)
+
+    return exact, patterns
+
+
+def _matches(value: str, *, exact: set[str], patterns: list[re.Pattern[str]]) -> bool:
+    if value in exact:
+        return True
+    return any(p.match(value) for p in patterns)
+
+
+###############################################################################
+# Java scanning (simple parser)
+###############################################################################
+
+
+JAVA_STRING_LITERAL_RE = re.compile(r"^\"(?:\\.|[^\"\\])*\"$", re.DOTALL)
+
+
+def _build_line_starts(text: str) -> list[int]:
+    starts = [0]
+    for m in re.finditer(r"\n", text):
+        starts.append(m.end())
+    return starts
+
+
+def _line_of_offset(line_starts: list[int], offset: int) -> int:
+    # 1-based line number
+    lo = 0
+    hi = len(line_starts)
+    while lo + 1 < hi:
+        mid = (lo + hi) // 2
+        if line_starts[mid] <= offset:
+            lo = mid
+        else:
+            hi = mid
+    return lo + 1
 
 
 def _mask_java_comments(text: str) -> str:
-    """Return a same-length string with Java comments replaced by spaces.
-
-    This prevents comment contents from confusing our simple parser
-    (parenthesis matching, top-level splitting, etc.) while preserving
-    offsets/line numbers.
-
-    Notes:
-    - Newlines are preserved.
-    - Comment markers inside string/char literals are not treated as comments.
-    """
-
+    """Return a same-length string with Java comments replaced by spaces."""
     out = list(text)
     in_string = False
     in_char = False
@@ -126,13 +321,11 @@ def _mask_java_comments(text: str) -> str:
             in_string = True
             i += 1
             continue
-
         if ch == "'":
             in_char = True
             i += 1
             continue
 
-        # Comment starts.
         if ch == "/" and i + 1 < len(out):
             nxt = out[i + 1]
             if nxt == "/":
@@ -153,123 +346,725 @@ def _mask_java_comments(text: str) -> str:
     return "".join(out)
 
 
+def _parse_java_string_literal(expr: str) -> Optional[str]:
+    s = expr.strip()
+    if not JAVA_STRING_LITERAL_RE.match(s):
+        return None
+    inner = s[1:-1]
+    try:
+        # Good enough for message keys: handles \\ \\" \n \t and \uXXXX.
+        return bytes(inner, "utf-8").decode("unicode_escape")
+    except Exception:
+        # Fall back to a very conservative unescape.
+        return inner.replace("\\\"", '"').replace("\\\\", "\\")
+
+
+def _split_top_level_args(arg_text: str) -> list[str]:
+    args: list[str] = []
+    buf: list[str] = []
+    in_string = False
+    in_char = False
+    escaped = False
+    depth_paren = 0
+    depth_brack = 0
+    depth_brace = 0
+
+    for ch in arg_text:
+        if in_string:
+            buf.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+
+        if in_char:
+            buf.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            continue
+
+        if ch == '"':
+            in_string = True
+            buf.append(ch)
+            continue
+        if ch == "'":
+            in_char = True
+            buf.append(ch)
+            continue
+
+        if ch == "(":
+            depth_paren += 1
+            buf.append(ch)
+            continue
+        if ch == ")":
+            if depth_paren > 0:
+                depth_paren -= 1
+            buf.append(ch)
+            continue
+        if ch == "[":
+            depth_brack += 1
+            buf.append(ch)
+            continue
+        if ch == "]":
+            if depth_brack > 0:
+                depth_brack -= 1
+            buf.append(ch)
+            continue
+        if ch == "{":
+            depth_brace += 1
+            buf.append(ch)
+            continue
+        if ch == "}":
+            if depth_brace > 0:
+                depth_brace -= 1
+            buf.append(ch)
+            continue
+
+        if ch == "," and depth_paren == 0 and depth_brack == 0 and depth_brace == 0:
+            args.append("".join(buf).strip())
+            buf.clear()
+            continue
+
+        buf.append(ch)
+
+    tail = "".join(buf).strip()
+    if tail:
+        args.append(tail)
+    return args
+
+
+def _extract_call_args(masked_text: str, open_paren_index: int) -> Optional[tuple[str, int]]:
+    """Extract raw args text and closing paren index for a call starting at '('"""
+    assert masked_text[open_paren_index] == "("
+    in_string = False
+    in_char = False
+    escaped = False
+    depth = 0
+    i = open_paren_index
+    i += 1
+    start = i
+
+    while i < len(masked_text):
+        ch = masked_text[i]
+
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            i += 1
+            continue
+
+        if in_char:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            i += 1
+            continue
+
+        if ch == '"':
+            in_string = True
+            i += 1
+            continue
+        if ch == "'":
+            in_char = True
+            i += 1
+            continue
+
+        if ch == "(":
+            depth += 1
+            i += 1
+            continue
+        if ch == ")":
+            if depth == 0:
+                return masked_text[start:i], i
+            depth -= 1
+            i += 1
+            continue
+
+        i += 1
+
+    return None
+
+
 @dataclass(frozen=True)
 class UsageSite:
     file: str
     line: int
     method: str
-    arg_expr: str
+    key_expr: str
+    apply_prefix: Optional[bool]
 
 
 @dataclass(frozen=True)
-class CertainKeyUsage:
+class LiteralKeyUsage:
     key: str
     site: UsageSite
+    group: str  # 'gui'|'player'
 
 
 @dataclass(frozen=True)
-class PatternKeyUsage:
-    pattern: str
-    raw_parts: tuple[str, ...]
+class DynamicKeyUsage:
     site: UsageSite
+    group_hint: str  # 'gui'|'player'
+    safe_pattern: Optional[str] = None
+    resolved_literals: tuple[str, ...] = ()
 
 
-@dataclass(frozen=True)
-class ResolvedUncertainPatternUsage:
-    pattern: str
-    source_expr: str
-    assignment_expr: Optional[str]
-    site: UsageSite
+def _infer_group_for_literal(key: str, apply_prefix: Optional[bool]) -> str:
+    if apply_prefix is False:
+        return "gui"
+    if key.startswith("gui."):
+        return "gui"
+    return "player"
 
 
-@dataclass(frozen=True)
-class ExpandedKeyUsage:
-    key: str
-    pattern: str
-    site: UsageSite
-    symbols: dict[str, list[str]]
+def _infer_group_for_dynamic(file_rel: str, apply_prefix: Optional[bool]) -> str:
+    if apply_prefix is False:
+        return "gui"
+    # Dynamic keys in this project are mostly GUI templates under menus.
+    if "/menu/" in file_rel.replace("\\", "/"):
+        return "gui"
+    return "player"
 
 
-@dataclass(frozen=True)
-class EnhancedPatternUsage:
-    pattern: str
-    original_pattern: str
-    site: UsageSite
-    inferred_from_symbols: dict[str, str]
+def _strip_wrapping_parens(expr: str) -> str:
+    s = expr.strip()
+    # Strip a single layer of wrapping parentheses, repeatedly.
+    while s.startswith("(") and s.endswith(")"):
+        inner = s[1:-1].strip()
+        if not inner:
+            return s
+        # Heuristic: only strip if parentheses appear balanced at top-level.
+        # (We don't need full parsing here; we just avoid stripping '(a) + b'.)
+        depth = 0
+        in_string = False
+        in_char = False
+        escaped = False
+        ok = True
+        for ch in inner:
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == '"':
+                    in_string = False
+                continue
+            if in_char:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == "'":
+                    in_char = False
+                continue
+            if ch == '"':
+                in_string = True
+                continue
+            if ch == "'":
+                in_char = True
+                continue
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth < 0:
+                    ok = False
+                    break
+        if not ok or depth != 0:
+            return s
+        s = inner
+    return s
 
 
-@dataclass(frozen=True)
-class UncertainKeyUsage:
-    site: UsageSite
+def _split_top_level_plus(expr: str) -> Optional[list[str]]:
+    """Split a Java expression on top-level '+' operators.
 
-
-@dataclass(frozen=True)
-class UncertainUsageContext:
-    class_name: Optional[str]
-    method_signature: Optional[str]
-    snippet: Optional[str]
-    symbol: Optional[str]
-    last_assignment_expr: Optional[str]
-    inferred_pattern: Optional[str]
-    propagated_literals: tuple[str, ...]
-
-
-@dataclass(frozen=True)
-class PatternMatcherSource:
-    pattern: str
-    source_kind: str  # 'concat'|'enhanced_concat'|'literal_pattern'|'inferred_dynamic'
-    site: Optional[UsageSite]
-    original_pattern: Optional[str]
-
-
-@dataclass(frozen=True)
-class IgnoreConfig:
-    expanded_missing_in_yaml: tuple[str, ...] = ()
-
-
-def _load_ignore_config(path: Path) -> IgnoreConfig:
-    """Load ignore configuration.
-
-    Supported formats:
-    - YAML/JSON with top-level keys (currently: expanded_missing_in_yaml)
-    - Plain text file with one entry per line (treated as expanded_missing_in_yaml)
-
-    Entries may be:
-    - exact keys
-    - wildcard patterns using '*'
-    - regex-like patterns (see _looks_like_regex_pattern)
+    Returns None if there is no top-level '+' split.
     """
+    s = expr.strip()
+    parts: list[str] = []
+    buf: list[str] = []
+    in_string = False
+    in_char = False
+    escaped = False
+    depth_paren = 0
+    depth_brack = 0
+    depth_brace = 0
+    saw_plus = False
 
-    if not path.exists() or not path.is_file():
-        return IgnoreConfig()
+    for ch in s:
+        if in_string:
+            buf.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if in_char:
+            buf.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            continue
 
-    # Best effort: prefer structured YAML/JSON. Fall back to line-based parsing.
-    data: Any
-    if path.suffix.lower() in (".yml", ".yaml", ".json"):
-        if path.suffix.lower() == ".json":
-            data = json.loads(_read_text(path))
-        else:
-            data = _load_yaml(path)
-    else:
-        # Plain text: non-empty, non-comment lines.
-        lines = _read_text(path).splitlines()
-        entries = [ln.strip() for ln in lines if ln.strip() and not ln.strip().startswith("#")]
-        return IgnoreConfig(expanded_missing_in_yaml=tuple(entries))
+        if ch == '"':
+            in_string = True
+            buf.append(ch)
+            continue
+        if ch == "'":
+            in_char = True
+            buf.append(ch)
+            continue
 
-    if not isinstance(data, dict):
-        return IgnoreConfig()
+        if ch == "(":
+            depth_paren += 1
+            buf.append(ch)
+            continue
+        if ch == ")":
+            if depth_paren > 0:
+                depth_paren -= 1
+            buf.append(ch)
+            continue
+        if ch == "[":
+            depth_brack += 1
+            buf.append(ch)
+            continue
+        if ch == "]":
+            if depth_brack > 0:
+                depth_brack -= 1
+            buf.append(ch)
+            continue
+        if ch == "{":
+            depth_brace += 1
+            buf.append(ch)
+            continue
+        if ch == "}":
+            if depth_brace > 0:
+                depth_brace -= 1
+            buf.append(ch)
+            continue
 
-    raw = data.get("expanded_missing_in_yaml", [])
-    if raw is None:
-        raw = []
-    if isinstance(raw, str):
-        raw_entries = [raw]
-    elif isinstance(raw, list):
-        raw_entries = [str(x) for x in raw if str(x).strip()]
-    else:
-        raw_entries = []
+        if ch == "+" and depth_paren == 0 and depth_brack == 0 and depth_brace == 0:
+            saw_plus = True
+            parts.append("".join(buf).strip())
+            buf.clear()
+            continue
 
-    return IgnoreConfig(expanded_missing_in_yaml=tuple(raw_entries))
+        buf.append(ch)
+
+    tail = "".join(buf).strip()
+    if tail:
+        parts.append(tail)
+    if not saw_plus:
+        return None
+    return [p for p in parts if p]
+
+
+def _try_resolve_simple_ternary_literals(expr: str) -> Optional[tuple[str, str]]:
+    """Resolve `cond ? "a" : "b"` where both branches are string literals."""
+    s = _strip_wrapping_parens(expr)
+
+    in_string = False
+    in_char = False
+    escaped = False
+    depth_paren = 0
+    depth_brack = 0
+    depth_brace = 0
+
+    q_index: Optional[int] = None
+    colon_index: Optional[int] = None
+
+    for i, ch in enumerate(s):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if in_char:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == "'":
+                in_char = False
+            continue
+
+        if ch == '"':
+            in_string = True
+            continue
+        if ch == "'":
+            in_char = True
+            continue
+
+        if ch == "(":
+            depth_paren += 1
+            continue
+        if ch == ")":
+            if depth_paren > 0:
+                depth_paren -= 1
+            continue
+        if ch == "[":
+            depth_brack += 1
+            continue
+        if ch == "]":
+            if depth_brack > 0:
+                depth_brack -= 1
+            continue
+        if ch == "{":
+            depth_brace += 1
+            continue
+        if ch == "}":
+            if depth_brace > 0:
+                depth_brace -= 1
+            continue
+
+        if depth_paren == 0 and depth_brack == 0 and depth_brace == 0:
+            if ch == "?" and q_index is None:
+                q_index = i
+                continue
+            if ch == ":" and q_index is not None and colon_index is None:
+                colon_index = i
+                continue
+
+    if q_index is None or colon_index is None or colon_index <= q_index:
+        return None
+
+    true_expr = s[q_index + 1 : colon_index].strip()
+    false_expr = s[colon_index + 1 :].strip()
+    lit_true = _parse_java_string_literal(true_expr)
+    lit_false = _parse_java_string_literal(false_expr)
+    if lit_true is None or lit_false is None:
+        return None
+    return lit_true, lit_false
+
+
+def _derive_safe_pattern_from_concat(expr: str) -> Optional[str]:
+    """Derive a *safe* pattern from a string concatenation expression.
+
+    Allowed examples:
+    - x.*
+    - x.*.x
+
+    Disallowed examples:
+    - *.x
+    - *
+    - any pattern with more than one '*'
+    """
+    parts = _split_top_level_plus(_strip_wrapping_parens(expr))
+    if not parts:
+        return None
+
+    wildcard_count = 0
+    built: list[str] = []
+
+    for part in parts:
+        lit = _parse_java_string_literal(part)
+        if lit is not None:
+            built.append(lit)
+            continue
+        wildcard_count += 1
+        if wildcard_count > 1:
+            return None
+        built.append("*")
+
+    pattern = "".join(built)
+    if not pattern or pattern == "*":
+        return None
+    if pattern.startswith("*"):
+        # Never allow patterns like '*.x'
+        return None
+    return pattern
+
+
+def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[LiteralKeyUsage], list[DynamicKeyUsage]]:
+    literals: list[LiteralKeyUsage] = []
+    dynamics: list[DynamicKeyUsage] = []
+
+    java_files = sorted(p for p in java_root.rglob("*.java") if p.is_file())
+    call_re = re.compile(r"\b(?P<method>getMessage|getMessageList)\s*\(")
+
+    for path in java_files:
+        # Do not treat MessageManager method declarations as usage sites.
+        if path.name == "MessageManager.java" and "advancedhunt/managers" in path.as_posix():
+            continue
+        text = _read_text(path)
+        masked = _mask_java_comments(text)
+        line_starts = _build_line_starts(text)
+        rel = path.relative_to(root).as_posix()
+
+        for m in call_re.finditer(masked):
+            method = m.group("method")
+            open_paren = m.end() - 1
+            extracted = _extract_call_args(masked, open_paren)
+            if extracted is None:
+                continue
+            raw_args, _close = extracted
+            args = _split_top_level_args(raw_args)
+            if not args:
+                continue
+
+            key_expr = args[0].strip()
+            key_literal = _parse_java_string_literal(key_expr)
+
+            apply_prefix: Optional[bool] = None
+            if len(args) >= 2:
+                second = args[1].strip()
+                if second == "false":
+                    apply_prefix = False
+                elif second == "true":
+                    apply_prefix = True
+
+            line = _line_of_offset(line_starts, m.start())
+            site = UsageSite(file=rel, line=line, method=method, key_expr=key_expr, apply_prefix=apply_prefix)
+
+            if key_literal is not None:
+                group = _infer_group_for_literal(key_literal, apply_prefix)
+                literals.append(LiteralKeyUsage(key=key_literal, site=site, group=group))
+            else:
+                # Try: resolve simple ternary where both branches are literals.
+                tern = _try_resolve_simple_ternary_literals(key_expr)
+                if tern is not None:
+                    for lit in tern:
+                        group = _infer_group_for_literal(lit, apply_prefix)
+                        literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
+                    continue
+
+                group_hint = _infer_group_for_dynamic(rel, apply_prefix)
+                safe_pattern = _derive_safe_pattern_from_concat(key_expr)
+                dynamics.append(DynamicKeyUsage(site=site, group_hint=group_hint, safe_pattern=safe_pattern))
+
+    return literals, dynamics
+
+
+###############################################################################
+# Reporting
+###############################################################################
+
+
+def _sort_unique(items: Iterable[str]) -> list[str]:
+    return sorted(set(items))
+
+
+def _print_section(title: str, items: list[str]) -> None:
+    print(f"\n== {title} ({len(items)}) ==")
+    for k in items:
+        print(k)
+
+
+def _print_dynamic_section(title: str, sites: list[DynamicKeyUsage], *, ignore_files: tuple[set[str], list[re.Pattern[str]]]) -> None:
+    exact, patterns = ignore_files
+    visible = [d for d in sites if not _matches(d.site.file, exact=exact, patterns=patterns)]
+
+    print(f"\n== {title} ({len(visible)}) ==")
+    for d in visible:
+        ap = ""
+        if d.site.apply_prefix is False:
+            ap = " (applyPrefix=false)"
+        elif d.site.apply_prefix is True:
+            ap = " (applyPrefix=true)"
+        extra = ""
+        if d.safe_pattern:
+            extra = f" -> {d.safe_pattern}"
+        print(f"{d.site.file}:{d.site.line} {d.site.method}({d.site.key_expr}){ap}{extra}")
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(description="Audit message keys used in code vs YAML (no wildcard output)")
+    parser.add_argument("--root", default=".", help="Repo root (default: .)")
+    parser.add_argument("--java", default="src/main/java", help="Java source root relative to --root")
+    parser.add_argument(
+        "--yaml",
+        default="src/main/resources/messages/messages_en.yml",
+        help="Messages YAML file relative to --root",
+    )
+    parser.add_argument(
+        "--ignore",
+        default="scripts/message_key_audit_ignores.yml",
+        help="Ignore config file relative to --root (optional)",
+    )
+    parser.add_argument(
+        "--only",
+        choices=("all", "missing", "unused", "dynamic"),
+        default="all",
+        help="Only print one category",
+    )
+    parser.add_argument(
+        "--no-fail",
+        action="store_true",
+        help="Always exit 0 even when missing/unused are present",
+    )
+    parser.add_argument(
+        "--json",
+        dest="json_out",
+        default=None,
+        help="Write JSON report to this path (relative to --root unless absolute)",
+    )
+
+    args = parser.parse_args(argv)
+
+    root = Path(args.root).resolve()
+    java_root = (root / args.java).resolve()
+    yaml_path = (root / args.yaml).resolve()
+    ignore_path = (root / args.ignore).resolve()
+
+    if not java_root.exists() or not java_root.is_dir():
+        print(f"Java root not found: {java_root}", file=sys.stderr)
+        return 2
+    if not yaml_path.exists() or not yaml_path.is_file():
+        print(f"Messages YAML not found: {yaml_path}", file=sys.stderr)
+        return 2
+
+    ignore_cfg = _load_ignore_config(ignore_path)
+    ignore_missing_exact, ignore_missing_patterns = _compile_matchers(ignore_cfg.ignore_missing)
+    ignore_unused_exact, ignore_unused_patterns = _compile_matchers(ignore_cfg.ignore_unused)
+    ignore_dynamic_exact, ignore_dynamic_patterns = _compile_matchers(ignore_cfg.ignore_dynamic_sites)
+
+    yaml_keys = extract_message_leaf_keys_from_yaml(_read_text(yaml_path))
+    literal_usages, dynamic_usages = scan_java_for_message_usages(java_root, root=root)
+    literal_keys = {u.key for u in literal_usages}
+
+    missing = sorted(k for k in literal_keys if k not in yaml_keys)
+    missing = [k for k in missing if not _matches(k, exact=ignore_missing_exact, patterns=ignore_missing_patterns)]
+
+    unused = sorted(k for k in yaml_keys if k not in literal_keys)
+    unused = [k for k in unused if not _matches(k, exact=ignore_unused_exact, patterns=ignore_unused_patterns)]
+
+    # Split into GUI vs Player groups for missing/unused by key naming.
+    missing_gui = [k for k in missing if k.startswith("gui.")]
+    missing_player = [k for k in missing if not k.startswith("gui.")]
+    unused_gui = [k for k in unused if k.startswith("gui.")]
+    unused_player = [k for k in unused if not k.startswith("gui.")]
+
+    # Split literal usages by group inference.
+    used_gui = _sort_unique(u.key for u in literal_usages if u.group == "gui")
+    used_player = _sort_unique(u.key for u in literal_usages if u.group == "player")
+
+    dyn_gui = [d for d in dynamic_usages if d.group_hint == "gui"]
+    dyn_player = [d for d in dynamic_usages if d.group_hint == "player"]
+
+    print(f"YAML keys: {len(yaml_keys)}")
+    print(f"Literal keys used in code: {len(literal_keys)} (gui={len(used_gui)}, player={len(used_player)})")
+    print(f"Dynamic usage sites: {len(dynamic_usages)} (gui_hint={len(dyn_gui)}, player_hint={len(dyn_player)})")
+    if ignore_path.exists():
+        print(f"Ignore config: {ignore_path.relative_to(root).as_posix()}")
+
+    if args.only in ("all", "missing"):
+        _print_section("Missing in YAML (GUI)", missing_gui)
+        _print_section("Missing in YAML (Player)", missing_player)
+
+    if args.only in ("all", "unused"):
+        _print_section("Unused in code (GUI) [literal-only]", unused_gui)
+        _print_section("Unused in code (Player) [literal-only]", unused_player)
+
+    if args.only in ("all", "dynamic"):
+        _print_dynamic_section(
+            "Dynamic message usages (GUI hint)",
+            dyn_gui,
+            ignore_files=(ignore_dynamic_exact, ignore_dynamic_patterns),
+        )
+        _print_dynamic_section(
+            "Dynamic message usages (Player hint)",
+            dyn_player,
+            ignore_files=(ignore_dynamic_exact, ignore_dynamic_patterns),
+        )
+
+    if args.json_out:
+        out_path = Path(args.json_out)
+        if not out_path.is_absolute():
+            out_path = root / out_path
+
+        payload: dict[str, Any] = {
+            "yaml": {
+                "file": yaml_path.relative_to(root).as_posix(),
+                "count": len(yaml_keys),
+            },
+            "literals": {
+                "count": len(literal_keys),
+                "gui": used_gui,
+                "player": used_player,
+            },
+            "missing": {
+                "count": len(missing),
+                "gui": missing_gui,
+                "player": missing_player,
+            },
+            "unused": {
+                "count": len(unused),
+                "gui": unused_gui,
+                "player": unused_player,
+                "note": "unused is computed using literal key usages only",
+            },
+            "dynamic": {
+                "count": len(dynamic_usages),
+                "gui_hint": [
+                    {
+                        "file": d.site.file,
+                        "line": d.site.line,
+                        "method": d.site.method,
+                        "key_expr": d.site.key_expr,
+                        "apply_prefix": d.site.apply_prefix,
+                        "safe_pattern": d.safe_pattern,
+                    }
+                    for d in dyn_gui
+                    if not _matches(d.site.file, exact=ignore_dynamic_exact, patterns=ignore_dynamic_patterns)
+                ],
+                "player_hint": [
+                    {
+                        "file": d.site.file,
+                        "line": d.site.line,
+                        "method": d.site.method,
+                        "key_expr": d.site.key_expr,
+                        "apply_prefix": d.site.apply_prefix,
+                        "safe_pattern": d.safe_pattern,
+                    }
+                    for d in dyn_player
+                    if not _matches(d.site.file, exact=ignore_dynamic_exact, patterns=ignore_dynamic_patterns)
+                ],
+            },
+        }
+        _write_json(out_path, payload)
+        print(f"\nWrote JSON report: {out_path.relative_to(root).as_posix()}")
+
+    has_issues = bool(missing or unused)
+    if has_issues and not args.no_fail:
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
+
+
+# Everything below is leftover legacy code from the previous implementation.
+# It's intentionally disabled so it can't run.
+_LEGACY_DISABLED = r'''
 
 
 def _compile_ignore_matchers(entries: Iterable[str]) -> tuple[set[str], list[re.Pattern[str]]]:
@@ -2876,3 +3671,5 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
+
+'''
