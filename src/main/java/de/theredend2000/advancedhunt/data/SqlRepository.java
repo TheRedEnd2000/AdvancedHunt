@@ -229,8 +229,7 @@ public class SqlRepository implements DataRepository {
 
             // Player Settings Table
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_players (" +
-                    "uuid VARCHAR(36) PRIMARY KEY, " +
-                    "selected_collection_id VARCHAR(36))");
+                    "uuid VARCHAR(36) PRIMARY KEY)");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -369,17 +368,6 @@ public class SqlRepository implements DataRepository {
                         data.addFoundTreasure(UUID.fromString(rs.getString("treasure_id")));
                     }
                 }
-                // Load selected collection
-                try (PreparedStatement ps = conn.prepareStatement("SELECT selected_collection_id FROM ah_players WHERE uuid = ?")) {
-                    ps.setString(1, playerUuid.toString());
-                    var rs = ps.executeQuery();
-                    if (rs.next()) {
-                        String idStr = rs.getString("selected_collection_id");
-                        if (idStr != null) {
-                            data.setSelectedCollectionId(UUID.fromString(idStr));
-                        }
-                    }
-                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -391,10 +379,13 @@ public class SqlRepository implements DataRepository {
     public CompletableFuture<Void> savePlayerData(PlayerData playerData) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
-                // Save selected collection
-                try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_players (uuid, selected_collection_id) VALUES (?, ?)")) {
+                // Ensure player row exists (legacy table previously stored player settings)
+                String ensurePlayerSql = useSqlite
+                        ? "INSERT OR IGNORE INTO ah_players (uuid) VALUES (?)"
+                        : "INSERT IGNORE INTO ah_players (uuid) VALUES (?)";
+
+                try (PreparedStatement ps = conn.prepareStatement(ensurePlayerSql)) {
                     ps.setString(1, playerData.getPlayerUuid().toString());
-                    ps.setString(2, playerData.getSelectedCollectionId() != null ? playerData.getSelectedCollectionId().toString() : null);
                     ps.executeUpdate();
                 }
 
@@ -427,11 +418,14 @@ public class SqlRepository implements DataRepository {
                 conn.setAutoCommit(false);
                 
                 try {
-                    // 1. Batch save selected collections
-                    try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_players (uuid, selected_collection_id) VALUES (?, ?)")) {
+                    // 1. Ensure player rows exist
+                    String ensurePlayerSql = useSqlite
+                            ? "INSERT OR IGNORE INTO ah_players (uuid) VALUES (?)"
+                            : "INSERT IGNORE INTO ah_players (uuid) VALUES (?)";
+
+                    try (PreparedStatement ps = conn.prepareStatement(ensurePlayerSql)) {
                         for (PlayerData pd : playerDataList) {
                             ps.setString(1, pd.getPlayerUuid().toString());
-                            ps.setString(2, pd.getSelectedCollectionId() != null ? pd.getSelectedCollectionId().toString() : null);
                             ps.addBatch();
                         }
                         ps.executeBatch();

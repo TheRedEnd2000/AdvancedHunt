@@ -7,8 +7,6 @@ import java.util.UUID;
 public class PlayerData {
     private final UUID playerUuid;
     private final Set<UUID> foundTreasures;
-    @Deprecated
-    private UUID selectedCollectionId;
 
     public PlayerData(UUID playerUuid) {
         this.playerUuid = playerUuid;
@@ -33,15 +31,5 @@ public class PlayerData {
 
     public void reset() {
         foundTreasures.clear();
-    }
-
-    @Deprecated
-    public UUID getSelectedCollectionId() {
-        return selectedCollectionId;
-    }
-
-    @Deprecated
-    public void setSelectedCollectionId(UUID selectedCollectionId) {
-        this.selectedCollectionId = selectedCollectionId;
     }
 }

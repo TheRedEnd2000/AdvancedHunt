@@ -431,12 +431,6 @@ public class YamlRepository implements DataRepository {
                         data.addFoundTreasure(UUID.fromString(s));
                     } catch (IllegalArgumentException ignored) {}
                 }
-                String selId = config.getString("selected-collection-id");
-                if (selId != null) {
-                    try {
-                        data.setSelectedCollectionId(UUID.fromString(selId));
-                    } catch (IllegalArgumentException ignored) {}
-                }
             }
             return data;
         });
@@ -452,7 +446,6 @@ public class YamlRepository implements DataRepository {
                 found.add(uuid.toString());
             }
             config.set("found-treasures", found);
-            config.set("selected-collection-id", playerData.getSelectedCollectionId() != null ? playerData.getSelectedCollectionId().toString() : null);
             saveConfig(config, file);
             
             // Update finder index (fast in-memory update)
@@ -475,7 +468,6 @@ public class YamlRepository implements DataRepository {
                     found.add(uuid.toString());
                 }
                 config.set("found-treasures", found);
-                config.set("selected-collection-id", pd.getSelectedCollectionId() != null ? pd.getSelectedCollectionId().toString() : null);
                 saveConfig(config, file);
                 
                 updateFinderIndex(pd);
