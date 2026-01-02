@@ -117,7 +117,7 @@ public class CollectionSettingsMenu extends Menu {
                     (confirmEvent) -> {
                         plugin.getCollectionManager().deleteCollection(collection.getId()).thenRun(() -> {
                             Bukkit.getScheduler().runTask(plugin, () -> {
-                                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.settings.delete.success", "%collection%", collection.getName()));
+                                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.settings.delete.success", "%collection%", collection.getName()));
                                 new CollectionEditorMenu(playerMenuUtility, plugin).open();
                             });
                         });

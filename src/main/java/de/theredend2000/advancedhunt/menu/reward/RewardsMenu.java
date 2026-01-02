@@ -482,17 +482,17 @@ public class RewardsMenu extends PagedMenu {
         // COMMAND, CHAT_MESSAGE, and CHAT_MESSAGE_BROADCAST rewards don't have a physical instance; show the configured value.
         if (reward.getType() == RewardType.COMMAND) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                "gui.rewards.command_preview",
+                "feedback.rewards.command_preview",
                 "%command%", reward.getValue()
             ));
         } else if (reward.getType() == RewardType.CHAT_MESSAGE) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                "gui.rewards.chat_message_preview",
+                "feedback.rewards.chat_message_preview",
                 "%message%", reward.getValue()
             ));
         } else if (reward.getType() == RewardType.CHAT_MESSAGE_BROADCAST) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                "gui.rewards.broadcast_message_preview",
+                "feedback.rewards.broadcast_message_preview",
                 "%message%", reward.getValue()
             ));
         }

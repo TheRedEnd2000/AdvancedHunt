@@ -184,7 +184,7 @@ public class ActRuleEditorMenu extends Menu {
                         });
                     });
                 } else {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.error.format.invalid_format"));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.act.format.invalid_format"));
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         this.open();
                     });
@@ -222,7 +222,7 @@ public class ActRuleEditorMenu extends Menu {
             collection.removeActRule(rule.getId());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.rules.list.rule_deleted",
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.rules.rule_deleted",
                         "%name%", rule.getName()));
                     openPreviousMenu();
                 });

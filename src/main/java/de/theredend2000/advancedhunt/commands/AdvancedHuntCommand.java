@@ -470,7 +470,7 @@ public class AdvancedHuntCommand {
         withCollection(player, name, collection ->
                 plugin.getCollectionManager().deleteCollection(collection.getId()).thenRun(() -> {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        player.sendMessage(plugin.getMessageManager().getMessage("gui.settings.delete.success", "%collection%", collection.getName()));
+                        player.sendMessage(plugin.getMessageManager().getMessage("feedback.settings.delete.success", "%collection%", collection.getName()));
                     });
                 })
         );
