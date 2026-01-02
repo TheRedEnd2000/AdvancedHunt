@@ -22,11 +22,11 @@ import java.util.UUID;
  * Supported placeholders:
  * <ul>
  *     <li>%advancedhunt_found_count% - Total found treasures (global)</li>
- *     <li>%advancedhunt_selected_collection% - Name of the selected collection</li>
+ *     <li>%advancedhunt_selected_collection% - Name of the selected collection (Deprecated)</li>
  *     <li>%advancedhunt_collection_size% - Total number of collections</li>
- *     <li>%advancedhunt_max_treasures% - Max treasures in the selected collection</li>
- *     <li>%advancedhunt_found_treasures% - Found treasures in the selected collection</li>
- *     <li>%advancedhunt_remaining_treasures% - Remaining treasures in the selected collection</li>
+ *     <li>%advancedhunt_max_treasures% - Max treasures in the selected collection (Deprecated)</li>
+ *     <li>%advancedhunt_found_treasures% - Found treasures in the selected collection (Deprecated)</li>
+ *     <li>%advancedhunt_remaining_treasures% - Remaining treasures in the selected collection (Deprecated)</li>
  *     <li>%advancedhunt_has_found_<treasure_id>% - "true"/"false" if found</li>
  *     <li>%advancedhunt_max_treasures_<collection>% - Max treasures in a specific collection</li>
  *     <li>%advancedhunt_found_treasures_<collection>% - Found treasures in a specific collection</li>
@@ -90,7 +90,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             return String.valueOf(collectionManager.getAllCollections().size());
         }
 
-        // %advancedhunt_selected_collection%
+        // %advancedhunt_selected_collection% (Deprecated)
         if (params.equalsIgnoreCase("selected_collection")) {
             UUID selectedId = data.getSelectedCollectionId();
             if (selectedId != null) {
@@ -101,7 +101,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             return "None";
         }
 
-        // Context-aware placeholders (Selected Collection)
+        // Context-aware placeholders (Selected Collection) (Deprecated)
         if (params.equalsIgnoreCase("max_treasures") ||
             params.equalsIgnoreCase("found_treasures") ||
             params.equalsIgnoreCase("remaining_treasures")) {
