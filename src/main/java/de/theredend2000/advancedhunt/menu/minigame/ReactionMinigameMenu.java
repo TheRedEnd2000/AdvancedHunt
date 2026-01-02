@@ -34,7 +34,7 @@ public class ReactionMinigameMenu extends MinigameMenu {
 
     @Override
     public String getMenuName() {
-        return "Reaction Game";
+        return plugin.getMessageManager().getMessage("gui.minigame.reaction.title", false);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ReactionMinigameMenu extends MinigameMenu {
         this.lastClicked = -1;
         this.active = true;
 
-        fillBackground(new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayName("§c").build());
+        fillBackground(new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).hideTooltip(true).build());
 
         new BukkitRunnable() {
             @Override
@@ -86,13 +86,15 @@ public class ReactionMinigameMenu extends MinigameMenu {
 
         // Reset old slot
         if (currentSlot >= 0 && currentSlot < getSlots()) {
-            updateSlot(currentSlot, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).setDisplayName("§c").build());
+            updateSlot(currentSlot, new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).hideTooltip(true).build());
         }
 
         currentSlot = getRandomSlot();
         updateSlot(currentSlot, new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE)
-                .setDisplayName("§aClick Me!")
-                .setLore("§6" + (currentCount + 1) + "§7/§6" + hintCount)
+            .setDisplayName(plugin.getMessageManager().getMessage("gui.minigame.reaction.click.name", false))
+            .setLore(plugin.getMessageManager().getMessage("gui.minigame.reaction.click.lore", false,
+                "%current%", String.valueOf(currentCount + 1),
+                "%required%", String.valueOf(hintCount)))
                 .build());
         
         clickedCorrectSlot = false;

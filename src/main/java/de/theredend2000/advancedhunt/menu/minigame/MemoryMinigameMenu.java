@@ -42,7 +42,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
 
     @Override
     public String getMenuName() {
-        return "Memory Game";
+        return plugin.getMessageManager().getMessage("gui.minigame.memory.title", false);
     }
 
     @Override
@@ -52,11 +52,14 @@ public class MemoryMinigameMenu extends MinigameMenu {
 
     @Override
     public void setMenuItems() {
-        fillBackground(new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).setDisplayName(" ").build());
+        fillBackground(new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).hideTooltip(true).build());
         
         // Set up game buttons
         for (int i = 0; i < GAME_SLOTS.length; i++) {
-            updateSlot(GAME_SLOTS[i], new ItemBuilder(COLORS[i]).setDisplayName("§fButton " + (i + 1)).build());
+            updateSlot(GAME_SLOTS[i], new ItemBuilder(COLORS[i]).setDisplayName(
+                    plugin.getMessageManager().getMessage("gui.minigame.memory.button.name", false,
+                            "%number%", String.valueOf(i + 1))
+            ).build());
         }
 
         startRound();
@@ -109,7 +112,10 @@ public class MemoryMinigameMenu extends MinigameMenu {
         if(colorIndex == -1) return;
 
         // Highlight
-        updateSlot(slot, new ItemBuilder(XMaterial.WHITE_WOOL).setDisplayName("§fButton " + (colorIndex + 1)).build());
+        updateSlot(slot, new ItemBuilder(XMaterial.WHITE_WOOL).setDisplayName(
+            plugin.getMessageManager().getMessage("gui.minigame.memory.button.name", false,
+                "%number%", String.valueOf(colorIndex + 1))
+        ).build());
         playerMenuUtility.playSound(playerMenuUtility.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1 + (colorIndex * 0.2f));
 
         // Reset after delay
@@ -118,7 +124,10 @@ public class MemoryMinigameMenu extends MinigameMenu {
             @Override
             public void run() {
                 if(!finished) {
-                    updateSlot(slot, new ItemBuilder(COLORS[finalColorIndex]).setDisplayName("§fButton " + (finalColorIndex + 1)).build());
+                    updateSlot(slot, new ItemBuilder(COLORS[finalColorIndex]).setDisplayName(
+                            plugin.getMessageManager().getMessage("gui.minigame.memory.button.name", false,
+                                    "%number%", String.valueOf(finalColorIndex + 1))
+                    ).build());
                 }
             }
         }.runTaskLater(plugin, 10);
