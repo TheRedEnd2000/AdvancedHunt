@@ -1246,6 +1246,9 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
     # Precompute known keys returned by CronEditPolicy.cronTypeMessageKey().
     cron_type_keys = tuple(sorted(_extract_cron_edit_policy_type_keys(java_root)))
 
+    # Precompute known reward menu title keys returned by RewardHolder.getRewardsTitleKey().
+    reward_title_keys = tuple(sorted(_extract_reward_holder_title_keys(java_root)))
+
     const_array_re = re.compile(
         r"\bString\s*\[\]\s*(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*\{(?P<body>.*?)\}\s*;",
         flags=re.DOTALL,
@@ -1380,6 +1383,13 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                     literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
                 continue
 
+            # Expand RewardHolder title accessor: holder.getRewardsTitleKey().
+            if reward_title_keys and re.match(r"^\s*.+\s*\.\s*getRewardsTitleKey\s*\(\s*\)\s*$", key_expr):
+                for lit in reward_title_keys:
+                    group = _infer_group_for_literal(lit, apply_prefix)
+                    literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
+                continue
+
             # Suppress helper getMessage(presetNameKey) when we've already expanded applyPreset(..., "...") sites.
             if expanded_apply_preset_keys and key_expr.strip() == "presetNameKey":
                 continue
@@ -1426,6 +1436,48 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                 dynamics.append(DynamicKeyUsage(site=site, group_hint=group_hint, safe_pattern=safe_pattern))
 
     return literals, dynamics
+
+
+def _extract_reward_holder_title_keys(java_root: Path) -> set[str]:
+    """Extract concrete keys returned by RewardHolder.getRewardsTitleKey().
+
+    This avoids wildcards for patterns like getMessage(holder.getRewardsTitleKey(), false).
+    We scan RewardHolder implementations for a simple literal return.
+    """
+    model_dir = java_root / "de/theredend2000/advancedhunt/model"
+    if not model_dir.exists():
+        return set()
+
+    out: set[str] = set()
+    for path in model_dir.rglob("*.java"):
+        text = _read_text(path)
+        masked = _mask_java_comments(text)
+        # Rough filter: only files that mention both RewardHolder and getRewardsTitleKey
+        if "RewardHolder" not in masked or "getRewardsTitleKey" not in masked:
+            continue
+
+        # Match: public String getRewardsTitleKey() { return "..."; }
+        m = re.search(
+            r"\bString\s+getRewardsTitleKey\s*\(\s*\)\s*\{(?P<body>.*?)\}",
+            masked,
+            flags=re.DOTALL,
+        )
+        if not m:
+            continue
+        body = m.group("body")
+        m_ret = re.search(r"\breturn\s+(?P<expr>.+?);", body, flags=re.DOTALL)
+        if not m_ret:
+            continue
+        expr = " ".join(m_ret.group("expr").split())
+        lit = _parse_java_string_literal(expr)
+        if lit:
+            out.add(lit)
+            continue
+        tern = _try_resolve_simple_ternary_literals(expr)
+        if tern is not None:
+            out.update(tern)
+
+    return out
 
 
 def _extract_cron_edit_policy_type_keys(java_root: Path) -> set[str]:
