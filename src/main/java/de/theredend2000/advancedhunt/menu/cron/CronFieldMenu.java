@@ -172,7 +172,7 @@ public class CronFieldMenu extends Menu {
         });
 
         addButton(43, new ItemBuilder(Material.LIME_DYE)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.increase", false))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.increase.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.builder.increase.lore").toArray(new String[0]))
                 .build(), (e) -> {
             modifyNumericValue(1);
