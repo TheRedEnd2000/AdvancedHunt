@@ -513,6 +513,7 @@ class UsageSite:
     method: str
     key_expr: str
     apply_prefix: Optional[bool]
+    delivery: str = "unknown"  # 'gui'|'player'|'unknown'
 
 
 @dataclass(frozen=True)
@@ -539,6 +540,57 @@ def _infer_group_for_literal(key: str, apply_prefix: Optional[bool]) -> str:
     if key.startswith("gui."):
         return "gui"
     return "player"
+
+
+_PLAYER_DELIVERY_RE = re.compile(
+    r"\b(sendMessage|sendActionBar|sendTitle|sendSubtitle|sendRawMessage)\s*\(",
+    flags=re.IGNORECASE,
+)
+
+
+def _statement_sends_to_player(stmt: str) -> bool:
+    # Conservative: only flag as player-delivery when a send* call appears *before*
+    # the getMessage/getMessageList call in the same gathered statement fragment.
+    # This avoids false positives where sendMessage appears later (e.g., inside a
+    # different lambda argument of the same outer method call).
+    idx_get = -1
+    for token in ("getMessage(", "getMessageList("):
+        j = stmt.find(token)
+        if j != -1 and (idx_get == -1 or j < idx_get):
+            idx_get = j
+    if idx_get == -1:
+        return False
+
+    m_send = _PLAYER_DELIVERY_RE.search(stmt)
+    if not m_send:
+        return False
+    return m_send.start() < idx_get
+
+
+def _try_extract_assigned_identifier(stmt: str) -> Optional[str]:
+    # Match: <id> = ...;
+    m = re.match(r"\s*(?P<id>[A-Za-z_$][A-Za-z0-9_$]*)\s*=", stmt)
+    if not m:
+        return None
+    return m.group("id")
+
+
+def _variable_sent_to_player_soon(masked_lines: list[str], start_line_1_based: int, var_name: str, *, max_lookahead: int = 30) -> bool:
+    # Look ahead a small window for sendMessage(varName) before it's reassigned.
+    start = max(0, start_line_1_based)  # next line index
+    end = min(len(masked_lines), start + max_lookahead)
+    assign_re = re.compile(r"\b" + re.escape(var_name) + r"\b\s*=")
+    send_re = re.compile(r"\b(sendMessage|sendActionBar|sendTitle|sendSubtitle|sendRawMessage)\s*\(.*\b" + re.escape(var_name) + r"\b", flags=re.IGNORECASE)
+
+    for i in range(start, end):
+        line = masked_lines[i]
+        if var_name not in line and "send" not in line:
+            continue
+        if assign_re.search(line):
+            return False
+        if send_re.search(line):
+            return True
+    return False
 
 
 def _infer_group_for_dynamic(file_rel: str, apply_prefix: Optional[bool]) -> str:
@@ -1091,7 +1143,7 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
             if lit is None:
                 continue
             line = _line_of_offset(line_starts, m.start())
-            site = UsageSite(file=rel, line=line, method="setTitleKey", key_expr=m.group(1), apply_prefix=False)
+            site = UsageSite(file=rel, line=line, method="setTitleKey", key_expr=m.group(1), apply_prefix=False, delivery="gui")
             literals.append(LiteralKeyUsage(key=lit, site=site, group="gui"))
 
         for m in re.finditer(
@@ -1102,7 +1154,7 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
             if lit is None:
                 continue
             line = _line_of_offset(line_starts, m.start())
-            site = UsageSite(file=rel, line=line, method="setAlternateContext", key_expr=m.group(1), apply_prefix=False)
+            site = UsageSite(file=rel, line=line, method="setAlternateContext", key_expr=m.group(1), apply_prefix=False, delivery="gui")
             literals.append(LiteralKeyUsage(key=lit, site=site, group="gui"))
 
         for m in call_re.finditer(masked):
@@ -1128,7 +1180,20 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                     apply_prefix = True
 
             line = _line_of_offset(line_starts, m.start())
-            site = UsageSite(file=rel, line=line, method=method, key_expr=key_expr, apply_prefix=apply_prefix)
+
+            # Determine whether the message text is player-visible.
+            stmt = _gather_statement_from(masked_lines, max(0, line - 1)) or ""
+            delivery = "unknown"
+            if _statement_sends_to_player(stmt):
+                delivery = "player"
+            else:
+                assigned = _try_extract_assigned_identifier(stmt)
+                if assigned and _variable_sent_to_player_soon(masked_lines, line, assigned):
+                    delivery = "player"
+                elif apply_prefix is False or "/menu/" in rel.replace("\\", "/"):
+                    delivery = "gui"
+
+            site = UsageSite(file=rel, line=line, method=method, key_expr=key_expr, apply_prefix=apply_prefix, delivery=delivery)
 
             if key_literal is not None:
                 group = _infer_group_for_literal(key_literal, apply_prefix)
@@ -1273,6 +1338,18 @@ def _print_dynamic_section(title: str, sites: list[DynamicKeyUsage], *, ignore_f
         print(f"{d.site.file}:{d.site.line} {d.site.method}({d.site.key_expr}){ap}{extra}")
 
 
+def _print_key_sites_section(title: str, key_to_sites: dict[str, list[UsageSite]], *, limit_sites: int = 4) -> None:
+    keys = sorted(key_to_sites.keys())
+    print(f"\n== {title} ({len(keys)}) ==")
+    if not keys:
+        return
+    for k in keys:
+        sites = key_to_sites[k]
+        preview = ", ".join(f"{s.file}:{s.line}" for s in sites[:limit_sites])
+        suffix = "" if len(sites) <= limit_sites else f" (+{len(sites) - limit_sites} more)"
+        print(f"{k}  [{preview}]{suffix}")
+
+
 def _compile_safe_pattern_regex(pattern: str) -> Optional[re.Pattern[str]]:
     """Compile a safe '*' pattern into a regex.
 
@@ -1331,7 +1408,7 @@ def main(argv: list[str]) -> int:
     )
     parser.add_argument(
         "--only",
-        choices=("all", "missing", "unused", "dynamic"),
+        choices=("all", "missing", "unused", "dynamic", "gui-sent"),
         default="all",
         help="Only print one category",
     )
@@ -1397,6 +1474,15 @@ def main(argv: list[str]) -> int:
     used_gui = _sort_unique(u.key for u in literal_usages if u.group == "gui")
     used_player = _sort_unique(u.key for u in literal_usages if u.group == "player")
 
+    # gui.* keys used in a player-delivery context (e.g., sendMessage).
+    gui_sent_to_player: dict[str, list[UsageSite]] = {}
+    for u in literal_usages:
+        if not u.key.startswith("gui."):
+            continue
+        if u.site.delivery != "player":
+            continue
+        gui_sent_to_player.setdefault(u.key, []).append(u.site)
+
     dyn_gui = [d for d in dynamic_usages if d.group_hint == "gui"]
     dyn_player = [d for d in dynamic_usages if d.group_hint == "player"]
 
@@ -1428,6 +1514,9 @@ def main(argv: list[str]) -> int:
             ignore_files=(ignore_dynamic_exact, ignore_dynamic_patterns),
         )
 
+    if args.only in ("all", "gui-sent"):
+        _print_key_sites_section("GUI keys sent to player", gui_sent_to_player)
+
     if args.json_out:
         out_path = Path(args.json_out)
         if not out_path.is_absolute():
@@ -1442,6 +1531,14 @@ def main(argv: list[str]) -> int:
                 "count": len(literal_keys),
                 "gui": used_gui,
                 "player": used_player,
+            },
+            "guiSentToPlayer": {
+                "count": len(gui_sent_to_player),
+                "keys": sorted(gui_sent_to_player.keys()),
+                "sites": {
+                    k: [f"{s.file}:{s.line}" for s in v]
+                    for k, v in sorted(gui_sent_to_player.items(), key=lambda kv: kv[0])
+                },
             },
             "missing": {
                 "count": len(missing),
