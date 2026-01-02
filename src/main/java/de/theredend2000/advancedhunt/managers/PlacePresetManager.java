@@ -14,6 +14,8 @@ public class PlacePresetManager {
     private final DataRepository repository;
 
     private final Map<UUID, PlacePreset> presets = new ConcurrentHashMap<>();
+    // normalized group name -> display group name
+    private final Map<String, String> groups = new ConcurrentHashMap<>();
 
     public PlacePresetManager(Main plugin, DataRepository repository) {
         this.plugin = plugin;
@@ -21,16 +23,31 @@ public class PlacePresetManager {
     }
 
     public CompletableFuture<Void> reloadPresets() {
-        return repository.loadPlacePresets().thenAccept(list -> {
+        CompletableFuture<List<PlacePreset>> presetsFuture = repository.loadPlacePresets();
+        CompletableFuture<Set<String>> groupsFuture = repository.loadPlacePresetGroups()
+                .exceptionally(ex -> Set.of());
+
+        return presetsFuture.thenCombine(groupsFuture, (list, persistedGroups) -> {
             presets.clear();
-            if (list == null) {
-                return;
-            }
-            for (PlacePreset preset : list) {
-                if (preset != null) {
-                    presets.put(preset.getId(), preset);
+            groups.clear();
+
+            if (persistedGroups != null) {
+                for (String group : persistedGroups) {
+                    addGroup(group);
                 }
             }
+
+            if (list != null) {
+                for (PlacePreset preset : list) {
+                    if (preset != null) {
+                        presets.put(preset.getId(), preset);
+                        addGroup(preset.getGroup());
+                    }
+                }
+            }
+
+            return null;
+        }).thenAccept(v -> {
         });
     }
 
@@ -45,12 +62,35 @@ public class PlacePresetManager {
 
     public List<String> getGroups() {
         TreeSet<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (PlacePreset preset : presets.values()) {
-            if (preset.getGroup() != null && !preset.getGroup().isBlank()) {
-                groups.add(preset.getGroup());
+        for (String group : this.groups.values()) {
+            if (group != null && !group.isBlank()) {
+                groups.add(group);
             }
         }
         return new ArrayList<>(groups);
+    }
+
+    public boolean hasGroup(String group) {
+        if (group == null || group.isBlank()) return false;
+        return groups.containsKey(normalize(group));
+    }
+
+    public CompletableFuture<Boolean> createGroup(String group) {
+        if (group == null || group.isBlank()) {
+            return CompletableFuture.completedFuture(false);
+        }
+        String trimmed = group.trim();
+        if (hasGroup(trimmed)) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        return repository.createPlacePresetGroup(trimmed)
+                .thenCompose(v -> reloadPresets())
+                .thenApply(v -> true)
+                .exceptionally(ex -> {
+                    plugin.getLogger().warning("Failed to create place preset group: " + ex.getMessage());
+                    return false;
+                });
     }
 
     public List<PlacePreset> getPresetsInGroup(String group) {
@@ -114,5 +154,13 @@ public class PlacePresetManager {
 
     private static String normalize(String value) {
         return value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private void addGroup(String group) {
+        if (group == null || group.isBlank()) {
+            return;
+        }
+        String trimmed = group.trim();
+        groups.putIfAbsent(normalize(trimmed), trimmed);
     }
 }

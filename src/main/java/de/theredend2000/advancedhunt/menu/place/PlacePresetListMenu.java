@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.model.PlacePreset;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -107,41 +108,47 @@ public class PlacePresetListMenu extends PagedMenu {
 
             ItemStack heldSnapshot = held.clone();
 
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.prompt_name"));
-            plugin.getChatInputListener().requestInput(playerMenuUtility, nameInput -> {
-                String name = nameInput == null ? null : nameInput.trim();
-                if (name == null || name.isEmpty()) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.invalid_name"));
-                    Bukkit.getScheduler().runTask(plugin, this::open);
-                    return;
-                }
+            String itemData = ItemSerializer.serialize(heldSnapshot);
+            if (itemData == null || itemData.isBlank()) {
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.serialize_failed"));
+                Bukkit.getScheduler().runTask(plugin, this::open);
+                return;
+            }
 
-                if (plugin.getPlacePresetManager().hasPresetNameInGroup(group, name)) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.duplicate_name"));
-                    Bukkit.getScheduler().runTask(plugin, this::open);
-                    return;
-                }
+            String name = generateUniqueName(group, heldSnapshot);
 
-                String itemData = ItemSerializer.serialize(heldSnapshot);
-                if (itemData == null || itemData.isBlank()) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.serialize_failed"));
-                    Bukkit.getScheduler().runTask(plugin, this::open);
-                    return;
-                }
-
-                plugin.getPlacePresetManager().createPreset(group, name, itemData).whenComplete((ok, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (ex != null || !Boolean.TRUE.equals(ok)) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.create_failed"));
-                        open();
-                        return;
-                    }
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.created",
-                            "%group%", group,
-                            "%name%", name));
+            plugin.getPlacePresetManager().createPreset(group, name, itemData).whenComplete((ok, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
+                if (ex != null || !Boolean.TRUE.equals(ok)) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.create_failed"));
                     open();
-                }));
-            });
+                    return;
+                }
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.created",
+                        "%group%", group,
+                        "%name%", name));
+                open();
+            }));
         }, "advancedhunt.admin.place_presets");
+    }
+
+    private String generateUniqueName(String group, ItemStack item) {
+        String base = "Preset";
+        if (item != null && item.hasItemMeta() && item.getItemMeta() != null && item.getItemMeta().hasDisplayName()) {
+            String display = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+            if (display != null && !display.isBlank()) {
+                base = display.trim();
+            }
+        } else if (item != null && item.getType() != null) {
+            base = item.getType().name();
+        }
+
+        String candidate = base;
+        int counter = 2;
+        while (plugin.getPlacePresetManager().hasPresetNameInGroup(group, candidate)) {
+            candidate = base + " " + counter;
+            counter++;
+        }
+        return candidate;
     }
 
     private void givePresetItem(PlacePreset preset) {
