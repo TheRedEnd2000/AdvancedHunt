@@ -1227,6 +1227,95 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup) {
+        return CompletableFuture.runAsync(() -> {
+            if (oldGroup == null || oldGroup.isBlank() || newGroup == null || newGroup.isBlank()) {
+                return;
+            }
+            if (placePresetGroupsFile == null) {
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+            }
+
+            String oldTrimmed = oldGroup.trim();
+            String newTrimmed = newGroup.trim();
+
+            FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
+            List<String> groups = new ArrayList<>(config.getStringList("groups"));
+            boolean changed = false;
+            for (int i = 0; i < groups.size(); i++) {
+                String g = groups.get(i);
+                if (g != null && g.equalsIgnoreCase(oldTrimmed)) {
+                    groups.set(i, newTrimmed);
+                    changed = true;
+                    break;
+                }
+            }
+            if (changed) {
+                config.set("groups", groups);
+                saveConfigAtomic(config, placePresetGroupsFile);
+            }
+
+            // Best-effort folder rename/move to keep filesystem tidy.
+            if (placePresetsFolder == null) {
+                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            }
+            File oldDir = new File(placePresetsFolder, sanitizeGroupFolderName(oldTrimmed));
+            File newDir = new File(placePresetsFolder, sanitizeGroupFolderName(newTrimmed));
+
+            if (oldDir.exists() && oldDir.isDirectory() && !oldDir.equals(newDir)) {
+                if (!newDir.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    newDir.mkdirs();
+                }
+
+                File[] files = oldDir.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+                if (files != null) {
+                    for (File file : files) {
+                        try {
+                            Files.move(file.toPath(), new File(newDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+                if (isPresetFolderEmpty(oldDir)) {
+                    //noinspection ResultOfMethodCallIgnored
+                    oldDir.delete();
+                }
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deletePlacePresetGroup(String group) {
+        return CompletableFuture.runAsync(() -> {
+            if (group == null || group.isBlank()) {
+                return;
+            }
+            if (placePresetGroupsFile == null) {
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+            }
+
+            String trimmed = group.trim();
+
+            FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
+            List<String> groups = new ArrayList<>(config.getStringList("groups"));
+            boolean removed = groups.removeIf(g -> g != null && g.equalsIgnoreCase(trimmed));
+            if (removed) {
+                config.set("groups", groups);
+                saveConfigAtomic(config, placePresetGroupsFile);
+            }
+
+            if (placePresetsFolder == null) {
+                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            }
+            File dir = new File(placePresetsFolder, sanitizeGroupFolderName(trimmed));
+            if (dir.exists() && dir.isDirectory()) {
+                deleteDirectoryRecursively(dir);
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<Void> deleteCollection(UUID id) {
         return CompletableFuture.runAsync(() -> {
             // Get treasure IDs before deleting files to clean up indexes

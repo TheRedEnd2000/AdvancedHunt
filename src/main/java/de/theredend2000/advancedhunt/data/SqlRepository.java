@@ -1007,6 +1007,77 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
+    public CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup) {
+        return runAsync(() -> {
+            if (oldGroup == null || oldGroup.isBlank() || newGroup == null || newGroup.isBlank()) {
+                return;
+            }
+            String oldTrimmed = oldGroup.trim();
+            String newTrimmed = newGroup.trim();
+
+            String insertSql = useSqlite
+                    ? "INSERT OR IGNORE INTO ah_place_preset_groups (grp) VALUES (?)"
+                    : "INSERT IGNORE INTO ah_place_preset_groups (grp) VALUES (?)";
+
+            try (Connection conn = dataSource.getConnection()) {
+                try {
+                    conn.setAutoCommit(false);
+
+                    // Ensure new group exists
+                    try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                        ps.setString(1, newTrimmed);
+                        ps.executeUpdate();
+                    }
+
+                    // Best-effort: update any remaining presets (manager usually handles this too)
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE ah_place_presets SET grp = ? WHERE LOWER(grp) = LOWER(?)")) {
+                        ps.setString(1, newTrimmed);
+                        ps.setString(2, oldTrimmed);
+                        ps.executeUpdate();
+                    }
+
+                    // Remove old group
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_preset_groups WHERE LOWER(grp) = LOWER(?)")) {
+                        ps.setString(1, oldTrimmed);
+                        ps.executeUpdate();
+                    }
+
+                    conn.commit();
+                } catch (SQLException e) {
+                    try {
+                        conn.rollback();
+                    } catch (SQLException ignored) {
+                    }
+                    throw e;
+                } finally {
+                    try {
+                        conn.setAutoCommit(true);
+                    } catch (SQLException ignored) {
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deletePlacePresetGroup(String group) {
+        return runAsync(() -> {
+            if (group == null || group.isBlank()) {
+                return;
+            }
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_preset_groups WHERE LOWER(grp) = LOWER(?)")) {
+                ps.setString(1, group.trim());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<Void> deleteCollection(UUID id) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {

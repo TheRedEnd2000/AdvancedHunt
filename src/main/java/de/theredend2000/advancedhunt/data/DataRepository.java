@@ -174,6 +174,8 @@ public interface DataRepository {
     // Place Preset Groups (persist empty groups)
     CompletableFuture<Set<String>> loadPlacePresetGroups();
     CompletableFuture<Void> createPlacePresetGroup(String group);
+    CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup);
+    CompletableFuture<Void> deletePlacePresetGroup(String group);
 
     /**
      * Saves multiple reward presets in a batch.
