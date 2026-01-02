@@ -234,7 +234,7 @@ public class RewardActionMenu extends Menu {
                 }
                 
                 parentMenu.updateRewardChance(rewardIndex, chance);
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.chance_updated"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.updated", "%type%", plugin.getMessageManager().getMessage("common.chance", false)));
                 parentMenu.open();
             } catch (NumberFormatException ex) {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.invalid_chance"));
@@ -251,12 +251,12 @@ public class RewardActionMenu extends Menu {
 
             plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
                 parentMenu.updateRewardMessage(rewardIndex,message);
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.message_updated"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.updated", "%type%", plugin.getMessageManager().getMessage("common.message", false)));
                 parentMenu.open();
             });
         }else if(clickType == ClickType.RIGHT || clickType == ClickType.SHIFT_RIGHT){
             parentMenu.updateRewardMessage(rewardIndex,null);
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.message_reset"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.reset", "%type%", plugin.getMessageManager().getMessage("common.message", false)));
             parentMenu.open();
         }
     }
@@ -269,12 +269,12 @@ public class RewardActionMenu extends Menu {
 
             plugin.getChatInputListener().requestInput(playerMenuUtility, message -> {
                 parentMenu.updateRewardBroadcast(rewardIndex,message);
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.broadcast_updated"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.updated", "%type%", plugin.getMessageManager().getMessage("common.broadcast", false)));
                 parentMenu.open();
             });
         }else if(clickType == ClickType.RIGHT || clickType == ClickType.SHIFT_RIGHT){
             parentMenu.updateRewardBroadcast(rewardIndex,null);
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.broadcast_reset"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.reset", "%type%", plugin.getMessageManager().getMessage("common.broadcast", false)));
             parentMenu.open();
         }
     }
@@ -286,7 +286,7 @@ public class RewardActionMenu extends Menu {
 
             plugin.getChatInputListener().requestInput(playerMenuUtility, value -> {
                 parentMenu.updateRewardValue(rewardIndex, value);
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.value_updated"));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.updated", "%type%", plugin.getMessageManager().getMessage("common.value", false)));
                 parentMenu.open();
             });
         }else{

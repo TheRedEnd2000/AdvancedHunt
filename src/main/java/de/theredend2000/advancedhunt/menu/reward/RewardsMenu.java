@@ -142,17 +142,17 @@ public class RewardsMenu extends PagedMenu {
         // Determine if we're in treasure or collection context
         RewardPresetType presetType = holder.getRewardsTitleKey().contains("collection") ? RewardPresetType.COLLECTION : RewardPresetType.TREASURE;
         boolean isCollection = presetType == RewardPresetType.COLLECTION;
-        String presetContext = presetType == RewardPresetType.COLLECTION ? "collection" : "treasure";
+        String presetTypeName = plugin.getMessageManager().getMessage(isCollection ? "common.collection" : "common.treasure", false);
 
         // Preset save/load buttons (not when already editing a preset)
         if (!(holder instanceof PresetRewardHolder)) {
             // Preset save button
             addButton(45, new ItemBuilder(Material.WRITABLE_BOOK)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.save_preset_" + presetContext + ".name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.save_preset_" + presetContext + ".lore", false))
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.save_preset.name", false, "%Type%", presetTypeName))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.save_preset.lore", false, "%type%", presetTypeName))
                     .build(), e -> {
                 // Prompt for preset name
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.prompt_name_" + presetContext));
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.prompt_name", "%type%", presetTypeName));
                 plugin.getChatInputListener().requestInput(playerMenuUtility, presetName -> {
                     if (presetName == null || presetName.trim().isEmpty()) {
                         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.invalid_name"));
@@ -170,12 +170,12 @@ public class RewardsMenu extends PagedMenu {
                     plugin.getRewardPresetManager().createPreset(presetType, trimmed, new ArrayList<>(rewards)).thenAccept(success -> {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             if (!success) {
-                                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.save_failed_" + presetContext));
+                                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.save_failed", "%type%", presetTypeName));
                                 open();
                                 return;
                             }
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.saved_" + presetContext,
-                                    "%name%", trimmed));
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.saved",
+                                    "%type%", presetTypeName, "%name%", trimmed));
                             open();
                         });
                     });
@@ -184,8 +184,8 @@ public class RewardsMenu extends PagedMenu {
 
             // Preset load button
             addButton(46, new ItemBuilder(Material.WRITTEN_BOOK)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.load_preset_" + presetContext + ".name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset_" + presetContext + ".lore", false))
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.load_preset.name", false, "%Type%", presetTypeName))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset.lore", false, "%type%", presetTypeName))
                     .build(), e -> {
 
                 Collection collectionContext = null;
@@ -199,8 +199,8 @@ public class RewardsMenu extends PagedMenu {
                     rewards.clear();
                     rewards.addAll(selected.getRewards());
                     holder.saveRewards(new ArrayList<>(rewards));
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.loaded_" + presetContext,
-                            "%name%", selected.getName()));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.preset.loaded",
+                            "%type%", presetTypeName, "%name%", selected.getName()));
                     Bukkit.getScheduler().runTask(plugin, RewardsMenu.this::open);
                 }, collectionContext).setPreviousMenu(this).open();
             });
@@ -419,7 +419,7 @@ public class RewardsMenu extends PagedMenu {
         if (mode == QuickActionMode.GET_INSTANCE) {
             return plugin.getMessageManager().getMessage("gui.rewards.quick_mode.mode_get_instance", false);
         }
-        return plugin.getMessageManager().getMessage("gui.rewards.quick_mode.mode_delete", false);
+        return plugin.getMessageManager().getMessage("gui.common.delete", false);
     }
 
     private String getQuickActionActionDisplay(QuickActionMode mode) {
