@@ -558,6 +558,7 @@ gui:
       lore_teleport: "&eLeft-Click &7to teleport"
       lore_reward: "&eShift+Left-Click &7to open the reward menu"
       lore_who_found: "&eRight-Click &7to see who found"
+      lore_action_menu_bedrock: "&8Bedrock/Geyser: &7Press &eDrop (Q) &7to open action menu"
   minigame:
     reaction:
       title: "&8Reaction Game"

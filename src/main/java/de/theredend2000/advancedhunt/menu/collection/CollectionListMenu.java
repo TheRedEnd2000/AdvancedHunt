@@ -195,6 +195,12 @@ public class CollectionListMenu extends PagedMenu {
             lore.add(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_reward", false));
         }
 
+        if (playerMenuUtility.hasPermission("advancedhunt.admin.teleport")
+                || playerMenuUtility.hasPermission("advancedhunt.admin.view_finders")
+                || playerMenuUtility.hasPermission("advancedhunt.admin.rewards")) {
+            lore.add(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_action_menu_bedrock", false));
+        }
+
         builder.setLore(lore);
 
         return builder.build();
