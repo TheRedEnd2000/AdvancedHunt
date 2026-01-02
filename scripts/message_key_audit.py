@@ -1243,6 +1243,9 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
     java_files = sorted(p for p in java_root.rglob("*.java") if p.is_file())
     call_re = re.compile(r"\b(?P<method>getMessage|getMessageList)\s*\(")
 
+    # Precompute known keys returned by CronEditPolicy.cronTypeMessageKey().
+    cron_type_keys = tuple(sorted(_extract_cron_edit_policy_type_keys(java_root)))
+
     const_array_re = re.compile(
         r"\bString\s*\[\]\s*(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*\{(?P<body>.*?)\}\s*;",
         flags=re.DOTALL,
@@ -1272,6 +1275,20 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
             for suffix in (".name", ".lore", ".lore_disabled"):
                 site = UsageSite(file=rel, line=call_line, method="buildCollectionActionItem", key_expr=m.group(1) + " + \"" + suffix + "\"", apply_prefix=False, delivery="gui")
                 literals.append(LiteralKeyUsage(key=lit + suffix, site=site, group="gui"))
+
+        # Special-case: applyPreset(cronExpr, "some.key") results in getMessage(presetNameKey)
+        # inside applyPreset(...). Expand those call sites into concrete key usages.
+        expanded_apply_preset_keys: list[tuple[str, int]] = []
+        for m in re.finditer(r"\bapplyPreset\s*\(\s*[^,]+,\s*(\"(?:\\.|[^\"\\])*\")\s*\)", masked):
+            lit = _parse_java_string_literal(m.group(1))
+            if lit is None:
+                continue
+            call_line = _line_of_offset(line_starts, m.start())
+            expanded_apply_preset_keys.append((lit, call_line))
+            # This key's value is used in a player feedback message.
+            site = UsageSite(file=rel, line=call_line, method="applyPreset", key_expr=m.group(1), apply_prefix=None, delivery="player")
+            group = _infer_group_for_literal(lit, None)
+            literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
 
         # Extract constant String[] arrays of message keys in this file so we can
         # resolve usages like getMessage(DIRECTION_KEYS[index]).
@@ -1345,6 +1362,17 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                     delivery = "gui"
 
             site = UsageSite(file=rel, line=line, method=method, key_expr=key_expr, apply_prefix=apply_prefix, delivery=delivery)
+
+            # Expand CronEditPolicy record accessor: policy.cronTypeMessageKey().
+            if cron_type_keys and re.match(r"^\s*[A-Za-z_][A-Za-z0-9_]*\s*\.\s*cronTypeMessageKey\s*\(\s*\)\s*$", key_expr):
+                for lit in cron_type_keys:
+                    group = _infer_group_for_literal(lit, apply_prefix)
+                    literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
+                continue
+
+            # Suppress helper getMessage(presetNameKey) when we've already expanded applyPreset(..., "...") sites.
+            if expanded_apply_preset_keys and key_expr.strip() == "presetNameKey":
+                continue
 
             # Suppress the internal helper lookups for buildCollectionActionItem(...)
             # when we already expanded the literal call sites.
