@@ -186,6 +186,13 @@ public class AdvancedHuntCommand {
         );
 
         commandManager.command(
+                playerBuilder()
+                        .literal("place")
+                        .permission("advancedhunt.admin.place")
+                        .handler(context -> placeMode((Player) context.sender(),null))
+        );
+
+        commandManager.command(
             playerBuilder()
                 .literal("place")
                 .required(collectionArg)
@@ -503,9 +510,15 @@ public class AdvancedHuntCommand {
             return;
         }
 
+        if(collectionName == null){
+            player.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.disabled"));
+            return;
+        }
+
         plugin.getCollectionManager().getCollectionByName(collectionName).ifPresentOrElse(collection -> {
             plugin.getPlaceModeManager().setPlaceMode(player, collection);
             player.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.enabled", "%collection%", collection.getName()));
+            player.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.use_command"));
         }, () -> {
             player.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
         });
