@@ -7,6 +7,7 @@ import java.util.UUID;
 public class PlayerData {
     private final UUID playerUuid;
     private final Set<UUID> foundTreasures;
+    @Deprecated
     private UUID selectedCollectionId;
 
     public PlayerData(UUID playerUuid) {
@@ -34,10 +35,12 @@ public class PlayerData {
         foundTreasures.clear();
     }
 
+    @Deprecated
     public UUID getSelectedCollectionId() {
         return selectedCollectionId;
     }
 
+    @Deprecated
     public void setSelectedCollectionId(UUID selectedCollectionId) {
         this.selectedCollectionId = selectedCollectionId;
     }
