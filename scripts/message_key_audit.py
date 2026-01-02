@@ -890,6 +890,43 @@ def _print_dynamic_section(title: str, sites: list[DynamicKeyUsage], *, ignore_f
         print(f"{d.site.file}:{d.site.line} {d.site.method}({d.site.key_expr}){ap}{extra}")
 
 
+def _compile_safe_pattern_regex(pattern: str) -> Optional[re.Pattern[str]]:
+    """Compile a safe '*' pattern into a regex.
+
+    The auditor guarantees these patterns:
+    - do not start with '*'
+    - contain at most one '*'
+
+    Matching rule:
+    - '*' matches one dot-segment (no '.') to keep risk bounded.
+    """
+    s = pattern.strip()
+    if not s or s == "*" or s.startswith("*"):
+        return None
+    if s.count("*") > 1:
+        return None
+
+    regex = "^" + re.escape(s).replace("\\*", "[^.]+") + "$"
+    try:
+        return re.compile(regex)
+    except re.error:
+        return None
+
+
+def _keys_matched_by_dynamic_patterns(dynamic_usages: list[DynamicKeyUsage], yaml_keys: set[str]) -> set[str]:
+    matched: set[str] = set()
+    for d in dynamic_usages:
+        if not d.safe_pattern:
+            continue
+        r = _compile_safe_pattern_regex(d.safe_pattern)
+        if r is None:
+            continue
+        for k in yaml_keys:
+            if r.match(k):
+                matched.add(k)
+    return matched
+
+
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -950,10 +987,17 @@ def main(argv: list[str]) -> int:
     literal_usages, dynamic_usages = scan_java_for_message_usages(java_root, root=root)
     literal_keys = {u.key for u in literal_usages}
 
+    dynamic_visible = [
+        d
+        for d in dynamic_usages
+        if not _matches(d.site.file, exact=ignore_dynamic_exact, patterns=ignore_dynamic_patterns)
+    ]
+    dynamic_matched_yaml_keys = _keys_matched_by_dynamic_patterns(dynamic_visible, yaml_keys)
+
     missing = sorted(k for k in literal_keys if k not in yaml_keys)
     missing = [k for k in missing if not _matches(k, exact=ignore_missing_exact, patterns=ignore_missing_patterns)]
 
-    unused = sorted(k for k in yaml_keys if k not in literal_keys)
+    unused = sorted(k for k in yaml_keys if k not in literal_keys and k not in dynamic_matched_yaml_keys)
     unused = [k for k in unused if not _matches(k, exact=ignore_unused_exact, patterns=ignore_unused_patterns)]
 
     # Split into GUI vs Player groups for missing/unused by key naming.
@@ -972,6 +1016,8 @@ def main(argv: list[str]) -> int:
     print(f"YAML keys: {len(yaml_keys)}")
     print(f"Literal keys used in code: {len(literal_keys)} (gui={len(used_gui)}, player={len(used_player)})")
     print(f"Dynamic usage sites: {len(dynamic_usages)} (gui_hint={len(dyn_gui)}, player_hint={len(dyn_player)})")
+    if dynamic_matched_yaml_keys:
+        print(f"YAML keys protected by dynamic patterns: {len(dynamic_matched_yaml_keys)}")
     if ignore_path.exists():
         print(f"Ignore config: {ignore_path.relative_to(root).as_posix()}")
 
@@ -980,8 +1026,8 @@ def main(argv: list[str]) -> int:
         _print_section("Missing in YAML (Player)", missing_player)
 
     if args.only in ("all", "unused"):
-        _print_section("Unused in code (GUI) [literal-only]", unused_gui)
-        _print_section("Unused in code (Player) [literal-only]", unused_player)
+        _print_section("Unused in code (GUI)", unused_gui)
+        _print_section("Unused in code (Player)", unused_player)
 
     if args.only in ("all", "dynamic"):
         _print_dynamic_section(
@@ -1019,7 +1065,8 @@ def main(argv: list[str]) -> int:
                 "count": len(unused),
                 "gui": unused_gui,
                 "player": unused_player,
-                "note": "unused is computed using literal key usages only",
+                "note": "unused excludes keys referenced by literal usages and keys matched by safe dynamic patterns",
+                "excluded_by_dynamic_patterns": len(dynamic_matched_yaml_keys),
             },
             "dynamic": {
                 "count": len(dynamic_usages),
