@@ -57,7 +57,14 @@ METHOD_NAMES = ("getMessage", "getMessageList")
 ###############################################################################
 
 
-YAML_KEY_RE = re.compile(r"^(?P<key>[A-Za-z0-9_\-]+)\s*:(?:\s+.*)?$")
+YAML_KEY_RE = re.compile(r"^(?P<key>(?:[A-Za-z0-9_\-]+|\"[^\"]+\"|'[^']+'))\s*:(?:\s+.*)?$")
+
+
+def _normalize_yaml_key_segment(key: str) -> str:
+    key = key.strip()
+    if len(key) >= 2 and ((key[0] == '"' and key[-1] == '"') or (key[0] == "'" and key[-1] == "'")):
+        return key[1:-1]
+    return key
 
 
 def _read_text(path: Path) -> str:
@@ -105,7 +112,7 @@ def extract_message_leaf_keys_from_yaml(text: str) -> set[str]:
         if not match:
             continue
 
-        key = match.group("key")
+        key = _normalize_yaml_key_segment(match.group("key"))
         colon_index = stripped.find(":")
         value_part = stripped[colon_index + 1 :].strip() if colon_index >= 0 else ""
 
@@ -999,6 +1006,27 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
         line_starts = _build_line_starts(text)
         rel = path.relative_to(root).as_posix()
 
+        # Also treat menu title setters as key usages (they are later used via getMessage(titleKey,...)).
+        # This helps catch keys like gui.rewards.preset_title.
+        for m in re.finditer(r"\.setTitleKey\s*\(\s*(\"(?:\\.|[^\"\\])*\")\s*\)", masked):
+            lit = _parse_java_string_literal(m.group(1))
+            if lit is None:
+                continue
+            line = _line_of_offset(line_starts, m.start())
+            site = UsageSite(file=rel, line=line, method="setTitleKey", key_expr=m.group(1), apply_prefix=False)
+            literals.append(LiteralKeyUsage(key=lit, site=site, group="gui"))
+
+        for m in re.finditer(
+            r"\.setAlternateContext\s*\(\s*[^,]+,\s*(\"(?:\\.|[^\"\\])*\")\s*\)",
+            masked,
+        ):
+            lit = _parse_java_string_literal(m.group(1))
+            if lit is None:
+                continue
+            line = _line_of_offset(line_starts, m.start())
+            site = UsageSite(file=rel, line=line, method="setAlternateContext", key_expr=m.group(1), apply_prefix=False)
+            literals.append(LiteralKeyUsage(key=lit, site=site, group="gui"))
+
         for m in call_re.finditer(masked):
             method = m.group("method")
             open_paren = m.end() - 1
@@ -1048,6 +1076,80 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                 dynamics.append(DynamicKeyUsage(site=site, group_hint=group_hint, safe_pattern=safe_pattern))
 
     return literals, dynamics
+
+
+def _extract_cron_edit_policy_type_keys(java_root: Path) -> set[str]:
+    """Extract possible cron type message keys from CronEditPolicy factories.
+
+    This covers record accessor usage like policy.cronTypeMessageKey().
+    """
+    policy_path = java_root / "de/theredend2000/advancedhunt/menu/cron/CronEditPolicy.java"
+    if not policy_path.exists():
+        return set()
+    text = _read_text(policy_path)
+    # Look for: new CronEditPolicy("gui.cron.type.act", ...)
+    out: set[str] = set()
+    for m in re.finditer(r"new\s+CronEditPolicy\s*\(\s*(\"(?:\\.|[^\"\\])*\")", text):
+        lit = _parse_java_string_literal(m.group(1))
+        if lit:
+            out.add(lit)
+    return out
+
+
+def _extract_cron_field_value_keys(java_root: Path) -> set[str]:
+    """Enumerate concrete value-description keys used by CronField.getValueDescription().
+
+    This avoids risky wildcard patterns by extracting the enum constants and their
+    preset values, then applying the same sanitizeKey() logic.
+    """
+    field_menu_path = java_root / "de/theredend2000/advancedhunt/menu/cron/CronFieldMenu.java"
+    if not field_menu_path.exists():
+        return set()
+    text = _read_text(field_menu_path)
+
+    # Matches enum constant entries like:
+    #   DAY("day", "*", 1, 31, List.of("1", "15", "L", "*", "?")),
+    enum_const_re = re.compile(
+        r"^\s*[A-Z0-9_]+\(\s*(\"(?:\\.|[^\"\\])*\")\s*,.*?List\.of\((.*?)\)\s*\)\s*,?\s*$",
+        re.MULTILINE | re.DOTALL,
+    )
+
+    str_lit_re = re.compile(r"\"(?:\\.|[^\"\\])*\"")
+
+    def sanitize_key(value: str) -> str:
+        return (
+            value.replace("*", "wildcard")
+            .replace("/", "_")
+            .replace(",", "_")
+            .replace("-", "_")
+            .replace("?", "none")
+            .replace("#", "nth")
+            .replace("L", "last")
+            .lower()
+        )
+
+    used: set[str] = set()
+
+    for m in enum_const_re.finditer(text):
+        key_lit = _parse_java_string_literal(m.group(1))
+        if not key_lit:
+            continue
+        values_blob = m.group(2)
+        for sm in str_lit_re.finditer(values_blob):
+            raw_val = _parse_java_string_literal(sm.group(0))
+            if raw_val is None:
+                continue
+
+            # These values use dedicated branches and should not be looked up via sanitizeKey.
+            if raw_val.startswith("*/"):
+                continue
+            if key_lit == "year" and raw_val != "*":
+                continue
+
+            sanitized = sanitize_key(raw_val)
+            used.add(f"gui.cron.builder.fields.{key_lit}.values.{sanitized}")
+
+    return used
 
 
 ###############################################################################
@@ -1178,6 +1280,10 @@ def main(argv: list[str]) -> int:
     yaml_keys = extract_message_leaf_keys_from_yaml(_read_text(yaml_path))
     literal_usages, dynamic_usages = scan_java_for_message_usages(java_root, root=root)
     literal_keys = {u.key for u in literal_usages}
+
+    # Extra static-derived usages to improve accuracy without risky wildcarding.
+    literal_keys |= _extract_cron_edit_policy_type_keys(java_root)
+    literal_keys |= _extract_cron_field_value_keys(java_root)
 
     dynamic_visible = [
         d
