@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.act.ActRulesMenu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
 import de.theredend2000.advancedhunt.menu.cron.CronEditorMenu;
+import de.theredend2000.advancedhunt.menu.place.PlacePresetGroupMenu;
 import de.theredend2000.advancedhunt.menu.reward.RewardPresetListMenu;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
@@ -228,6 +229,15 @@ public class CollectionSettingsMenu extends Menu {
                 ).setPreviousMenu(this).open();
             }, collection).setPreviousMenu(this).open();
         });
+
+        // Place Presets
+        addButton(32, new ItemBuilder(Material.PLAYER_HEAD)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.place_presets.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.place_presets.lore", false).toArray(new String[0]))
+                .setSkullOwner(playerMenuUtility.getUniqueId())
+                .build(), (e) -> {
+            new PlacePresetGroupMenu(playerMenuUtility, plugin).setPreviousMenu(this).open();
+        }, "advancedhunt.admin.place_presets");
 
         // ==================== VISIBILITY OPTIONS ====================
         addStaticItem(37, new ItemBuilder(Material.PLAYER_HEAD)

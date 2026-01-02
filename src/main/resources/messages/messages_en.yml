@@ -85,10 +85,31 @@ feedback:
       progress: "&eOverride progress: &f%percent%% &7(%current%/%total%)"
       done: "%prefix%&aOverrode &f%count%&a treasures with preset '&f%name%&a'."
       failed: "%prefix%&cFailed to override treasure rewards. Check console for details."
+
+  place_presets:
+    prompt_group: "%prefix%&7Type the &egroup name&7 in chat (or 'cancel')."
+    prompt_name: "%prefix%&7Type the &epreset name&7 in chat (or 'cancel')."
+    prompt_rename: "%prefix%&7Type a new name for &e%name%&7 (or 'cancel')."
+    prompt_move_group: "%prefix%&7Type a new group for this preset (current: &e%group%&7)."
+    created: "%prefix%&aCreated place preset &e%name%&a in group &e%group%&a."
+    given: "%prefix%&aGiven preset &e%name%&a (&7%group%&a)."
+    renamed: "%prefix%&aRenamed preset to &e%name%&a (&7%group%&a)."
+    moved: "%prefix%&aMoved preset &e%name%&a to group &e%group%&a."
+    deleted: "%prefix%&aDeleted preset &e%name%&a (&7%group%&a)."
+
 prefix: "&6AdvancedHunt &8>> &7"
 
 error:
   no_permission: "%prefix%&cYou do not have permission to do this!"
+  place_presets:
+    no_item: "%prefix%&cHold the item you want to save in your main hand."
+    invalid_group: "%prefix%&cInvalid group name."
+    invalid_name: "%prefix%&cInvalid preset name."
+    duplicate_name: "%prefix%&cA preset with that name already exists in that group."
+    serialize_failed: "%prefix%&cFailed to save that item as a preset."
+    deserialize_failed: "%prefix%&cFailed to load that preset item."
+    create_failed: "%prefix%&cFailed to create the place preset."
+    save_failed: "%prefix%&cFailed to save the place preset."
 
   feature_disabled: "%prefix%&cThat feature is currently disabled."
 
@@ -206,6 +227,69 @@ gui:
     enabled: "&aEnabled"
     disabled: "&cDisabled"
     none: "&cNone"
+  place_presets:
+    groups:
+      title: "&8Place Preset Groups"
+      none:
+        name: "&cNo groups"
+        lore:
+          - "&7No place presets exist yet."
+          - "&7Create one with the button below."
+      group:
+        name: "&e%group%"
+        lore:
+          - "&7Presets: &f%count%"
+          - ""
+          - "&a%action%"
+        action:
+          open: "Click to open"
+
+    list:
+      title: "&8Place Presets: &e%group%"
+      none:
+        name: "&cNo presets"
+        lore:
+          - "&7No presets exist in this group."
+          - "&7Create one with the button below."
+      preset:
+        name: "&e%name%"
+        lore:
+          - "&a%action%"
+          - "&7%action2%"
+        action:
+          give: "Left-click to get the item"
+          manage: "Right-click to manage"
+
+    actions:
+      title: "&8Preset: &e%name%"
+      give:
+        name: "&aGet item"
+        lore:
+          - "&7Adds the preset item to your inventory."
+      rename:
+        name: "&eRename"
+        lore:
+          - "&7Current: &f%current%"
+      move_group:
+        name: "&eMove group"
+        lore:
+          - "&7Current: &f%current%"
+      delete:
+        name: "&cDelete"
+        lore:
+          - "&7Permanently deletes this preset."
+        confirm_title: "&8Delete preset &c%name%&8?"
+
+    create:
+      name: "&aCreate preset"
+      lore:
+        - "&7Creates a new place preset"
+        - "&7from the item in your main hand."
+    create_in_group:
+      name: "&aAdd preset"
+      lore:
+        - "&7Adds a preset to &e%group%"
+        - "&7from the item in your main hand."
   rewards:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"
@@ -596,6 +680,12 @@ gui:
         - ""
         - "&eClick to choose preset"
       confirm_title: "Override rewards with '%name%'?"
+
+    place_presets:
+      name: "&ePlace presets"
+      lore:
+        - "&7Manage place presets (blocks/heads/items)."
+        - "&7Includes ItemsAdder items if installed."
     act_rules:
       name: "&eSchedule Rules"
       lore:
@@ -1141,30 +1231,6 @@ gui:
         - "&7Collection will not auto-reset"
         - ""
         - "&cClick to clear"
-  place:
-    presets:
-      list:
-        easter:
-          name: "&e&lEaster Preset"
-          lore:
-            - "&7A preset themed around Easter"
-            - "&7with colorful eggs and spring vibes"
-            - ""
-            - "&aClick to load preset"
-        halloween:
-          name: "&6&lHalloween Preset"
-          lore:
-            - "&7A spooky preset for Halloween"
-            - "&7with pumpkins and scary decorations"
-            - ""
-            - "&aClick to load preset"
-        christmas:
-          name: "&c&lChristmas Preset"
-          lore:
-            - "&7A festive preset for Christmas"
-            - "&7with snow and holiday decorations"
-            - ""
-            - "&aClick to load preset"
   act:
     editor:
       title: "ACT Rule Editor: %name%"

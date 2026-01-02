@@ -131,6 +131,16 @@ public class SqlRepository implements DataRepository {
                         "rewards TEXT)");
             } catch (SQLException ignored) {}
         });
+
+            schemaMigrations.put(7, conn -> {
+                try {
+                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_presets (" +
+                            "id VARCHAR(36) PRIMARY KEY, " +
+                            "grp VARCHAR(64) NOT NULL, " +
+                            "name VARCHAR(64) NOT NULL, " +
+                            "item TEXT)");
+                } catch (SQLException ignored) {}
+            });
     }
 
     @Override
@@ -209,6 +219,14 @@ public class SqlRepository implements DataRepository {
                     "cron_expression VARCHAR(64), " +
                     "enabled BOOLEAN, " +
                     "FOREIGN KEY (collection_id) REFERENCES ah_collections(id) ON DELETE CASCADE)");
+
+                    // Place Presets Table
+                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_presets (" +
+                        "id VARCHAR(36) PRIMARY KEY, " +
+                        "grp VARCHAR(64) NOT NULL, " +
+                        "name VARCHAR(64) NOT NULL, " +
+                        "item TEXT)");
+
 
             // Treasures Table
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_treasures (" +
@@ -875,6 +893,61 @@ public class SqlRepository implements DataRepository {
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_reward_presets WHERE id = ? AND type = ?")) {
                 ps.setString(1, presetId.toString());
                 ps.setString(2, type.name());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<PlacePreset>> loadPlacePresets() {
+        return supplyAsync(() -> {
+            List<PlacePreset> presets = new ArrayList<>();
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_place_presets")) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    UUID id = UUID.fromString(rs.getString("id"));
+                    String group = rs.getString("grp");
+                    String name = rs.getString("name");
+                    String item = rs.getString("item");
+                    presets.add(new PlacePreset(id, group, name, item));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            presets.sort(Comparator
+                    .comparing(PlacePreset::getGroup, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(PlacePreset::getName, String.CASE_INSENSITIVE_ORDER));
+            return presets;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> savePlacePreset(PlacePreset preset) {
+        return runAsync(() -> {
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(
+                         "REPLACE INTO ah_place_presets (id, grp, name, item) VALUES (?, ?, ?, ?)")) {
+                ps.setString(1, preset.getId().toString());
+                ps.setString(2, preset.getGroup());
+                ps.setString(3, preset.getName());
+                ps.setString(4, preset.getItemData());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deletePlacePreset(UUID presetId) {
+        return runAsync(() -> {
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_presets WHERE id = ?")) {
+                ps.setString(1, presetId.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
