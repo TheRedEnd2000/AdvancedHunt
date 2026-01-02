@@ -5,19 +5,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class ChatInputListener implements Listener {
 
     private final Main plugin;
-    private final Map<UUID, InputRequest> awaitingInput = new HashMap<>();
+    private final Map<UUID, InputRequest> awaitingInput = new ConcurrentHashMap<>();
 
     public ChatInputListener(Main plugin) {
         this.plugin = plugin;
@@ -31,8 +31,8 @@ public class ChatInputListener implements Listener {
         player.sendMessage(plugin.getMessageManager().getMessage("chat_input.request"));
 
         BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (awaitingInput.containsKey(uuid)) {
-                awaitingInput.remove(uuid);
+            InputRequest request = awaitingInput.remove(uuid);
+            if (request != null) {
                 player.sendMessage(plugin.getMessageManager().getMessage("chat_input.timeout"));
             }
         }, 1200L); // 60 seconds timeout
@@ -40,26 +40,79 @@ public class ChatInputListener implements Listener {
         awaitingInput.put(uuid, new InputRequest(callback, task));
     }
 
+    private void cancelRequestDueToAction(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (!awaitingInput.containsKey(uuid)) {
+            return;
+        }
+
+        cancelRequest(uuid);
+        player.sendMessage(plugin.getMessageManager().getMessage("chat_input.canceled"));
+    }
+
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
-        if (awaitingInput.containsKey(uuid)) {
-            event.setCancelled(true);
+        InputRequest request = awaitingInput.remove(uuid);
+        if (request == null) {
+            return;
+        }
 
-            InputRequest request = awaitingInput.remove(uuid);
+        event.setCancelled(true);
+
+        String message = event.getMessage();
+
+        // Run on the main thread as chat is async
+        Bukkit.getScheduler().runTask(plugin, () -> {
             request.task().cancel();
 
-            String message = event.getMessage();
-            
             if (message.equalsIgnoreCase("cancel")) {
                 player.sendMessage(plugin.getMessageManager().getMessage("chat_input.canceled"));
                 return;
             }
 
-            // Run on the main thread as chat is async
-            Bukkit.getScheduler().runTask(plugin, () -> request.callback().accept(message));
+            request.callback().accept(message);
+        });
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        if (event.getTo() == null) {
+            return;
         }
+
+        // Allow vertical-only movement (jump/crouch); cancel only on horizontal block movement.
+        // Also ignores pure head rotation.
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX()
+                && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            return;
+        }
+
+        cancelRequestDueToAction(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent event) {
+        cancelRequestDueToAction(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        cancelRequestDueToAction(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        cancelRequestDueToAction(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) {
+            return;
+        }
+        cancelRequestDueToAction(player);
     }
 
     @EventHandler
