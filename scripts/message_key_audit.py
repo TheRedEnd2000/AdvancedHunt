@@ -1273,7 +1273,17 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
             call_line = _line_of_offset(line_starts, m.start())
             expanded_collection_action_base_keys.append((lit, call_line))
             for suffix in (".name", ".lore", ".lore_disabled"):
-                site = UsageSite(file=rel, line=call_line, method="buildCollectionActionItem", key_expr=m.group(1) + " + \"" + suffix + "\"", apply_prefix=False, delivery="gui")
+                # Preserve the expected YAML type by tagging the synthetic usage as getMessage (scalar)
+                # or getMessageList (list), matching buildCollectionActionItem's implementation.
+                expected_method = "getMessage" if suffix == ".name" else "getMessageList"
+                site = UsageSite(
+                    file=rel,
+                    line=call_line,
+                    method=expected_method,
+                    key_expr=m.group(1) + " + \"" + suffix + "\"",
+                    apply_prefix=False,
+                    delivery="gui",
+                )
                 literals.append(LiteralKeyUsage(key=lit + suffix, site=site, group="gui"))
 
         # Special-case: applyPreset(cronExpr, "some.key") results in getMessage(presetNameKey)
