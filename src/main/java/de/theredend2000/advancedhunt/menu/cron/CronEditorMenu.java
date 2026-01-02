@@ -84,7 +84,7 @@ public class CronEditorMenu extends Menu {
                     currentLore.add("§7" + (i + 1) + ". §f" + nextRuns.get(i));
                 }
             } else {
-                currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.invalid"));
+                currentLore.add(plugin.getMessageManager().getMessage("gui.cron.common.invalid_expression"));
             }
         }
 
