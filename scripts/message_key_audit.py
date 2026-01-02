@@ -523,6 +523,9 @@ class DynamicKeyUsage:
     resolved_literals: tuple[str, ...] = ()
 
 
+JAVA_IDENTIFIER_RE = re.compile(r"^[A-Za-z_$][A-Za-z0-9_$]*$")
+
+
 def _infer_group_for_literal(key: str, apply_prefix: Optional[bool]) -> str:
     if apply_prefix is False:
         return "gui"
@@ -798,6 +801,187 @@ def _derive_safe_pattern_from_concat(expr: str) -> Optional[str]:
     return pattern
 
 
+def _extract_simple_identifier(expr: str) -> Optional[str]:
+    s = _strip_wrapping_parens(expr).strip()
+    if JAVA_IDENTIFIER_RE.match(s):
+        return s
+    return None
+
+
+def _parse_identifier_plus_literal(expr: str) -> Optional[tuple[str, str]]:
+    """Parse `symbol + "suffix"` where suffix is a string literal."""
+    parts = _split_top_level_plus(_strip_wrapping_parens(expr))
+    if not parts or len(parts) != 2:
+        return None
+    left = _extract_simple_identifier(parts[0])
+    right_lit = _parse_java_string_literal(parts[1])
+    if left is None or right_lit is None:
+        return None
+    return left, right_lit
+
+
+def _parse_literal_plus_identifier(expr: str) -> Optional[tuple[str, str]]:
+    """Parse `"prefix" + symbol` where prefix is a string literal."""
+    parts = _split_top_level_plus(_strip_wrapping_parens(expr))
+    if not parts or len(parts) != 2:
+        return None
+    left_lit = _parse_java_string_literal(parts[0])
+    right = _extract_simple_identifier(parts[1])
+    if left_lit is None or right is None:
+        return None
+    return left_lit, right
+
+
+def _gather_statement_from(lines: list[str], start_index: int, *, max_lines: int = 8) -> Optional[str]:
+    """Join lines until a top-level ';' is found (best-effort)."""
+    buf: list[str] = []
+    in_string = False
+    in_char = False
+    escaped = False
+    depth_paren = 0
+    depth_brack = 0
+    depth_brace = 0
+
+    for j in range(start_index, min(len(lines), start_index + max_lines)):
+        line = lines[j]
+        for ch in line:
+            buf.append(ch)
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == '"':
+                    in_string = False
+                continue
+            if in_char:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == "'":
+                    in_char = False
+                continue
+
+            if ch == '"':
+                in_string = True
+                continue
+            if ch == "'":
+                in_char = True
+                continue
+
+            if ch == "(":
+                depth_paren += 1
+                continue
+            if ch == ")":
+                if depth_paren > 0:
+                    depth_paren -= 1
+                continue
+            if ch == "[":
+                depth_brack += 1
+                continue
+            if ch == "]":
+                if depth_brack > 0:
+                    depth_brack -= 1
+                continue
+            if ch == "{":
+                depth_brace += 1
+                continue
+            if ch == "}":
+                if depth_brace > 0:
+                    depth_brace -= 1
+                continue
+
+            if ch == ";" and depth_paren == 0 and depth_brack == 0 and depth_brace == 0:
+                return "".join(buf)
+        buf.append("\n")
+    return None
+
+
+def _find_recent_assignment_rhs(masked_lines: list[str], symbol: str, *, upto_line_1_based: int, max_lookback: int = 120) -> Optional[str]:
+    """Find a recent assignment to `symbol` above the given line (1-based)."""
+    # Search backwards for a line that mentions `symbol` and '='.
+    start = max(0, upto_line_1_based - 2)  # previous line index
+    end = max(-1, start - max_lookback)
+    assign_hint = re.compile(r"\b" + re.escape(symbol) + r"\b\s*=")
+
+    for i in range(start, end, -1):
+        line = masked_lines[i]
+        if symbol not in line:
+            continue
+        if not assign_hint.search(line):
+            continue
+
+        stmt = _gather_statement_from(masked_lines, i)
+        if stmt is None:
+            continue
+        # Extract RHS of the assignment (best effort).
+        m = re.search(r"\b" + re.escape(symbol) + r"\b\s*=\s*(.+?)\s*;", stmt, flags=re.DOTALL)
+        if not m:
+            continue
+        return m.group(1).strip()
+
+    return None
+
+
+def _resolve_dynamic_key_expr(masked_lines: list[str], key_expr: str, *, line_1_based: int) -> tuple[tuple[str, ...], Optional[str]]:
+    """Try to resolve a dynamic key expression into literals or a safe pattern.
+
+    Returns (resolved_literals, safe_pattern). At most one of them will be non-empty.
+    """
+    expr = _strip_wrapping_parens(key_expr)
+
+    # Direct symbol: try resolve from recent assignment.
+    sym = _extract_simple_identifier(expr)
+    if sym is not None:
+        rhs = _find_recent_assignment_rhs(masked_lines, sym, upto_line_1_based=line_1_based)
+        if rhs is not None:
+            tern = _try_resolve_simple_ternary_literals(rhs)
+            if tern is not None:
+                return (tern[0], tern[1]), None
+            pat = _derive_safe_pattern_from_concat(rhs)
+            if pat is not None:
+                return (), pat
+        return (), None
+
+    # symbol + "suffix"
+    sym_suffix = _parse_identifier_plus_literal(expr)
+    if sym_suffix is not None:
+        sym2, suffix = sym_suffix
+        rhs = _find_recent_assignment_rhs(masked_lines, sym2, upto_line_1_based=line_1_based)
+        if rhs is not None:
+            tern = _try_resolve_simple_ternary_literals(rhs)
+            if tern is not None:
+                return (tern[0] + suffix, tern[1] + suffix), None
+            pat = _derive_safe_pattern_from_concat(rhs)
+            if pat is not None:
+                return (), pat + suffix
+        # If unknown, would be '*.suffix' which we disallow.
+        return (), None
+
+    # "prefix" + symbol
+    prefix_sym = _parse_literal_plus_identifier(expr)
+    if prefix_sym is not None:
+        prefix, sym3 = prefix_sym
+        rhs = _find_recent_assignment_rhs(masked_lines, sym3, upto_line_1_based=line_1_based)
+        if rhs is not None:
+            tern = _try_resolve_simple_ternary_literals(rhs)
+            if tern is not None:
+                return (prefix + tern[0], prefix + tern[1]), None
+            pat = _derive_safe_pattern_from_concat(rhs)
+            if pat is not None:
+                # prefix + (something with 0/1 wildcard)
+                return (), prefix + pat
+        # If unknown, we can still safely pattern-match because prefix is known and pattern won't start with '*'.
+        if prefix:
+            candidate = prefix + "*"
+            if not candidate.startswith("*"):
+                return (), candidate
+        return (), None
+
+    return (), None
+
+
 def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[LiteralKeyUsage], list[DynamicKeyUsage]]:
     literals: list[LiteralKeyUsage] = []
     dynamics: list[DynamicKeyUsage] = []
@@ -811,6 +995,7 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
             continue
         text = _read_text(path)
         masked = _mask_java_comments(text)
+        masked_lines = masked.splitlines()
         line_starts = _build_line_starts(text)
         rel = path.relative_to(root).as_posix()
 
@@ -851,8 +1036,15 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                         literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
                     continue
 
+                resolved_lits, resolved_pat = _resolve_dynamic_key_expr(masked_lines, key_expr, line_1_based=line)
+                if resolved_lits:
+                    for lit in resolved_lits:
+                        group = _infer_group_for_literal(lit, apply_prefix)
+                        literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
+                    continue
+
                 group_hint = _infer_group_for_dynamic(rel, apply_prefix)
-                safe_pattern = _derive_safe_pattern_from_concat(key_expr)
+                safe_pattern = resolved_pat or _derive_safe_pattern_from_concat(key_expr)
                 dynamics.append(DynamicKeyUsage(site=site, group_hint=group_hint, safe_pattern=safe_pattern))
 
     return literals, dynamics
