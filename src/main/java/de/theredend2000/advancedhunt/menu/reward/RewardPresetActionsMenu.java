@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,10 +52,12 @@ public class RewardPresetActionsMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.rename.lore", false,"%current%",preset.getName()).toArray(new String[0]))
                 .build(), e -> handleRename());
 
-        addButton(12, buildCollectionActionItem(
-                "gui.presets.actions.load_all",
+        addButton(12, buildActionItem(
                 Material.ANVIL,
-                isTreasurePreset() && hasCollectionContext()
+                isTreasurePreset() && hasCollectionContext(),
+                "gui.presets.actions.load_all.name",
+                "gui.presets.actions.load_all.lore",
+                "gui.presets.actions.load_all.lore_disabled"
         ), e -> handleLoadAll());
 
         boolean isCurrentDefault;
@@ -76,7 +77,18 @@ public class RewardPresetActionsMenu extends Menu {
                 ? "gui.presets.actions.set_default.option.already_selected"
                 : "gui.presets.actions.set_default.option.available";
 
-        addButton(13, buildSetDefaultItem(isCurrentDefault, optionKey,defaultPresetName),
+        boolean enabled = isTreasurePreset() && hasCollectionContext();
+        Material enabledMaterial = isCurrentDefault ? Material.OAK_SAPLING : Material.DEAD_BUSH;
+
+        addButton(13, buildActionItem(
+                        enabledMaterial,
+                        enabled,
+                        "gui.presets.actions.set_default.name",
+                        "gui.presets.actions.set_default.lore",
+                        "gui.presets.actions.set_default.lore_disabled",
+                        "%option%", plugin.getMessageManager().getMessage(optionKey, false),
+                        "%current%", defaultPresetName
+                ),
                 e -> {
                     if (!isCurrentDefault) {
                         handleSetDefault();
@@ -97,54 +109,6 @@ public class RewardPresetActionsMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());
         fillBackground(FILLER_GLASS);
-    }
-
-    private ItemStack buildSetDefaultItem(boolean isDefault, String optionKey, String defaultPresetName) {
-        boolean enabled = isTreasurePreset() && hasCollectionContext();
-        Material enabledMaterial = isDefault ? Material.OAK_SAPLING : Material.DEAD_BUSH;
-
-        return buildActionItem(
-            enabledMaterial,
-            enabled,
-            "gui.presets.actions.set_default.name",
-            "gui.presets.actions.set_default.lore",
-            "gui.presets.actions.set_default.lore_disabled",
-            "%option%", plugin.getMessageManager().getMessage(optionKey, false),
-            "%current%", defaultPresetName
-        );
-    }
-
-    private ItemStack buildCollectionActionItem(String baseKey, Material material, boolean enabled) {
-        return buildActionItem(
-            material,
-            enabled,
-            baseKey + ".name",
-            baseKey + ".lore",
-            baseKey + ".lore_disabled"
-        );
-    }
-
-    private ItemStack buildActionItem(
-        Material enabledMaterial,
-        boolean enabled,
-        String nameKey,
-        String loreKeyEnabled,
-        String loreKeyDisabled,
-        String... loreArgsEnabled
-    ) {
-        Material material = enabled ? enabledMaterial : Material.BARRIER;
-        String loreKey = enabled ? loreKeyEnabled : loreKeyDisabled;
-
-        ItemBuilder builder = new ItemBuilder(material)
-                .setDisplayName(plugin.getMessageManager().getMessage(nameKey, false));
-
-        if (enabled && loreArgsEnabled != null && loreArgsEnabled.length > 0) {
-            builder.setLore(plugin.getMessageManager().getMessageList(loreKey, false, loreArgsEnabled).toArray(new String[0]));
-        } else {
-            builder.setLore(plugin.getMessageManager().getMessageList(loreKey, false).toArray(new String[0]));
-        }
-
-        return builder.build();
     }
 
     private void handleRename() {

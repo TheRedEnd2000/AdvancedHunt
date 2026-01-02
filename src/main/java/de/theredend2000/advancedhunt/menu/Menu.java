@@ -122,6 +122,29 @@ public abstract class Menu implements InventoryHolder {
         }
     }
 
+    protected ItemStack buildActionItem(
+            Material enabledMaterial,
+            boolean enabled,
+            String nameKey,
+            String loreKeyEnabled,
+            String loreKeyDisabled,
+            String... loreArgsEnabled
+    ) {
+        Material material = enabled ? enabledMaterial : Material.BARRIER;
+        String loreKey = enabled ? loreKeyEnabled : loreKeyDisabled;
+
+        ItemBuilder builder = new ItemBuilder(material)
+                .setDisplayName(plugin.getMessageManager().getMessage(nameKey, false));
+
+        if (enabled && loreArgsEnabled != null && loreArgsEnabled.length > 0) {
+            builder.setLore(plugin.getMessageManager().getMessageList(loreKey, false, loreArgsEnabled).toArray(new String[0]));
+        } else {
+            builder.setLore(plugin.getMessageManager().getMessageList(loreKey, false).toArray(new String[0]));
+        }
+
+        return builder.build();
+    }
+
     public void fillBackground(ItemStack item) {
         Button buttonToUse = item.isSimilar(FILLER_GLASS) ? FILLER_BUTTON : new Button(item, null);
         
