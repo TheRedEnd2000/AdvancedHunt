@@ -42,6 +42,7 @@ public final class Main extends JavaPlugin {
     private RewardManager rewardManager;
     private PlaceModeManager placeModeManager;
     private RewardPresetManager rewardPresetManager;
+    private PlacePresetManager placePresetManager;
     private ParticleManager particleManager;
     private MigrationService migrationService;
     private MessageManager messageManager;
@@ -106,6 +107,7 @@ public final class Main extends JavaPlugin {
 
     private void rebuildRepositoryDependentManagers() {
         rewardPresetManager = new RewardPresetManager(this, dataRepository);
+        placePresetManager = new PlacePresetManager(this, dataRepository);
         treasureManager = new TreasureManager(dataRepository);
         playerManager = new PlayerManager(this, dataRepository);
         leaderboardManager = new LeaderboardManager(this, dataRepository);
@@ -142,6 +144,7 @@ public final class Main extends JavaPlugin {
         rewardManager = new RewardManager(this);
         rebuildRepositoryDependentManagers();
         rewardPresetManager.reloadPresets();
+        placePresetManager.reloadPresets();
         treasureManager.loadTreasures();
         placeModeManager = new PlaceModeManager(this);
         minigameManager = new MinigameManager(this);
@@ -208,6 +211,10 @@ public final class Main extends JavaPlugin {
             // Check for updates asynchronously
             getServer().getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
         }
+    }
+
+    public PlacePresetManager getPlacePresetManager() {
+        return placePresetManager;
     }
 
     /**

@@ -166,6 +166,11 @@ public interface DataRepository {
     CompletableFuture<Void> saveRewardPreset(RewardPreset preset);
     CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId);
 
+    // Place Presets
+    CompletableFuture<List<PlacePreset>> loadPlacePresets();
+    CompletableFuture<Void> savePlacePreset(PlacePreset preset);
+    CompletableFuture<Void> deletePlacePreset(UUID presetId);
+
     /**
      * Saves multiple reward presets in a batch.
      *

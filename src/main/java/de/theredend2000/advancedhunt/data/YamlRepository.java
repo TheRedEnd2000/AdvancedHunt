@@ -33,6 +33,7 @@ public class YamlRepository implements DataRepository {
     private File rewardPresetsFolder;
     private File treasureRewardPresetsFolder;
     private File collectionRewardPresetsFolder;
+    private File placePresetsFolder;
     private BukkitTask flushTask;
     
     // In-memory indexes for efficient lookups (rebuilt on init, updated on save)
@@ -104,6 +105,12 @@ public class YamlRepository implements DataRepository {
             collectionRewardPresetsFolder.mkdirs();
         }
 
+        // Place presets are stored under place-presets/<group>/<id>.yml
+        placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+        if (!placePresetsFolder.exists()) {
+            placePresetsFolder.mkdirs();
+        }
+
         // Keep legacy file reference for migration/back-compat reads
         legacyRewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
         
@@ -119,6 +126,18 @@ public class YamlRepository implements DataRepository {
 
     private File getPresetFile(RewardPresetType type, UUID presetId) {
         return new File(getPresetFolder(type), presetId.toString() + YML_EXTENSION);
+    }
+
+    private static String sanitizeGroupFolderName(String group) {
+        if (group == null || group.isBlank()) {
+            return "default";
+        }
+        String trimmed = group.trim();
+        String sanitized = trimmed.replaceAll("[^a-zA-Z0-9_-]", "_");
+        if (sanitized.isBlank()) {
+            return "default";
+        }
+        return sanitized;
     }
 
     private void saveConfigAtomic(FileConfiguration config, File file) {
@@ -1051,6 +1070,99 @@ public class YamlRepository implements DataRepository {
             if (file.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<PlacePreset>> loadPlacePresets() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<PlacePreset> presets = new ArrayList<>();
+
+            if (placePresetsFolder == null) {
+                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            }
+            if (!placePresetsFolder.exists() || !placePresetsFolder.isDirectory()) {
+                return presets;
+            }
+
+            File[] groupDirs = placePresetsFolder.listFiles(File::isDirectory);
+            if (groupDirs == null) {
+                return presets;
+            }
+
+            for (File groupDir : groupDirs) {
+                File[] files = groupDir.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
+                if (files == null) continue;
+
+                for (File file : files) {
+                    String idStr = file.getName().replace(YML_EXTENSION, "");
+                    try {
+                        UUID id = UUID.fromString(idStr);
+                        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+                        String name = config.getString("name");
+                        String group = config.getString("group");
+                        if (group == null || group.isBlank()) {
+                            group = groupDir.getName();
+                        }
+                        String itemData = config.getString("item");
+                        if (name != null && !name.isBlank() && itemData != null && !itemData.isBlank()) {
+                            presets.add(new PlacePreset(id, group, name, itemData));
+                        }
+                    } catch (Exception e) {
+                        plugin.getLogger().warning("Failed to load place preset file " + file.getName() + ": " + e.getMessage());
+                    }
+                }
+            }
+
+            presets.sort(Comparator
+                    .comparing(PlacePreset::getGroup, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(PlacePreset::getName, String.CASE_INSENSITIVE_ORDER));
+            return presets;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> savePlacePreset(PlacePreset preset) {
+        return CompletableFuture.runAsync(() -> {
+            if (placePresetsFolder == null) {
+                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            }
+            File groupDir = new File(placePresetsFolder, sanitizeGroupFolderName(preset.getGroup()));
+            if (!groupDir.exists()) {
+                groupDir.mkdirs();
+            }
+
+            File file = new File(groupDir, preset.getId().toString() + YML_EXTENSION);
+            FileConfiguration config = new YamlConfiguration();
+            config.set("group", preset.getGroup());
+            config.set("name", preset.getName());
+            config.set("item", preset.getItemData());
+            saveConfigAtomic(config, file);
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deletePlacePreset(UUID presetId) {
+        return CompletableFuture.runAsync(() -> {
+            if (placePresetsFolder == null) {
+                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            }
+            if (!placePresetsFolder.exists() || !placePresetsFolder.isDirectory()) {
+                return;
+            }
+
+            File[] groupDirs = placePresetsFolder.listFiles(File::isDirectory);
+            if (groupDirs == null) return;
+
+            String filename = presetId.toString() + YML_EXTENSION;
+            for (File groupDir : groupDirs) {
+                File file = new File(groupDir, filename);
+                if (file.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
+                    break;
+                }
             }
         });
     }

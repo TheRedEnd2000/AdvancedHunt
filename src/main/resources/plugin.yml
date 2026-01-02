@@ -3,6 +3,7 @@ version: '4.0.0-SNAPSHOT'
 main: de.theredend2000.advancedhunt.Main
 api-version: '1.21'
 authors: [ GrafterCrafter, TheRedEnd2000 ]
+softdepend: [ ItemsAdder ]
 
 permissions:
   advancedhunt.help:
@@ -29,6 +30,7 @@ permissions:
       advancedhunt.admin.collection.rename: true
       advancedhunt.admin.collection.create: true
       advancedhunt.admin.place: true
+      advancedhunt.admin.place_presets: true
       advancedhunt.admin.reset: true
       advancedhunt.admin.teleport: true
       advancedhunt.admin.view_finders: true
@@ -50,6 +52,9 @@ permissions:
     default: op
   advancedhunt.admin.place:
     description: Allows entering place mode
+    default: op
+  advancedhunt.admin.place_presets:
+    description: Allows managing place presets
     default: op
   advancedhunt.admin.reset:
     description: Allows resetting player data
