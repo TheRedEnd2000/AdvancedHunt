@@ -155,7 +155,7 @@ public class RewardPresetActionsMenu extends Menu {
             preset.setName(trimmed);
             plugin.getRewardPresetManager().savePreset(preset).whenComplete((v, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
                 if (ex != null) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.save_failed_" + presetContextKey()));
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.preset.save_failed", "%type%", getPresetTypeName()));
                     open();
                     return;
                 }
@@ -268,8 +268,11 @@ public class RewardPresetActionsMenu extends Menu {
         return preset.getType() == RewardPresetType.TREASURE;
     }
 
-    private String presetContextKey() {
-        return preset.getType() == RewardPresetType.COLLECTION ? "collection" : "treasure";
+    private String getPresetTypeName() {
+        return plugin.getMessageManager().getMessage(
+                preset.getType() == RewardPresetType.COLLECTION ? "common.collection" : "common.treasure",
+                false
+        );
     }
 
     private boolean isNameTaken(String name) {

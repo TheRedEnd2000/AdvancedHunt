@@ -1,5 +1,13 @@
 config-version: 2
 
+common:
+  treasure: "Treasure"
+  collection: "Collection"
+  chance: "Chance"
+  message: "Message"
+  broadcast: "Broadcast"
+  value: "Value"
+
 feedback:
   gui:
     first_page: "%prefix%&cYou are already on the first page."
@@ -21,12 +29,8 @@ feedback:
     command_preview: "%prefix%&eCommand: &f/%command%"
     chat_message_preview: "%prefix%&eMessage: &f%message%"
     broadcast_message_preview: "%prefix%&eBroadcast Message: &f%message%"
-    chance_updated: "%prefix%&aChance updated successfully!"
-    message_updated: "%prefix%&aMessage updated successfully!"
-    broadcast_updated: "%prefix%&aBroadcast updated successfully!"
-    value_updated: "%prefix%&aValue updated successfully!"
-    message_reset: "%prefix%&aMessage reset successfully!"
-    broadcast_reset: "%prefix%&aBroadcast reset successfully!"
+    updated: "%prefix%&a%type% updated successfully!"
+    reset: "%prefix%&a%type% reset successfully!"
   teleport:
     success: "%prefix%&aTeleported to treasure!"
     unsafe: "%prefix%&cUnable to find a safe teleport location!"
@@ -68,14 +72,11 @@ feedback:
       yearly:
         name: "&eYearly"
   preset:
-    prompt_name_treasure: "%prefix%&eEnter a name for this treasure preset:"
-    prompt_name_collection: "%prefix%&eEnter a name for this collection preset:"
+    prompt_name: "%prefix%&eEnter a name for this %type% preset:"
     prompt_rename: "%prefix%&eEnter a new name for preset '&f%name%&e':"
-    saved_treasure: "%prefix%&aSuccessfully saved treasure preset '&f%name%&a'!"
-    saved_collection: "%prefix%&aSuccessfully saved collection preset '&f%name%&a'!"
+    saved: "%prefix%&aSuccessfully saved %type% preset '&f%name%&a'!"
     renamed: "%prefix%&aRenamed preset to '&f%name%&a'."
-    loaded_treasure: "%prefix%&aSuccessfully loaded treasure preset '&f%name%&a'!"
-    loaded_collection: "%prefix%&aSuccessfully loaded collection preset '&f%name%&a'!"
+    loaded: "%prefix%&aSuccessfully loaded %type% preset '&f%name%&a'!"
     deleted: "%prefix%&cDeleted preset '&f%name%&c'."
     set_default: "%prefix%&aSet default preset for &e%collection%&a to '&f%name%&a'."
     override:
@@ -108,8 +109,7 @@ error:
   preset:
     invalid_name: "%prefix%&cInvalid preset name! Please enter a valid name."
     duplicate_name: "%prefix%&cA preset with that name already exists."
-    save_failed_treasure: "%prefix%&cFailed to save treasure preset!"
-    save_failed_collection: "%prefix%&cFailed to save collection preset!"
+    save_failed: "%prefix%&cFailed to save %type% preset!"
   
 command:
   help:
@@ -261,41 +261,21 @@ gui:
     broadcast_message_label: "&7Broadcasts to all:"
     # Edit mode
     click_to_edit: "&e&lLeft-Click &7to edit  &8|  &e&lRight-Click &7to %action%"
-    save_preset_treasure:
-      name: "&aCreate Treasure Preset"
+    save_preset:
+      name: "&aCreate %Type% Preset"
       lore:
         - "&7Save the current reward configuration"
-        - "&7as a reusable preset for treasures"
+        - "&7as a reusable preset for %type%s"
         - ""
         - "&7This allows you to quickly apply"
-        - "&7the same rewards to other treasures"
+        - "&7the same rewards to other %type%s"
         - ""
         - "&eClick to create preset"
-    load_preset_treasure:
-      name: "&bLoad Treasure Preset"
+    load_preset:
+      name: "&bLoad %Type% Preset"
       lore:
         - "&7Load a saved reward configuration"
-        - "&7from your treasure presets"
-        - ""
-        - "&7Replace current rewards with"
-        - "&7a previously saved preset"
-        - ""
-        - "&eClick to view presets"
-    save_preset_collection:
-      name: "&aCreate Collection Preset"
-      lore:
-        - "&7Save the current reward configuration"
-        - "&7as a reusable preset for collections"
-        - ""
-        - "&7This allows you to quickly apply"
-        - "&7the same rewards to other collections"
-        - ""
-        - "&eClick to create preset"
-    load_preset_collection:
-      name: "&bLoad Collection Preset"
-      lore:
-        - "&7Load a saved reward configuration"
-        - "&7from your collection presets"
+        - "&7from your %type% presets"
         - ""
         - "&7Replace current rewards with"
         - "&7a previously saved preset"

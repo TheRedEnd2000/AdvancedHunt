@@ -138,7 +138,7 @@ public class AddItemRewardMenu extends Menu {
         if(edit){
             String serialized = ItemSerializer.serialize(item);
             parentMenu.updateRewardValue(rewardIndex, serialized);
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.value_updated"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.updated", "%type%", plugin.getMessageManager().getMessage("common.value", false)));
             parentMenu.open();
             return;
         }
