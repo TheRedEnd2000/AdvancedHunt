@@ -7,7 +7,6 @@ import de.theredend2000.advancedhunt.data.YamlRepository;
 import de.theredend2000.advancedhunt.managers.MigrationService;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameType;
 import de.theredend2000.advancedhunt.menu.collection.*;
-import de.theredend2000.advancedhunt.menu.place.ViewPlacePresetsMenu;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
@@ -247,13 +246,6 @@ public class AdvancedHuntCommand {
                 .literal("hint")
                 .permission("advancedhunt.admin")
                 .handler(context -> debugHint((Player) context.sender()))
-        );
-        commandManager.command(
-                playerBuilder()
-                        .literal("debug")
-                        .literal("place")
-                        .permission("advancedhunt.admin")
-                        .handler(context -> new ViewPlacePresetsMenu((Player) context.sender(),plugin).open())
         );
 
         commandManager.command(
