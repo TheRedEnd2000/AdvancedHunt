@@ -63,8 +63,8 @@ public class HintManager {
     
     // Cardinal direction message keys (index matches getCardinalDirection mapping)
     private static final String[] DIRECTION_KEYS = {
-        "direction.east", "direction.southeast", "direction.south", "direction.southwest",
-        "direction.west", "direction.northwest", "direction.north", "direction.northeast"
+        "command.direction.east", "command.direction.southeast", "command.direction.south", "command.direction.southwest",
+        "command.direction.west", "command.direction.northwest", "command.direction.north", "command.direction.northeast"
     };
 
     public enum VisualHintType {
