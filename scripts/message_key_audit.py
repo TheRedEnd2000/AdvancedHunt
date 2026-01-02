@@ -996,6 +996,12 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
     java_files = sorted(p for p in java_root.rglob("*.java") if p.is_file())
     call_re = re.compile(r"\b(?P<method>getMessage|getMessageList)\s*\(")
 
+    const_array_re = re.compile(
+        r"\bString\s*\[\]\s*(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*\{(?P<body>.*?)\}\s*;",
+        flags=re.DOTALL,
+    )
+    array_index_expr_re = re.compile(r"^(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\[.+\]$")
+
     for path in java_files:
         # Do not treat MessageManager method declarations as usage sites.
         if path.name == "MessageManager.java" and "advancedhunt/managers" in path.as_posix():
@@ -1005,6 +1011,20 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
         masked_lines = masked.splitlines()
         line_starts = _build_line_starts(text)
         rel = path.relative_to(root).as_posix()
+
+        # Extract constant String[] arrays of message keys in this file so we can
+        # resolve usages like getMessage(DIRECTION_KEYS[index]).
+        const_string_arrays: dict[str, tuple[str, ...]] = {}
+        for m_arr in const_array_re.finditer(masked):
+            name = m_arr.group("name")
+            body = m_arr.group("body")
+            items: list[str] = []
+            for m_lit in re.finditer(r'"(?:\\.|[^"\\])*"', body):
+                lit = _parse_java_string_literal(m_lit.group(0))
+                if lit is not None:
+                    items.append(lit)
+            if items:
+                const_string_arrays[name] = tuple(items)
 
         # Also treat menu title setters as key usages (they are later used via getMessage(titleKey,...)).
         # This helps catch keys like gui.rewards.preset_title.
@@ -1056,6 +1076,17 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                 group = _infer_group_for_literal(key_literal, apply_prefix)
                 literals.append(LiteralKeyUsage(key=key_literal, site=site, group=group))
             else:
+                # Resolve constant string arrays (e.g., SOME_KEYS[i]) into concrete key usages.
+                m_idx = array_index_expr_re.match(key_expr)
+                if m_idx is not None:
+                    arr_name = m_idx.group("name")
+                    arr_items = const_string_arrays.get(arr_name)
+                    if arr_items:
+                        for lit in arr_items:
+                            group = _infer_group_for_literal(lit, apply_prefix)
+                            literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
+                        continue
+
                 # Try: resolve simple ternary where both branches are literals.
                 tern = _try_resolve_simple_ternary_literals(key_expr)
                 if tern is not None:
