@@ -251,9 +251,9 @@ public class RewardsMenu extends PagedMenu {
         if (item == null || item.getType() == Material.AIR) {
             // Fallback for invalid item data
             return new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(ChatColor.RED + "Invalid Item")
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.invalid_item.name", false))
                     .setLore(
-                            ChatColor.GRAY + "This item could not be loaded",
+                    plugin.getMessageManager().getMessage("gui.rewards.invalid_item.lore", false),
                             "",
                             chanceLore
                     )
@@ -324,7 +324,7 @@ public class RewardsMenu extends PagedMenu {
         // Show full command if truncated
         if (command.length() > 40) {
             lore.add("");
-            lore.add(ChatColor.DARK_GRAY + "(Command truncated)");
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.truncated.command", false));
         }
 
         lore.add("");
@@ -517,7 +517,7 @@ public class RewardsMenu extends PagedMenu {
         // Show full message if truncated
         if (message.length() > 40) {
             lore.add("");
-            lore.add(ChatColor.DARK_GRAY + "(Message truncated)");
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.truncated.message", false));
         }
         
         lore.add("");
@@ -555,7 +555,7 @@ public class RewardsMenu extends PagedMenu {
         // Show full message if truncated
         if (message.length() > 40) {
             lore.add("");
-            lore.add(ChatColor.DARK_GRAY + "(Message truncated)");
+            lore.add(plugin.getMessageManager().getMessage("gui.rewards.truncated.message", false));
         }
         
         lore.add("");

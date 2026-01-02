@@ -14,7 +14,6 @@ import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -38,7 +37,7 @@ public class CollectionListMenu extends PagedMenu {
 
     @Override
     public String getMenuName() {
-        return "Collection Content";
+        return plugin.getMessageManager().getMessage("gui.collection_content.title", false);
     }
 
     @Override
@@ -172,15 +171,24 @@ public class CollectionListMenu extends PagedMenu {
             }
         }
 
-        String foundLine = playerFoundSize == null ? ChatColor.GRAY + "Players found: ..." : (ChatColor.GRAY + "Players found: " + playerFoundSize);
-        builder.setDisplayName(ChatColor.GOLD + "Treasure #" + (index + 1));
+        String foundLine = playerFoundSize == null
+            ? plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.players_found_loading", false)
+            : plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.players_found", false,
+                "%count%", String.valueOf(playerFoundSize));
+
+        builder.setDisplayName(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.name", false,
+            "%number%", String.valueOf(index + 1)));
         builder.addLoreLine(foundLine);
         builder.addLoreLine("");
-        builder.addLoreLine(ChatColor.GRAY + "Location:");
-        builder.addLoreLine(ChatColor.GRAY + "X: " + treasureCore.getLocation().getBlockX());
-        builder.addLoreLine(ChatColor.GRAY + "Y: " + treasureCore.getLocation().getBlockY());
-        builder.addLoreLine(ChatColor.GRAY + "Z: " + treasureCore.getLocation().getBlockZ());
-        builder.addLoreLine(ChatColor.GRAY + "World: " + treasureCore.getLocation().getWorld().getName());
+        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_header", false));
+        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_x", false,
+            "%x%", String.valueOf(treasureCore.getLocation().getBlockX())));
+        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_y", false,
+            "%y%", String.valueOf(treasureCore.getLocation().getBlockY())));
+        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_z", false,
+            "%z%", String.valueOf(treasureCore.getLocation().getBlockZ())));
+        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_world", false,
+            "%world%", treasureCore.getLocation().getWorld().getName()));
         builder.addLoreLine("");
         
         if (playerMenuUtility.hasPermission("advancedhunt.admin.teleport")) {
