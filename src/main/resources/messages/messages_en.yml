@@ -89,8 +89,11 @@ feedback:
   place_presets:
     prompt_group: "%prefix%&7Type the &egroup name&7 in chat (or 'cancel')."
     prompt_rename: "%prefix%&7Type a new name for &e%name%&7 (or 'cancel')."
+    prompt_rename_group: "%prefix%&7Type a new name for group &e%group%&7 (or 'cancel')."
     prompt_move_group: "%prefix%&7Type a new group for this preset (current: &e%group%&7)."
     group_created: "%prefix%&aCreated group &e%group%&a."
+    group_renamed: "%prefix%&aRenamed group &e%old%&a to &e%group%&a."
+    group_deleted: "%prefix%&aDeleted group &e%group%&a."
     created: "%prefix%&aCreated place preset &e%name%&a in group &e%group%&a."
     given: "%prefix%&aGiven preset &e%name%&a (&7%group%&a)."
     renamed: "%prefix%&aRenamed preset to &e%name%&a (&7%group%&a)."
@@ -111,6 +114,7 @@ error:
     deserialize_failed: "%prefix%&cFailed to load that preset item."
     create_failed: "%prefix%&cFailed to create the place preset."
     create_group_failed: "%prefix%&cFailed to create the group."
+    rename_group_failed: "%prefix%&cFailed to rename the group."
     save_failed: "%prefix%&cFailed to save the place preset."
 
   feature_disabled: "%prefix%&cThat feature is currently disabled."
@@ -243,8 +247,28 @@ gui:
           - "&7Presets: &f%count%"
           - ""
           - "&a%action%"
+          - "&7%action2%"
         action:
           open: "Click to open"
+          manage: "Right-click to manage"
+
+    group_actions:
+      title: "&8Group: &e%group%"
+      rename:
+        name: "&eRename group"
+        lore:
+          - "&7Current: &f%current%"
+          - ""
+          - "&eClick to rename"
+      delete:
+        name: "&cDelete group"
+        lore:
+          - "&7Presets in group: &f%count%"
+          - ""
+          - "&c&lWARNING: deletes all presets in this group!"
+          - ""
+          - "&cClick to delete"
+        confirm_title: "&8Delete group &c%group%&8?"
 
     list:
       title: "&8Place Presets: &e%group%"

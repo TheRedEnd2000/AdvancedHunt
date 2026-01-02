@@ -93,6 +93,74 @@ public class PlacePresetManager {
                 });
     }
 
+    public CompletableFuture<Boolean> renameGroup(String oldGroup, String newGroup) {
+        if (oldGroup == null || oldGroup.isBlank() || newGroup == null || newGroup.isBlank()) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        String oldTrimmed = oldGroup.trim();
+        String newTrimmed = newGroup.trim();
+
+        if (!hasGroup(oldTrimmed)) {
+            return CompletableFuture.completedFuture(false);
+        }
+        if (hasGroup(newTrimmed)) {
+            return CompletableFuture.completedFuture(false);
+        }
+        if (normalize(oldTrimmed).equals(normalize(newTrimmed))) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        // Update group persistence first (covers empty groups)
+        return repository.renamePlacePresetGroup(oldTrimmed, newTrimmed)
+                .thenCompose(v -> {
+                    List<PlacePreset> toMove = getPresetsInGroup(oldTrimmed);
+                    if (toMove.isEmpty()) {
+                        return CompletableFuture.completedFuture(null);
+                    }
+
+                    CompletableFuture<?>[] futures = new CompletableFuture[toMove.size()];
+                    for (int i = 0; i < toMove.size(); i++) {
+                        PlacePreset preset = toMove.get(i);
+                        preset.setGroup(newTrimmed);
+                        futures[i] = repository.savePlacePreset(preset);
+                    }
+                    return CompletableFuture.allOf(futures);
+                })
+                .thenCompose(v -> reloadPresets())
+                .thenApply(v -> true)
+                .exceptionally(ex -> {
+                    plugin.getLogger().warning("Failed to rename place preset group: " + ex.getMessage());
+                    return false;
+                });
+    }
+
+    public CompletableFuture<Boolean> deleteGroup(String group) {
+        if (group == null || group.isBlank()) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        String trimmed = group.trim();
+        if (!hasGroup(trimmed)) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        List<PlacePreset> inGroup = getPresetsInGroup(trimmed);
+        CompletableFuture<?>[] deleteFutures = new CompletableFuture[inGroup.size()];
+        for (int i = 0; i < inGroup.size(); i++) {
+            deleteFutures[i] = repository.deletePlacePreset(inGroup.get(i).getId());
+        }
+
+        return CompletableFuture.allOf(deleteFutures)
+                .thenCompose(v -> repository.deletePlacePresetGroup(trimmed))
+                .thenCompose(v -> reloadPresets())
+                .thenApply(v -> true)
+                .exceptionally(ex -> {
+                    plugin.getLogger().warning("Failed to delete place preset group: " + ex.getMessage());
+                    return false;
+                });
+    }
+
     public List<PlacePreset> getPresetsInGroup(String group) {
         if (group == null) {
             return List.of();

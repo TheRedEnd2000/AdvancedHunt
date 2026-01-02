@@ -60,12 +60,21 @@ public class PlacePresetGroupMenu extends PagedMenu {
                                 "%group%", group))
                         .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.groups.group.lore", false,
                                 "%count%", String.valueOf(plugin.getPlacePresetManager().getPresetsInGroup(group).size()),
-                                "%action%", plugin.getMessageManager().getMessage("gui.place_presets.groups.group.action.open", false)))
+                        "%action%", plugin.getMessageManager().getMessage("gui.place_presets.groups.group.action.open", false),
+                        "%action2%", plugin.getMessageManager().getMessage("gui.place_presets.groups.group.action.manage", false)))
                         .build();
 
-                addPagedItem(index++, icon, click -> new PlacePresetListMenu(playerMenuUtility, plugin, group)
+                addPagedItem(index++, icon, click -> {
+                    if (click.isRightClick()) {
+                    new PlacePresetGroupActionsMenu(playerMenuUtility, plugin, group)
                         .setPreviousMenu(this)
-                        .open());
+                        .open();
+                    return;
+                    }
+                    new PlacePresetListMenu(playerMenuUtility, plugin, group)
+                        .setPreviousMenu(this)
+                        .open();
+                });
             }
 
             addMenuBorder();
