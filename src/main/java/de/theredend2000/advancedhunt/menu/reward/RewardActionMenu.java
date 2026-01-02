@@ -206,14 +206,11 @@ public class RewardActionMenu extends Menu {
         // Invalid item
         return new ItemBuilder(Material.BARRIER)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.invalid_item.name", false))
-            .setLore(
-                "",
-                plugin.getMessageManager().getMessage("gui.rewards.invalid_item.lore", false),
-                "",
-                ChatColor.DARK_GRAY + "─────────────",
-                plugin.getMessageManager().getMessage("gui.rewards.chance_lore", false,
-                    "%chance%", formatChance(reward.getChance()))
-            )
+            .setLore(plugin.getMessageManager().getMessageList(
+                "gui.rewards.invalid_item.lore",
+                false,
+                "%chance%", formatChance(reward.getChance())
+            ))
             .build();
     }
 

@@ -171,35 +171,31 @@ public class CollectionListMenu extends PagedMenu {
             }
         }
 
-        String foundLine = playerFoundSize == null
-            ? plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.players_found_loading", false)
-            : plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.players_found", false,
-                "%count%", String.valueOf(playerFoundSize));
-
         builder.setDisplayName(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.name", false,
             "%number%", String.valueOf(index + 1)));
-        builder.addLoreLine(foundLine);
-        builder.addLoreLine("");
-        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_header", false));
-        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_x", false,
-            "%x%", String.valueOf(treasureCore.getLocation().getBlockX())));
-        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_y", false,
-            "%y%", String.valueOf(treasureCore.getLocation().getBlockY())));
-        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_z", false,
-            "%z%", String.valueOf(treasureCore.getLocation().getBlockZ())));
-        builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.location_world", false,
-            "%world%", treasureCore.getLocation().getWorld().getName()));
-        builder.addLoreLine("");
+
+        String foundCount = playerFoundSize == null ? "..." : String.valueOf(playerFoundSize);
+        List<String> lore = plugin.getMessageManager().getMessageList(
+                "gui.collection_content.treasure_item.lore",
+                false,
+                "%count%", foundCount,
+                "%x%", String.valueOf(treasureCore.getLocation().getBlockX()),
+                "%y%", String.valueOf(treasureCore.getLocation().getBlockY()),
+                "%z%", String.valueOf(treasureCore.getLocation().getBlockZ()),
+                "%world%", treasureCore.getLocation().getWorld().getName()
+        );
         
         if (playerMenuUtility.hasPermission("advancedhunt.admin.teleport")) {
-            builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_teleport", false));
+            lore.add(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_teleport", false));
         }
         if (playerMenuUtility.hasPermission("advancedhunt.admin.view_finders")) {
-            builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_who_found", false));
+            lore.add(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_who_found", false));
         }
         if (playerMenuUtility.hasPermission("advancedhunt.admin.rewards")) {
-            builder.addLoreLine(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_reward", false));
+            lore.add(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.lore_reward", false));
         }
+
+        builder.setLore(lore);
 
         return builder.build();
     }

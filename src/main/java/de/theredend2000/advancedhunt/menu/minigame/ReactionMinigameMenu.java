@@ -92,7 +92,7 @@ public class ReactionMinigameMenu extends MinigameMenu {
         currentSlot = getRandomSlot();
         updateSlot(currentSlot, new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.minigame.reaction.click.name", false))
-            .setLore(plugin.getMessageManager().getMessage("gui.minigame.reaction.click.lore", false,
+            .setLore(plugin.getMessageManager().getMessageList("gui.minigame.reaction.click.lore", false,
                 "%current%", String.valueOf(currentCount + 1),
                 "%required%", String.valueOf(hintCount)))
                 .build());

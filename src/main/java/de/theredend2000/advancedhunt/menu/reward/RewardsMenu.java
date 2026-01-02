@@ -252,11 +252,11 @@ public class RewardsMenu extends PagedMenu {
             // Fallback for invalid item data
             return new ItemBuilder(Material.BARRIER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.invalid_item.name", false))
-                    .setLore(
-                    plugin.getMessageManager().getMessage("gui.rewards.invalid_item.lore", false),
-                            "",
-                            chanceLore
-                    )
+                .setLore(plugin.getMessageManager().getMessageList(
+                    "gui.rewards.invalid_item.lore",
+                    false,
+                    "%chance%", formatChance(reward.getChance())
+                ))
                     .build();
         }
 
