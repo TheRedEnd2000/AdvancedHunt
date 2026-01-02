@@ -108,22 +108,22 @@ public class CronEditorMenu extends Menu {
         addButton(11, new ItemBuilder(Material.SUNFLOWER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.daily.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.daily.lore").toArray(new String[0]))
-                .build(), (e) -> applyPreset("0 0 0 * * ? *", "gui.cron.preset.daily.name"));
+            .build(), (e) -> applyPreset("0 0 0 * * ? *", "feedback.cron.preset.daily.name"));
 
         addButton(12, new ItemBuilder(Material.PAPER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.weekly.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.weekly.lore").toArray(new String[0]))
-                .build(), (e) -> applyPreset("0 0 0 ? * MON *", "gui.cron.preset.weekly.name"));
+            .build(), (e) -> applyPreset("0 0 0 ? * MON *", "feedback.cron.preset.weekly.name"));
 
         addButton(13, new ItemBuilder(Material.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.monthly.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.monthly.lore").toArray(new String[0]))
-                .build(), (e) -> applyPreset("0 0 0 1 * ? *", "gui.cron.preset.monthly.name"));
+            .build(), (e) -> applyPreset("0 0 0 1 * ? *", "feedback.cron.preset.monthly.name"));
 
         addButton(14, new ItemBuilder(Material.EXPERIENCE_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.yearly.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.yearly.lore").toArray(new String[0]))
-                .build(), (e) -> applyPreset("0 0 0 1 1 ? *", "gui.cron.preset.yearly.name"));
+            .build(), (e) -> applyPreset("0 0 0 1 1 ? *", "feedback.cron.preset.yearly.name"));
 
         // More Presets Button
         addButton(15, new ItemBuilder(Material.BOOKSHELF)

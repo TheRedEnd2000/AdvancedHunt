@@ -133,7 +133,7 @@ public class ActDurationMenu extends Menu {
             Player player = (Player) e.getWhoClicked();
             player.closeInventory();
             
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.duration.prompt"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.components.duration.prompt"));
             
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
                 if (ActFormatParser.isValidDuration(input)) {

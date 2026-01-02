@@ -118,7 +118,7 @@ public class ActRulesMenu extends PagedMenu {
                             collection.removeActRule(rule.getId());
                             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                                 plugin.getServer().getScheduler().runTask(plugin, () -> {
-                                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.rules.list.rule_deleted",
+                                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.rules.rule_deleted",
                                             "%name%", rule.getName()));
                                     refresh();
                                     processing = false;

@@ -111,7 +111,7 @@ public class ActDateRangeMenu extends Menu {
             Player player = (Player) e.getWhoClicked();
             player.closeInventory();
             
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.components.date_range.prompt"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.components.date_range.prompt"));
             
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
                 if (ActFormatParser.isValidDateRange(input)) {

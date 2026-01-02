@@ -89,7 +89,7 @@ public class ActPresetMenu extends PagedMenu {
             
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.presets.applied", 
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.presets.applied", 
                         "%preset%", preset.getName(plugin)));
                     
                     if (previousMenu != null) {
@@ -100,7 +100,7 @@ public class ActPresetMenu extends PagedMenu {
                 });
             });
         } else {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.error.format.invalid_format"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.act.format.invalid_format"));
             if (previousMenu != null) {
                 previousMenu.open();
             }

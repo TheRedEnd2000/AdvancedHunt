@@ -129,7 +129,7 @@ public class AddItemRewardMenu extends Menu {
         ItemStack item = inventory.getItem(ITEM_SLOT);
         
         if (item == null || item.getType() == Material.AIR) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.add.item.no_item"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.rewards.add.item.no_item"));
             return;
         }
         
@@ -138,7 +138,7 @@ public class AddItemRewardMenu extends Menu {
         if(edit){
             String serialized = ItemSerializer.serialize(item);
             parentMenu.updateRewardValue(rewardIndex, serialized);
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.rewards.value_updated"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.rewards.value_updated"));
             parentMenu.open();
             return;
         }
