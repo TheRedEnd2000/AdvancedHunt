@@ -1134,6 +1134,20 @@ def _resolve_dynamic_key_expr(masked_lines: list[str], key_expr: str, *, line_1_
         # If unknown, would be '*.suffix' which we disallow.
         return (), None
 
+    # "prefix" + no-arg method call (where the method returns known string literals)
+    prefix_call = _parse_literal_plus_noarg_call(expr)
+    if prefix_call is not None:
+        prefix, method_name = prefix_call
+        method_values = _extract_noarg_string_method_return_literals(masked_lines).get(method_name)
+        if method_values:
+            return tuple(prefix + v for v in method_values), None
+        # Even if unknown, prefix + '*' is safe (never starts with '*').
+        if prefix:
+            candidate = prefix + "*"
+            if not candidate.startswith("*"):
+                return (), candidate
+        return (), None
+
     # "prefix" + symbol
     prefix_sym = _parse_literal_plus_identifier(expr)
     if prefix_sym is not None:
@@ -1155,6 +1169,71 @@ def _resolve_dynamic_key_expr(masked_lines: list[str], key_expr: str, *, line_1_
         return (), None
 
     return (), None
+
+
+def _parse_literal_plus_noarg_call(expr: str) -> Optional[tuple[str, str]]:
+    """Parse: "prefix" + methodName()"""
+    m = re.match(r"^\s*(?P<lit>\"(?:\\.|[^\"\\])*\")\s*\+\s*(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)\s*$", expr)
+    if not m:
+        return None
+    lit = _parse_java_string_literal(m.group("lit"))
+    if lit is None:
+        return None
+    return lit, m.group("name")
+
+
+def _strip_java_string_literals(text: str) -> str:
+    return re.sub(r'"(?:\\.|[^"\\])*"', '""', text)
+
+
+def _extract_noarg_string_method_return_literals(masked_lines: list[str]) -> dict[str, tuple[str, ...]]:
+    """Extract simple no-arg String methods that return literal strings.
+
+    Supported forms:
+    - return "x";
+    - return cond ? "a" : "b";
+
+    This is intentionally conservative and file-local.
+    """
+    out: dict[str, tuple[str, ...]] = {}
+    i = 0
+    sig_re = re.compile(r"^\s*(?:public|protected|private)?\s*(?:final\s+)?String\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)\s*\{\s*$")
+    while i < len(masked_lines):
+        m = sig_re.match(masked_lines[i])
+        if not m:
+            i += 1
+            continue
+        name = m.group("name")
+        brace = 1
+        body_lines: list[str] = []
+        i += 1
+        while i < len(masked_lines) and brace > 0:
+            line = masked_lines[i]
+            stripped = _strip_java_string_literals(line)
+            brace += stripped.count("{")
+            brace -= stripped.count("}")
+            body_lines.append(line)
+            i += 1
+
+        body = "\n".join(body_lines)
+        m_ret = re.search(r"\breturn\s+(?P<expr>.+?);", body, flags=re.DOTALL)
+        if not m_ret:
+            continue
+        expr = " ".join(m_ret.group("expr").split())
+
+        # return "literal";
+        lit = _parse_java_string_literal(expr)
+        if lit is not None:
+            out[name] = (lit,)
+            continue
+
+        # return cond ? "a" : "b";
+        tern = _try_resolve_simple_ternary_literals(expr)
+        if tern is not None:
+            out[name] = tern
+            continue
+
+    return out
 
 
 def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[LiteralKeyUsage], list[DynamicKeyUsage]]:
@@ -1179,6 +1258,20 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
         masked_lines = masked.splitlines()
         line_starts = _build_line_starts(text)
         rel = path.relative_to(root).as_posix()
+
+        # Special-case: helper method buildCollectionActionItem(baseKey, ...) is called with a literal baseKey,
+        # but the underlying lookups are baseKey + ".name" / ".lore" / ".lore_disabled".
+        # Expand those call sites into concrete key usages so they aren't lost as disallowed "*.suffix" dynamics.
+        expanded_collection_action_base_keys: list[tuple[str, int]] = []
+        for m in re.finditer(r"\bbuildCollectionActionItem\s*\(\s*(\"(?:\\.|[^\"\\])*\")\s*,", masked):
+            lit = _parse_java_string_literal(m.group(1))
+            if lit is None:
+                continue
+            call_line = _line_of_offset(line_starts, m.start())
+            expanded_collection_action_base_keys.append((lit, call_line))
+            for suffix in (".name", ".lore", ".lore_disabled"):
+                site = UsageSite(file=rel, line=call_line, method="buildCollectionActionItem", key_expr=m.group(1) + " + \"" + suffix + "\"", apply_prefix=False, delivery="gui")
+                literals.append(LiteralKeyUsage(key=lit + suffix, site=site, group="gui"))
 
         # Extract constant String[] arrays of message keys in this file so we can
         # resolve usages like getMessage(DIRECTION_KEYS[index]).
@@ -1252,6 +1345,13 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                     delivery = "gui"
 
             site = UsageSite(file=rel, line=line, method=method, key_expr=key_expr, apply_prefix=apply_prefix, delivery=delivery)
+
+            # Suppress the internal helper lookups for buildCollectionActionItem(...)
+            # when we already expanded the literal call sites.
+            if expanded_collection_action_base_keys and (
+                key_expr.replace(" ", "") in ("baseKey+\".name\"", "baseKey+\".lore\"", "baseKey+\".lore_disabled\"")
+            ):
+                continue
 
             if key_literal is not None:
                 group = _infer_group_for_literal(key_literal, apply_prefix)
