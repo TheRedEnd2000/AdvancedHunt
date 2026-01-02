@@ -26,8 +26,8 @@ public class CollectionRewardHolder implements RewardHolder {
     }
 
     @Override
-    public String getDisplayName() {
-        return collection.getName();
+    public String getRewardsTitleKey() {
+        return "gui.rewards.collection_title";
     }
 
     public Collection getCollection() {

@@ -244,7 +244,7 @@ public class CollectionListMenu extends PagedMenu {
                             .setPreviousMenu(this);
 
                     if (collectionContext != null) {
-                        menu.setAlternateContext(new CollectionRewardHolder(plugin, collectionContext), "gui.rewards.collection_title");
+                        menu.setAlternateContext(new CollectionRewardHolder(plugin, collectionContext));
                     }
 
                     menu.open();

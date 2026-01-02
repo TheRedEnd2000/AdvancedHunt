@@ -32,11 +32,9 @@ public class RewardsMenu extends PagedMenu {
 
     private final RewardHolder holder;
     private final List<Reward> rewards;
-    private String titleKey = "gui.rewards.title";
-    
+
     // Optional context for switching between treasure and collection rewards
     private RewardHolder alternateHolder;
-    private String alternateTitleKey;
 
     /**
      * Creates a reward menu.
@@ -49,24 +47,18 @@ public class RewardsMenu extends PagedMenu {
         this.maxItemsPerPage = 28; // 4 rows × 7 columns
     }
 
-    public RewardsMenu setTitleKey(String titleKey) {
-        this.titleKey = titleKey;
-        return this;
-    }
-    
     /**
      * Sets an alternate holder and title for switching contexts.
      * For example, allows switching between treasure and collection rewards.
      */
-    public RewardsMenu setAlternateContext(RewardHolder alternateHolder, String alternateTitleKey) {
+    public RewardsMenu setAlternateContext(RewardHolder alternateHolder) {
         this.alternateHolder = alternateHolder;
-        this.alternateTitleKey = alternateTitleKey;
         return this;
     }
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage(titleKey, false);
+        return plugin.getMessageManager().getMessage(holder.getRewardsTitleKey(), false);
     }
 
     @Override
@@ -148,7 +140,7 @@ public class RewardsMenu extends PagedMenu {
             });
 
         // Determine if we're in treasure or collection context
-        RewardPresetType presetType = titleKey.contains("collection") ? RewardPresetType.COLLECTION : RewardPresetType.TREASURE;
+        RewardPresetType presetType = holder.getRewardsTitleKey().contains("collection") ? RewardPresetType.COLLECTION : RewardPresetType.TREASURE;
         boolean isCollection = presetType == RewardPresetType.COLLECTION;
         String presetContext = presetType == RewardPresetType.COLLECTION ? "collection" : "treasure";
 
@@ -225,8 +217,7 @@ public class RewardsMenu extends PagedMenu {
                     .build(), e -> {
                 // Switch to the alternate context
                 RewardsMenu newMenu = new RewardsMenu(playerMenuUtility, plugin, alternateHolder)
-                        .setTitleKey(alternateTitleKey)
-                        .setAlternateContext(holder, titleKey);
+                        .setAlternateContext(holder);
                 newMenu.open();
             });
         }
