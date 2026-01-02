@@ -1369,8 +1369,7 @@ gui:
             - "&cClick to delete"
     error:
       format:
-        error:
-          invalid_format: "%prefix%&cInvalid ACT format! Expected: [DATE_RANGE] [DURATION] [CRON]"
+        invalid_format: "%prefix%&cInvalid ACT format! Expected: [DATE_RANGE] [DURATION] [CRON]"
     components:
       duration:
         editor:

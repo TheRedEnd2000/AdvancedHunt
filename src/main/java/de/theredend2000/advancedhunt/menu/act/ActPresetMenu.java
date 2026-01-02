@@ -100,7 +100,7 @@ public class ActPresetMenu extends PagedMenu {
                 });
             });
         } else {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.error.format.error.invalid_format"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("gui.act.error.format.invalid_format"));
             if (previousMenu != null) {
                 previousMenu.open();
             }
