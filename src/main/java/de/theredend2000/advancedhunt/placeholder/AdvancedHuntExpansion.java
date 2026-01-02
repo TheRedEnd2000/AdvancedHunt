@@ -22,11 +22,7 @@ import java.util.UUID;
  * Supported placeholders:
  * <ul>
  *     <li>%advancedhunt_found_count% - Total found treasures (global)</li>
- *     <li>%advancedhunt_selected_collection% - Name of the selected collection (Deprecated)</li>
  *     <li>%advancedhunt_collection_size% - Total number of collections</li>
- *     <li>%advancedhunt_max_treasures% - Max treasures in the selected collection (Deprecated)</li>
- *     <li>%advancedhunt_found_treasures% - Found treasures in the selected collection (Deprecated)</li>
- *     <li>%advancedhunt_remaining_treasures% - Remaining treasures in the selected collection (Deprecated)</li>
  *     <li>%advancedhunt_has_found_<treasure_id>% - "true"/"false" if found</li>
  *     <li>%advancedhunt_max_treasures_<collection>% - Max treasures in a specific collection</li>
  *     <li>%advancedhunt_found_treasures_<collection>% - Found treasures in a specific collection</li>
@@ -88,40 +84,6 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
         // %advancedhunt_collection_size%
         if (params.equalsIgnoreCase("collection_size")) {
             return String.valueOf(collectionManager.getAllCollections().size());
-        }
-
-        // %advancedhunt_selected_collection% (Deprecated)
-        if (params.equalsIgnoreCase("selected_collection")) {
-            UUID selectedId = data.getSelectedCollectionId();
-            if (selectedId != null) {
-                return collectionManager.getCollectionById(selectedId)
-                        .map(Collection::getName)
-                        .orElse("Unknown");
-            }
-            return "None";
-        }
-
-        // Context-aware placeholders (Selected Collection) (Deprecated)
-        if (params.equalsIgnoreCase("max_treasures") ||
-            params.equalsIgnoreCase("found_treasures") ||
-            params.equalsIgnoreCase("remaining_treasures")) {
-            
-            UUID selectedId = data.getSelectedCollectionId();
-            if (selectedId == null) return "0";
-
-            List<TreasureCore> allCores = treasureManager.getTreasureCoresInCollection(selectedId);
-            if (allCores.isEmpty()) return "0";
-
-            int total = allCores.size();
-            int foundCount = treasureManager.countFoundInCollection(data.getFoundTreasures(), selectedId);
-
-            if (params.equalsIgnoreCase("max_treasures")) {
-                return String.valueOf(total);
-            }
-            if (params.equalsIgnoreCase("found_treasures")) {
-                return String.valueOf(foundCount);
-            }
-            return String.valueOf(total - foundCount);
         }
 
         // %advancedhunt_has_found_<treasure_id>%

@@ -7,18 +7,7 @@ This document lists all available PlaceholderAPI placeholders for AdvancedHunt.
 | Placeholder | Description |
 | :--- | :--- |
 | `%advancedhunt_found_count%` | Total number of treasures found by the player across all collections. |
-| `%advancedhunt_selected_collection%` | The name of the collection currently selected by the player. Returns "None" if no collection is selected. |
 | `%advancedhunt_collection_size%` | The total number of collections available on the server. |
-
-## Context-Aware Placeholders (Selected Collection)
-
-These placeholders return values based on the player's currently selected collection. If no collection is selected, they return "0".
-
-| Placeholder | Description |
-| :--- | :--- |
-| `%advancedhunt_max_treasures%` | The total number of treasures in the selected collection. |
-| `%advancedhunt_found_treasures%` | The number of treasures the player has found in the selected collection. |
-| `%advancedhunt_remaining_treasures%` | The number of treasures remaining for the player to find in the selected collection. |
 
 ## Collection-Specific Placeholders
 
@@ -55,5 +44,4 @@ Replace `<collection>` with the collection name and `<rank>` with the position (
 If you are migrating from AdvancedHunt V2, please note the following changes:
 
 1.  **Global Leaderboards**: Global leaderboards (e.g., `%advancedhunt_top_player_<rank>%` without a collection) are **no longer supported**. You must specify a collection name.
-2.  **Selected Collection**: `%advancedhunt_selected_collection%` now returns "None" if no collection is selected, whereas V2 might have defaulted to a config-defined collection.
-3.  **Aliases**: We have added aliases to support V2 naming conventions (e.g., `remaining_treasures` works alongside `remaining_count`), so most existing setups should work without changes.
+2.  **Aliases**: We have added aliases to support V2 naming conventions (e.g., `remaining_treasures` works alongside `remaining_count`), so most existing setups should work without changes.
