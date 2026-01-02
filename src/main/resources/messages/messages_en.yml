@@ -825,6 +825,8 @@ gui:
           - "&eClick to delete"
         confirm_title: "Delete preset '%name%'?"
   cron:
+    common:
+      invalid_expression: "&c&l⚠ Invalid expression"
     type:
       act: "ACT"
       reset: "Progress Reset"
@@ -836,7 +838,6 @@ gui:
         next_runs: "&7Next executions:"
         none: "&7No schedule set"
         manual: "&7Manual schedule (no cron)"
-        invalid: "&c&l⚠ Invalid expression"
     preset:
       information:
         name: "&e---------->"
@@ -1105,7 +1106,6 @@ gui:
         name: "&e&lPreview"
         current_expression: "&7Current Expression:"
         next_runs: "&7Next runs:"
-        invalid: "&c&l⚠ Invalid expression"
       field:
         selected_name: "&a&l► %name%"
         unselected_name: "&7%name%"
