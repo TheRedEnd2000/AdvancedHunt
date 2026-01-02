@@ -931,6 +931,59 @@ def _find_recent_assignment_rhs(masked_lines: list[str], symbol: str, *, upto_li
     return None
 
 
+def _collect_recent_literal_assignments(masked_lines: list[str], symbol: str, *, upto_line_1_based: int, max_lookback: int = 240) -> tuple[str, ...]:
+    """Collect nearby assignments `symbol = "...";` above the given line (1-based).
+
+    This is intentionally conservative: it only returns string-literal RHS values.
+    Useful for patterns like:
+      String key;
+      switch (...) { case A: key = "x"; ... case B: key = "y"; ... }
+      getMessage(key)
+    """
+
+    start = max(0, upto_line_1_based - 2)
+    end = max(-1, start - max_lookback)
+    assign_hint = re.compile(r"\b" + re.escape(symbol) + r"\b\s*=")
+    decl_hint = re.compile(r"\bString\b[^;\n]*\b" + re.escape(symbol) + r"\b")
+
+    out: list[str] = []
+    seen: set[str] = set()
+
+    for i in range(start, end, -1):
+        line = masked_lines[i]
+
+        # Stop if we reached a likely declaration (limits overreach across scopes).
+        if decl_hint.search(line):
+            break
+
+        if symbol not in line:
+            continue
+        if not assign_hint.search(line):
+            continue
+
+        stmt = _gather_statement_from(masked_lines, i)
+        if stmt is None:
+            continue
+        m = re.search(r"\b" + re.escape(symbol) + r"\b\s*=\s*(.+?)\s*;", stmt, flags=re.DOTALL)
+        if not m:
+            continue
+        rhs = m.group(1).strip()
+
+        lit = _parse_java_string_literal(rhs)
+        if lit is None:
+            continue
+        if lit in seen:
+            continue
+        seen.add(lit)
+        out.append(lit)
+
+        # Don't collect an unbounded amount.
+        if len(out) >= 32:
+            break
+
+    return tuple(out)
+
+
 def _resolve_dynamic_key_expr(masked_lines: list[str], key_expr: str, *, line_1_based: int) -> tuple[tuple[str, ...], Optional[str]]:
     """Try to resolve a dynamic key expression into literals or a safe pattern.
 
@@ -949,6 +1002,11 @@ def _resolve_dynamic_key_expr(masked_lines: list[str], key_expr: str, *, line_1_
             pat = _derive_safe_pattern_from_concat(rhs)
             if pat is not None:
                 return (), pat
+
+        # If we couldn't resolve a single RHS, try collecting multiple literal assignments.
+        lits = _collect_recent_literal_assignments(masked_lines, sym, upto_line_1_based=line_1_based)
+        if lits:
+            return lits, None
         return (), None
 
     # symbol + "suffix"
@@ -1141,7 +1199,7 @@ def _extract_cron_field_value_keys(java_root: Path) -> set[str]:
     # Matches enum constant entries like:
     #   DAY("day", "*", 1, 31, List.of("1", "15", "L", "*", "?")),
     enum_const_re = re.compile(
-        r"^\s*[A-Z0-9_]+\(\s*(\"(?:\\.|[^\"\\])*\")\s*,.*?List\.of\((.*?)\)\s*\)\s*,?\s*$",
+        r"^\s*[A-Z0-9_]+\(\s*(\"(?:\\.|[^\"\\])*\")\s*,.*?List\.of\((.*?)\)\s*\)\s*(?:,|;)\s*$",
         re.MULTILINE | re.DOTALL,
     )
 
