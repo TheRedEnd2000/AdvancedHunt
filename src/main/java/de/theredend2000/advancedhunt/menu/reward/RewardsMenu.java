@@ -419,7 +419,7 @@ public class RewardsMenu extends PagedMenu {
         if (mode == QuickActionMode.GET_INSTANCE) {
             return plugin.getMessageManager().getMessage("gui.rewards.quick_mode.mode_get_instance", false);
         }
-        return plugin.getMessageManager().getMessage("gui.common.delete", false);
+        return plugin.getMessageManager().getMessage("gui.rewards.quick_mode.mode_delete", false);
     }
 
     private String getQuickActionActionDisplay(QuickActionMode mode) {
