@@ -255,11 +255,15 @@ public class CronFieldMenu extends Menu {
     }
     
     private void navigateBack() {
+        if (previousMenu instanceof CronEditorMenu cronEditorMenu && cronEditorMenu.getAfterApplyMenu() != null) {
+            cronEditorMenu.getAfterApplyMenu().open();
+            return;
+        }
         if (previousMenu != null) {
             previousMenu.open();
-        } else {
-            new CronEditorMenu(playerMenuUtility, plugin, holder, policy).open();
+            return;
         }
+        new CronEditorMenu(playerMenuUtility, plugin, holder, policy).open();
     }
 
     private enum CronField {
