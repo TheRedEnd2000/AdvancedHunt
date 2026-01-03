@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.theredend2000.advancedhunt.util.updater.UpdateInfo;
 import de.theredend2000.advancedhunt.util.updater.UpdateSource;
 import org.bukkit.Bukkit;
 
@@ -15,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -23,7 +25,7 @@ public class ModrinthSource implements UpdateSource {
     private static final String API_URL = "https://api.modrinth.com/v2/project/%s/version";
 
     @Override
-    public CompletableFuture<String> getLatestVersion(String id) {
+    public CompletableFuture<UpdateInfo> getLatestUpdate(String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 URL url = new URL(String.format(API_URL, id));
@@ -38,10 +40,16 @@ public class ModrinthSource implements UpdateSource {
                     for (JsonElement element : versions) {
                         JsonObject versionObj = element.getAsJsonObject();
                         String versionType = versionObj.get("version_type").getAsString();
-                        
-                        // Ignore alpha/beta if requested (user said ignore beta/alpha/snapshot)
+
+                        // Only stable releases
                         if (versionType.equalsIgnoreCase("release")) {
-                            return cleanVersion(versionObj.get("version_number").getAsString());
+                            String sourceVersion = versionObj.get("version_number").getAsString();
+                            String version = cleanVersion(sourceVersion);
+                            Instant publishedAt = null;
+                            if (versionObj.has("date_published") && !versionObj.get("date_published").isJsonNull()) {
+                                publishedAt = Instant.parse(versionObj.get("date_published").getAsString());
+                            }
+                            return new UpdateInfo(version, sourceVersion, publishedAt);
                         }
                     }
                 }
@@ -60,7 +68,7 @@ public class ModrinthSource implements UpdateSource {
     }
 
     @Override
-    public CompletableFuture<Boolean> downloadPlugin(String id, String version, File destination) {
+    public CompletableFuture<Boolean> downloadPlugin(String id, UpdateInfo update, File destination) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // First find the version again to get the download URL
@@ -75,7 +83,8 @@ public class ModrinthSource implements UpdateSource {
                     
                     for (JsonElement element : versions) {
                         JsonObject versionObj = element.getAsJsonObject();
-                        if (versionObj.get("version_number").getAsString().equals(version)) {
+                        String sourceVersion = versionObj.get("version_number").getAsString();
+                        if (sourceVersion.equals(update.sourceVersion()) || cleanVersion(sourceVersion).equals(update.version())) {
                             JsonArray files = versionObj.getAsJsonArray("files");
                             if (files.size() > 0) {
                                 String downloadUrl = files.get(0).getAsJsonObject().get("url").getAsString();

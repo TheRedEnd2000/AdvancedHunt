@@ -5,20 +5,20 @@ import java.util.concurrent.CompletableFuture;
 
 public interface UpdateSource {
     /**
-     * Checks for the latest version of the plugin.
+     * Checks for the latest stable update of the plugin.
      * @param id The identifier of the plugin on this platform (slug, id, etc.)
-     * @return A future completing with the latest version string, or null if not found/error.
+     * @return A future completing with update info, or null if not found/error.
      */
-    CompletableFuture<String> getLatestVersion(String id);
+    CompletableFuture<UpdateInfo> getLatestUpdate(String id);
 
     /**
-     * Downloads the specified version of the plugin.
+    * Downloads the specified update of the plugin.
      * @param id The identifier of the plugin on this platform.
-     * @param version The version to download.
+    * @param update The update to download.
      * @param destination The file to save the plugin to.
      * @return A future completing with true if successful, false otherwise.
      */
-    CompletableFuture<Boolean> downloadPlugin(String id, String version, File destination);
+    CompletableFuture<Boolean> downloadPlugin(String id, UpdateInfo update, File destination);
     
     /**
      * @return The name of the source (e.g. "Modrinth", "SpigotMC").

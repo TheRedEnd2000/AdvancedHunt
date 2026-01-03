@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.util.updater.source;
 
+import de.theredend2000.advancedhunt.util.updater.UpdateInfo;
 import de.theredend2000.advancedhunt.util.updater.UpdateSource;
 import org.bukkit.Bukkit;
 import org.w3c.dom.Document;
@@ -15,6 +16,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -23,7 +27,7 @@ public class BukkitSource implements UpdateSource {
     private static final String RSS_URL = "https://dev.bukkit.org/projects/%s/files.rss";
 
     @Override
-    public CompletableFuture<String> getLatestVersion(String id) {
+    public CompletableFuture<UpdateInfo> getLatestUpdate(String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 URL url = new URL(String.format(RSS_URL, id));
@@ -42,7 +46,13 @@ public class BukkitSource implements UpdateSource {
                         String title = item.getElementsByTagName("title").item(0).getTextContent();
                         
                         if (!isUnstable(title)) {
-                            return cleanVersion(title);
+                            Instant publishedAt = null;
+                            NodeList pubDates = item.getElementsByTagName("pubDate");
+                            if (pubDates.getLength() > 0) {
+                                String pubDate = pubDates.item(0).getTextContent();
+                                publishedAt = ZonedDateTime.parse(pubDate, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant();
+                            }
+                            return new UpdateInfo(cleanVersion(title), title, publishedAt);
                         }
                     }
                 }
@@ -76,7 +86,7 @@ public class BukkitSource implements UpdateSource {
     }
 
     @Override
-    public CompletableFuture<Boolean> downloadPlugin(String id, String version, File destination) {
+    public CompletableFuture<Boolean> downloadPlugin(String id, UpdateInfo update, File destination) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Parse RSS again to find the link
@@ -95,7 +105,7 @@ public class BukkitSource implements UpdateSource {
                         Element item = (Element) items.item(i);
                         String title = item.getElementsByTagName("title").item(0).getTextContent();
                         
-                        if (title.equals(version)) {
+                        if (title.equals(update.sourceVersion())) {
                             String link = item.getElementsByTagName("link").item(0).getTextContent();
                             // The link in RSS is the page link, not the direct download link.
                             // Usually: https://dev.bukkit.org/projects/plugin-name/files/12345
