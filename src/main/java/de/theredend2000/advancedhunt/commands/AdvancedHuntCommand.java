@@ -511,7 +511,7 @@ public class AdvancedHuntCommand {
         }
 
         if(collectionName == null){
-            player.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.disabled"));
+            player.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.not_in_place_mode"));
             return;
         }
 

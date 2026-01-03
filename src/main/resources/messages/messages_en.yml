@@ -184,8 +184,9 @@ command:
   place_mode:
     disabled: "%prefix%&aPlace mode disabled."
     enabled: "%prefix%&aPlace mode enabled for collection &e%collection%&a. Place blocks to add treasures."
+    not_in_place_mode: "%prefix%&cYou are not in place mode."
     no_break: "%prefix%&cYou cannot break blocks in place mode!"
-    use_command: "%prefix%&fUse the placepreset menu to receive your saved treasures."
+    use_command: "%prefix%&eUse /ah placepreset &eto receive your saved treasures."
   reset:
     all_success: "%prefix%&aReset &e%count% &atreasure records for all players across all collections!"
     collection_success: "%prefix%&aReset &e%count% &atreasure records for collection &e%collection%&a!"
