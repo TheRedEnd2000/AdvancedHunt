@@ -13,6 +13,26 @@ public class ItemsAdderAdapter {
     private static Class<?> customFurnitureClass;
     private static Class<?> customStackClass;
 
+    private static Object tryGetInstance(Class<?> clazz, String id) {
+        if (clazz == null || id == null) return null;
+        try {
+            Method getInstance = clazz.getMethod("getInstance", String.class);
+            return getInstance.invoke(null, id);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private static ItemStack tryGetItemStack(Object instance) {
+        if (instance == null) return null;
+        try {
+            Method getItemStack = instance.getClass().getMethod("getItemStack");
+            return (ItemStack) getItemStack.invoke(instance);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
     static {
         try {
             customBlockClass = Class.forName("dev.lone.itemsadder.api.CustomBlock");
@@ -127,16 +147,16 @@ public class ItemsAdderAdapter {
 
     public static ItemStack getCustomItem(String id) {
         if (!enabled || id == null) return null;
-        try {
-            Method getInstance = customStackClass.getMethod("getInstance", String.class);
-            Object customStack = getInstance.invoke(null, id);
-            if (customStack != null) {
-                Method getItemStack = customStackClass.getMethod("getItemStack");
-                return (ItemStack) getItemStack.invoke(customStack);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+
+        // Prefer CustomStack (the usual way to obtain an inventory item)
+        ItemStack item = tryGetItemStack(tryGetInstance(customStackClass, id));
+        if (item != null) return item;
+
+        // Fallback: some IDs are resolved via CustomBlock/CustomFurniture instances
+        item = tryGetItemStack(tryGetInstance(customBlockClass, id));
+        if (item != null) return item;
+
+        item = tryGetItemStack(tryGetInstance(customFurnitureClass, id));
+        return item;
     }
 }

@@ -61,7 +61,10 @@ public interface DataRepository {
     }
 
     /**
-     * Loads lightweight treasure cores (no rewards, no NBT/block state).
+     * Loads lightweight treasure cores (no rewards, no NBT).
+     *
+     * Note: cores do include material + blockState for correct rendering of
+     * ItemsAdder custom blocks/furniture without loading full treasure objects.
      *
      * This is the preferred startup/indexing API for memory and performance.
      * Use {@link #loadTreasure(UUID)} when full treasure data is required.

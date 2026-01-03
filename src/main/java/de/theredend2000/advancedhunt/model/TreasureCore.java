@@ -15,12 +15,18 @@ public class TreasureCore {
     private final UUID collectionId;
     private final Location location;
     private final String material;
+    private final String blockState;
 
-    public TreasureCore(UUID id, UUID collectionId, Location location, String material) {
+    public TreasureCore(UUID id, UUID collectionId, Location location, String material, String blockState) {
         this.id = id;
         this.collectionId = collectionId;
         this.location = location;
         this.material = material;
+        this.blockState = blockState;
+    }
+
+    public TreasureCore(UUID id, UUID collectionId, Location location, String material) {
+        this(id, collectionId, location, material, null);
     }
 
     public UUID getId() {
@@ -38,6 +44,10 @@ public class TreasureCore {
     public String getMaterial() {
         return material;
     }
+
+    public String getBlockState() {
+        return blockState;
+    }
     
     /**
      * Creates a TreasureCore from a full Treasure object.
@@ -47,7 +57,8 @@ public class TreasureCore {
             treasure.getId(),
             treasure.getCollectionId(),
             treasure.getLocation(),
-            treasure.getMaterial()
+            treasure.getMaterial(),
+            treasure.getBlockState()
         );
     }
 }

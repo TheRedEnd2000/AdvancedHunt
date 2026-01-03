@@ -595,7 +595,8 @@ public class YamlRepository implements DataRepository {
                                     Location loc = new Location(Bukkit.getWorld(worldName), x, y, z);
 
                                     String material = config.getString("material");
-                                    cores.add(new TreasureCore(id, collectionId, loc, material));
+                                    String blockState = config.getString("block-state");
+                                    cores.add(new TreasureCore(id, collectionId, loc, material, blockState));
                                 } catch (Exception e) {
                                     plugin.getLogger().warning("Failed to load treasure core " + file.getName() + ": " + e.getMessage());
                                 }

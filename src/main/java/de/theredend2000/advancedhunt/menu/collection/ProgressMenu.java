@@ -7,6 +7,7 @@ import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -203,11 +204,19 @@ public class ProgressMenu extends PagedMenu {
 
         if (isFound) {
             statusColor = ChatColor.GREEN.toString();
-            Material material = Material.matchMaterial(treasureCore.getMaterial());
-            if (material == null) material = Material.CHEST;
+            ItemStack item = null;
+            if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
+                item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
+            }
 
-            XMaterial xMaterial = XMaterial.matchXMaterial(material);
-            ItemStack item = XMaterialHelper.getItemStack(xMaterial);
+            if (item == null) {
+                Material material = Material.matchMaterial(treasureCore.getMaterial());
+                if (material == null) material = Material.CHEST;
+
+                XMaterial xMaterial = XMaterial.matchXMaterial(material);
+                item = XMaterialHelper.getItemStack(xMaterial);
+            }
+
             if (item != null) {
                 builder = new ItemBuilder(item);
             } else {
