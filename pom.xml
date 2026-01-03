@@ -112,6 +112,10 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/releases/</url>
         </repository>
+        <repository>
+            <id>matteodev</id>
+            <url>https://maven.devs.beer/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -185,6 +189,14 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>3.1.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- ItemsAdder -->
+        <dependency>
+            <groupId>dev.lone</groupId>
+            <artifactId>api-itemsadder</artifactId>
+            <version>4.0.10</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -43,7 +43,7 @@ public class AddPlacePresetMenu extends SingleItemInputMenu {
     @Override
     protected boolean isValidItem(ItemStack item) {
         if (item == null || item.getType() == Material.AIR) return false;
-        return item.getType().isBlock() || ItemsAdderAdapter.isCustomBlockItem(item);
+        return item.getType().isBlock() || ItemsAdderAdapter.isCustomBlockItem(item) || ItemsAdderAdapter.isCustomFurniture(item);
     }
 
     @Override
