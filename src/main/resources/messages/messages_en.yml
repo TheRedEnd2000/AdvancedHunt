@@ -107,7 +107,8 @@ prefix: "&6AdvancedHunt &8>> &7"
 error:
   no_permission: "%prefix%&cYou do not have permission to do this!"
   place_presets:
-    no_item: "%prefix%&cHold the item you want to save in your main hand."
+    no_item: "%prefix%&cPlace a block item into the slot first."
+    not_a_block: "%prefix%&cThat preset isn't a block and can't be used for placing."
     invalid_group: "%prefix%&cInvalid group name."
     duplicate_group: "%prefix%&cThat group already exists."
     invalid_name: "%prefix%&cInvalid preset name."
@@ -315,10 +316,34 @@ gui:
       lore:
         - "&7Creates a new empty group."
     create_in_group:
-      name: "&aAdd preset"
+      name: "&aAdd block preset"
       lore:
-        - "&7Adds a preset to &e%group%"
-        - "&7from the item in your main hand."
+        - "&7Adds a block preset to &e%group%&7."
+        - "&7Place a block item in the slot"
+        - "&7and confirm to save it."
+
+    add:
+      title: "&8Add Place Preset: &e%group%"
+      placeholder:
+        name: "&7Place a block here"
+        lore:
+          - "&7Drag a block item into"
+          - "&7the center slot."
+      info:
+        name: "&eHow it works"
+        lore:
+          - "&7Put any &eblock item&7 in the slot."
+          - "&7The preset is saved as &f1 block&7."
+          - "&7Your item is &anot consumed&7."
+      confirm:
+        name: "&aSave preset"
+        lore:
+          - "&7Saves this block as a preset"
+          - "&7in the selected group."
+      cancel:
+        name: "&cCancel"
+        lore:
+          - "&7Return without saving."
   rewards:
     title: "&8Treasure Rewards"
     collection_title: "&8Completion Rewards"

@@ -49,6 +49,32 @@ public class ItemsAdderAdapter {
         return null;
     }
 
+    public static boolean isCustomBlockItem(ItemStack item) {
+        if (!enabled || item == null) return false;
+        try {
+            Method byItemStack = customBlockClass.getMethod("byItemStack", ItemStack.class);
+            Object result = byItemStack.invoke(null, item);
+            return result != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String getCustomBlockId(ItemStack item) {
+        if (!enabled || item == null) return null;
+        try {
+            Method byItemStack = customBlockClass.getMethod("byItemStack", ItemStack.class);
+            Object customBlock = byItemStack.invoke(null, item);
+            if (customBlock != null) {
+                Method getNamespacedID = customBlockClass.getMethod("getNamespacedID");
+                return (String) getNamespacedID.invoke(customBlock);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
     public static boolean isCustomFurniture(ItemStack item) {
         if (!enabled || item == null) return false;
         try {

@@ -5,7 +5,7 @@ import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.PlacePreset;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
-import org.bukkit.Bukkit;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -62,9 +62,10 @@ public class PlacePresetListMenu extends PagedMenu {
             for (int i = startIndex; i < endIndex; i++) {
                 PlacePreset preset = presets.get(i);
                 ItemStack icon = ItemSerializer.deserialize(preset.getItemData());
-                if (icon == null || icon.getType() == Material.AIR) {
+                if (icon == null || icon.getType() == Material.AIR || (!icon.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(icon))) {
                     icon = new ItemStack(Material.BARRIER);
                 }
+                icon.setAmount(1);
 
                 icon = new ItemBuilder(icon.clone())
                         .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.list.preset.name", false,
@@ -88,7 +89,7 @@ public class PlacePresetListMenu extends PagedMenu {
             addMenuBorder();
         }
 
-        // Add preset to this group (captures held item)
+        // Add block preset to this group
         addButton(52, new ItemBuilder(Material.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.create_in_group.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.create_in_group.lore", false,
@@ -99,36 +100,12 @@ public class PlacePresetListMenu extends PagedMenu {
                 return;
             }
 
-            ItemStack held = playerMenuUtility.getInventory().getItemInMainHand();
-            if (held == null || held.getType() == Material.AIR) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.no_item"));
-                Bukkit.getScheduler().runTask(plugin, this::open);
-                return;
-            }
-
-            ItemStack heldSnapshot = held.clone();
-
-            String itemData = ItemSerializer.serialize(heldSnapshot);
-            if (itemData == null || itemData.isBlank()) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.serialize_failed"));
-                Bukkit.getScheduler().runTask(plugin, this::open);
-                return;
-            }
-
-            String name = generateUniqueName(group, heldSnapshot);
-
-            plugin.getPlacePresetManager().createPreset(group, name, itemData).whenComplete((ok, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
-                if (ex != null || !Boolean.TRUE.equals(ok)) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.create_failed"));
-                    open();
-                    return;
-                }
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.created",
-                        "%group%", group,
-                        "%name%", name));
-                open();
-            }));
+            new AddPlacePresetMenu(playerMenuUtility, plugin, group, this).open();
         }, "advancedhunt.admin.place_presets");
+    }
+
+    String generateUniqueNameForCreate(String group, ItemStack item) {
+        return generateUniqueName(group, item);
     }
 
     private String generateUniqueName(String group, ItemStack item) {
@@ -158,7 +135,13 @@ public class PlacePresetListMenu extends PagedMenu {
             return;
         }
 
+        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item)) {
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.not_a_block"));
+            return;
+        }
+
         ItemStack toGive = item.clone();
+        toGive.setAmount(1);
         var leftovers = playerMenuUtility.getInventory().addItem(toGive);
         for (ItemStack leftover : leftovers.values()) {
             playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), leftover);

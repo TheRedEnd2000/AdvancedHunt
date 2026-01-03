@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
 import de.theredend2000.advancedhunt.model.PlacePreset;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -64,7 +65,13 @@ public class PlacePresetActionsMenu extends Menu {
             return;
         }
 
+        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item)) {
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.not_a_block"));
+            return;
+        }
+
         ItemStack toGive = item.clone();
+        toGive.setAmount(1);
         var leftovers = playerMenuUtility.getInventory().addItem(toGive);
         for (ItemStack leftover : leftovers.values()) {
             playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), leftover);
