@@ -21,7 +21,7 @@ import java.util.UUID;
  *
  * This class is only registered when ItemsAdder is installed and the API is present.
  */
-public class ItemsAdderFurnitureListener implements Listener {
+public class ItemsAdderIntegrationListener implements Listener {
 
     private final Main plugin;
     private final TreasureManager treasureManager;
@@ -30,7 +30,7 @@ public class ItemsAdderFurnitureListener implements Listener {
     private final RewardManager rewardManager;
     private final PlaceModeManager placeModeManager;
 
-    public ItemsAdderFurnitureListener(Main plugin) {
+    public ItemsAdderIntegrationListener(Main plugin) {
         this.plugin = plugin;
         this.treasureManager = plugin.getTreasureManager();
         this.playerManager = plugin.getPlayerManager();
@@ -66,6 +66,43 @@ public class ItemsAdderFurnitureListener implements Listener {
                 null,
                 "ITEMS_ADDER",
                 event.getNamespacedID()
+        );
+
+        treasureManager.addTreasure(treasure);
+        player.sendMessage(plugin.getMessageManager().getMessage("treasure.added"));
+        plugin.getSoundManager().playTreasurePlaced(player);
+    }
+
+    @EventHandler
+    public void onCustomBlockPlace(CustomBlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        if (!placeModeManager.isInPlaceMode(player)) return;
+
+        UUID collectionId = placeModeManager.getCollectionId(player);
+        if (collectionId == null) return;
+
+        if (event.getBlock() == null) return;
+        Location loc = event.getBlock().getLocation();
+
+        if (treasureManager.getTreasureCoreAt(loc) != null) return;
+
+        String namespacedId = event.getNamespacedID();
+        if (namespacedId == null || namespacedId.isEmpty()) return;
+
+        List<Reward> rewards = new ArrayList<>();
+        plugin.getCollectionManager().getCollectionById(collectionId)
+                .map(Collection::getDefaultTreasureRewardPresetId)
+                .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
+                .ifPresent(preset -> rewards.addAll(preset.getRewards()));
+
+        Treasure treasure = new Treasure(
+                treasureManager.generateUniqueTreasureId(),
+                collectionId,
+                loc,
+                rewards,
+                null,
+                "ITEMS_ADDER",
+                namespacedId
         );
 
         treasureManager.addTreasure(treasure);

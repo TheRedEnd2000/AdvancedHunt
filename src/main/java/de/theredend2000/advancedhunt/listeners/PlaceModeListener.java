@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,41 @@ public class PlaceModeListener implements Listener {
 
         Block block = event.getBlock();
 
+        // ItemsAdder furniture placement is handled by ItemsAdder events (entity-based).
+        // BlockPlaceEvent may still fire with AIR or a base block, which would create invalid treasures.
+        ItemStack placedItem = event.getItemInHand();
+        if (ItemsAdderAdapter.isCustomFurniture(placedItem)) {
+            return;
+        }
+        if (block.getType().isAir()) {
+            return;
+        }
+
+        // If a treasure already exists at this location, do nothing.
+        if (treasureManager.getTreasureCoreAt(block.getLocation()) != null) {
+            return;
+        }
+
+        // ItemsAdder custom blocks are registered via ItemsAdder's CustomBlockPlaceEvent.
+        // Avoid creating a duplicate treasure here.
+        if (ItemsAdderAdapter.isCustomBlockItem(placedItem)) {
+            return;
+        }
+
+        handlePlacedBlock(player, collectionId, block.getLocation(), placedItem);
+    }
+
+    private void handlePlacedBlock(Player player, UUID collectionId, org.bukkit.Location location, ItemStack placedItem) {
+        if (player == null || collectionId == null || location == null) return;
+        if (!placeModeManager.isInPlaceMode(player)) return;
+
+        Block block = location.getBlock();
+        if (block.getType().isAir()) return;
+
+        if (treasureManager.getTreasureCoreAt(location) != null) {
+            return;
+        }
+
         String nbtData;
         try {
             nbtData = NBT.get(block.getState(), ReadableNBT::toString);
@@ -57,9 +93,21 @@ public class PlaceModeListener implements Listener {
         if (ItemsAdderAdapter.isItemsAdderBlock(block)) {
             material = "ITEMS_ADDER";
             blockState = ItemsAdderAdapter.getCustomBlockId(block);
+            if ((blockState == null || blockState.isEmpty()) && placedItem != null) {
+                blockState = ItemsAdderAdapter.getCustomBlockId(placedItem);
+            }
+        } else if (placedItem != null && ItemsAdderAdapter.isCustomBlockItem(placedItem)) {
+            // Fallback: treat as ItemsAdder custom block even if block inspection fails.
+            material = "ITEMS_ADDER";
+            blockState = ItemsAdderAdapter.getCustomBlockId(placedItem);
         } else {
             material = block.getType().name();
             blockState = BlockUtils.getBlockStateString(block);
+        }
+
+        if ("ITEMS_ADDER".equalsIgnoreCase(material) && (blockState == null || blockState.isEmpty())) {
+            plugin.getLogger().warning("Failed to resolve ItemsAdder block ID for placed block at " + location);
+            return;
         }
 
         List<Reward> rewards = new ArrayList<>();
@@ -71,7 +119,7 @@ public class PlaceModeListener implements Listener {
         Treasure treasure = new Treasure(
                 treasureManager.generateUniqueTreasureId(),
                 collectionId,
-                block.getLocation(),
+            location,
             rewards,
                 nbtData,
                 material,

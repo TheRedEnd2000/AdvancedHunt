@@ -26,14 +26,31 @@ public class ItemBuilder {
     private String skullTexture;
     private String skullOwnerName;
 
+    private ItemMeta ensureMeta() {
+        if (meta != null) {
+            return meta;
+        }
+        meta = item.getItemMeta();
+        if (meta != null) {
+            return meta;
+        }
+        try {
+            meta = Bukkit.getItemFactory().getItemMeta(item.getType());
+        } catch (Exception ignored) {
+        }
+        return meta;
+    }
+
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material);
         this.meta = item.getItemMeta();
+        ensureMeta();
     }
 
     public ItemBuilder(ItemStack item) {
         this.item = item.clone();
         this.meta = this.item.getItemMeta();
+        ensureMeta();
         try {
             NBT.get(this.item, nbt -> {
                 if (nbt.hasTag("custom_id")) {
@@ -50,6 +67,7 @@ public class ItemBuilder {
             this.item = new ItemStack(Material.STONE); // Fallback
         }
         this.meta = this.item.getItemMeta();
+        ensureMeta();
     }
 
     public ItemBuilder setAmount(int amount) {
@@ -58,21 +76,34 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setDisplayName(String name) {
-        meta.setDisplayName(name);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.setDisplayName(name);
+        }
         return this;
     }
 
     public ItemBuilder setLore(String... lore) {
-        meta.setLore(Arrays.asList(lore));
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.setLore(Arrays.asList(lore));
+        }
         return this;
     }
 
     public ItemBuilder setLore(List<String> lore) {
-        meta.setLore(lore);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.setLore(lore);
+        }
         return this;
     }
 
     public ItemBuilder addLoreLine(String line) {
+        ItemMeta meta = ensureMeta();
+        if (meta == null) {
+            return this;
+        }
         List<String> lore = meta.getLore();
         if (lore == null) {
             lore = new ArrayList<>();
@@ -83,31 +114,47 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addEnchant(Enchantment enchantment, int level) {
-        meta.addEnchant(enchantment, level, true);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.addEnchant(enchantment, level, true);
+        }
         return this;
     }
 
     public ItemBuilder addItemFlags(ItemFlag... flags) {
-        meta.addItemFlags(flags);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.addItemFlags(flags);
+        }
         return this;
     }
 
     public ItemBuilder hideTooltip(boolean tooltip) {
-        meta.setHideTooltip(tooltip);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.setHideTooltip(tooltip);
+        }
         return this;
     }
 
     public ItemBuilder setUnbreakable(boolean unbreakable) {
-        meta.setUnbreakable(unbreakable);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.setUnbreakable(unbreakable);
+        }
         return this;
     }
 
     public ItemBuilder setCustomModelData(int data) {
-        meta.setCustomModelData(data);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            meta.setCustomModelData(data);
+        }
         return this;
     }
 
     public ItemBuilder setSkullOwner(UUID uuid) {
+        ItemMeta meta = ensureMeta();
         if (meta instanceof SkullMeta) {
             ((SkullMeta) meta).setOwnerProfile(Bukkit.createPlayerProfile(uuid));
         }
@@ -122,6 +169,7 @@ public class ItemBuilder {
     }
     
     public ItemBuilder setLeatherColor(Color color) {
+        ItemMeta meta = ensureMeta();
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(color);
         }
@@ -147,7 +195,10 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
-        item.setItemMeta(meta);
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            item.setItemMeta(meta);
+        }
         if (customId != null || skullTexture != null || skullOwnerName != null) {
             try {
                 String version = Bukkit.getBukkitVersion().split("-")[0];
