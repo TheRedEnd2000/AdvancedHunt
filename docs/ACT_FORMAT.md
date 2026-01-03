@@ -66,7 +66,6 @@ Specifies how long the collection remains available once triggered.
 
 **Notes:**
 - Duration starts when the cron expression triggers
-- For `MANUAL` triggers, duration starts when admin activates the rule
 - Once duration expires, the rule becomes inactive until next trigger
 
 ---
@@ -77,7 +76,6 @@ Determines when the rule activates (triggers the duration countdown).
 
 **Formats:**
 - `NONE` - Never triggers automatically (rule stays inactive)
-- `MANUAL` - Only activates via admin command (no auto-trigger)
 - Quartz Cron Expression - Standard 6 or 7 field format
 
 **Quartz Cron Format:**
@@ -106,7 +104,6 @@ Determines when the rule activates (triggers the duration countdown).
 **Examples:**
 ```
 [NONE]                    # Never activates
-[MANUAL]                  # Admin-triggered only
 [0 0 9 * * ?]            # Every day at 9:00 AM
 [0 0 0 25 12 ?]          # Christmas Day at midnight
 [0 0 12 ? * MON-FRI]     # Weekdays at noon
@@ -194,12 +191,6 @@ Triggers every hour on the hour, available for 30 minutes.
 ```
 Every night at 10:00 PM, available for 8 hours (until 6:00 AM).
 
-**Manual Event (Admin controlled)**
-```
-[2025-01-01:2025-12-31] [6h] [MANUAL]
-```
-Only activates when admin manually triggers it, runs for 6 hours.
-
 **Always Available**
 ```
 [*] [*] [NONE]
@@ -260,9 +251,6 @@ Rule 2: [*] [6h] [0 0 12 * * ?]  # 12 PM - 6 PM
 # Collection is actually available 8 AM - 6 PM (10 hours)
 ```
 
-### 5. **Use MANUAL for Special Events**
-For one-time or admin-controlled events, use `[MANUAL]` and trigger via command.
-
 ---
 
 ## Common Mistakes
@@ -305,7 +293,7 @@ The plugin validates ACT rules when you enter them:
 
 1. **Date Range**: Must be `*` or `YYYY-MM-DD:YYYY-MM-DD` with valid dates
 2. **Duration**: Must be `*` or `<number><s|m|h|d>`
-3. **Cron**: Must be `NONE`, `MANUAL`, or valid Quartz expression
+3. **Cron**: Must be `NONE` or a valid Quartz expression
 
 If validation fails, you'll see an error message with details.
 
@@ -313,13 +301,7 @@ If validation fails, you'll see an error message with details.
 
 ## Commands
 
-*(Commands to be implemented)*
-
-```
-/ah collection <name> activate <rule-name>  # Manually activate a MANUAL rule
-/ah collection <name> deactivate            # Deactivate all rules
-/ah collection <name> schedule              # View rule schedule
-```
+*(No ACT-specific scheduling commands are exposed at the moment.)*
 
 ---
 

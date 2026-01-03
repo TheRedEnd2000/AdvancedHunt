@@ -12,7 +12,9 @@ import de.theredend2000.advancedhunt.util.ActFormatParser;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Evaluates ACT (Availability-Cycle-Timing) rules for collections.
@@ -23,7 +25,6 @@ public class ActRuleEvaluator {
 
     private final JavaPlugin plugin;
     private final CronParser cronParser;
-    private final Map<UUID, Map<UUID, ZonedDateTime>> ruleActivationTimes;
     
     // Availability cache with pre-calculated state transitions
     private final Cache<UUID, AvailabilityCacheEntry> availabilityCache;
@@ -45,10 +46,9 @@ public class ActRuleEvaluator {
         }
     }
 
-    public ActRuleEvaluator(JavaPlugin plugin, Map<UUID, Map<UUID, ZonedDateTime>> ruleActivationTimes) {
+    public ActRuleEvaluator(JavaPlugin plugin) {
         this.plugin = plugin;
         this.cronParser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ));
-        this.ruleActivationTimes = ruleActivationTimes;
         
         // Initialize availability cache - expiration handled per-entry based on state transitions
         this.availabilityCache = Caffeine.newBuilder()
@@ -127,14 +127,8 @@ public class ActRuleEvaluator {
             }
             
             ActFormatParser.ActSchedule schedule = scheduleOpt.get();
-            
-            // Get last activation time for this rule
-            ZonedDateTime lastActivation = null;
-            if (ruleActivationTimes.containsKey(collectionId)) {
-                lastActivation = ruleActivationTimes.get(collectionId).get(rule.getId());
-            }
-            
-            return schedule.isAvailable(now, lastActivation);
+
+            return schedule.isAvailable(now, null);
         } catch (Exception e) {
             plugin.getLogger().warning("Error checking ACT rule " + rule.getName() + ": " + e.getMessage());
             return false;
@@ -192,32 +186,22 @@ public class ActRuleEvaluator {
                 
                 if (scheduleOpt.isPresent()) {
                     ActFormatParser.ActSchedule schedule = scheduleOpt.get();
-                    
-                    // For manual rules
-                    if (schedule.isManual()) {
-                        ZonedDateTime lastActivation = null;
-                        if (ruleActivationTimes.containsKey(collection.getId())) {
-                            lastActivation = ruleActivationTimes.get(collection.getId()).get(rule.getId());
-                        }
-                        
-                        if (lastActivation != null && schedule.getActiveDuration() != null) {
-                            ZonedDateTime deactivation = lastActivation.plus(schedule.getActiveDuration());
-                            if (earliest == null || deactivation.isBefore(earliest)) {
-                                earliest = deactivation;
-                            }
-                        }
-                    } else {
-                        // For cron-based rules
-                        ExecutionTime executionTime = ExecutionTime.forCron(
-                            cronParser.parse(schedule.getCron())
-                        );
-                        Optional<ZonedDateTime> lastExecution = executionTime.lastExecution(now);
-                        
-                        if (lastExecution.isPresent() && schedule.getActiveDuration() != null) {
-                            ZonedDateTime deactivation = lastExecution.get().plus(schedule.getActiveDuration());
-                            if (earliest == null || deactivation.isBefore(earliest)) {
-                                earliest = deactivation;
-                            }
+
+                    // NONE has no deactivation time (it is date-range based).
+                    if (schedule.isNone() || schedule.getActiveDuration() == null) {
+                        continue;
+                    }
+
+                    // Cron-based rules
+                    ExecutionTime executionTime = ExecutionTime.forCron(
+                        cronParser.parse(schedule.getCron())
+                    );
+                    Optional<ZonedDateTime> lastExecution = executionTime.lastExecution(now);
+
+                    if (lastExecution.isPresent()) {
+                        ZonedDateTime deactivation = lastExecution.get().plus(schedule.getActiveDuration());
+                        if (earliest == null || deactivation.isBefore(earliest)) {
+                            earliest = deactivation;
                         }
                     }
                 }
@@ -245,22 +229,6 @@ public class ActRuleEvaluator {
             // Currently unavailable - find when it will become available
             return getNextActivation(collection);
         }
-    }
-    
-    /**
-     * Manually activates a collection rule (for MANUAL cron expressions).
-     * Invalidates cache for the collection.
-     * @param collectionId the collection ID
-     * @param ruleId the rule ID to activate
-     */
-    public void activateRule(UUID collectionId, UUID ruleId) {
-        if (!ruleActivationTimes.containsKey(collectionId)) {
-            ruleActivationTimes.put(collectionId, new HashMap<>());
-        }
-        ruleActivationTimes.get(collectionId).put(ruleId, ZonedDateTime.now());
-        
-        // Invalidate availability cache for this collection
-        clearAvailabilityCache(collectionId);
     }
     
     /**

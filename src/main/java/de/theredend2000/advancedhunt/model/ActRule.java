@@ -15,7 +15,7 @@ public class ActRule {
     private String name;
     private String dateRange;      // [START:END] or [*] for always
     private String duration;        // [2h], [30m], [*] for permanent
-    private String cronExpression;  // Quartz cron or [MANUAL] or [NONE]
+    private String cronExpression;  // Quartz cron or [NONE]
     private boolean enabled;
 
     /**
@@ -27,7 +27,7 @@ public class ActRule {
         this.name = name;
         this.dateRange = "*";
         this.duration = "*";
-        this.cronExpression = "MANUAL";
+        this.cronExpression = "NONE";
         this.enabled = true;
     }
 
@@ -78,6 +78,18 @@ public class ActRule {
     }
 
     public void setCronExpression(String cronExpression) {
+        if (cronExpression == null || cronExpression.isBlank()) {
+            this.cronExpression = "NONE";
+            return;
+        }
+
+        // Legacy compatibility: MANUAL was never fully implemented.
+        // Treat it as NONE to keep older configs working without exposing MANUAL as a feature.
+        if (cronExpression.equalsIgnoreCase("MANUAL")) {
+            this.cronExpression = "NONE";
+            return;
+        }
+
         this.cronExpression = cronExpression;
     }
 

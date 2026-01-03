@@ -7,33 +7,27 @@ public record CronEditPolicy(
     String cronTypeMessageKey,
     boolean allowSpecialValues,
     boolean allowNone,
-    boolean allowManual,
     String defaultBuilderExpression
 ) {
 
     public static final String SPECIAL_NONE = "NONE";
-    public static final String SPECIAL_MANUAL = "MANUAL";
 
     public static CronEditPolicy progressReset() {
-        return new CronEditPolicy("gui.cron.type.reset", false, false, false, "0 0 0 * * ? *");
+        return new CronEditPolicy("gui.cron.type.reset", false, false, "0 0 0 * * ? *");
     }
 
     public static CronEditPolicy actSchedule() {
-        return new CronEditPolicy("gui.cron.type.act", true, true, true, "0 0 0 * * ? *");
+        return new CronEditPolicy("gui.cron.type.act", true, true, "0 0 0 * * ? *");
     }
 
     public boolean isNone(String value) {
         return value != null && value.equalsIgnoreCase(SPECIAL_NONE);
     }
 
-    public boolean isManual(String value) {
-        return value != null && value.equalsIgnoreCase(SPECIAL_MANUAL);
-    }
-
     public boolean isSpecial(String value) {
         if (!allowSpecialValues || value == null) {
             return false;
         }
-        return isNone(value) || isManual(value);
+        return isNone(value);
     }
 }
