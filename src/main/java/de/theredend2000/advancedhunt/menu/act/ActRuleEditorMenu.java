@@ -15,7 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.StringJoiner;
 
 /**
  * Hub menu for ACT rule editing.
@@ -112,10 +112,102 @@ public class ActRuleEditorMenu extends Menu {
             });
         });
 
-        // Component Editors (Middle Row)
+        // Quick actions row: Presets / Guided Setup / Manual ACT Input
 
-        // Date Range Editor
-        addButton(20, new ItemBuilder(Material.MAP)
+        // Presets
+        addButton(20, new ItemBuilder(Material.CHEST)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.preset.apply.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.preset.apply.lore", false).toArray(new String[0]))
+                .build(), (e) -> {
+            ActPresetMenu presetMenu = new ActPresetMenu(playerMenuUtility, plugin, collection, rule);
+            presetMenu.setPreviousMenu(this);
+            presetMenu.open();
+        });
+
+        // Guided setup (re-open wizard)
+        addButton(22, new ItemBuilder(Material.BOOK)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.guided_setup.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.editor.guided_setup.lore", false).toArray(new String[0]))
+                .build(), (e) -> {
+            new ActSetupMenu(playerMenuUtility, plugin, collection, rule)
+                    .setPreviousMenu(this)
+                    .open();
+        });
+
+        // Manual ACT format input
+        addButton(24, new ItemBuilder(Material.WRITABLE_BOOK)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.manual_input.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.act.editor.manual_input.lore", false).toArray(new String[0]))
+                .build(), (e) -> {
+            Player player = (Player) e.getWhoClicked();
+            player.closeInventory();
+
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.components.act_format.prompt"));
+
+            plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
+                ActFormatParser.ActComponents components = null;
+
+                // Prefer bracket format if provided
+                if (input.contains("[") && input.contains("]")) {
+                    components = ActFormatParser.parseToComponents(input);
+                }
+
+                // Fallback: token format (DATE_RANGE DURATION CRON...)
+                if (components == null) {
+                    String[] parts = input.trim().split("\\s+");
+                    if (parts.length >= 3) {
+                        String dateRange = parts[0];
+                        String duration = parts[1];
+
+                        StringJoiner joiner = new StringJoiner(" ");
+                        for (int i = 2; i < parts.length; i++) {
+                            joiner.add(parts[i]);
+                        }
+                        String cron = joiner.toString();
+
+                        components = new ActFormatParser.ActComponents(dateRange, duration, cron);
+                    }
+                }
+
+                if (components == null) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.act.format.invalid_format"));
+                    Bukkit.getScheduler().runTask(plugin, this::open);
+                    return;
+                }
+
+                if (!ActFormatParser.isValidDateRange(components.getDateRange())) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.validation.date_range"));
+                    Bukkit.getScheduler().runTask(plugin, this::open);
+                    return;
+                }
+
+                if (!ActFormatParser.isValidDuration(components.getDuration())) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.validation.duration"));
+                    Bukkit.getScheduler().runTask(plugin, this::open);
+                    return;
+                }
+
+                if (!ActFormatParser.isValidCron(components.getCron())) {
+                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.cron.invalid"));
+                    Bukkit.getScheduler().runTask(plugin, this::open);
+                    return;
+                }
+
+                rule.setDateRange(components.getDateRange());
+                rule.setDuration(components.getDuration());
+                rule.setCronExpression(components.getCron());
+
+                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.applied"));
+                        this.open();
+                    });
+                });
+            });
+        });
+
+        // Advanced component editors (single row; no duplicates)
+        addButton(30, new ItemBuilder(Material.MAP)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.component.date_range.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.component.date_range.lore", false,
                     "%value%", rule.getDateRange(),
@@ -126,7 +218,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Duration Editor
-        addButton(22, new ItemBuilder(Material.CLOCK)
+        addButton(31, new ItemBuilder(Material.CLOCK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.component.duration.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.component.duration.lore", false,
                     "%value%", rule.getDuration(),
@@ -137,7 +229,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Cron Editor
-        addButton(24, new ItemBuilder(Material.REPEATER)
+        addButton(32, new ItemBuilder(Material.REPEATER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.component.cron.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.component.cron.lore", false,
                     "%value%", rule.getCronExpression(),
@@ -145,51 +237,6 @@ public class ActRuleEditorMenu extends Menu {
                 ).toArray(new String[0]))
                 .build(), (e) -> {
             new CronEditorMenu(playerMenuUtility, plugin, collection, rule).setPreviousMenu(this).open();
-        });
-
-        // Apply Preset Button
-        addButton(31, new ItemBuilder(Material.CHEST)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.preset.apply.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.preset.apply.lore", false).toArray(new String[0]))
-                .build(), (e) -> {
-            ActPresetMenu presetMenu = new ActPresetMenu(playerMenuUtility, plugin, collection, rule);
-            presetMenu.setPreviousMenu(this);
-            presetMenu.open();
-        });
-
-        // Manual ACT Input Button
-        addButton(32, new ItemBuilder(Material.WRITABLE_BOOK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.act.manual.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.act.manual.lore", false).toArray(new String[0]))
-                .build(), (e) -> {
-            Player player = (Player) e.getWhoClicked();
-            player.closeInventory();
-            
-            for (String line : plugin.getMessageManager().getMessageList("gui.act.manual.prompt", false)) {
-                playerMenuUtility.sendMessage(line);
-            }
-            
-            plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
-                Optional<ActFormatParser.ActSchedule> parsed = ActFormatParser.parse(input);
-                if (parsed.isPresent()) {
-                    ActFormatParser.ActSchedule schedule = parsed.get();
-                    rule.setDateRange(schedule.getDateRange());
-                    rule.setDuration(schedule.getDuration());
-                    rule.setCronExpression(schedule.getCron());
-                    
-                    plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.applied"));
-                            this.open();
-                        });
-                    });
-                } else {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.act.format.invalid_format"));
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        this.open();
-                    });
-                }
-            });
         });
 
         // Settings Row (Bottom)

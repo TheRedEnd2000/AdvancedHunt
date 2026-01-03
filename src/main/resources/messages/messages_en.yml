@@ -47,6 +47,8 @@ feedback:
         prompt: "%prefix%&aEnter date range (YYYY-MM-DD:YYYY-MM-DD or * for always):"
       duration:
         prompt: "%prefix%&aEnter duration (e.g., 2h, 30m, 1d or * for permanent):"
+      act_format:
+        prompt: "%prefix%&aEnter ACT format: [DATE_RANGE] [DURATION] [CRON] (example: [*] [2h] [0 0 9 * * ?])"
 
     presets:
       applied: "%prefix%&aApplied preset: &e%preset%"
@@ -121,7 +123,7 @@ error:
 
   validation:
     date_range: "%prefix%&cInvalid date range! Use ISO dates (2024-01-01:2024-12-31) or * for always."
-    duration: "%prefix%&cInvalid duration! Use format like 2h, 30m, or * for always active."
+    duration: "%prefix%&cInvalid duration! Use format like 90s, 2h, 30m, or * for always active."
   rewards:
     invalid_chance: "%prefix%&cInvalid chance! Must be a number between 0 and 100."
     command_blacklisted: "%prefix%&cThat command is blacklisted and cannot be used!"
@@ -1291,8 +1293,53 @@ gui:
         - ""
         - "&cClick to clear"
   act:
+    setup:
+      title: "&8ACT Setup"
+      date_window:
+        name: "&aDate Window (Always On)"
+        lore:
+          - "&7Active all day between"
+          - "&7a start and end date."
+          - ""
+          - "&7You will pick the date range."
+          - "&7No schedule needed."
+          - ""
+          - "&eClick to configure"
+      repeating_schedule:
+        name: "&eRepeating Schedule"
+        lore:
+          - "&7Active for X hours"
+          - "&7at a fixed time schedule."
+          - ""
+          - "&7You will pick the duration"
+          - "&7then pick the schedule."
+          - ""
+          - "&eClick to configure"
+      advanced:
+        name: "&cAdvanced"
+        lore:
+          - "&7Full control over"
+          - "&7date range, duration,"
+          - "&7and schedule."
+          - ""
+          - "&eClick to open editor"
+
     editor:
       title: "ACT Rule Editor: %name%"
+      guided_setup:
+        name: "&bGuided Setup"
+        lore:
+          - "&7Reopen the setup wizard"
+          - "&7for this rule."
+          - ""
+          - "&eClick to open"
+      manual_input:
+        name: "&bManual ACT Input"
+        lore:
+          - "&7Enter the ACT format"
+          - "&7directly in chat."
+          - ""
+          - "&eClick to type"
       current:
         name: "&e&lCurrent Rule Configuration"
         date_range: "&7Date Range: &f%date_range%"
@@ -1304,25 +1351,12 @@ gui:
         invalid: "&c✗ Invalid"
     preset:
       apply:
-        name: "&6Apply Complete Preset"
+        name: "&6Quick Setup (Presets)"
         lore:
-          - "&7Choose from common ACT patterns"
-          - "&7to quickly configure this rule"
+          - "&7Pick a common schedule"
+          - "&7(no ACT format needed)"
           - ""
           - "&eClick to browse presets"
-    manual:
-      name: "&bManual ACT Input"
-      lore:
-        - "&7Enter complete ACT format manually"
-        - "&7Format: [DATE_RANGE] [DURATION] [CRON]"
-        - ""
-        - "&7Example: &f[*] [2h] [0 0 9 * * ?]"
-        - ""
-        - "&eClick to type ACT format"
-      prompt:
-        - "&6Enter complete ACT format:"
-        - "&7Format: &f[DATE_RANGE] [DURATION] [CRON]"
-        - "&7Example: &f[*] [2h] [0 0 9 * * ?]"
     presets:
       title: "ACT Rule Presets"
       list:
@@ -1369,15 +1403,6 @@ gui:
             - "&7For the entire day"
             - ""
             - "&7Format: &f[*] [24h] [0 0 0 ? * MON]"
-            - ""
-            - "&aClick to apply"
-        manual_6h:
-          name: "Manual Event (6 Hours)"
-          lore:
-            - "&7Manually triggered by admin"
-            - "&7Lasts for 6 hours once activated"
-            - ""
-            - "&7Format: &f[*] [6h] [MANUAL]"
             - ""
             - "&aClick to apply"
         holiday_special:
@@ -1430,33 +1455,30 @@ gui:
             - "&aClick to apply"
     component:
       date_range:
-        name: "&eEdit Date Range"
+        name: "&eDate Range"
         lore:
           - "&7Current: &f%value%"
           - "&7%description%"
           - ""
-          - "&7Opens the date range editor"
-          - "&7with presets and custom input"
+          - "&7Optional: limit to specific dates"
           - ""
           - "&eClick to edit"
       duration:
-        name: "&eEdit Duration"
+        name: "&eDuration"
         lore:
           - "&7Current: &f%value%"
           - "&7%description%"
           - ""
-          - "&7Opens the duration editor"
-          - "&7with presets and quick adjust"
+          - "&7Optional: limit how long it's active"
           - ""
           - "&eClick to edit"
       cron:
-        name: "&eEdit Cron Schedule"
+        name: "&eSchedule"
         lore:
           - "&7Current: &f%value%"
           - "&7%description%"
           - ""
-          - "&7Opens the cron editor"
-          - "&7with advanced builder"
+          - "&7Optional: run on a repeating schedule"
           - ""
           - "&eClick to edit"
     rules:
@@ -1477,8 +1499,8 @@ gui:
         add_rule:
           name: "&aAdd New Rule"
           lore:
-            - "&7Click to create a new"
-            - "&7availability schedule rule"
+            - "&7Creates a new rule"
+            - "&7and opens setup"
       editor:
         name:
           name: "&eName"
@@ -1577,8 +1599,8 @@ gui:
           lore:
             - "&7Enter a custom duration"
             - "&7Format: <number><unit>"
-            - "&7Units: m (minutes), h (hours), d (days)"
-            - "&7Example: 90m, 12h, 3d"
+            - "&7Units: s, m, h, d"
+            - "&7Example: 90s, 90m, 12h, 3d"
             - ""
             - "&eClick to type manually"
         increase:

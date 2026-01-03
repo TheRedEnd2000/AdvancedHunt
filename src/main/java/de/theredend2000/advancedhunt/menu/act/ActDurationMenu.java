@@ -22,14 +22,27 @@ public class ActDurationMenu extends Menu {
 
     private final Collection collection;
     private final ActRule rule;
-    private final Menu previousMenu;
-    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([mhd])");
+    private final Menu afterApplyMenu;
+    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([smhd])");
 
     public ActDurationMenu(Player player, Main plugin, Collection collection, ActRule rule, Menu previousMenu) {
         super(player, plugin);
         this.collection = collection;
         this.rule = rule;
-        this.previousMenu = previousMenu;
+        this.afterApplyMenu = null;
+        setPreviousMenu(previousMenu);
+    }
+
+    /**
+     * When afterApplyMenu is provided, applying a duration will immediately open that menu.
+     * Used for operator-friendly flows (e.g., pick duration, then pick schedule).
+     */
+    public ActDurationMenu(Player player, Main plugin, Collection collection, ActRule rule, Menu previousMenu, Menu afterApplyMenu) {
+        super(player, plugin);
+        this.collection = collection;
+        this.rule = rule;
+        this.afterApplyMenu = afterApplyMenu;
+        setPreviousMenu(previousMenu);
     }
 
     @Override
@@ -174,7 +187,11 @@ public class ActDurationMenu extends Menu {
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.duration.success"));
-                refresh();
+                if (afterApplyMenu != null) {
+                    afterApplyMenu.open();
+                } else {
+                    refresh();
+                }
             });
         });
     }
