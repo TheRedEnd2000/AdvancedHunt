@@ -8,10 +8,14 @@ import de.theredend2000.advancedhunt.util.updater.source.SpigotSource;
 import org.bukkit.Bukkit;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PluginUpdater {
+
+    private static final Duration MINIMUM_RELEASE_AGE = Duration.ofDays(3);
 
     private final Main plugin;
     private final Map<String, UpdateSource> sources;
@@ -50,19 +54,40 @@ public class PluginUpdater {
             UpdateSource source = sources.get(sourceName);
 
             if (source != null && id != null && !id.isEmpty()) {
-                source.getLatestVersion(id).thenAccept(latestVersion -> {
-                    if (latestVersion != null) {
-                        if (versionComparator.isGreaterThan(latestVersion, tracked.currentVersion)) {
-                            plugin.getLogger().info("[" + tracked.name + "] Found a new version on " + sourceName + ": " + latestVersion);
-                            downloadUpdate(tracked, sourceName, latestVersion);
-                        }
+                source.getLatestUpdate(id).thenAccept(update -> {
+                    if (update == null) {
+                        return;
                     }
+
+                    if (!versionComparator.isGreaterThan(update.version(), tracked.currentVersion)) {
+                        return;
+                    }
+
+                    if (!isOldEnoughToAutoDownload(update)) {
+                        plugin.getLogger().info(
+                                "[" + tracked.name + "] Found a new version on " + sourceName + ": " + update.version()
+                                        + " (not auto-downloading; release is newer than " + MINIMUM_RELEASE_AGE.toDays() + " days or has no publish date)"
+                        );
+                        return;
+                    }
+
+                    plugin.getLogger().info("[" + tracked.name + "] Found a new version on " + sourceName + ": " + update.version());
+                    downloadUpdate(tracked, sourceName, update);
                 });
             }
         }
     }
 
-    public void downloadUpdate(TrackedPlugin tracked, String sourceName, String version) {
+    private boolean isOldEnoughToAutoDownload(UpdateInfo update) {
+        Instant publishedAt = update.publishedAt();
+        if (publishedAt == null) {
+            return false;
+        }
+        Instant threshold = Instant.now().minus(MINIMUM_RELEASE_AGE);
+        return !publishedAt.isAfter(threshold);
+    }
+
+    public void downloadUpdate(TrackedPlugin tracked, String sourceName, UpdateInfo update) {
         UpdateSource source = sources.get(sourceName);
         String id = tracked.ids.get(sourceName);
 
@@ -72,16 +97,16 @@ public class PluginUpdater {
                 updateFolder.mkdirs();
             }
             
-            File destination = new File(updateFolder, tracked.name + "-" + version + ".jar");
+            File destination = new File(updateFolder, tracked.name + "-" + update.version() + ".jar");
             
             if (destination.exists()) {
-                 plugin.getLogger().info("[" + tracked.name + "] Update " + version + " is already downloaded. It will be applied on next restart.");
+                 plugin.getLogger().info("[" + tracked.name + "] Update " + update.version() + " is already downloaded. It will be applied on next restart.");
                  return;
             }
 
-            source.downloadPlugin(id, version, destination).thenAccept(success -> {
+            source.downloadPlugin(id, update, destination).thenAccept(success -> {
                 if (success) {
-                    plugin.getLogger().info("[" + tracked.name + "] Successfully downloaded update: " + version + ". It will be applied on next restart.");
+                    plugin.getLogger().info("[" + tracked.name + "] Successfully downloaded update: " + update.version() + ". It will be applied on next restart.");
                 } else {
                     plugin.getLogger().warning("[" + tracked.name + "] Failed to download update from " + sourceName);
                 }

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.theredend2000.advancedhunt.util.updater.UpdateInfo;
 import de.theredend2000.advancedhunt.util.updater.UpdateSource;
 import org.bukkit.Bukkit;
 
@@ -15,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -24,7 +26,7 @@ public class SpigotSource implements UpdateSource {
     private static final String DOWNLOAD_URL = "https://api.spiget.org/v2/resources/%s/versions/%s/download";
 
     @Override
-    public CompletableFuture<String> getLatestVersion(String id) {
+    public CompletableFuture<UpdateInfo> getLatestUpdate(String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 URL url = new URL(String.format(API_URL, id));
@@ -42,7 +44,13 @@ public class SpigotSource implements UpdateSource {
                         
                         // Simple check for alpha/beta in name
                         if (!isUnstable(versionName)) {
-                            return cleanVersion(versionName);
+                            String cleaned = cleanVersion(versionName);
+                            Instant publishedAt = null;
+                            if (versionObj.has("releaseDate") && !versionObj.get("releaseDate").isJsonNull()) {
+                                long raw = versionObj.get("releaseDate").getAsLong();
+                                publishedAt = Instant.ofEpochMilli(normalizeEpochMillis(raw));
+                            }
+                            return new UpdateInfo(cleaned, versionName, publishedAt);
                         }
                     }
                 }
@@ -51,6 +59,14 @@ public class SpigotSource implements UpdateSource {
             }
             return null;
         });
+    }
+
+    private long normalizeEpochMillis(long value) {
+        // Spiget typically uses millis, but guard against seconds.
+        if (value > 0 && value < 1_000_000_000_000L) {
+            return value * 1000L;
+        }
+        return value;
     }
 
     private String cleanVersion(String version) {
@@ -76,11 +92,11 @@ public class SpigotSource implements UpdateSource {
     }
 
     @Override
-    public CompletableFuture<Boolean> downloadPlugin(String id, String version, File destination) {
+    public CompletableFuture<Boolean> downloadPlugin(String id, UpdateInfo update, File destination) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Need to find version ID first
-                String versionId = getVersionId(id, version);
+                String versionId = getVersionId(id, update.sourceVersion());
                 if (versionId == null) return false;
 
                 String downloadUrl = String.format(DOWNLOAD_URL, id, versionId);
