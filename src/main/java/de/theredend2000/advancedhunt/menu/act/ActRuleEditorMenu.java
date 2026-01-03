@@ -53,7 +53,13 @@ public class ActRuleEditorMenu extends Menu {
         // Live Preview Section (Top)
         String dateRangeReadable = ActFormatParser.getHumanReadableDateRange(rule.getDateRange());
         String durationReadable = ActFormatParser.getHumanReadableDuration(rule.getDuration());
-        String cronReadable = ActFormatParser.getHumanReadableCron(rule.getCronExpression());
+        String lang = plugin.getConfig().getString("language", "en");
+        String cronReadable = ActFormatParser.getHumanReadableCron(
+                rule.getCronExpression(),
+                CronUtils.toLocale(lang),
+                plugin.getMessageManager().getMessage("gui.act.component.cron.description.none", false),
+                plugin.getMessageManager().getMessage("gui.act.component.cron.description.invalid", false)
+        );
         
         boolean isValid = ActFormatParser.isValidDateRange(rule.getDateRange()) &&
                          ActFormatParser.isValidDuration(rule.getDuration()) &&

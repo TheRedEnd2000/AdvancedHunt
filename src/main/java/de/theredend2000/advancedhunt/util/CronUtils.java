@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.util;
 
+import com.cronutils.descriptor.CronDescriptor;
 import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
@@ -8,10 +9,7 @@ import com.cronutils.parser.CronParser;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Utility class for Quartz cron expression operations.
@@ -74,6 +72,60 @@ public final class CronUtils {
             // Invalid expression - return empty list
         }
         return executions;
+    }
+
+    /**
+     * Produces a human-readable description for a Quartz cron expression.
+     *
+     * @param cronExpression Quartz cron expression
+     * @param locale locale to use for the generated description
+     * @return human-readable description, or the raw cron expression if description cannot be generated
+     */
+    public static String describeQuartzCron(String cronExpression, Locale locale) {
+        if (cronExpression == null || cronExpression.isEmpty()) {
+            return "";
+        }
+
+        try {
+            Cron cron = PARSER.parse(cronExpression);
+            cron.validate();
+
+            Locale effectiveLocale = (locale != null) ? locale : Locale.ENGLISH;
+            CronDescriptor descriptor = CronDescriptor.instance(effectiveLocale);
+            String description = descriptor.describe(cron);
+            if (description == null || description.isBlank()) {
+                return cronExpression;
+            }
+            return description;
+        } catch (MissingResourceException e) {
+            // Locale bundle missing (possible with shaded dependencies). Fall back to English.
+            try {
+                Cron cron = PARSER.parse(cronExpression);
+                cron.validate();
+                String description = CronDescriptor.instance(Locale.ENGLISH).describe(cron);
+                return (description == null || description.isBlank()) ? cronExpression : description;
+            } catch (Exception ignored) {
+                return cronExpression;
+            }
+        } catch (Exception e) {
+            return cronExpression;
+        }
+    }
+
+    /**
+     * Maps a config language code (e.g. "en", "de", "pt-BR") to a Locale.
+     */
+    public static Locale toLocale(String languageTag) {
+        if (languageTag == null || languageTag.isBlank()) {
+            return Locale.ENGLISH;
+        }
+
+        // Support both "pt_BR" and "pt-BR" styles.
+        Locale locale = Locale.forLanguageTag(languageTag.trim().replace('_', '-'));
+        if (locale.getLanguage() == null || locale.getLanguage().isBlank() || "und".equals(locale.getLanguage())) {
+            return Locale.ENGLISH;
+        }
+        return locale;
     }
 
     /**
