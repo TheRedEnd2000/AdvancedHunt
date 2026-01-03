@@ -84,8 +84,6 @@ public class CronEditorMenu extends Menu {
         
         if (currentCron == null || currentCron.isEmpty() || policy.isNone(currentCron)) {
             currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.none"));
-        } else if (policy.isManual(currentCron)) {
-            currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.manual"));
         } else {
             currentLore.add(plugin.getMessageManager().getMessage("gui.cron.editor.current.expression") + " §f" + currentCron);
             currentLore.add("");
@@ -180,10 +178,6 @@ public class CronEditorMenu extends Menu {
                     if (policy.allowSpecialValues()) {
                         if (policy.allowNone() && input.equalsIgnoreCase(CronEditPolicy.SPECIAL_NONE)) {
                             applyCron(CronEditPolicy.SPECIAL_NONE);
-                            return;
-                        }
-                        if (policy.allowManual() && input.equalsIgnoreCase(CronEditPolicy.SPECIAL_MANUAL)) {
-                            applyCron(CronEditPolicy.SPECIAL_MANUAL);
                             return;
                         }
                     }

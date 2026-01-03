@@ -15,7 +15,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -28,7 +31,6 @@ public class CollectionManager {
     private final RewardManager rewardManager;
     private final ActRuleEvaluator actRuleEvaluator;
     private List<Collection> cachedCollections;
-    private final Map<UUID, Map<UUID, ZonedDateTime>> ruleActivationTimes; // Collection ID -> Rule ID -> Last Activation Time
     private BukkitTask resetTask;
 
     public CollectionManager(JavaPlugin plugin, DataRepository repository, TreasureManager treasureManager, PlayerManager playerManager, RewardManager rewardManager) {
@@ -38,8 +40,7 @@ public class CollectionManager {
         this.playerManager = playerManager;
         this.rewardManager = rewardManager;
         this.cachedCollections = new ArrayList<>();
-        this.ruleActivationTimes = new HashMap<>();
-        this.actRuleEvaluator = new ActRuleEvaluator(plugin, ruleActivationTimes);
+        this.actRuleEvaluator = new ActRuleEvaluator(plugin);
 
         reloadCollections();
 
@@ -208,16 +209,6 @@ public class CollectionManager {
      */
     public boolean isCollectionAvailable(Collection collection) {
         return actRuleEvaluator.isCollectionAvailable(collection);
-    }
-
-    /**
-     * Manually activates a collection rule (for MANUAL cron expressions).
-     * Delegates to ActRuleEvaluator.
-     * @param collectionId the collection ID
-     * @param ruleId the rule ID to activate
-     */
-    public void activateRule(UUID collectionId, UUID ruleId) {
-        actRuleEvaluator.activateRule(collectionId, ruleId);
     }
 
     /**

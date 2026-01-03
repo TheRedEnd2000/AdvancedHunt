@@ -69,8 +69,7 @@ public class ActRuleEditorMenu extends Menu {
         previewLore.add("");
         
         // Show next activation times if cron is valid
-        if (!rule.getCronExpression().equalsIgnoreCase("MANUAL") && 
-            !rule.getCronExpression().equalsIgnoreCase("NONE") &&
+        if (!rule.getCronExpression().equalsIgnoreCase("NONE") &&
             ActFormatParser.isValidCron(rule.getCronExpression())) {
             try {
                 List<String> nextRuns = CronUtils.getNextExecutions(rule.getCronExpression(), 3);

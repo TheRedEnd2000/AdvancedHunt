@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * Components:
  * - DATE_RANGE: ISO date range (2025-12-24:2025-12-31) or * for always
  * - DURATION: Time period (2h, 30m, 1d) or * for permanent
- * - CRON_EXPRESSION: Quartz cron expression or MANUAL/NONE
+ * - CRON_EXPRESSION: Quartz cron expression or NONE
  */
 public class ActFormatParser {
     
@@ -99,12 +99,12 @@ public class ActFormatParser {
 
     /**
      * Validates a cron expression or special keyword
-     * @param cron the cron expression or MANUAL/NONE
+     * @param cron the cron expression or NONE
      * @return true if valid
      */
     public static boolean isValidCron(String cron) {
         if (cron == null) return false;
-        if (cron.equalsIgnoreCase("MANUAL") || cron.equalsIgnoreCase("NONE")) {
+        if (cron.equalsIgnoreCase("NONE")) {
             return true;
         }
         return ValidationUtil.validateCron(cron);
@@ -164,14 +164,11 @@ public class ActFormatParser {
 
     /**
      * Converts a cron expression to human-readable format
-     * @param cron the cron expression or MANUAL/NONE
+     * @param cron the cron expression or NONE
      * @return human-readable description
      */
     public static String getHumanReadableCron(String cron) {
         if (cron == null) return "Invalid";
-        if (cron.equalsIgnoreCase("MANUAL")) {
-            return "Manual Activation";
-        }
         if (cron.equalsIgnoreCase("NONE")) {
             return "No Schedule";
         }
@@ -286,7 +283,6 @@ public class ActFormatParser {
         private final ZonedDateTime ruleEnd;
         private final Duration activeDuration;
         private final ExecutionTime executionTime;
-        private final boolean isManual;
         private final boolean isNone;
 
         ActSchedule(String dateRange, String duration, String cron) {
@@ -318,9 +314,8 @@ public class ActFormatParser {
 
             // Parse cron
             this.isNone = cron.equalsIgnoreCase("NONE");
-            this.isManual = cron.equalsIgnoreCase("MANUAL");
 
-            if (this.isNone || this.isManual) {
+            if (this.isNone) {
                 this.executionTime = null;
             } else {
                 try {
@@ -362,13 +357,6 @@ public class ActFormatParser {
                 return true;
             }
 
-            if (isManual) {
-                // Manual activation: available if manually activated and within duration
-                if (lastActivation == null) return false;
-                if (activeDuration == null) return true; // Permanent
-                return now.isBefore(lastActivation.plus(activeDuration));
-            }
-
             // Cron-based: check if we're within duration window of last trigger
             Optional<ZonedDateTime> lastExecution = executionTime.lastExecution(now);
             if (!lastExecution.isPresent()) {
@@ -401,7 +389,7 @@ public class ActFormatParser {
          * @return Optional containing next trigger time
          */
         public Optional<ZonedDateTime> getNextTrigger(ZonedDateTime now) {
-            if (isManual || isNone || executionTime == null) {
+            if (isNone || executionTime == null) {
                 return Optional.empty();
             }
 
@@ -434,10 +422,6 @@ public class ActFormatParser {
 
         public String getCron() {
             return cronStr;
-        }
-
-        public boolean isManual() {
-            return isManual;
         }
 
         public boolean isNone() {

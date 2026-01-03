@@ -968,7 +968,6 @@ gui:
         expression: "&7Expression:"
         next_runs: "&7Next executions:"
         none: "&7No schedule set"
-        manual: "&7Manual schedule (no cron)"
     preset:
       information:
         name: "&e---------->"
