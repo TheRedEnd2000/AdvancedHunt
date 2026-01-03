@@ -41,7 +41,7 @@ public class PlacePresetActionsMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        addButton(10, new ItemBuilder(Material.CHEST)
+        addButton(12, new ItemBuilder(Material.CHEST)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.give.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.give.lore", false).toArray(new String[0]))
                 .build(), e -> {
@@ -49,19 +49,7 @@ public class PlacePresetActionsMenu extends Menu {
             openPreviousMenu();
         });
 
-        addButton(12, new ItemBuilder(Material.NAME_TAG)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.rename.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.rename.lore", false,
-                        "%current%", preset.getName()).toArray(new String[0]))
-                .build(), e -> handleRename());
-
-        addButton(14, new ItemBuilder(Material.BOOK)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.move_group.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.move_group.lore", false,
-                        "%current%", preset.getGroup()).toArray(new String[0]))
-                .build(), e -> handleMoveGroup());
-
-        addButton(16, new ItemBuilder(Material.TNT)
+        addButton(14, new ItemBuilder(Material.TNT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());
@@ -85,81 +73,6 @@ public class PlacePresetActionsMenu extends Menu {
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.given",
                 "%group%", preset.getGroup(),
                 "%name%", preset.getName()));
-    }
-
-    private void handleRename() {
-        if (!playerMenuUtility.hasPermission("advancedhunt.admin.place_presets")) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
-            return;
-        }
-
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.prompt_rename",
-                "%name%", preset.getName()));
-        plugin.getChatInputListener().requestInput(playerMenuUtility, input -> {
-            String trimmed = input == null ? null : input.trim();
-            if (trimmed == null || trimmed.isEmpty()) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.invalid_name"));
-                Bukkit.getScheduler().runTask(plugin, this::open);
-                return;
-            }
-
-            if (plugin.getPlacePresetManager().hasPresetNameInGroup(preset.getGroup(), trimmed)) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.duplicate_name"));
-                Bukkit.getScheduler().runTask(plugin, this::open);
-                return;
-            }
-
-            preset.setName(trimmed);
-            plugin.getPlacePresetManager().savePreset(preset).whenComplete((v, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
-                if (ex != null) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.save_failed"));
-                    open();
-                    return;
-                }
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.renamed",
-                        "%group%", preset.getGroup(),
-                        "%name%", preset.getName()));
-                openPreviousMenu();
-            }));
-        });
-    }
-
-    private void handleMoveGroup() {
-        if (!playerMenuUtility.hasPermission("advancedhunt.admin.place_presets")) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
-            return;
-        }
-
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.prompt_move_group",
-                "%group%", preset.getGroup()));
-        plugin.getChatInputListener().requestInput(playerMenuUtility, input -> {
-            String trimmed = input == null ? null : input.trim();
-            if (trimmed == null || trimmed.isEmpty()) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.invalid_group"));
-                Bukkit.getScheduler().runTask(plugin, this::open);
-                return;
-            }
-
-            // Prevent duplicate names within target group
-            if (plugin.getPlacePresetManager().hasPresetNameInGroup(trimmed, preset.getName())) {
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.duplicate_name"));
-                Bukkit.getScheduler().runTask(plugin, this::open);
-                return;
-            }
-
-            preset.setGroup(trimmed);
-            plugin.getPlacePresetManager().savePreset(preset).whenComplete((v, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
-                if (ex != null) {
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.save_failed"));
-                    open();
-                    return;
-                }
-                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.moved",
-                        "%group%", preset.getGroup(),
-                        "%name%", preset.getName()));
-                openPreviousMenu();
-            }));
-        });
     }
 
     private void handleDelete() {
