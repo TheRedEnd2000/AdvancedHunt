@@ -741,12 +741,6 @@ gui:
         - ""
         - "&eClick to choose preset"
       confirm_title: "Override rewards with '%name%'?"
-
-    place_presets:
-      name: "&ePlace presets"
-      lore:
-        - "&7Manage place presets (blocks/heads/items)."
-        - "&7Includes ItemsAdder items if installed."
     act_rules:
       name: "&eSchedule Rules"
       lore:
