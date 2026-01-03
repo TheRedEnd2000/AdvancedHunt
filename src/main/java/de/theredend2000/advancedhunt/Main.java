@@ -10,6 +10,7 @@ import de.theredend2000.advancedhunt.managers.minigame.MinigameManager;
 import de.theredend2000.advancedhunt.placeholder.AdvancedHuntExpansion;
 import de.theredend2000.advancedhunt.util.ConfigMigrationHandler;
 import de.theredend2000.advancedhunt.util.ConfigUpdater;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -142,17 +143,20 @@ public final class Main extends JavaPlugin {
 
         // Initialize Managers
         rewardManager = new RewardManager(this);
+        placeModeManager = new PlaceModeManager(this);
         rebuildRepositoryDependentManagers();
         rewardPresetManager.reloadPresets();
         placePresetManager.reloadPresets();
         treasureManager.loadTreasures();
-        placeModeManager = new PlaceModeManager(this);
         minigameManager = new MinigameManager(this);
         fireworkManager = new FireworkManager(this);
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
         getServer().getPluginManager().registerEvents(new PlaceModeListener(this), this);
+        if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null && ItemsAdderAdapter.isEnabled()) {
+            getServer().getPluginManager().registerEvents(new ItemsAdderFurnitureListener(this), this);
+        }
         getServer().getPluginManager().registerEvents(new TreasureProtectListener(this), this);
         getServer().getPluginManager().registerEvents(new MenuListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerProtectionListener(this), this);

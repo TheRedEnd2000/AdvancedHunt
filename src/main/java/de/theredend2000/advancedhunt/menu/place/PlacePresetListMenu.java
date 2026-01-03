@@ -62,7 +62,7 @@ public class PlacePresetListMenu extends PagedMenu {
             for (int i = startIndex; i < endIndex; i++) {
                 PlacePreset preset = presets.get(i);
                 ItemStack icon = ItemSerializer.deserialize(preset.getItemData());
-                if (icon == null || icon.getType() == Material.AIR || (!icon.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(icon))) {
+                if (icon == null || icon.getType() == Material.AIR || (!icon.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(icon) && !ItemsAdderAdapter.isCustomFurniture(icon))) {
                     icon = new ItemStack(Material.BARRIER);
                 }
                 icon.setAmount(1);
@@ -135,7 +135,7 @@ public class PlacePresetListMenu extends PagedMenu {
             return;
         }
 
-        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item)) {
+        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item) && !ItemsAdderAdapter.isCustomFurniture(item)) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.not_a_block"));
             return;
         }

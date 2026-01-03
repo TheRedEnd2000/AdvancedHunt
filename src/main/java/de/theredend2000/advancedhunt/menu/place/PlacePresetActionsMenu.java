@@ -65,7 +65,7 @@ public class PlacePresetActionsMenu extends Menu {
             return;
         }
 
-        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item)) {
+        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item) && !ItemsAdderAdapter.isCustomFurniture(item)) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.not_a_block"));
             return;
         }

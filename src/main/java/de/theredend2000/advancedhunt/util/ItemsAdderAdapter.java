@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.util;
 
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
@@ -21,6 +22,10 @@ public class ItemsAdderAdapter {
         } catch (ClassNotFoundException e) {
             enabled = false;
         }
+    }
+
+    public static boolean isEnabled() {
+        return enabled;
     }
 
     public static boolean isItemsAdderBlock(Block block) {
@@ -84,6 +89,25 @@ public class ItemsAdderAdapter {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean isItemsAdderFurniture(Entity entity) {
+        return getCustomFurnitureId(entity) != null;
+    }
+
+    public static String getCustomFurnitureId(Entity entity) {
+        if (!enabled || entity == null) return null;
+        try {
+            Method byAlreadySpawned = customFurnitureClass.getMethod("byAlreadySpawned", Entity.class);
+            Object customFurniture = byAlreadySpawned.invoke(null, entity);
+            if (customFurniture != null) {
+                Method getNamespacedID = customFurnitureClass.getMethod("getNamespacedID");
+                return (String) getNamespacedID.invoke(customFurniture);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
     }
 
     public static String getCustomFurnitureId(ItemStack item) {
