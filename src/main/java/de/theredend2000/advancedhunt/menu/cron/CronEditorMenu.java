@@ -19,6 +19,7 @@ public class CronEditorMenu extends Menu {
 
     private final CronExpressionHolder holder;
     private final CronEditPolicy policy;
+    private Menu afterApplyMenu;
 
     // Constructor for Collection context (progress reset cron)
     public CronEditorMenu(Player playerMenuUtility, Main plugin, Collection collection) {
@@ -38,6 +39,19 @@ public class CronEditorMenu extends Menu {
         super(playerMenuUtility, plugin);
         this.holder = holder;
         this.policy = policy;
+    }
+
+    /**
+     * Optional navigation target used by guided flows.
+     * If set, applying or clearing a cron will open this menu instead of staying in the cron editor.
+     */
+    public CronEditorMenu setAfterApplyMenu(Menu afterApplyMenu) {
+        this.afterApplyMenu = afterApplyMenu;
+        return this;
+    }
+
+    public Menu getAfterApplyMenu() {
+        return afterApplyMenu;
     }
 
     @Override
@@ -204,7 +218,11 @@ public class CronEditorMenu extends Menu {
         holder.save().thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.applied"));
-                refresh();
+                if (afterApplyMenu != null) {
+                    afterApplyMenu.open();
+                } else {
+                    refresh();
+                }
             });
         });
     }
@@ -214,7 +232,11 @@ public class CronEditorMenu extends Menu {
         holder.save().thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.cleared"));
-                refresh();
+                if (afterApplyMenu != null) {
+                    afterApplyMenu.open();
+                } else {
+                    refresh();
+                }
             });
         });
     }

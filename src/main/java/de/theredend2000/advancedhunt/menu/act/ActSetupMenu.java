@@ -90,10 +90,11 @@ public class ActSetupMenu extends Menu {
             // Defaults; user will pick duration, then pick schedule.
             rule.setDateRange("*");
 
-            CronEditorMenu cronMenu = new CronEditorMenu(playerMenuUtility, plugin, collection, rule);
-            cronMenu.setPreviousMenu(editorMenu);
+            CronEditorMenu cronMenu = new CronEditorMenu(playerMenuUtility, plugin, collection, rule)
+                    .setAfterApplyMenu(editorMenu);
 
             ActDurationMenu durationMenu = new ActDurationMenu(playerMenuUtility, plugin, collection, rule, this, cronMenu);
+            cronMenu.setPreviousMenu(durationMenu);
             durationMenu.open();
         });
 
