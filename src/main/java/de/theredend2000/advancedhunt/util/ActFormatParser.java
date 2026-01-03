@@ -7,6 +7,7 @@ import com.cronutils.parser.CronParser;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -163,16 +164,26 @@ public class ActFormatParser {
     }
 
     /**
-     * Converts a cron expression to human-readable format
+     * Converts a cron expression to human-readable format.
+     * This overload supports locale selection and custom strings for NONE/invalid cases.
+     *
      * @param cron the cron expression or NONE
+     * @param locale locale for the generated description (used when cron is valid)
+     * @param noneText text used when cron is NONE
+     * @param invalidText text used when cron is null/blank/invalid
      * @return human-readable description
      */
-    public static String getHumanReadableCron(String cron) {
-        if (cron == null) return "Invalid";
-        if (cron.equalsIgnoreCase("NONE")) {
-            return "No Schedule";
+    public static String getHumanReadableCron(String cron, Locale locale, String noneText, String invalidText) {
+        if (cron == null || cron.isBlank()) {
+            return invalidText;
         }
-        return cron; // Return expression as-is (could be enhanced with CronUtils in future)
+        if (cron.equalsIgnoreCase("NONE")) {
+            return noneText;
+        }
+        if (!isValidCron(cron)) {
+            return invalidText;
+        }
+        return CronUtils.describeQuartzCron(cron, locale);
     }
 
     /**

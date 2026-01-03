@@ -1467,6 +1467,9 @@ gui:
           - "&eClick to edit"
       cron:
         name: "&eSchedule"
+        description:
+          none: "No schedule"
+          invalid: "Invalid schedule"
         lore:
           - "&7Current: &f%value%"
           - "&7%description%"
