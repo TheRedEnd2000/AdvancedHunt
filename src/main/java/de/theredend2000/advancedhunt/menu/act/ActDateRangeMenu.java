@@ -22,13 +22,13 @@ public class ActDateRangeMenu extends Menu {
 
     private final Collection collection;
     private final ActRule rule;
-    private final Menu previousMenu;
+    private final Menu afterApplyMenu;
 
     public ActDateRangeMenu(Player player, Main plugin, Collection collection, ActRule rule, Menu previousMenu) {
         super(player, plugin);
         this.collection = collection;
         this.rule = rule;
-        this.previousMenu = previousMenu;
+        this.afterApplyMenu = previousMenu;
     }
 
     @Override
@@ -129,8 +129,8 @@ public class ActDateRangeMenu extends Menu {
         plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.date_range.success"));
-                if (previousMenu != null) {
-                    previousMenu.open();
+                if (afterApplyMenu != null) {
+                    afterApplyMenu.open();
                 } else {
                     new ActRuleEditorMenu(playerMenuUtility, plugin, collection, rule).open();
                 }

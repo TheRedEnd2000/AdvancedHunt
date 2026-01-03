@@ -31,7 +31,6 @@ public class ActPresetMenu extends PagedMenu {
             new ActPreset("daily_4h", "[*] [4h] [0 0 14 * * ?]", Material.GOLDEN_CARROT),
             new ActPreset("weekend_8h", "[*] [8h] [0 0 10 ? * SAT,SUN]", Material.CAKE),
             new ActPreset("weekly_24h", "[*] [24h] [0 0 0 ? * MON]", Material.PAPER),
-            new ActPreset("manual_6h", "[*] [6h] [MANUAL]", Material.LEVER),
             new ActPreset("holiday_special", "[" + getChristmasDateRange() + "] [*] [0 0 0 * * ?]", Material.PLAYER_HEAD),
             new ActPreset("seasonal_summer", "[" + getSummerDateRange() + "] [*] [NONE]", Material.SUNFLOWER),
             new ActPreset("hourly_30m", "[*] [30m] [0 0 * * * ?]", Material.IRON_NUGGET),

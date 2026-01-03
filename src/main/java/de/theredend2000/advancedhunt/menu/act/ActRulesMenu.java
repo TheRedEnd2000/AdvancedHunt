@@ -163,7 +163,9 @@ public class ActRulesMenu extends PagedMenu {
             collection.addActRule(newRule);
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
-                    new ActRuleEditorMenu(playerMenuUtility, plugin, collection, newRule).setPreviousMenu(this).open();
+                    new ActSetupMenu(playerMenuUtility, plugin, collection, newRule)
+                            .setPreviousMenu(this)
+                            .open();
                     processing = false;
                 });
             }).exceptionally(ex -> {

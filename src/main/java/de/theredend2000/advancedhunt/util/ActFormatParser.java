@@ -4,8 +4,7 @@ import com.cronutils.model.Cron;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 
-import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
@@ -26,7 +25,7 @@ public class ActFormatParser {
     private static final Pattern ACT_PATTERN = Pattern.compile(
         "\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]"
     );
-    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([mhd])");
+    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([smhd])");
     private static final Pattern DATE_RANGE_PATTERN = Pattern.compile(
         "(\\d{4}-\\d{2}-\\d{2}):(\\d{4}-\\d{2}-\\d{2})"
     );
@@ -77,8 +76,8 @@ public class ActFormatParser {
         try {
             String startStr = matcher.group(1);
             String endStr = matcher.group(2);
-            ZonedDateTime.parse(startStr + "T00:00:00Z");
-            ZonedDateTime.parse(endStr + "T23:59:59Z");
+            LocalDate.parse(startStr, DATE_FORMATTER);
+            LocalDate.parse(endStr, DATE_FORMATTER);
             return true;
         } catch (DateTimeParseException e) {
             return false;
@@ -131,6 +130,8 @@ public class ActFormatParser {
         String unit = matcher.group(2);
 
         switch (unit) {
+            case "s":
+                return value == 1 ? "1 Second" : value + " Seconds";
             case "m":
                 return value == 1 ? "1 Minute" : value + " Minutes";
             case "h":
@@ -266,6 +267,7 @@ public class ActFormatParser {
         String unit = matcher.group(2);
 
         switch (unit) {
+            case "s": return Duration.ofSeconds(value);
             case "m": return Duration.ofMinutes(value);
             case "h": return Duration.ofHours(value);
             case "d": return Duration.ofDays(value);
@@ -285,11 +287,14 @@ public class ActFormatParser {
         private final Duration activeDuration;
         private final ExecutionTime executionTime;
         private final boolean isManual;
+        private final boolean isNone;
 
         ActSchedule(String dateRange, String duration, String cron) {
             this.dateRangeStr = dateRange;
             this.durationStr = duration;
             this.cronStr = cron;
+
+            ZoneId serverZone = ZoneId.systemDefault();
 
             // Parse date range
             if (dateRange.equals("*") || dateRange.equalsIgnoreCase("ALWAYS")) {
@@ -300,19 +305,24 @@ public class ActFormatParser {
                 if (!matcher.matches()) {
                     throw new IllegalArgumentException("Invalid date range: " + dateRange);
                 }
-                this.ruleStart = ZonedDateTime.parse(matcher.group(1) + "T00:00:00Z");
-                this.ruleEnd = ZonedDateTime.parse(matcher.group(2) + "T23:59:59Z");
+
+                LocalDate startDate = LocalDate.parse(matcher.group(1), DATE_FORMATTER);
+                LocalDate endDate = LocalDate.parse(matcher.group(2), DATE_FORMATTER);
+
+                this.ruleStart = startDate.atStartOfDay(serverZone);
+                this.ruleEnd = endDate.atTime(LocalTime.MAX).atZone(serverZone);
             }
 
             // Parse duration
             this.activeDuration = parseDuration(duration);
 
             // Parse cron
-            if (cron.equalsIgnoreCase("MANUAL") || cron.equalsIgnoreCase("NONE")) {
-                this.isManual = true;
+            this.isNone = cron.equalsIgnoreCase("NONE");
+            this.isManual = cron.equalsIgnoreCase("MANUAL");
+
+            if (this.isNone || this.isManual) {
                 this.executionTime = null;
             } else {
-                this.isManual = false;
                 try {
                     CronParser parser = CronUtils.getParser();
                     Cron parsedCron = parser.parse(cron);
@@ -344,6 +354,12 @@ public class ActFormatParser {
         public boolean isAvailable(ZonedDateTime now, ZonedDateTime lastActivation) {
             if (!isRuleActive(now)) {
                 return false;
+            }
+
+            // NONE means: no schedule required. If the date range matches, the rule is available.
+            // This keeps common cases ("always available", seasonal windows) simple.
+            if (isNone) {
+                return true;
             }
 
             if (isManual) {
@@ -385,7 +401,7 @@ public class ActFormatParser {
          * @return Optional containing next trigger time
          */
         public Optional<ZonedDateTime> getNextTrigger(ZonedDateTime now) {
-            if (isManual || executionTime == null) {
+            if (isManual || isNone || executionTime == null) {
                 return Optional.empty();
             }
 
@@ -422,6 +438,10 @@ public class ActFormatParser {
 
         public boolean isManual() {
             return isManual;
+        }
+
+        public boolean isNone() {
+            return isNone;
         }
 
         public Duration getActiveDuration() {
