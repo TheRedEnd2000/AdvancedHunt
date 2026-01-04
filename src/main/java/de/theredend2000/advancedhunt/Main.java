@@ -116,6 +116,7 @@ public final class Main extends JavaPlugin {
         particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
         hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
         proximityManager = new ProximityManager(this, treasureManager, playerManager);
+        placeModeManager = new PlaceModeManager(this);
         scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
 
         particleManager.start();
@@ -154,7 +155,7 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
         getServer().getPluginManager().registerEvents(new PlaceModeListener(this), this);
         if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null && de.theredend2000.advancedhunt.util.ItemsAdderAdapter.isEnabled()) {
-            getServer().getPluginManager().registerEvents(new ItemsAdderFurnitureListener(this), this);
+            getServer().getPluginManager().registerEvents(new ItemsAdderIntegrationListener(this), this);
         }
         getServer().getPluginManager().registerEvents(new TreasureProtectListener(this), this);
         getServer().getPluginManager().registerEvents(new MenuListener(this), this);

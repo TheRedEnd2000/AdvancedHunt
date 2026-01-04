@@ -48,11 +48,7 @@ public class PlacePresetListMenu extends PagedMenu {
 
         if (presets.isEmpty()) {
             addMenuBorder();
-            ItemStack none = new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.list.none.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.list.none.lore", false))
-                    .build();
-            addStaticItem(22, none);
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.place_presets.list.none.name", false),plugin.getMessageManager().getMessageList("gui.place_presets.list.none.lore", false)));
         } else {
             addPagedButtons(presets.size());
             int startIndex = page * maxItemsPerPage;

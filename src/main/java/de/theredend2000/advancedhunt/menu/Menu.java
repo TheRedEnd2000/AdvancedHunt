@@ -14,6 +14,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -81,8 +82,8 @@ public abstract class Menu implements InventoryHolder {
 
     public void addCloseOrBack(){
         ItemStack closeOrBack = previousMenu == null
-                ? new ItemBuilder(Material.BARRIER).setDisplayName(plugin.getMessageManager().getMessage("gui.common.close")).build()
-                : new ItemBuilder(Material.ARROW).setDisplayName(plugin.getMessageManager().getMessage("gui.common.back","%menu%", previousMenu.getMenuName())).build();
+                ? getCloseButton()
+                : getBackButton();
 
         addButton(getSlots() - 5, closeOrBack, (e) -> {
             if (previousMenu == null) {
@@ -226,5 +227,27 @@ public abstract class Menu implements InventoryHolder {
         } else {
             playerMenuUtility.closeInventory();
         }
+    }
+
+    public ItemStack getCloseButton(){
+        return new ItemBuilder(Material.PLAYER_HEAD)
+                .setSkullTexture("ewogICJ0aW1lc3RhbXAiIDogMTc2NzUyMjY2MTY2OCwKICAicHJvZmlsZUlkIiA6ICI0YTQ1ZmY3NDM2Njk0YTNiYTc3OTdhYTgyN2IwNDM1NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJzcGlmZnRvcGlhNSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8xOTVhNWU4ZDI1OWM2MTQ4MDcxMzgxYTNkYmNmYTU2NGRjMjNiYThkODVkY2M1ZDU1YTExOGQ2MzczYWY3YjNkIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=")
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.close"))
+                .build();
+    }
+
+    public ItemStack getBackButton(){
+        return new ItemBuilder(Material.PLAYER_HEAD)
+                .setSkullTexture("ewogICJ0aW1lc3RhbXAiIDogMTc2NzUyMjU3ODMzMCwKICAicHJvZmlsZUlkIiA6ICJmMWFlNzVjYmE3MmU0YWUzYTU0Yzk5ZmYwMWFlZjQ1ZCIsCiAgInByb2ZpbGVOYW1lIiA6ICJlcm1zaWVzIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q1NjE3Y2UxMjllZDk1YzdiOTE1MTE5YjEwNzQ2ZjM0YzFjYzlkZmYwYWUzZTMzMjM4NjNlYmVkZDAwYmEyOWYiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ==")
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.common.back","%menu%", previousMenu.getMenuName()))
+                .build();
+    }
+
+    public ItemStack getWarningIcon(String displayName, List<String> lore){
+        return new ItemBuilder(Material.PLAYER_HEAD)
+                .setSkullTexture("ewogICJ0aW1lc3RhbXAiIDogMTc2NzUyMjY0NTA3MiwKICAicHJvZmlsZUlkIiA6ICI0OThjYTc2ZGYwODM0NzhmOGY0NjdjOGY1OTQwMjk1MiIsCiAgInByb2ZpbGVOYW1lIiA6ICJHdWx0cm8iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZlODRmZmM1NzcxY2VlOWFjMmZiMDMyN2YxMWMyZGRiN2EwOGFjMmYxNjVjNjFjMDUyMWI3YmI5N2VhZGY5ZCIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9")
+                .setDisplayName(displayName)
+                .setLore(lore)
+                .build();
     }
 }

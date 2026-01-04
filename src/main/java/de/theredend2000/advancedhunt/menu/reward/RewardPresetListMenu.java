@@ -73,17 +73,13 @@ public class RewardPresetListMenu extends PagedMenu {
     @Override
     public void setMenuItems() {
         index = 0;
+        addMenuBorder();
 
         List<RewardPreset> presets = plugin.getRewardPresetManager().getPresets(type);
         presets.sort(Comparator.comparing(RewardPreset::getName, String.CASE_INSENSITIVE_ORDER));
 
         if (presets.isEmpty()) {
-            addMenuBorder();
-            ItemStack noPresets = new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.none.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.presets.none.lore", false))
-                    .build();
-            addStaticItem(22, noPresets);
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.presets.none.name", false),plugin.getMessageManager().getMessageList("gui.presets.none.lore", false)));
         } else {
             addPagedButtons(presets.size());
             int startIndex = page * maxItemsPerPage;
@@ -125,8 +121,6 @@ public class RewardPresetListMenu extends PagedMenu {
                             .open();
                 });
             }
-
-            addMenuBorder();
         }
     }
 }

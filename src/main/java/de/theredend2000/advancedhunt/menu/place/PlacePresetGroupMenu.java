@@ -37,15 +37,12 @@ public class PlacePresetGroupMenu extends PagedMenu {
     public void setMenuItems() {
         index = 0;
 
+        addMenuBorder();
+
         List<String> groups = plugin.getPlacePresetManager().getGroups();
 
         if (groups.isEmpty()) {
-            addMenuBorder();
-            ItemStack noGroups = new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.groups.none.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.groups.none.lore", false))
-                    .build();
-            addStaticItem(22, noGroups);
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.place_presets.groups.none.name", false),plugin.getMessageManager().getMessageList("gui.place_presets.groups.none.lore", false)));
         } else {
             addPagedButtons(groups.size());
             int startIndex = page * maxItemsPerPage;
@@ -76,8 +73,6 @@ public class PlacePresetGroupMenu extends PagedMenu {
                         .open();
                 });
             }
-
-            addMenuBorder();
         }
 
         // Create group

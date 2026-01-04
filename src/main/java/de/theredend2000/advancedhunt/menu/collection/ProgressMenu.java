@@ -86,11 +86,7 @@ public class ProgressMenu extends PagedMenu {
         addStatsButton();
 
         if (treasures == null || treasures.isEmpty()) {
-            ItemStack emptyItem = new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.no_treasures.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.progress.no_treasures.lore", false))
-                    .build();
-            addStaticItem(22, emptyItem);
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.progress.no_treasures.name", false),plugin.getMessageManager().getMessageList("gui.progress.no_treasures.lore", false)));
             return;
         }
 
