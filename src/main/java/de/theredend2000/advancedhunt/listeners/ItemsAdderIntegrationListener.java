@@ -2,17 +2,17 @@ package de.theredend2000.advancedhunt.listeners;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.*;
-import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
-import de.theredend2000.advancedhunt.model.*;
+import de.theredend2000.advancedhunt.model.Reward;
+import de.theredend2000.advancedhunt.model.Treasure;
+import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.util.RewardPresetUtils;
 import dev.lone.itemsadder.api.Events.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +29,7 @@ public class ItemsAdderIntegrationListener implements Listener {
     private final CollectionManager collectionManager;
     private final RewardManager rewardManager;
     private final PlaceModeManager placeModeManager;
+    private final TreasureInteractionHandler treasureInteractionHandler;
 
     public ItemsAdderIntegrationListener(Main plugin) {
         this.plugin = plugin;
@@ -37,6 +38,7 @@ public class ItemsAdderIntegrationListener implements Listener {
         this.collectionManager = plugin.getCollectionManager();
         this.rewardManager = plugin.getRewardManager();
         this.placeModeManager = plugin.getPlaceModeManager();
+        this.treasureInteractionHandler = new TreasureInteractionHandler(plugin);
     }
 
     @EventHandler
@@ -52,11 +54,7 @@ public class ItemsAdderIntegrationListener implements Listener {
 
         if (treasureManager.getTreasureCoreAt(loc) != null) return;
 
-        List<Reward> rewards = new ArrayList<>();
-        plugin.getCollectionManager().getCollectionById(collectionId)
-                .map(Collection::getDefaultTreasureRewardPresetId)
-                .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
-                .ifPresent(preset -> rewards.addAll(preset.getRewards()));
+        List<Reward> rewards = RewardPresetUtils.getDefaultTreasureRewards(plugin, collectionId);
 
         Treasure treasure = new Treasure(
                 treasureManager.generateUniqueTreasureId(),
@@ -89,11 +87,7 @@ public class ItemsAdderIntegrationListener implements Listener {
         String namespacedId = event.getNamespacedID();
         if (namespacedId == null || namespacedId.isEmpty()) return;
 
-        List<Reward> rewards = new ArrayList<>();
-        plugin.getCollectionManager().getCollectionById(collectionId)
-                .map(Collection::getDefaultTreasureRewardPresetId)
-                .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
-                .ifPresent(preset -> rewards.addAll(preset.getRewards()));
+        List<Reward> rewards = RewardPresetUtils.getDefaultTreasureRewards(plugin, collectionId);
 
         Treasure treasure = new Treasure(
                 treasureManager.generateUniqueTreasureId(),
@@ -152,74 +146,8 @@ public class ItemsAdderIntegrationListener implements Listener {
         Player player = event.getPlayer();
         event.setCancelled(true);
 
-        // Shift + interact: Admin reward editor
-        if (player.isSneaking()) {
-            if (!player.hasPermission("advancedhunt.admin.rewards")) {
-                player.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
-                return;
-            }
-
-            treasureManager.getFullTreasureAsync(treasureCore.getId()).thenAccept(treasure -> {
-                if (treasure == null) return;
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    RewardsMenu menu = new RewardsMenu(player, plugin, new TreasureRewardHolder(plugin, treasure));
-                    collectionManager.getCollectionById(treasure.getCollectionId()).ifPresent(collection ->
-                            menu.setAlternateContext(new CollectionRewardHolder(plugin, collection))
-                    );
-                    menu.open();
-                });
-            });
-            return;
-        }
-
-        if (placeModeManager.isInPlaceMode(player)) {
-            player.sendMessage(plugin.getMessageManager().getMessage("treasure.placemode"));
-            plugin.getSoundManager().playPlaceModeCollectDeny(player);
-            return;
-        }
-
-        PlayerData data = playerManager.getPlayerData(player.getUniqueId());
-
-        collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
-            if (!collectionManager.isCollectionAvailable(collection)) {
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    plugin.getSoundManager().playCollectionUnavailable(player);
-                    player.sendMessage(plugin.getMessageManager().getMessage("collection.unavailable",
-                            "%collection%", collection.getName()));
-
-                    collectionManager.getNextActivation(collection).ifPresent(nextTime -> {
-                        String timeStr = plugin.getMessageManager().formatDateTime(nextTime);
-                        player.sendMessage(plugin.getMessageManager().getMessage("collection.available_at",
-                                "%time%", timeStr));
-                    });
-                });
-                return;
-            }
-
-            if (data.hasFound(treasureCore.getId())) {
-                player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
-                plugin.getSoundManager().playTreasureAlreadyFound(player);
-                return;
-            }
-
-            plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().clone().add(0.5, 1, 0.5));
-
-            if (collection.isSinglePlayerFind()) {
-                plugin.getDataRepository().getPlayersWhoFound(treasureCore.getId()).thenAccept(claimers -> {
-                    if (!claimers.isEmpty()) {
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_claimed_global"));
-                            plugin.getSoundManager().playTreasureClaimedByOther(player);
-                        });
-                        return;
-                    }
-
-                    Bukkit.getScheduler().runTask(plugin, () -> claimTreasure(player, treasureCore, data));
-                });
-            } else {
-                claimTreasure(player, treasureCore, data);
-            }
-        });
+        if (treasureInteractionHandler.handleSneakRewardsEditor(player, treasureCore)) return;
+        treasureInteractionHandler.handleTreasureCollect(player, treasureCore);
     }
 
     @EventHandler
@@ -237,71 +165,8 @@ public class ItemsAdderIntegrationListener implements Listener {
         Player player = event.getPlayer();
         if (player == null) return;
 
-        if (player.isSneaking()) {
-            if (!player.hasPermission("advancedhunt.admin.rewards")) {
-                player.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
-                return;
-            }
-
-            treasureManager.getFullTreasureAsync(treasureCore.getId()).thenAccept(treasure -> {
-                if (treasure == null) return;
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    RewardsMenu menu = new RewardsMenu(player, plugin, new TreasureRewardHolder(plugin, treasure));
-                    collectionManager.getCollectionById(treasure.getCollectionId()).ifPresent(collection ->
-                            menu.setAlternateContext(new CollectionRewardHolder(plugin, collection))
-                    );
-                    menu.open();
-                });
-            });
-            return;
-        }
-
-        if (placeModeManager.isInPlaceMode(player)) {
-            player.sendMessage(plugin.getMessageManager().getMessage("treasure.placemode"));
-            plugin.getSoundManager().playPlaceModeCollectDeny(player);
-            return;
-        }
-
-        PlayerData data = playerManager.getPlayerData(player.getUniqueId());
-        collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
-            if (!collectionManager.isCollectionAvailable(collection)) {
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    plugin.getSoundManager().playCollectionUnavailable(player);
-                    player.sendMessage(plugin.getMessageManager().getMessage("collection.unavailable",
-                            "%collection%", collection.getName()));
-                    collectionManager.getNextActivation(collection).ifPresent(nextTime -> {
-                        String timeStr = plugin.getMessageManager().formatDateTime(nextTime);
-                        player.sendMessage(plugin.getMessageManager().getMessage("collection.available_at",
-                                "%time%", timeStr));
-                    });
-                });
-                return;
-            }
-
-            if (data.hasFound(treasureCore.getId())) {
-                player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
-                plugin.getSoundManager().playTreasureAlreadyFound(player);
-                return;
-            }
-
-            plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().clone().add(0.5, 1, 0.5));
-
-            if (collection.isSinglePlayerFind()) {
-                plugin.getDataRepository().getPlayersWhoFound(treasureCore.getId()).thenAccept(claimers -> {
-                    if (!claimers.isEmpty()) {
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_claimed_global"));
-                            plugin.getSoundManager().playTreasureClaimedByOther(player);
-                        });
-                        return;
-                    }
-
-                    Bukkit.getScheduler().runTask(plugin, () -> claimTreasure(player, treasureCore, data));
-                });
-            } else {
-                claimTreasure(player, treasureCore, data);
-            }
-        });
+        if (treasureInteractionHandler.handleSneakRewardsEditor(player, treasureCore)) return;
+        treasureInteractionHandler.handleTreasureCollect(player, treasureCore);
     }
 
     @EventHandler
@@ -320,32 +185,6 @@ public class ItemsAdderIntegrationListener implements Listener {
         event.setCancelled(true);
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.protected"));
         plugin.getSoundManager().playBlockProtected(player);
-    }
-
-    private void claimTreasure(Player player, TreasureCore treasureCore, PlayerData data) {
-        data.addFoundTreasure(treasureCore.getId());
-        playerManager.savePlayerData(player.getUniqueId());
-        player.sendMessage(plugin.getMessageManager().getMessage("treasure.found"));
-
-        collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
-            if (collection.isSinglePlayerFind()) {
-                plugin.getParticleManager().markTreasureAsGloballyClaimed(treasureCore.getId());
-            }
-        });
-
-        treasureManager.getFullTreasureAsync(treasureCore.getId()).thenAccept(treasure -> {
-            if (treasure != null && treasure.getRewards() != null) {
-                Bukkit.getScheduler().runTask(plugin, () ->
-                        collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(c ->
-                                rewardManager.giveRewards(player, treasure.getRewards(), c)
-                        )
-                );
-            }
-        });
-
-        collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(c ->
-                collectionManager.checkCompletion(player, c)
-        );
     }
 
     private static Location toBlockLocation(Location location) {
