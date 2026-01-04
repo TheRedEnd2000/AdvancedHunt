@@ -116,8 +116,8 @@ public final class Main extends JavaPlugin {
         particleManager = new ParticleManager(this, treasureManager, playerManager, collectionManager);
         hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
         proximityManager = new ProximityManager(this, treasureManager, playerManager);
-        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
         placeModeManager = new PlaceModeManager(this);
+        scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
 
         particleManager.start();
         scanManager.start();
