@@ -87,11 +87,7 @@ public class LeaderboardMenu extends PagedMenu {
 
         if (entries.isEmpty()) {
             // Show "no data" message
-            ItemStack emptyItem = new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.empty.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.empty.lore", false))
-                    .build();
-            addStaticItem(22, emptyItem);
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.leaderboard.empty.name", false), plugin.getMessageManager().getMessageList("gui.leaderboard.empty.lore", false)));
             return;
         }
 
