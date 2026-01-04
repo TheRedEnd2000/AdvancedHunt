@@ -3,12 +3,11 @@ package de.theredend2000.advancedhunt.listeners;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.PlaceModeManager;
 import de.theredend2000.advancedhunt.managers.TreasureManager;
-import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.Reward;
-import de.theredend2000.advancedhunt.model.RewardPresetType;
 import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.util.BlockUtils;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
+import de.theredend2000.advancedhunt.util.RewardPresetUtils;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import org.bukkit.block.Block;
@@ -110,11 +109,7 @@ public class PlaceModeListener implements Listener {
             return;
         }
 
-        List<Reward> rewards = new ArrayList<>();
-        plugin.getCollectionManager().getCollectionById(collectionId)
-            .map(Collection::getDefaultTreasureRewardPresetId)
-            .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
-            .ifPresent(preset -> rewards.addAll(preset.getRewards()));
+        List<Reward> rewards = new ArrayList<>(RewardPresetUtils.getDefaultTreasureRewards(plugin, collectionId));
 
         Treasure treasure = new Treasure(
                 treasureManager.generateUniqueTreasureId(),
