@@ -231,7 +231,7 @@ public abstract class Menu implements InventoryHolder {
 
     public ItemStack getCloseButton(){
         return new ItemBuilder(Material.PLAYER_HEAD)
-                .setSkullTexture("ewogICJ0aW1lc3RhbXAiIDogMTc2NzUyMjY2MTY2OCwKICAicHJvZmlsZUlkIiA6ICI0YTQ1ZmY3NDM2Njk0YTNiYTc3OTdhYTgyN2IwNDM1NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJzcGlmZnRvcGlhNSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8xOTVhNWU4ZDI1OWM2MTQ4MDcxMzgxYTNkYmNmYTU2NGRjMjNiYThkODVkY2M1ZDU1YTExOGQ2MzczYWY3YjNkIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=")
+                .setSkullTexture("ewogICJ0aW1lc3RhbXAiIDogMTc2NzUyNTYyMTI2MywKICAicHJvZmlsZUlkIiA6ICIxMTM0OTAxMTU3ZTE0Yzg0OTE1YTNjMGY3M2RmYzM0NSIsCiAgInByb2ZpbGVOYW1lIiA6ICJab2xlZWV5IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2JjMTc1ZjFkMzEyZjNjOTEyZmM1ZjY3MjAyNDNlMmZmMmU1NDk4YjgwMGZjNWI3MDEyNjFhZDM2NTViODJjYWIiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ==")
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.close"))
                 .build();
     }
