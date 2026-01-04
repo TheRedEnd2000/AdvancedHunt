@@ -1,114 +1,77 @@
 package de.theredend2000.advancedhunt.util;
 
+import de.theredend2000.advancedhunt.util.itemsadder.ItemsAdderBridge;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Method;
-
 public class ItemsAdderAdapter {
 
-    private static boolean enabled = false;
-    private static Class<?> customBlockClass;
-    private static Class<?> customFurnitureClass;
-    private static Class<?> customStackClass;
+    private static volatile ItemsAdderBridge bridge;
 
-    private static Object tryGetInstance(Class<?> clazz, String id) {
-        if (clazz == null || id == null) return null;
-        try {
-            Method getInstance = clazz.getMethod("getInstance", String.class);
-            return getInstance.invoke(null, id);
-        } catch (Exception ignored) {
-            return null;
+    private static ItemsAdderBridge getBridge() {
+        ItemsAdderBridge local = bridge;
+        if (local != null) {
+            return local;
         }
-    }
 
-    private static ItemStack tryGetItemStack(Object instance) {
-        if (instance == null) return null;
-        try {
-            Method getItemStack = instance.getClass().getMethod("getItemStack");
-            return (ItemStack) getItemStack.invoke(instance);
-        } catch (Exception ignored) {
-            return null;
-        }
-    }
+        synchronized (ItemsAdderAdapter.class) {
+            if (bridge != null) {
+                return bridge;
+            }
+            try {
+                // Avoid loading any ItemsAdder API types unless the plugin exists AND is enabled.
+                var itemsAdderPlugin = Bukkit.getPluginManager().getPlugin("ItemsAdder");
+                if (itemsAdderPlugin == null || !itemsAdderPlugin.isEnabled()) {
+                    return null;
+                }
 
-    static {
-        try {
-            customBlockClass = Class.forName("dev.lone.itemsadder.api.CustomBlock");
-            customFurnitureClass = Class.forName("dev.lone.itemsadder.api.CustomFurniture");
-            customStackClass = Class.forName("dev.lone.itemsadder.api.CustomStack");
-            enabled = true;
-        } catch (ClassNotFoundException e) {
-            enabled = false;
+                Class<?> impl = Class.forName(
+                        "de.theredend2000.advancedhunt.util.itemsadder.ApiItemsAdderBridge",
+                        true,
+                        ItemsAdderAdapter.class.getClassLoader()
+                );
+                bridge = (ItemsAdderBridge) impl.getDeclaredConstructor().newInstance();
+                return bridge;
+            } catch (Throwable ignored) {
+                return null;
+            }
         }
     }
 
     public static boolean isEnabled() {
-        return enabled;
+        return getBridge() != null;
     }
 
     public static boolean isItemsAdderBlock(Block block) {
-        if (!enabled) return false;
-        try {
-            Method method = customBlockClass.getMethod("byAlreadyPlaced", Block.class);
-            Object result = method.invoke(null, block);
-            return result != null;
-        } catch (Exception e) {
-            return false;
-        }
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.isItemsAdderBlock(block);
     }
 
     public static String getCustomBlockId(Block block) {
-        if (!enabled) return null;
-        try {
-            Method byAlreadyPlaced = customBlockClass.getMethod("byAlreadyPlaced", Block.class);
-            Object customBlock = byAlreadyPlaced.invoke(null, block);
-            if (customBlock != null) {
-                Method getNamespacedID = customBlockClass.getMethod("getNamespacedID");
-                return (String) getNamespacedID.invoke(customBlock);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return null;
+        return bridge.getCustomBlockId(block);
     }
 
     public static boolean isCustomBlockItem(ItemStack item) {
-        if (!enabled || item == null) return false;
-        try {
-            Method byItemStack = customBlockClass.getMethod("byItemStack", ItemStack.class);
-            Object result = byItemStack.invoke(null, item);
-            return result != null;
-        } catch (Exception e) {
-            return false;
-        }
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.isCustomBlockItem(item);
     }
 
     public static String getCustomBlockId(ItemStack item) {
-        if (!enabled || item == null) return null;
-        try {
-            Method byItemStack = customBlockClass.getMethod("byItemStack", ItemStack.class);
-            Object customBlock = byItemStack.invoke(null, item);
-            if (customBlock != null) {
-                Method getNamespacedID = customBlockClass.getMethod("getNamespacedID");
-                return (String) getNamespacedID.invoke(customBlock);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return null;
+        return bridge.getCustomBlockId(item);
     }
 
     public static boolean isCustomFurniture(ItemStack item) {
-        if (!enabled || item == null) return false;
-        try {
-            Method byItemStack = customFurnitureClass.getMethod("byItemStack", ItemStack.class);
-            Object result = byItemStack.invoke(null, item);
-            return result != null;
-        } catch (Exception e) {
-            return false;
-        }
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.isCustomFurniture(item);
     }
 
     public static boolean isItemsAdderFurniture(Entity entity) {
@@ -116,47 +79,20 @@ public class ItemsAdderAdapter {
     }
 
     public static String getCustomFurnitureId(Entity entity) {
-        if (!enabled || entity == null) return null;
-        try {
-            Method byAlreadySpawned = customFurnitureClass.getMethod("byAlreadySpawned", Entity.class);
-            Object customFurniture = byAlreadySpawned.invoke(null, entity);
-            if (customFurniture != null) {
-                Method getNamespacedID = customFurnitureClass.getMethod("getNamespacedID");
-                return (String) getNamespacedID.invoke(customFurniture);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return null;
+        return bridge.getCustomFurnitureId(entity);
     }
 
     public static String getCustomFurnitureId(ItemStack item) {
-        if (!enabled || item == null) return null;
-        try {
-            Method byItemStack = customFurnitureClass.getMethod("byItemStack", ItemStack.class);
-            Object customFurniture = byItemStack.invoke(null, item);
-            if (customFurniture != null) {
-                Method getNamespacedID = customFurnitureClass.getMethod("getNamespacedID");
-                return (String) getNamespacedID.invoke(customFurniture);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return null;
+        return bridge.getCustomFurnitureId(item);
     }
 
     public static ItemStack getCustomItem(String id) {
-        if (!enabled || id == null) return null;
-
-        // Prefer CustomStack (the usual way to obtain an inventory item)
-        ItemStack item = tryGetItemStack(tryGetInstance(customStackClass, id));
-        if (item != null) return item;
-
-        // Fallback: some IDs are resolved via CustomBlock/CustomFurniture instances
-        item = tryGetItemStack(tryGetInstance(customBlockClass, id));
-        if (item != null) return item;
-
-        item = tryGetItemStack(tryGetInstance(customFurnitureClass, id));
-        return item;
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return null;
+        return bridge.getCustomItem(id);
     }
 }
