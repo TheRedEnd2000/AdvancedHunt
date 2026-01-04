@@ -67,11 +67,7 @@ public class WhoFoundMenu extends PagedMenu {
 
         if (finderUuids.isEmpty()) {
             // Show "no one found" message
-            ItemStack noOneItem = new ItemBuilder(Material.BARRIER)
-                    .setDisplayName(plugin.getMessageManager().getMessage("gui.finders.empty.name", false))
-                    .setLore(plugin.getMessageManager().getMessageList("gui.finders.empty.lore", false))
-                    .build();
-            addStaticItem(22, noOneItem);
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.finders.empty.name", false),plugin.getMessageManager().getMessageList("gui.finders.empty.lore", false)));
             return;
         }
 

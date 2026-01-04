@@ -75,15 +75,12 @@ public class RewardsMenu extends PagedMenu {
     public void setMenuItems() {
         // Reset index for this page
         index = 0;
+
+        addMenuBorder();
         
         if (rewards.isEmpty()) {
             // Show "no rewards" indicator in center
-            addMenuBorder();
-            ItemStack noRewards = new ItemBuilder(Material.BARRIER)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.no_rewards.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.rewards.no_rewards.lore", false))
-                .build();
-            addStaticItem(22, noRewards);
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.rewards.no_rewards.name", false),plugin.getMessageManager().getMessageList("gui.rewards.no_rewards.lore", false)));
         } else {
 
             addPagedButtons(rewards.size());
@@ -101,8 +98,6 @@ public class RewardsMenu extends PagedMenu {
 
                 addPagedItem(index++, displayItem, e -> handleRewardClick(e, rewardIndex));
             }
-            
-            addMenuBorder();
         }
     }
     
