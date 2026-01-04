@@ -1,9 +1,9 @@
 package de.theredend2000.advancedhunt.menu.common;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -47,7 +47,7 @@ public class ConfirmationMenu extends Menu {
         fillBorders(super.FILLER_GLASS);
 
         // Confirm Button
-        addButton(11, new ItemBuilder(Material.LIME_TERRACOTTA)
+        addButton(11, new ItemBuilder(XMaterial.LIME_TERRACOTTA.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.confirm"))
                 .build(), (e) -> {
             if (onConfirm != null) {
@@ -56,7 +56,7 @@ public class ConfirmationMenu extends Menu {
         });
 
         // Cancel Button
-        addButton(15, new ItemBuilder(Material.RED_TERRACOTTA)
+        addButton(15, new ItemBuilder(XMaterial.RED_TERRACOTTA.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.cancel"))
                 .build(), (e) -> {
             if (onCancel != null) {

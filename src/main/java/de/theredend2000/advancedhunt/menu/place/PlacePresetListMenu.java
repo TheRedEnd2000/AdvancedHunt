@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.place;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.PlacePreset;
@@ -7,7 +8,6 @@ import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -58,8 +58,8 @@ public class PlacePresetListMenu extends PagedMenu {
             for (int i = startIndex; i < endIndex; i++) {
                 PlacePreset preset = presets.get(i);
                 ItemStack icon = ItemSerializer.deserialize(preset.getItemData());
-                if (icon == null || icon.getType() == Material.AIR || (!icon.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(icon) && !ItemsAdderAdapter.isCustomFurniture(icon))) {
-                    icon = new ItemStack(Material.BARRIER);
+                if (icon == null || icon.getType() == XMaterial.AIR.get() || (!icon.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(icon) && !ItemsAdderAdapter.isCustomFurniture(icon))) {
+                    icon = new ItemStack(XMaterial.BARRIER.get());
                 }
                 icon.setAmount(1);
 
@@ -86,7 +86,7 @@ public class PlacePresetListMenu extends PagedMenu {
         }
 
         // Add block preset to this group
-        addButton(52, new ItemBuilder(Material.EMERALD)
+        addButton(52, new ItemBuilder(XMaterial.EMERALD.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.create_in_group.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.create_in_group.lore", false,
                         "%group%", group).toArray(new String[0]))
@@ -126,7 +126,7 @@ public class PlacePresetListMenu extends PagedMenu {
 
     private void givePresetItem(PlacePreset preset) {
         ItemStack item = ItemSerializer.deserialize(preset.getItemData());
-        if (item == null || item.getType() == Material.AIR) {
+        if (item == null || item.getType() == XMaterial.AIR.get()) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.deserialize_failed"));
             return;
         }

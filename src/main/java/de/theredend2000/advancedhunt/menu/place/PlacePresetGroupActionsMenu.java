@@ -1,11 +1,11 @@
 package de.theredend2000.advancedhunt.menu.place;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -38,13 +38,13 @@ public class PlacePresetGroupActionsMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        addButton(11, new ItemBuilder(Material.NAME_TAG)
+        addButton(11, new ItemBuilder(XMaterial.NAME_TAG.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.group_actions.rename.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.group_actions.rename.lore", false,
                         "%current%", group).toArray(new String[0]))
                 .build(), e -> handleRename());
 
-        addButton(15, new ItemBuilder(Material.TNT)
+        addButton(15, new ItemBuilder(XMaterial.TNT.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.group_actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.group_actions.delete.lore", false,
                         "%count%", String.valueOf(plugin.getPlacePresetManager().getPresetsInGroup(group).size())).toArray(new String[0]))
