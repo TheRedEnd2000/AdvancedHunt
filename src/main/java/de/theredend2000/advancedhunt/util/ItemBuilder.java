@@ -64,7 +64,7 @@ public class ItemBuilder {
     public ItemBuilder(XMaterial material) {
         this.item = material.parseItem();
         if (this.item == null) {
-            this.item = new ItemStack(Material.STONE); // Fallback
+            this.item = new ItemStack(XMaterial.STONE.get()); // Fallback
         }
         this.meta = this.item.getItemMeta();
         ensureMeta();

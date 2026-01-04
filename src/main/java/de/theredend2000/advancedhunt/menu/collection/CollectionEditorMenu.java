@@ -1,9 +1,9 @@
 package de.theredend2000.advancedhunt.menu.collection;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -61,7 +61,7 @@ public class CollectionEditorMenu extends PagedMenu {
 
                         int treasureCount = plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId()).size();
 
-                        addPagedItem(finalI, new ItemBuilder(Material.CHEST)
+                        addPagedItem(finalI, new ItemBuilder(XMaterial.CHEST.get())
                                 .setDisplayName(plugin.getMessageManager().getMessage("gui.editor.collection_item.name", "%collection%", collection.getName()))
                                 .setLore(plugin.getMessageManager().getMessageList("gui.editor.collection_item.lore", 
                                     "%status%", status,
@@ -78,7 +78,7 @@ public class CollectionEditorMenu extends PagedMenu {
         }
 
         // Create Collection Button
-        addButton(52, new ItemBuilder(Material.EMERALD)
+        addButton(52, new ItemBuilder(XMaterial.EMERALD.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.editor.create.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.editor.create.lore").toArray(new String[0]))
                 .build(), (e) -> {

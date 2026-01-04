@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.act;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.ActRule;
@@ -26,15 +27,15 @@ public class ActPresetMenu extends PagedMenu {
     
     // Static preset list - initialized once, shared across all menu instances
     private static final List<ActPreset> PRESETS = List.of(
-            new ActPreset("always_available", "[*] [*] [NONE]", Material.NETHER_STAR),
-            new ActPreset("daily_2h", "[*] [2h] [0 0 9 * * ?]", Material.CLOCK),
-            new ActPreset("daily_4h", "[*] [4h] [0 0 14 * * ?]", Material.GOLDEN_CARROT),
-            new ActPreset("weekend_8h", "[*] [8h] [0 0 10 ? * SAT,SUN]", Material.CAKE),
-            new ActPreset("weekly_24h", "[*] [24h] [0 0 0 ? * MON]", Material.PAPER),
-            new ActPreset("holiday_special", "[" + getChristmasDateRange() + "] [*] [0 0 0 * * ?]", Material.PLAYER_HEAD),
-            new ActPreset("seasonal_summer", "[" + getSummerDateRange() + "] [*] [NONE]", Material.SUNFLOWER),
-            new ActPreset("hourly_30m", "[*] [30m] [0 0 * * * ?]", Material.IRON_NUGGET),
-            new ActPreset("twice_daily_3h", "[*] [3h] [0 0 9,18 * * ?]", Material.GOLDEN_APPLE)
+            new ActPreset("always_available", "[*] [*] [NONE]", XMaterial.NETHER_STAR.get()),
+            new ActPreset("daily_2h", "[*] [2h] [0 0 9 * * ?]", XMaterial.CLOCK.get()),
+            new ActPreset("daily_4h", "[*] [4h] [0 0 14 * * ?]", XMaterial.GOLDEN_CARROT.get()),
+            new ActPreset("weekend_8h", "[*] [8h] [0 0 10 ? * SAT,SUN]", XMaterial.CAKE.get()),
+            new ActPreset("weekly_24h", "[*] [24h] [0 0 0 ? * MON]", XMaterial.PAPER.get()),
+            new ActPreset("holiday_special", "[" + getChristmasDateRange() + "] [*] [0 0 0 * * ?]", XMaterial.PLAYER_HEAD.get()),
+            new ActPreset("seasonal_summer", "[" + getSummerDateRange() + "] [*] [NONE]", XMaterial.SUNFLOWER.get()),
+            new ActPreset("hourly_30m", "[*] [30m] [0 0 * * * ?]", XMaterial.IRON_NUGGET.get()),
+            new ActPreset("twice_daily_3h", "[*] [3h] [0 0 9,18 * * ?]", XMaterial.GOLDEN_APPLE.get())
     );
 
     public ActPresetMenu(Player player, Main plugin, Collection collection, ActRule rule) {

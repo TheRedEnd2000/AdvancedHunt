@@ -1,10 +1,10 @@
 package de.theredend2000.advancedhunt.menu.common;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -47,7 +47,7 @@ public abstract class SingleItemInputMenu extends Menu {
 
     /** Validate the placed item. Default: allow any non-air item. */
     protected boolean isValidItem(ItemStack item) {
-        return item != null && item.getType() != Material.AIR;
+        return item != null && item.getType() != XMaterial.AIR.get();
     }
 
     /** Message key when validation fails; return null to send nothing. */
@@ -115,25 +115,25 @@ public abstract class SingleItemInputMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        ItemStack placeholder = new ItemBuilder(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
+        ItemStack placeholder = new ItemBuilder(XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE)
                 .setDisplayName(plugin.getMessageManager().getMessage(getGuiKeyBase() + ".placeholder.name", false))
                 .setLore(plugin.getMessageManager().getMessageList(getGuiKeyBase() + ".placeholder.lore", false))
                 .build();
         addStaticItem(ITEM_SLOT, placeholder);
 
-        ItemStack info = new ItemBuilder(Material.BOOK)
+        ItemStack info = new ItemBuilder(XMaterial.BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage(getGuiKeyBase() + ".info.name", false))
                 .setLore(plugin.getMessageManager().getMessageList(getGuiKeyBase() + ".info.lore", false).toArray(new String[0]))
                 .build();
         addStaticItem(4, info);
 
-        ItemStack confirm = new ItemBuilder(Material.LIME_CONCRETE)
+        ItemStack confirm = new ItemBuilder(XMaterial.LIME_CONCRETE)
                 .setDisplayName(plugin.getMessageManager().getMessage(getGuiKeyBase() + ".confirm.name", false))
                 .setLore(plugin.getMessageManager().getMessageList(getGuiKeyBase() + ".confirm.lore", false).toArray(new String[0]))
                 .build();
         addButton(39, confirm, e -> confirmClicked());
 
-        ItemStack cancel = new ItemBuilder(Material.RED_CONCRETE)
+        ItemStack cancel = new ItemBuilder(XMaterial.RED_CONCRETE)
                 .setDisplayName(plugin.getMessageManager().getMessage(getGuiKeyBase() + ".cancel.name", false))
                 .setLore(plugin.getMessageManager().getMessageList(getGuiKeyBase() + ".cancel.lore", false).toArray(new String[0]))
                 .build();
@@ -147,7 +147,7 @@ public abstract class SingleItemInputMenu extends Menu {
 
     private void confirmClicked() {
         ItemStack item = inventory.getItem(ITEM_SLOT);
-        if (item == null || item.getType() == Material.AIR) {
+        if (item == null || item.getType() == XMaterial.AIR.get()) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(getNoItemErrorKey()));
             return;
         }
@@ -176,7 +176,7 @@ public abstract class SingleItemInputMenu extends Menu {
         confirmed = true;
 
         ItemStack item = inventory.getItem(ITEM_SLOT);
-        if (item != null && item.getType() != Material.AIR) {
+        if (item != null && item.getType() != XMaterial.AIR.get()) {
             giveItemBack(item);
         }
 
@@ -184,7 +184,7 @@ public abstract class SingleItemInputMenu extends Menu {
     }
 
     private void giveItemBack(ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return;
+        if (item == null || item.getType() == XMaterial.AIR.get()) return;
 
         var leftover = playerMenuUtility.getInventory().addItem(item);
         if (!leftover.isEmpty()) {
@@ -196,7 +196,7 @@ public abstract class SingleItemInputMenu extends Menu {
     public void onClose(InventoryCloseEvent event) {
         if (!confirmed) {
             ItemStack item = inventory.getItem(ITEM_SLOT);
-            if (item != null && item.getType() != Material.AIR) {
+            if (item != null && item.getType() != XMaterial.AIR.get()) {
                 giveItemBack(item);
             }
 

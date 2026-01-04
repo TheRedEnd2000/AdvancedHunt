@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.collection;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.act.ActRulesMenu;
@@ -48,7 +49,7 @@ public class CollectionSettingsMenu extends Menu {
         fillBorders(super.FILLER_GLASS);
 
         // ==================== BASIC SETTINGS ====================
-        addStaticItem(10, new ItemBuilder(Material.PLAYER_HEAD)
+        addStaticItem(10, new ItemBuilder(XMaterial.PLAYER_HEAD.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.categories.basic.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.categories.basic.lore", false))
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJmOGI2Mjc3Y2QzNjI2NjI4M2NiNWE5ZTY5NDM5NTNjNzgzZTZmZjdkNmEyZDU5ZDE1YWQwNjk3ZTkxZDQzYyJ9fX0=")
@@ -57,7 +58,7 @@ public class CollectionSettingsMenu extends Menu {
         addStaticItem(11, super.EXTRA_GLASS);
 
         // Rename
-        addButton(12, new ItemBuilder(Material.NAME_TAG)
+        addButton(12, new ItemBuilder(XMaterial.NAME_TAG.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.rename.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.rename.lore", "%name%", collection.getName()).toArray(new String[0]))
                 .build(), (e) -> {
@@ -82,7 +83,7 @@ public class CollectionSettingsMenu extends Menu {
                 plugin.getMessageManager().getMessage("gui.common.enabled") :
                 plugin.getMessageManager().getMessage("gui.common.disabled");
 
-        addButton(13, new ItemBuilder(collection.isEnabled() ? Material.LIME_DYE : Material.GRAY_DYE)
+        addButton(13, new ItemBuilder(collection.isEnabled() ? XMaterial.LIME_DYE.get() : XMaterial.GRAY_DYE.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.status.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.status.lore", "%status%", status).toArray(new String[0]))
                 .build(), (e) -> {
@@ -97,7 +98,7 @@ public class CollectionSettingsMenu extends Menu {
                 plugin.getMessageManager().getMessage("gui.common.enabled") :
                 plugin.getMessageManager().getMessage("gui.common.disabled");
 
-        addButton(14, new ItemBuilder(collection.isSinglePlayerFind() ? Material.ENDER_PEARL : Material.ENDER_EYE)
+        addButton(14, new ItemBuilder(collection.isSinglePlayerFind() ? XMaterial.ENDER_PEARL.get() : XMaterial.ENDER_EYE.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.single_player_find.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.single_player_find.lore", "%status%", spfStatus).toArray(new String[0]))
                 .build(), (e) -> {
@@ -108,7 +109,7 @@ public class CollectionSettingsMenu extends Menu {
         });
 
         // Delete Collection
-        addButton(15, new ItemBuilder(Material.TNT)
+        addButton(15, new ItemBuilder(XMaterial.TNT.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.delete.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.delete.lore").toArray(new String[0]))
                 .build(), (e) -> {
@@ -127,7 +128,7 @@ public class CollectionSettingsMenu extends Menu {
         }, "advancedhunt.admin.collection.delete");
 
         // ==================== ACT CONFIGURATION ====================
-        addStaticItem(19, new ItemBuilder(Material.PLAYER_HEAD)
+        addStaticItem(19, new ItemBuilder(XMaterial.PLAYER_HEAD.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.categories.rewards.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.categories.rewards.lore", false))
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJmOGI2Mjc3Y2QzNjI2NjI4M2NiNWE5ZTY5NDM5NTNjNzgzZTZmZjdkNmEyZDU5ZDE1YWQwNjk3ZTkxZDQzYyJ9fX0=")
@@ -136,7 +137,7 @@ public class CollectionSettingsMenu extends Menu {
         addStaticItem(20, super.EXTRA_GLASS);
 
         // Completion Rewards
-        addButton(21, new ItemBuilder(Material.CHEST)
+        addButton(21, new ItemBuilder(XMaterial.CHEST.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.rewards.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.rewards.lore").toArray(new String[0]))
                 .build(), (e) -> {
@@ -147,7 +148,7 @@ public class CollectionSettingsMenu extends Menu {
 
         // ACT Schedule Rules
         int ruleCount = collection.getActRules().size();
-        addButton(22, new ItemBuilder(Material.REPEATING_COMMAND_BLOCK)
+        addButton(22, new ItemBuilder(XMaterial.REPEATING_COMMAND_BLOCK.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.act_rules.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.act_rules.lore", false,
                         "%count%", String.valueOf(ruleCount)
@@ -161,7 +162,7 @@ public class CollectionSettingsMenu extends Menu {
                 "§f" + collection.getProgressResetCron() :
                 plugin.getMessageManager().getMessage("gui.common.none", false);
 
-        addButton(23, new ItemBuilder(Material.CLOCK)
+        addButton(23, new ItemBuilder(XMaterial.CLOCK.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.progress_reset_cron.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.progress_reset_cron.lore", false, "%cron%", cron).toArray(new String[0]))
                 .build(), (e) -> {
@@ -169,7 +170,7 @@ public class CollectionSettingsMenu extends Menu {
         });
 
         // ==================== PRESETS ====================
-        addStaticItem(28, new ItemBuilder(Material.PLAYER_HEAD)
+        addStaticItem(28, new ItemBuilder(XMaterial.PLAYER_HEAD.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.categories.presets.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.categories.presets.lore", false))
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJmOGI2Mjc3Y2QzNjI2NjI4M2NiNWE5ZTY5NDM5NTNjNzgzZTZmZjdkNmEyZDU5ZDE1YWQwNjk3ZTkxZDQzYyJ9fX0=")
@@ -187,7 +188,7 @@ public class CollectionSettingsMenu extends Menu {
                     .orElse(plugin.getMessageManager().getMessage("gui.presets.unknown", false));
         }
 
-        addButton(30, new ItemBuilder(Material.WRITABLE_BOOK)
+        addButton(30, new ItemBuilder(XMaterial.WRITABLE_BOOK.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.default_treasure_preset.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.default_treasure_preset.lore", false,
                         "%preset%", "§f" + defaultPresetName).toArray(new String[0]))
@@ -210,7 +211,7 @@ public class CollectionSettingsMenu extends Menu {
         });
 
         // Override all treasures rewards
-        addButton(31, new ItemBuilder(Material.ANVIL)
+        addButton(31, new ItemBuilder(XMaterial.ANVIL.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.override_treasure_rewards.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.override_treasure_rewards.lore", false).toArray(new String[0]))
                 .build(), (e) -> {

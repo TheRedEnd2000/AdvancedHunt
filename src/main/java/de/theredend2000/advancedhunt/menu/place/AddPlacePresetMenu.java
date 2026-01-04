@@ -1,11 +1,11 @@
 package de.theredend2000.advancedhunt.menu.place;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.common.SingleItemInputMenu;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -42,7 +42,7 @@ public class AddPlacePresetMenu extends SingleItemInputMenu {
 
     @Override
     protected boolean isValidItem(ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return false;
+        if (item == null || item.getType() == XMaterial.AIR.get()) return false;
         return item.getType().isBlock() || ItemsAdderAdapter.isCustomBlockItem(item) || ItemsAdderAdapter.isCustomFurniture(item);
     }
 

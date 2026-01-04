@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.cron;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.model.ActRule;
@@ -8,7 +9,6 @@ import de.theredend2000.advancedhunt.util.CronUtils;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ValidationUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -93,7 +93,7 @@ public class CronFieldMenu extends Menu {
             previewLore.add(plugin.getMessageManager().getMessage("gui.cron.common.invalid_expression"));
         }
 
-        addStaticItem(4, new ItemBuilder(Material.ENDER_EYE)
+        addStaticItem(4, new ItemBuilder(XMaterial.ENDER_EYE.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.preview.name"))
                 .setLore(previewLore.toArray(new String[0]))
                 .build());
@@ -104,7 +104,7 @@ public class CronFieldMenu extends Menu {
             boolean isSelected = selectedField == field;
             String value = fieldValues.getOrDefault(field, field.defaultValue);
             
-            addButton(slot++, new ItemBuilder(isSelected ? Material.LIME_DYE : Material.GRAY_DYE)
+            addButton(slot++, new ItemBuilder(isSelected ? XMaterial.LIME_DYE.get() : XMaterial.GRAY_DYE.get())
                     .setDisplayName(plugin.getMessageManager().getMessage(
                             isSelected ? "gui.cron.builder.field.selected_name" : "gui.cron.builder.field.unselected_name",
                             "%name%", field.getDisplayName(plugin)
@@ -128,7 +128,7 @@ public class CronFieldMenu extends Menu {
             String preset = presets.get(i);
             boolean isCurrent = currentValue.equals(preset);
             
-            addButton(28 + i, new ItemBuilder(isCurrent ? Material.LIME_STAINED_GLASS_PANE : Material.WHITE_STAINED_GLASS_PANE)
+            addButton(28 + i, new ItemBuilder(isCurrent ? XMaterial.LIME_STAINED_GLASS_PANE.get() : XMaterial.WHITE_STAINED_GLASS_PANE.get())
                     .setDisplayName(plugin.getMessageManager().getMessage(
                             isCurrent ? "gui.cron.builder.preset.current_name" : "gui.cron.builder.preset.set_name",
                             "%value%", preset
@@ -144,7 +144,7 @@ public class CronFieldMenu extends Menu {
         }
 
         // Custom Input Button
-        addButton(31, new ItemBuilder(Material.ANVIL)
+        addButton(31, new ItemBuilder(XMaterial.ANVIL.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.custom_input.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.builder.custom_input.lore",
                         "%field%", selectedField.getDisplayName(plugin)
@@ -164,14 +164,14 @@ public class CronFieldMenu extends Menu {
         });
 
         // Quick Modify Buttons
-        addButton(37, new ItemBuilder(Material.RED_DYE)
+        addButton(37, new ItemBuilder(XMaterial.RED_DYE.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.decrease.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.builder.decrease.lore").toArray(new String[0]))
                 .build(), (e) -> {
             modifyNumericValue(-1);
         });
 
-        addButton(43, new ItemBuilder(Material.LIME_DYE)
+        addButton(43, new ItemBuilder(XMaterial.LIME_DYE.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.increase.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.builder.increase.lore").toArray(new String[0]))
                 .build(), (e) -> {
@@ -179,7 +179,7 @@ public class CronFieldMenu extends Menu {
         });
 
         // Action Buttons
-        addButton(53, new ItemBuilder(Material.EMERALD)
+        addButton(53, new ItemBuilder(XMaterial.EMERALD.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.builder.save.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.builder.save.lore",
                         "%expression%", buildExpression()

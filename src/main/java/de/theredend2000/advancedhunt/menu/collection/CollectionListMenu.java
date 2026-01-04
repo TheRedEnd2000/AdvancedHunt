@@ -10,10 +10,7 @@ import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
-import de.theredend2000.advancedhunt.util.HeadHelper;
-import de.theredend2000.advancedhunt.util.ItemBuilder;
-import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
-import de.theredend2000.advancedhunt.util.XMaterialHelper;
+import de.theredend2000.advancedhunt.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -138,7 +135,7 @@ public class CollectionListMenu extends PagedMenu {
             if (collection != null) {
                 Collection finalCollection = collection;
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    ItemStack leaderboardButton = new ItemBuilder(Material.GOLDEN_HELMET)
+                    ItemStack leaderboardButton = new ItemBuilder(XMaterial.GOLDEN_HELMET.get())
                             .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.view_button.name", false))
                             .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.view_button.lore", false))
                             .addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
@@ -159,17 +156,17 @@ public class CollectionListMenu extends PagedMenu {
         if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
             item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
         }
-        if (item != null && item.getType().isAir()) {
+        if (item != null && MaterialUtils.isAir(item.getType())) {
             item = null;
         }
         if (item == null) {
             Material material = Material.matchMaterial(treasureCore.getMaterial());
-            if (material == null) material = Material.CHEST;
+            if (material == null) material = XMaterial.CHEST.get();
 
             XMaterial xMaterial = XMaterial.matchXMaterial(material);
             item = XMaterialHelper.getItemStack(xMaterial);
-            if (item == null) item = new ItemStack(Material.CHEST);
-            if (item.getType().isAir()) item = new ItemStack(Material.CHEST);
+            if (item == null) item = new ItemStack(XMaterial.CHEST.get());
+            if (MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
         }
 
         ItemBuilder builder = new ItemBuilder(item);

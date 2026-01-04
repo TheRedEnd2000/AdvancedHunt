@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.treasure;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
@@ -51,7 +52,7 @@ public class TreasureActionMenu extends Menu {
         fillBorders(FILLER_GLASS);
 
         // Teleport Button
-        ItemStack teleportItem = new ItemBuilder(Material.ENDER_PEARL)
+        ItemStack teleportItem = new ItemBuilder(XMaterial.ENDER_PEARL.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.teleport.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.teleport.lore", false))
                 .build();
@@ -63,7 +64,7 @@ public class TreasureActionMenu extends Menu {
         }, "advancedhunt.admin.teleport");
 
         // View Finders Button
-        ItemStack viewFindersItem = new ItemBuilder(Material.PLAYER_HEAD)
+        ItemStack viewFindersItem = new ItemBuilder(XMaterial.PLAYER_HEAD.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.view_finders.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.view_finders.lore", false))
                 .setSkullOwner(playerMenuUtility.getUniqueId())
@@ -74,7 +75,7 @@ public class TreasureActionMenu extends Menu {
             new WhoFoundMenu(p, plugin, treasureId, this).open();
         }, "advancedhunt.admin.view_finders");
 
-        ItemStack rewardsItem = new ItemBuilder(Material.CHEST)
+        ItemStack rewardsItem = new ItemBuilder(XMaterial.CHEST.get())
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.rewards.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.rewards.lore", false))
                 .build();

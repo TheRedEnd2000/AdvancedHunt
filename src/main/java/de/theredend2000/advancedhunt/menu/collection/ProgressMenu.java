@@ -72,7 +72,7 @@ public class ProgressMenu extends PagedMenu {
     public void setMenuItems() {
         if (isLoading) {
             addMenuBorder();
-            ItemStack loadingItem = new ItemBuilder(Material.HOPPER)
+            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER.get())
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.loading", false))
                     .build();
             addStaticItem(22, loadingItem);
@@ -182,7 +182,7 @@ public class ProgressMenu extends PagedMenu {
         int total = treasures.size();
         double percentage = total > 0 ? (foundCount * 100.0 / total) : 0;
 
-        ItemStack statsItem = new ItemBuilder(Material.BOOK)
+        ItemStack statsItem = new ItemBuilder(XMaterial.BOOK.get())
             .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.stats.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.progress.stats.lore", false,
                 "%found%", String.valueOf(foundCount),
@@ -207,7 +207,7 @@ public class ProgressMenu extends PagedMenu {
 
             if (item == null) {
                 Material material = Material.matchMaterial(treasureCore.getMaterial());
-                if (material == null) material = Material.CHEST;
+                if (material == null) material = XMaterial.CHEST.get();
 
                 XMaterial xMaterial = XMaterial.matchXMaterial(material);
                 item = XMaterialHelper.getItemStack(xMaterial);
@@ -216,7 +216,7 @@ public class ProgressMenu extends PagedMenu {
             if (item != null) {
                 builder = new ItemBuilder(item);
             } else {
-                builder = new ItemBuilder(Material.CHEST);
+                builder = new ItemBuilder(XMaterial.CHEST.get());
             }
 
             if (HeadHelper.isPlayerHead(item) && skullInfo != null) {
@@ -228,7 +228,7 @@ public class ProgressMenu extends PagedMenu {
             }
         } else {
             statusColor = ChatColor.RED.toString();
-            builder = new ItemBuilder(Material.RED_STAINED_GLASS_PANE);
+            builder = new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE.get());
         }
         
         String status = isFound 

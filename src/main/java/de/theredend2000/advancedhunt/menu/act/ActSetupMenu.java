@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.act;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.cron.CronEditorMenu;
@@ -7,7 +8,6 @@ import de.theredend2000.advancedhunt.model.ActRule;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -65,7 +65,7 @@ public class ActSetupMenu extends Menu {
         }
 
         // Date window (always on)
-        addButton(11, new ItemBuilder(Material.MAP)
+        addButton(11, new ItemBuilder(XMaterial.MAP.get())
             .setDisplayName(plugin.getMessageManager().getMessage("gui.act.setup.date_window.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.act.setup.date_window.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -83,7 +83,7 @@ public class ActSetupMenu extends Menu {
         });
 
         // Repeating schedule (duration + fixed time cron)
-        addButton(13, new ItemBuilder(Material.CLOCK)
+        addButton(13, new ItemBuilder(XMaterial.CLOCK.get())
             .setDisplayName(plugin.getMessageManager().getMessage("gui.act.setup.repeating_schedule.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.act.setup.repeating_schedule.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -99,7 +99,7 @@ public class ActSetupMenu extends Menu {
         });
 
         // Advanced
-        addButton(15, new ItemBuilder(Material.COMPARATOR)
+        addButton(15, new ItemBuilder(XMaterial.COMPARATOR.get())
             .setDisplayName(plugin.getMessageManager().getMessage("gui.act.setup.advanced.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.act.setup.advanced.lore", false).toArray(new String[0]))
                 .build(), (e) -> editorMenu.open());

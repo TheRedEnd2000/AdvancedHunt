@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.commands;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.data.DataRepository;
 import de.theredend2000.advancedhunt.data.SqlRepository;
@@ -813,7 +814,7 @@ public class AdvancedHuntCommand {
                     PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
                     block.setType(chosen.type(), false);
 
-                    if (chosen.type() == Material.PLAYER_HEAD && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
+                    if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
                         try {
                             skullState.setOwnerProfile(chosen.ownerProfile());
                         } catch (Throwable ignored) {
@@ -981,7 +982,7 @@ public class AdvancedHuntCommand {
                         PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
                         block.setType(chosen.type(), false);
 
-                        if (chosen.type() == Material.PLAYER_HEAD && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
+                        if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
                             try {
                                 skullState.setOwnerProfile(chosen.ownerProfile());
                             } catch (Throwable ignored) {
@@ -1069,12 +1070,12 @@ public class AdvancedHuntCommand {
             if (type.isAir()) continue;
             if (!type.isBlock()) continue;
 
-            if (type == Material.PLAYER_WALL_HEAD) {
-                type = Material.PLAYER_HEAD;
+            if (type == XMaterial.PLAYER_WALL_HEAD.get()) {
+                type = XMaterial.PLAYER_HEAD.get();
             }
 
             PlayerProfile ownerProfile = null;
-            if (type == Material.PLAYER_HEAD) {
+            if (type == XMaterial.PLAYER_HEAD.get()) {
                 ItemMeta meta = item.getItemMeta();
                 if (meta instanceof SkullMeta skullMeta) {
                     try {
@@ -1093,7 +1094,7 @@ public class AdvancedHuntCommand {
             }
 
             String nbtData = DEBUG_PLACED_MARKER;
-            if (type == Material.PLAYER_HEAD) {
+            if (type == XMaterial.PLAYER_HEAD.get()) {
                 try {
                     String headNbt = NBT.get(item, ReadableNBT::toString);
                     if (headNbt != null && !headNbt.isEmpty()) {
@@ -1172,6 +1173,7 @@ public class AdvancedHuntCommand {
                     Block block = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                     if (!block.getType().isAir()) {
                         block.setType(Material.AIR, false);
+                        block.setType(XMaterial.AIR.get(), false);
                         blocksRemoved.incrementAndGet();
                     }
                 }
