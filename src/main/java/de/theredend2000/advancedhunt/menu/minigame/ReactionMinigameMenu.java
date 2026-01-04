@@ -1,9 +1,9 @@
 package de.theredend2000.advancedhunt.menu.minigame;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -114,10 +114,10 @@ public class ReactionMinigameMenu extends MinigameMenu {
 
         if (event.getSlot() == currentSlot) {
             currentCount++;
-            playerMenuUtility.playSound(playerMenuUtility.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+            playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.BLOCK_NOTE_BLOCK_PLING.get(), 1, 2);
             
             if (currentCount >= hintCount) {
-                playerMenuUtility.playSound(playerMenuUtility.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.ENTITY_PLAYER_LEVELUP.get(), 1, 1);
                 finish(true);
                 return;
             }
