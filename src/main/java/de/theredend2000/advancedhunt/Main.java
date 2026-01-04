@@ -117,6 +117,7 @@ public final class Main extends JavaPlugin {
         hintManager = new HintManager(this, treasureManager, collectionManager, playerManager, messageManager, particleManager);
         proximityManager = new ProximityManager(this, treasureManager, playerManager);
         scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
+        placeModeManager = new PlaceModeManager(this);
 
         particleManager.start();
         scanManager.start();
@@ -146,7 +147,6 @@ public final class Main extends JavaPlugin {
         rewardPresetManager.reloadPresets();
         placePresetManager.reloadPresets();
         treasureManager.loadTreasures();
-        placeModeManager = new PlaceModeManager(this);
         minigameManager = new MinigameManager(this);
         fireworkManager = new FireworkManager(this);
 
