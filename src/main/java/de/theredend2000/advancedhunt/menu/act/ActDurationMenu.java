@@ -68,7 +68,7 @@ public class ActDurationMenu extends Menu {
         String description = ActFormatParser.getHumanReadableDuration(currentValue);
         boolean isValid = ActFormatParser.isValidDuration(currentValue);
 
-        addButton(13, new ItemBuilder(XMaterial.CLOCK.get())
+        addButton(13, new ItemBuilder(XMaterial.CLOCK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.editor.current.name", false))
                 .setLore(
                     plugin.getMessageManager().getMessage("gui.act.components.duration.editor.current.value", false, "%duration%", currentValue),
@@ -79,67 +79,67 @@ public class ActDurationMenu extends Menu {
                 .build(), (e) -> {});
 
         // Preset: Permanent (*)
-        addButton(19, new ItemBuilder(XMaterial.NETHER_STAR.get())
+        addButton(19, new ItemBuilder(XMaterial.NETHER_STAR)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.permanent.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.permanent.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("*"));
 
         // Preset: 30 Minutes
-        addButton(20, new ItemBuilder(XMaterial.IRON_NUGGET.get())
+        addButton(20, new ItemBuilder(XMaterial.IRON_NUGGET)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.30_minutes.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.30_minutes.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("30m"));
 
         // Preset: 1 Hour
-        addButton(21, new ItemBuilder(XMaterial.GOLD_NUGGET.get())
+        addButton(21, new ItemBuilder(XMaterial.GOLD_NUGGET)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.1_hour.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.1_hour.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("1h"));
 
         // Preset: 2 Hours
-        addButton(22, new ItemBuilder(XMaterial.GOLD_INGOT.get())
+        addButton(22, new ItemBuilder(XMaterial.GOLD_INGOT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.2_hours.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.2_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("2h"));
 
         // Preset: 4 Hours
-        addButton(23, new ItemBuilder(XMaterial.GOLDEN_CARROT.get())
+        addButton(23, new ItemBuilder(XMaterial.GOLDEN_CARROT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.4_hours.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.4_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("4h"));
 
         // Preset: 8 Hours
-        addButton(24, new ItemBuilder(XMaterial.GOLDEN_APPLE.get())
+        addButton(24, new ItemBuilder(XMaterial.GOLDEN_APPLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.8_hours.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.8_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("8h"));
 
         // Preset: 24 Hours
-        addButton(25, new ItemBuilder(XMaterial.ENCHANTED_GOLDEN_APPLE.get())
+        addButton(25, new ItemBuilder(XMaterial.ENCHANTED_GOLDEN_APPLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.24_hours.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.24_hours.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("24h"));
 
         // Preset: 7 Days
-        addButton(28, new ItemBuilder(XMaterial.TOTEM_OF_UNDYING.get())
+        addButton(28, new ItemBuilder(XMaterial.TOTEM_OF_UNDYING)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.preset.7_days.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.preset.7_days.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDuration("7d"));
 
         // Decrease button (-1)
-        addButton(37, new ItemBuilder(XMaterial.RED_CONCRETE.get())
+        addButton(37, new ItemBuilder(XMaterial.RED_CONCRETE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.decrease.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.decrease.lore", false).toArray(new String[0]))
                 .build(), (e) -> modifyNumericDuration(-1));
 
         // Increase button (+1)
-        addButton(43, new ItemBuilder(XMaterial.LIME_CONCRETE.get())
+        addButton(43, new ItemBuilder(XMaterial.LIME_CONCRETE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.increase.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.increase.lore", false).toArray(new String[0]))
                 .build(), (e) -> modifyNumericDuration(1));
 
         // Manual Input
-        addButton(40, new ItemBuilder(XMaterial.ANVIL.get())
+        addButton(40, new ItemBuilder(XMaterial.ANVIL)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.duration.custom.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.duration.custom.lore", false).toArray(new String[0]))
                 .build(), (e) -> {

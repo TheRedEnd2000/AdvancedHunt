@@ -54,7 +54,7 @@ public class ActDateRangeMenu extends Menu {
         String description = ActFormatParser.getHumanReadableDateRange(currentValue);
         boolean isValid = ActFormatParser.isValidDateRange(currentValue);
 
-        addButton(13, new ItemBuilder(XMaterial.PAPER.get())
+        addButton(13, new ItemBuilder(XMaterial.PAPER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.editor.current.name", false))
                 .setLore(
                     plugin.getMessageManager().getMessage("gui.act.components.date_range.editor.current.value", false, "%date_range%", currentValue),
@@ -65,7 +65,7 @@ public class ActDateRangeMenu extends Menu {
                 .build(), (e) -> {});
 
         // Preset: Always Active (*)
-        addButton(19, new ItemBuilder(XMaterial.LIME_DYE.get())
+        addButton(19, new ItemBuilder(XMaterial.LIME_DYE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.always.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.always.lore", false).toArray(new String[0]))
                 .build(), (e) -> applyDateRange("*"));
@@ -74,7 +74,7 @@ public class ActDateRangeMenu extends Menu {
         LocalDate now = LocalDate.now();
         int currentYear = now.getYear();
         String thisYearRange = currentYear + "-01-01:" + currentYear + "-12-31";
-        addButton(20, new ItemBuilder(XMaterial.YELLOW_DYE.get())
+        addButton(20, new ItemBuilder(XMaterial.YELLOW_DYE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.this_year.name", false, "%year%", String.valueOf(currentYear)))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.this_year.lore", false, 
                     "%year%", String.valueOf(currentYear)).toArray(new String[0]))
@@ -85,7 +85,7 @@ public class ActDateRangeMenu extends Menu {
         LocalDate monthEnd = now.withDayOfMonth(now.lengthOfMonth());
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
         String thisMonthRange = monthStart.format(formatter) + ":" + monthEnd.format(formatter);
-        addButton(21, new ItemBuilder(XMaterial.ORANGE_DYE.get())
+        addButton(21, new ItemBuilder(XMaterial.ORANGE_DYE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.this_month.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.this_month.lore", false,
                     "%start%", monthStart.format(formatter),
@@ -96,7 +96,7 @@ public class ActDateRangeMenu extends Menu {
         LocalDate nextMonthStart = now.plusMonths(1).withDayOfMonth(1);
         LocalDate nextMonthEnd = nextMonthStart.withDayOfMonth(nextMonthStart.lengthOfMonth());
         String nextMonthRange = nextMonthStart.format(formatter) + ":" + nextMonthEnd.format(formatter);
-        addButton(22, new ItemBuilder(XMaterial.PINK_DYE.get())
+        addButton(22, new ItemBuilder(XMaterial.PINK_DYE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.preset.next_month.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.preset.next_month.lore", false,
                     "%start%", nextMonthStart.format(formatter),
@@ -104,7 +104,7 @@ public class ActDateRangeMenu extends Menu {
                 .build(), (e) -> applyDateRange(nextMonthRange));
 
         // Manual Input
-        addButton(31, new ItemBuilder(XMaterial.ANVIL.get())
+        addButton(31, new ItemBuilder(XMaterial.ANVIL)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.components.date_range.manual.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.components.date_range.manual.lore", false).toArray(new String[0]))
                 .build(), (e) -> {

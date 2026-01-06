@@ -47,7 +47,7 @@ public class ConfirmationMenu extends Menu {
         fillBorders(super.FILLER_GLASS);
 
         // Confirm Button
-        addButton(11, new ItemBuilder(XMaterial.LIME_TERRACOTTA.get())
+        addButton(11, new ItemBuilder(XMaterial.LIME_TERRACOTTA)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.confirm"))
                 .build(), (e) -> {
             if (onConfirm != null) {
@@ -56,7 +56,7 @@ public class ConfirmationMenu extends Menu {
         });
 
         // Cancel Button
-        addButton(15, new ItemBuilder(XMaterial.RED_TERRACOTTA.get())
+        addButton(15, new ItemBuilder(XMaterial.RED_TERRACOTTA)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.cancel"))
                 .build(), (e) -> {
             if (onCancel != null) {

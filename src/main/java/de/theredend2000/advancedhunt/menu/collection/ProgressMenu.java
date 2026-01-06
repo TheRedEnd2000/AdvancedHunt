@@ -72,7 +72,7 @@ public class ProgressMenu extends PagedMenu {
     public void setMenuItems() {
         if (isLoading) {
             addMenuBorder();
-            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER.get())
+            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.loading", false))
                     .build();
             addStaticItem(22, loadingItem);
@@ -182,7 +182,7 @@ public class ProgressMenu extends PagedMenu {
         int total = treasures.size();
         double percentage = total > 0 ? (foundCount * 100.0 / total) : 0;
 
-        ItemStack statsItem = new ItemBuilder(XMaterial.BOOK.get())
+        ItemStack statsItem = new ItemBuilder(XMaterial.BOOK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.stats.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.progress.stats.lore", false,
                 "%found%", String.valueOf(foundCount),
@@ -216,7 +216,7 @@ public class ProgressMenu extends PagedMenu {
             if (item != null) {
                 builder = new ItemBuilder(item);
             } else {
-                builder = new ItemBuilder(XMaterial.CHEST.get());
+                builder = new ItemBuilder(XMaterial.CHEST);
             }
 
             if (HeadHelper.isPlayerHead(item) && skullInfo != null) {
@@ -228,7 +228,7 @@ public class ProgressMenu extends PagedMenu {
             }
         } else {
             statusColor = ChatColor.RED.toString();
-            builder = new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE.get());
+            builder = new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE);
         }
         
         String status = isFound 

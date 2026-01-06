@@ -65,7 +65,7 @@ public class ActSetupMenu extends Menu {
         }
 
         // Date window (always on)
-        addButton(11, new ItemBuilder(XMaterial.MAP.get())
+        addButton(11, new ItemBuilder(XMaterial.MAP)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.act.setup.date_window.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.act.setup.date_window.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -83,7 +83,7 @@ public class ActSetupMenu extends Menu {
         });
 
         // Repeating schedule (duration + fixed time cron)
-        addButton(13, new ItemBuilder(XMaterial.CLOCK.get())
+        addButton(13, new ItemBuilder(XMaterial.CLOCK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.act.setup.repeating_schedule.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.act.setup.repeating_schedule.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -99,7 +99,7 @@ public class ActSetupMenu extends Menu {
         });
 
         // Advanced
-        addButton(15, new ItemBuilder(XMaterial.COMPARATOR.get())
+        addButton(15, new ItemBuilder(XMaterial.COMPARATOR)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.act.setup.advanced.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.act.setup.advanced.lore", false).toArray(new String[0]))
                 .build(), (e) -> editorMenu.open());

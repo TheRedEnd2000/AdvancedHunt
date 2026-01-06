@@ -118,14 +118,14 @@ public class RewardsMenu extends PagedMenu {
         super.addMenuBorder();
 
         // Reward controls
-        addButton(53, new ItemBuilder(XMaterial.HOPPER.get())
+        addButton(53, new ItemBuilder(XMaterial.HOPPER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.open_reward_option_menu.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.open_reward_option_menu.lore", false))
                 .build(), e -> new AddRewardMenu(playerMenuUtility, plugin, this).open());
 
         // Quick action mode toggle
         QuickActionMode mode = getQuickActionMode();
-        addButton(52, new ItemBuilder(XMaterial.LEVER.get())
+        addButton(52, new ItemBuilder(XMaterial.LEVER)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.quick_mode.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.quick_mode.lore", false,
                 "%mode%", getQuickActionModeDisplay(mode),
@@ -143,7 +143,7 @@ public class RewardsMenu extends PagedMenu {
         // Preset save/load buttons (not when already editing a preset)
         if (!(holder instanceof PresetRewardHolder)) {
             // Preset save button
-            addButton(45, new ItemBuilder(XMaterial.WRITABLE_BOOK.get())
+            addButton(45, new ItemBuilder(XMaterial.WRITABLE_BOOK)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.save_preset.name", false, "%Type%", presetTypeName))
                     .setLore(plugin.getMessageManager().getMessageList("gui.rewards.save_preset.lore", false, "%type%", presetTypeName))
                     .build(), e -> {
@@ -179,7 +179,7 @@ public class RewardsMenu extends PagedMenu {
             });
 
             // Preset load button
-            addButton(46, new ItemBuilder(XMaterial.WRITTEN_BOOK.get())
+            addButton(46, new ItemBuilder(XMaterial.WRITTEN_BOOK)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.load_preset.name", false, "%Type%", presetTypeName))
                     .setLore(plugin.getMessageManager().getMessageList("gui.rewards.load_preset.lore", false, "%type%", presetTypeName))
                     .build(), e -> {
@@ -246,7 +246,7 @@ public class RewardsMenu extends PagedMenu {
 
         if (item == null || item.getType() == XMaterial.AIR.get()) {
             // Fallback for invalid item data
-            return new ItemBuilder(XMaterial.BARRIER.get())
+            return new ItemBuilder(XMaterial.BARRIER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.invalid_item.name", false))
                 .setLore(plugin.getMessageManager().getMessageList(
                     "gui.rewards.invalid_item.lore",
@@ -351,7 +351,7 @@ public class RewardsMenu extends PagedMenu {
         lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
             "%action%", getQuickActionActionDisplay(getQuickActionMode())));
 
-        return new ItemBuilder(XMaterial.COMMAND_BLOCK.get())
+        return new ItemBuilder(XMaterial.COMMAND_BLOCK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.command_name", false))
                 .setLore(lore)
                 .build();
@@ -434,7 +434,7 @@ public class RewardsMenu extends PagedMenu {
         QuickActionMode mode = getQuickActionMode();
         
         // Update the lever icon at slot 47
-        ItemStack leverIcon = new ItemBuilder(XMaterial.LEVER.get())
+        ItemStack leverIcon = new ItemBuilder(XMaterial.LEVER)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.quick_mode.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.quick_mode.lore", false,
                 "%mode%", getQuickActionModeDisplay(mode),
@@ -526,7 +526,7 @@ public class RewardsMenu extends PagedMenu {
         lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
             "%action%", getQuickActionActionDisplay(getQuickActionMode())));
         
-        return new ItemBuilder(XMaterial.BELL.get())
+        return new ItemBuilder(XMaterial.BELL)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.broadcast_message_name", false))
             .setLore(lore)
             .build();
@@ -564,7 +564,7 @@ public class RewardsMenu extends PagedMenu {
         lore.add(plugin.getMessageManager().getMessage("gui.rewards.click_to_edit", false,
             "%action%", getQuickActionActionDisplay(getQuickActionMode())));
         
-        return new ItemBuilder(XMaterial.WRITABLE_BOOK.get())
+        return new ItemBuilder(XMaterial.WRITABLE_BOOK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.chat_message_name", false))
             .setLore(lore)
             .build();

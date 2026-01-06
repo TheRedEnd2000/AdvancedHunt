@@ -48,7 +48,7 @@ public class RewardPresetActionsMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        addButton(10, new ItemBuilder(XMaterial.NAME_TAG.get())
+        addButton(10, new ItemBuilder(XMaterial.NAME_TAG)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.rename.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.rename.lore", false,"%current%",preset.getName()).toArray(new String[0]))
                 .build(), e -> handleRename());
@@ -96,7 +96,7 @@ public class RewardPresetActionsMenu extends Menu {
                     }
                 });
 
-        addButton(14, new ItemBuilder(XMaterial.WRITTEN_BOOK.get())
+        addButton(14, new ItemBuilder(XMaterial.WRITTEN_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.edit_rewards.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.edit_rewards.lore", false).toArray(new String[0]))
                 .build(), e -> {
@@ -105,7 +105,7 @@ public class RewardPresetActionsMenu extends Menu {
                     .open();
         });
 
-        addButton(16, new ItemBuilder(XMaterial.TNT.get())
+        addButton(16, new ItemBuilder(XMaterial.TNT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());

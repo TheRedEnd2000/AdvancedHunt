@@ -10,7 +10,10 @@ import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
-import de.theredend2000.advancedhunt.util.*;
+import de.theredend2000.advancedhunt.util.HeadHelper;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
+import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -135,7 +138,7 @@ public class CollectionListMenu extends PagedMenu {
             if (collection != null) {
                 Collection finalCollection = collection;
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    ItemStack leaderboardButton = new ItemBuilder(XMaterial.GOLDEN_HELMET.get())
+                    ItemStack leaderboardButton = new ItemBuilder(XMaterial.GOLDEN_HELMET)
                             .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.view_button.name", false))
                             .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.view_button.lore", false))
                             .addItemFlags(ItemFlag.HIDE_ATTRIBUTES)

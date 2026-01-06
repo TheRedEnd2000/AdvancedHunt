@@ -89,7 +89,7 @@ public class RewardPresetListMenu extends PagedMenu {
             for (int i = startIndex; i < endIndex; i++) {
                 RewardPreset preset = presets.get(i);
 
-                ItemStack icon = new ItemBuilder(XMaterial.WRITTEN_BOOK.get())
+                ItemStack icon = new ItemBuilder(XMaterial.WRITTEN_BOOK)
                         .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.preset.name", false,
                                 "%name%", preset.getName()))
                         .setLore(plugin.getMessageManager().getMessageList("gui.presets.preset.lore", false,
