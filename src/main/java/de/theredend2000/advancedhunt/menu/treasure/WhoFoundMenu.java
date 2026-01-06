@@ -52,7 +52,7 @@ public class WhoFoundMenu extends PagedMenu {
         if (isLoading) {
             // Show loading indicator
             addMenuBorder();
-            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER.get())
+            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.finders.loading", false))
                     .build();
             addStaticItem(22, loadingItem);

@@ -96,13 +96,13 @@ public class ActRuleEditorMenu extends Menu {
             "%status%", isValid ? plugin.getMessageManager().getMessage("gui.act.editor.current.valid", false) : 
                                plugin.getMessageManager().getMessage("gui.act.editor.current.invalid", false)));
         
-        addButton(4, new ItemBuilder(XMaterial.PAPER.get())
+        addButton(4, new ItemBuilder(XMaterial.PAPER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.current.name", false))
                 .setLore(previewLore.toArray(new String[0]))
                 .build(), (e) -> {});
 
         // Name Editor
-        addButton(10, new ItemBuilder(XMaterial.NAME_TAG.get())
+        addButton(10, new ItemBuilder(XMaterial.NAME_TAG)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.editor.name.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.editor.name.lore", false,
                     "%name%", rule.getName()
@@ -121,7 +121,7 @@ public class ActRuleEditorMenu extends Menu {
         // Quick actions row: Presets / Guided Setup / Manual ACT Input
 
         // Presets
-        addButton(20, new ItemBuilder(XMaterial.CHEST.get())
+        addButton(20, new ItemBuilder(XMaterial.CHEST)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.preset.apply.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.preset.apply.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -131,7 +131,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Guided setup (re-open wizard)
-        addButton(22, new ItemBuilder(XMaterial.BOOK.get())
+        addButton(22, new ItemBuilder(XMaterial.BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.guided_setup.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.editor.guided_setup.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -141,7 +141,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Manual ACT format input
-        addButton(24, new ItemBuilder(XMaterial.WRITABLE_BOOK.get())
+        addButton(24, new ItemBuilder(XMaterial.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.manual_input.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.editor.manual_input.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -213,7 +213,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Advanced component editors (single row; no duplicates)
-        addButton(30, new ItemBuilder(XMaterial.MAP.get())
+        addButton(30, new ItemBuilder(XMaterial.MAP)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.component.date_range.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.component.date_range.lore", false,
                     "%value%", rule.getDateRange(),

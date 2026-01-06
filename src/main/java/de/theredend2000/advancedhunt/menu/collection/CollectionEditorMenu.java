@@ -61,7 +61,7 @@ public class CollectionEditorMenu extends PagedMenu {
 
                         int treasureCount = plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId()).size();
 
-                        addPagedItem(finalI, new ItemBuilder(XMaterial.CHEST.get())
+                        addPagedItem(finalI, new ItemBuilder(XMaterial.CHEST)
                                 .setDisplayName(plugin.getMessageManager().getMessage("gui.editor.collection_item.name", "%collection%", collection.getName()))
                                 .setLore(plugin.getMessageManager().getMessageList("gui.editor.collection_item.lore", 
                                     "%status%", status,
@@ -78,7 +78,7 @@ public class CollectionEditorMenu extends PagedMenu {
         }
 
         // Create Collection Button
-        addButton(52, new ItemBuilder(XMaterial.EMERALD.get())
+        addButton(52, new ItemBuilder(XMaterial.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.editor.create.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.editor.create.lore").toArray(new String[0]))
                 .build(), (e) -> {

@@ -42,7 +42,7 @@ public class PlacePresetActionsMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        addButton(12, new ItemBuilder(XMaterial.CHEST.get())
+        addButton(12, new ItemBuilder(XMaterial.CHEST)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.give.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.give.lore", false).toArray(new String[0]))
                 .build(), e -> {
@@ -50,7 +50,7 @@ public class PlacePresetActionsMenu extends Menu {
             openPreviousMenu();
         });
 
-        addButton(14, new ItemBuilder(XMaterial.TNT.get())
+        addButton(14, new ItemBuilder(XMaterial.TNT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());

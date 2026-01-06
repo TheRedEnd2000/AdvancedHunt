@@ -52,7 +52,7 @@ public class TreasureActionMenu extends Menu {
         fillBorders(FILLER_GLASS);
 
         // Teleport Button
-        ItemStack teleportItem = new ItemBuilder(XMaterial.ENDER_PEARL.get())
+        ItemStack teleportItem = new ItemBuilder(XMaterial.ENDER_PEARL)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.teleport.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.teleport.lore", false))
                 .build();
@@ -64,7 +64,7 @@ public class TreasureActionMenu extends Menu {
         }, "advancedhunt.admin.teleport");
 
         // View Finders Button
-        ItemStack viewFindersItem = new ItemBuilder(XMaterial.PLAYER_HEAD.get())
+        ItemStack viewFindersItem = new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.view_finders.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.view_finders.lore", false))
                 .setSkullOwner(playerMenuUtility.getUniqueId())
@@ -75,7 +75,7 @@ public class TreasureActionMenu extends Menu {
             new WhoFoundMenu(p, plugin, treasureId, this).open();
         }, "advancedhunt.admin.view_finders");
 
-        ItemStack rewardsItem = new ItemBuilder(XMaterial.CHEST.get())
+        ItemStack rewardsItem = new ItemBuilder(XMaterial.CHEST)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.treasure_action.rewards.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.treasure_action.rewards.lore", false))
                 .build();

@@ -42,7 +42,7 @@ public abstract class PagedMenu extends Menu {
     }
 
     public void addPagedButtons(int size){
-        addButton(48, new ItemBuilder(XMaterial.PLAYER_HEAD.get())
+        addButton(48, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19")
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.previous_page")+getPageIndicator(size))
                 .build(), (e) -> {
@@ -54,7 +54,7 @@ public abstract class PagedMenu extends Menu {
             }
         });
 
-        addButton(50, new ItemBuilder(XMaterial.PLAYER_HEAD.get())
+        addButton(50, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==")
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.common.next_page")+getPageIndicator(size))
                 .build(), (e) -> {

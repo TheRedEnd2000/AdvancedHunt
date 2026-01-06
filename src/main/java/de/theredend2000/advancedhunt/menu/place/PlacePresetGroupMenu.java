@@ -52,7 +52,7 @@ public class PlacePresetGroupMenu extends PagedMenu {
             for (int i = startIndex; i < endIndex; i++) {
                 String group = groups.get(i);
 
-                ItemStack icon = new ItemBuilder(XMaterial.CHEST.get())
+                ItemStack icon = new ItemBuilder(XMaterial.CHEST)
                         .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.groups.group.name", false,
                                 "%group%", group))
                         .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.groups.group.lore", false,
@@ -76,7 +76,7 @@ public class PlacePresetGroupMenu extends PagedMenu {
         }
 
         // Create group
-        addButton(52, new ItemBuilder(XMaterial.EMERALD.get())
+        addButton(52, new ItemBuilder(XMaterial.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.create.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.create.lore", false).toArray(new String[0]))
                 .build(), click -> {

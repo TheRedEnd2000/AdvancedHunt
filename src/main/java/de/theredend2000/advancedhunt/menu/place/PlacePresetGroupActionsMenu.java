@@ -38,13 +38,13 @@ public class PlacePresetGroupActionsMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        addButton(11, new ItemBuilder(XMaterial.NAME_TAG.get())
+        addButton(11, new ItemBuilder(XMaterial.NAME_TAG)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.group_actions.rename.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.group_actions.rename.lore", false,
                         "%current%", group).toArray(new String[0]))
                 .build(), e -> handleRename());
 
-        addButton(15, new ItemBuilder(XMaterial.TNT.get())
+        addButton(15, new ItemBuilder(XMaterial.TNT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.group_actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.group_actions.delete.lore", false,
                         "%count%", String.valueOf(plugin.getPlacePresetManager().getPresetsInGroup(group).size())).toArray(new String[0]))

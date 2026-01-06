@@ -86,7 +86,7 @@ public class PlacePresetListMenu extends PagedMenu {
         }
 
         // Add block preset to this group
-        addButton(52, new ItemBuilder(XMaterial.EMERALD.get())
+        addButton(52, new ItemBuilder(XMaterial.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.create_in_group.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.create_in_group.lore", false,
                         "%group%", group).toArray(new String[0]))
