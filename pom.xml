@@ -55,11 +55,32 @@
                                         <include>**</include>
                                     </includes>
                                 </filter>
+                                <!-- NEW: Adventure Filter -->
+                                <filter>
+                                    <artifact>net.kyori:*</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <!-- Exclude signature files -->
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>
                                     <pattern>org.incendo.cloud</pattern>
                                     <shadedPattern>de.theredend2000.advancedhunt.lib.cloud</shadedPattern>
+                                </relocation>
+                                <!-- NEW: Adventure Relocation -->
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.kyori</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
@@ -130,6 +151,24 @@
             <groupId>org.incendo</groupId>
             <artifactId>cloud-paper</artifactId>
             <version>2.0.0-beta.14</version>
+        </dependency>
+        <!-- cloud-minecraft-extras Help -->
+        <dependency>
+            <groupId>org.incendo</groupId>
+            <artifactId>cloud-minecraft-extras</artifactId>
+            <version>2.0.0-beta.10</version>
+        </dependency>
+        <!-- NEU: Adventure API -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.17.0</version>
+        </dependency>
+        <!-- NEU: Adventure Platform Bukkit -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.3.2</version>
         </dependency>
         <!-- Database -->
         <dependency>

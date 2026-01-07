@@ -30,6 +30,7 @@ import org.bukkit.profile.PlayerProfile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.component.CommandComponent;
+import org.incendo.cloud.description.CommandDescription;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.suggestion.Suggestion;
@@ -82,57 +83,68 @@ public class AdvancedHuntCommand {
 
         // ==================== General Commands ====================
         commandManager.command(
-            baseBuilder()
-                .literal("help")
-                .permission("advancedhunt.help")
-                .handler(context -> help(context.sender()))
+                baseBuilder()
+                        .literal("help")
+                        .permission("advancedhunt.help")
+                        .optional("query", StringParser.greedyStringParser())
+                        .commandDescription(desc("help"))
+                        .handler(context -> {
+                            String query = context.getOrDefault("query", "");
+                            plugin.getMinecraftHelp().queryCommands(query, context.sender());
+                        })
         );
 
         commandManager.command(
-            baseBuilder()
-                .literal("reload")
-                .permission("advancedhunt.admin.reload")
-                .handler(context -> reload(context.sender()))
+                baseBuilder()
+                        .literal("reload")
+                        .permission("advancedhunt.admin.reload")
+                        .commandDescription(desc("reload"))
+                        .handler(context -> reload(context.sender()))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("rewards")
-                .permission("advancedhunt.admin.rewards")
-                .handler(context -> rewards((Player) context.sender()))
+                playerBuilder()
+                        .literal("rewards")
+                        .permission("advancedhunt.admin.rewards")
+                        .commandDescription(desc("rewards"))
+                        .handler(context -> rewards((Player) context.sender()))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("placepresets")
-                .permission("advancedhunt.admin.place_presets")
-                .handler(context -> new PlacePresetGroupMenu((Player) context.sender(), plugin).open())
+                playerBuilder()
+                        .literal("placepresets")
+                        .permission("advancedhunt.admin.place_presets")
+                        .commandDescription(desc("placepresets"))
+                        .handler(context -> new PlacePresetGroupMenu((Player) context.sender(), plugin).open())
         );
 
         // ==================== Collection Management ====================
         commandManager.command(
-            playerBuilder()
-                .literal("collection")
-                .permission("advancedhunt.admin.collection.editor")
-                .handler(context -> editor((Player) context.sender()))
+                playerBuilder()
+                        .literal("collection")
+                        .permission("advancedhunt.admin.collection.editor")
+                        .commandDescription(desc("collection"))
+                        .handler(context -> editor((Player) context.sender()))
         );
 
         commandManager.command(
-            baseBuilder()
-                .literal("collection")
-                .literal("create")
-                .required("name", StringParser.stringParser())
-                .permission("advancedhunt.admin.collection.create")
-                .handler(context -> createCollection(context.sender(), context.get("name")))
+                baseBuilder()
+                        .literal("collection")
+                        .literal("create")
+                        .required("name", StringParser.stringParser())
+                        .permission("advancedhunt.admin.collection.create")
+                        .commandDescription(desc("collection_create"))
+                        .handler(context -> createCollection(context.sender(), context.get("name")))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("collection")
-                .literal("edit")
-                .required("name", StringParser.stringParser(), collectionsSuggestions)
-                .permission("advancedhunt.admin.collection.edit")
-                .handler(context -> editCollection((Player) context.sender(), context.get("name")))
+                playerBuilder()
+                        .literal("collection")
+                        .literal("edit")
+                        .required("name", StringParser.stringParser(), collectionsSuggestions)
+                        .permission("advancedhunt.admin.collection.edit")
+                        .commandDescription(desc("collection_edit"))
+                        .handler(context -> editCollection((Player) context.sender(), context.get("name")))
         );
 
         commandManager.command(
@@ -141,191 +153,216 @@ public class AdvancedHuntCommand {
                         .literal("delete")
                         .required("name", StringParser.stringParser(), collectionsSuggestions)
                         .permission("advancedhunt.admin.collection.delete")
+                        .commandDescription(desc("collection_delete"))
                         .handler(context -> deleteCollection((Player) context.sender(), context.get("name")))
         );
 
         commandManager.command(
-            baseBuilder()
-                .literal("collection")
-                .literal("rename")
-                .required("oldName", StringParser.stringParser(), collectionsSuggestions)
-                .required("newName", StringParser.stringParser())
-                .permission("advancedhunt.admin.collection.rename")
-                .handler(context -> renameCollection(context.sender(), context.get("oldName"), context.get("newName")))
+                baseBuilder()
+                        .literal("collection")
+                        .literal("rename")
+                        .required("oldName", StringParser.stringParser(), collectionsSuggestions)
+                        .required("newName", StringParser.stringParser())
+                        .permission("advancedhunt.admin.collection.rename")
+                        .commandDescription(desc("collection_rename"))
+                        .handler(context -> renameCollection(context.sender(), context.get("oldName"), context.get("newName")))
         );
 
         // ==================== Player Commands ====================
         commandManager.command(
-            playerBuilder()
-                .literal("list")
-                .permission("advancedhunt.list")
-                .handler(context -> list((Player) context.sender(), null))
+                playerBuilder()
+                        .literal("list")
+                        .permission("advancedhunt.list")
+                        .commandDescription(desc("list"))
+                        .handler(context -> list((Player) context.sender(), null))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("list")
-                .required(collectionArg)
-                .permission("advancedhunt.list")
-                .handler(context -> list((Player) context.sender(), context.get("collection")))
+                playerBuilder()
+                        .literal("list")
+                        .required(collectionArg)
+                        .permission("advancedhunt.list")
+                        .commandDescription(desc("list_collection"))
+                        .handler(context -> list((Player) context.sender(), context.get("collection")))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("leaderboard")
-                .required(collectionArg)
-                .permission("advancedhunt.leaderboard")
-                .handler(context -> leaderboard((Player) context.sender(), context.get("collection")))
+                playerBuilder()
+                        .literal("leaderboard")
+                        .required(collectionArg)
+                        .permission("advancedhunt.leaderboard")
+                        .commandDescription(desc("leaderboard"))
+                        .handler(context -> leaderboard((Player) context.sender(), context.get("collection")))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("progress")
-                .required(collectionArg)
-                .permission("advancedhunt.progress")
-                .handler(context -> progress((Player) context.sender(), context.get("collection")))
+                playerBuilder()
+                        .literal("progress")
+                        .required(collectionArg)
+                        .permission("advancedhunt.progress")
+                        .commandDescription(desc("progress"))
+                        .handler(context -> progress((Player) context.sender(), context.get("collection")))
         );
 
         commandManager.command(
                 playerBuilder()
                         .literal("place")
                         .permission("advancedhunt.admin.place")
-                        .handler(context -> placeMode((Player) context.sender(),null))
+                        .commandDescription(desc("place"))
+                        .handler(context -> placeMode((Player) context.sender(), null))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("place")
-                .required(collectionArg)
-                .permission("advancedhunt.admin.place")
-                .handler(context -> placeMode((Player) context.sender(), context.get("collection")))
+                playerBuilder()
+                        .literal("place")
+                        .required(collectionArg)
+                        .permission("advancedhunt.admin.place")
+                        .commandDescription(desc("place_collection"))
+                        .handler(context -> placeMode((Player) context.sender(), context.get("collection")))
         );
 
         // ==================== Reset Commands ====================
         commandManager.command(
-            baseBuilder()
-                .literal("reset")
-                .literal("all")
-                .permission("advancedhunt.admin.reset")
-                .handler(context -> resetAll(context.sender()))
+                baseBuilder()
+                        .literal("reset")
+                        .literal("all")
+                        .permission("advancedhunt.admin.reset")
+                        .commandDescription(desc("reset_all"))
+                        .handler(context -> resetAll(context.sender()))
         );
 
         commandManager.command(
-            baseBuilder()
-                .literal("reset")
-                .literal("collection")
-                .required(collectionArg)
-                .permission("advancedhunt.admin.reset")
-                .handler(context -> resetCollection(context.sender(), context.get("collection")))
+                baseBuilder()
+                        .literal("reset")
+                        .literal("collection")
+                        .required(collectionArg)
+                        .permission("advancedhunt.admin.reset")
+                        .commandDescription(desc("reset_collection"))
+                        .handler(context -> resetCollection(context.sender(), context.get("collection")))
         );
 
         commandManager.command(
-            baseBuilder()
-                .literal("reset")
-                .literal("player")
-                .required("player", StringParser.stringParser(), playerNameSuggestions)
-                .permission("advancedhunt.admin.reset")
-                .handler(context -> resetPlayer(context.sender(), context.get("player")))
+                baseBuilder()
+                        .literal("reset")
+                        .literal("player")
+                        .required("player", StringParser.stringParser(), playerNameSuggestions)
+                        .permission("advancedhunt.admin.reset")
+                        .commandDescription(desc("reset_player"))
+                        .handler(context -> resetPlayer(context.sender(), context.get("player")))
         );
 
         commandManager.command(
-            baseBuilder()
-                .literal("reset")
-                .literal("player")
-                .required("player", StringParser.stringParser(), playerNameSuggestions)
-                .required(collectionArg)
-                .permission("advancedhunt.admin.reset")
-                .handler(context -> resetPlayerCollection(context.sender(), context.get("player"), context.get("collection")))
+                baseBuilder()
+                        .literal("reset")
+                        .literal("player")
+                        .required("player", StringParser.stringParser(), playerNameSuggestions)
+                        .required(collectionArg)
+                        .permission("advancedhunt.admin.reset")
+                        .commandDescription(desc("reset_player_collection"))
+                        .handler(context -> resetPlayerCollection(context.sender(), context.get("player"), context.get("collection")))
         );
 
-        // ==================== Minigame Command ====================
+        // ==================== Minigame & Hint Commands ====================
         commandManager.command(
-            playerBuilder()
-                .literal("minigame")
-                .required("type", StringParser.stringParser(), minigameSuggestions)
-                .permission("advancedhunt.minigame")
-                .handler(context -> minigame((Player) context.sender(), context.get("type")))
+                playerBuilder()
+                        .literal("minigame")
+                        .required("type", StringParser.stringParser(), minigameSuggestions)
+                        .permission("advancedhunt.minigame")
+                        .commandDescription(desc("minigame"))
+                        .handler(context -> minigame((Player) context.sender(), context.get("type")))
         );
 
-        // ==================== Hint Command ====================
         commandManager.command(
-            playerBuilder()
-                .literal("hint")
-                .permission("advancedhunt.hint")
-                .handler(context -> hint((Player) context.sender()))
+                playerBuilder()
+                        .literal("hint")
+                        .permission("advancedhunt.hint")
+                        .commandDescription(desc("hint"))
+                        .handler(context -> hint((Player) context.sender()))
         );
 
         // ==================== Debug Commands ====================
         commandManager.command(
-            playerBuilder()
-                .literal("debug")
-                .literal("hint")
-                .permission("advancedhunt.admin")
-                .handler(context -> debugHint((Player) context.sender()))
+                playerBuilder()
+                        .literal("debug")
+                        .literal("hint")
+                        .permission("advancedhunt.admin")
+                        .commandDescription(desc("debug_hint"))
+                        .handler(context -> debugHint((Player) context.sender()))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("debug")
-                .literal("placecollection")
-                .required(collectionArg)
-                .required("amount", StringParser.stringParser())
-                .permission("advancedhunt.admin")
-                .handler(context -> debugPlaceCollectionRandom((Player) context.sender(), context.get("collection"), context.get("amount")))
+                playerBuilder()
+                        .literal("debug")
+                        .literal("placecollection")
+                        .required(collectionArg)
+                        .required("amount", StringParser.stringParser())
+                        .permission("advancedhunt.admin")
+                        .commandDescription(desc("debug_placecollection"))
+                        .handler(context -> debugPlaceCollectionRandom((Player) context.sender(), context.get("collection"), context.get("amount")))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("debug")
-                .literal("placecollection")
-                .required(collectionArg)
-                .required("amount", StringParser.stringParser())
-                .literal("random")
-                .permission("advancedhunt.admin")
-                .handler(context -> debugPlaceCollectionRandom((Player) context.sender(), context.get("collection"), context.get("amount")))
+                playerBuilder()
+                        .literal("debug")
+                        .literal("placecollection")
+                        .required(collectionArg)
+                        .required("amount", StringParser.stringParser())
+                        .literal("random")
+                        .permission("advancedhunt.admin")
+                        .commandDescription(desc("debug_placecollection_random"))
+                        .handler(context -> debugPlaceCollectionRandom((Player) context.sender(), context.get("collection"), context.get("amount")))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("debug")
-                .literal("placecollection")
-                .required(collectionArg)
-                .required("amount", StringParser.stringParser())
-                .literal("plane")
-                .permission("advancedhunt.admin")
-                .handler(context -> debugPlaceCollectionPlane((Player) context.sender(), context.get("collection"), context.get("amount")))
+                playerBuilder()
+                        .literal("debug")
+                        .literal("placecollection")
+                        .required(collectionArg)
+                        .required("amount", StringParser.stringParser())
+                        .literal("plane")
+                        .permission("advancedhunt.admin")
+                        .commandDescription(desc("debug_placecollection_plane"))
+                        .handler(context -> debugPlaceCollectionPlane((Player) context.sender(), context.get("collection"), context.get("amount")))
         );
 
         commandManager.command(
-            playerBuilder()
-                .literal("debug")
-                .literal("removecollectionplaced")
-                .required(collectionArg)
-                .permission("advancedhunt.admin")
-                .handler(context -> debugRemoveCollectionPlaced((Player) context.sender(), context.get("collection")))
+                playerBuilder()
+                        .literal("debug")
+                        .literal("removecollectionplaced")
+                        .required(collectionArg)
+                        .permission("advancedhunt.admin")
+                        .commandDescription(desc("debug_removecollectionplaced"))
+                        .handler(context -> debugRemoveCollectionPlaced((Player) context.sender(), context.get("collection")))
         );
 
         // ==================== Migration Commands ====================
         SuggestionProvider<CommandSender> migrationTypes = (context, input) ->
-            CompletableFuture.completedFuture(List.of("yaml", "sqlite", "mysql").stream()
-                .map(Suggestion::suggestion).collect(Collectors.toList()));
+                CompletableFuture.completedFuture(List.of("yaml", "sqlite", "mysql").stream()
+                        .map(Suggestion::suggestion).collect(Collectors.toList()));
 
         commandManager.command(
-            baseBuilder()
-                .literal("migrate")
-                .required("type", StringParser.stringParser(), migrationTypes)
-                .flag(commandManager.flagBuilder("force"))
-                .flag(commandManager.flagBuilder("purge"))
-                .permission("advancedhunt.admin.migrate")
-                .handler(context -> {
-                    boolean force = context.flags().isPresent("force");
-                    boolean purge = context.flags().isPresent("purge");
-                    migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
-                })
+                baseBuilder()
+                        .literal("migrate")
+                        .required("type", StringParser.stringParser(), migrationTypes)
+                        .flag(commandManager.flagBuilder("force"))
+                        .flag(commandManager.flagBuilder("purge"))
+                        .permission("advancedhunt.admin.migrate")
+                        .commandDescription(desc("migrate"))
+                        .handler(context -> {
+                            boolean force = context.flags().isPresent("force");
+                            boolean purge = context.flags().isPresent("purge");
+                            migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
+                        })
         );
     }
 
+
     // ==================== Helper Methods ====================
+
+    private CommandDescription desc(String key) {
+        String description = plugin.getMessageManager().getMessage("command.help.descriptions." + key, false);
+        return CommandDescription.commandDescription(description);
+    }
 
     private Command.Builder<CommandSender> baseBuilder() {
         String[] parts = plugin.getConfig().getString("command.name", "advancedhunt|ah").split("\\|");
@@ -356,10 +393,6 @@ public class AdvancedHuntCommand {
     }
 
     // ==================== Command Handlers ====================
-
-    public void help(CommandSender sender) {
-        sender.sendMessage(plugin.getMessageManager().getMessageList("command.help").toArray(new String[0]));
-    }
 
     public void rewards(Player player) {
         // Get the block the player is looking at

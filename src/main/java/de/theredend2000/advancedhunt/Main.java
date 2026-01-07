@@ -12,6 +12,10 @@ import de.theredend2000.advancedhunt.util.ConfigMigrationHandler;
 import de.theredend2000.advancedhunt.util.ConfigUpdater;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
+import me.clip.placeholderapi.libs.kyori.adventure.text.Component;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -21,13 +25,11 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
 import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public final class Main extends JavaPlugin {
 
@@ -35,6 +37,8 @@ public final class Main extends JavaPlugin {
     }
 
     private LegacyPaperCommandManager<CommandSender> commandManager;
+    private MinecraftHelp<CommandSender> minecraftHelp;
+    private BukkitAudiences adventure;
     private DataRepository dataRepository;
     private TreasureManager treasureManager;
     private PlayerManager playerManager;
@@ -131,6 +135,9 @@ public final class Main extends JavaPlugin {
         ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"), ConfigMigrationHandler::migrateConfig);
         reloadConfig();
 
+        // Initialize Adventure
+        adventure = BukkitAudiences.create(this);
+
         migrationService = new MigrationService(getLogger());
         // Initialize Message Manager
         messageManager = new MessageManager(this);
@@ -181,7 +188,7 @@ public final class Main extends JavaPlugin {
         // Initialize Updater
         if (getConfig().getBoolean("updater.enabled", true)) {
             pluginUpdater = new PluginUpdater(this);
-            
+
             // Track Main Plugin
             Map<String, String> mainIds = new HashMap<>();
             if (getConfig().isConfigurationSection("updater.sources")) {
@@ -204,10 +211,10 @@ public final class Main extends JavaPlugin {
                                 depIds.put(key, depSources.getString(key));
                             }
                         }
-                        
+
                         Plugin dep = Bukkit.getPluginManager().getPlugin(depName);
                         String currentVersion = (dep != null) ? dep.getDescription().getVersion() : "0.0.0";
-                        
+
                         pluginUpdater.trackPlugin(depName, currentVersion, depIds);
                     }
                 }
@@ -316,6 +323,27 @@ public final class Main extends JavaPlugin {
             commandManager.registerAsynchronousCompletions();
         }
 
+        String[] parts = getConfig().getString("command.name", "advancedhunt").split("\\|");
+        minecraftHelp = MinecraftHelp.<CommandSender>builder()
+                .commandManager(commandManager)
+                .audienceProvider(adventure::sender)
+                .commandPrefix("/" + parts[0])
+                .colors(MinecraftHelp.helpColors(
+                        NamedTextColor.GOLD,
+                        NamedTextColor.YELLOW,
+                        NamedTextColor.AQUA,
+                        NamedTextColor.GRAY,
+                        NamedTextColor.DARK_GRAY
+                ))
+                .messageProvider((sender, key, args) -> {
+                    String raw = getMessageManager().getMessage("command.help.minecraft." + key, false);
+
+                    // Nur Legacy-Farben ersetzen
+                    return LegacyComponentSerializer.legacyAmpersand().deserialize(raw);
+                })
+                .build();
+
+
         new AdvancedHuntCommand(this).register(commandManager);
     }
 
@@ -332,6 +360,9 @@ public final class Main extends JavaPlugin {
         }
         if (dataRepository != null) {
             dataRepository.shutdown();
+        }
+        if (adventure != null) {
+            adventure.close();
         }
     }
 
@@ -409,5 +440,9 @@ public final class Main extends JavaPlugin {
 
     public FireworkManager getFireworkManager() {
         return fireworkManager;
+    }
+
+    public MinecraftHelp<CommandSender> getMinecraftHelp() {
+        return minecraftHelp;
     }
 }
