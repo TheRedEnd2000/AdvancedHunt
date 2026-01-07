@@ -98,8 +98,6 @@ feedback:
     group_deleted: "%prefix%&aDeleted group &e%group%&a."
     created: "%prefix%&aCreated place preset &e%name%&a in group &e%group%&a."
     given: "%prefix%&aGiven preset &e%name%&a (&7%group%&a)."
-    renamed: "%prefix%&aRenamed preset to &e%name%&a (&7%group%&a)."
-    moved: "%prefix%&aMoved preset &e%name%&a to group &e%group%&a."
     deleted: "%prefix%&aDeleted preset &e%name%&a (&7%group%&a)."
 
 prefix: "&6AdvancedHunt &8>> &7"
