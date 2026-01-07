@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.act;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.cron.CronEditorMenu;
@@ -95,13 +96,13 @@ public class ActRuleEditorMenu extends Menu {
             "%status%", isValid ? plugin.getMessageManager().getMessage("gui.act.editor.current.valid", false) : 
                                plugin.getMessageManager().getMessage("gui.act.editor.current.invalid", false)));
         
-        addButton(4, new ItemBuilder(Material.PAPER)
+        addButton(4, new ItemBuilder(XMaterial.PAPER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.current.name", false))
                 .setLore(previewLore.toArray(new String[0]))
                 .build(), (e) -> {});
 
         // Name Editor
-        addButton(10, new ItemBuilder(Material.NAME_TAG)
+        addButton(10, new ItemBuilder(XMaterial.NAME_TAG)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.editor.name.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.editor.name.lore", false,
                     "%name%", rule.getName()
@@ -120,7 +121,7 @@ public class ActRuleEditorMenu extends Menu {
         // Quick actions row: Presets / Guided Setup / Manual ACT Input
 
         // Presets
-        addButton(20, new ItemBuilder(Material.CHEST)
+        addButton(20, new ItemBuilder(XMaterial.CHEST)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.preset.apply.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.preset.apply.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -130,7 +131,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Guided setup (re-open wizard)
-        addButton(22, new ItemBuilder(Material.BOOK)
+        addButton(22, new ItemBuilder(XMaterial.BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.guided_setup.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.editor.guided_setup.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -140,7 +141,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Manual ACT format input
-        addButton(24, new ItemBuilder(Material.WRITABLE_BOOK)
+        addButton(24, new ItemBuilder(XMaterial.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.editor.manual_input.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.editor.manual_input.lore", false).toArray(new String[0]))
                 .build(), (e) -> {
@@ -212,7 +213,7 @@ public class ActRuleEditorMenu extends Menu {
         });
 
         // Advanced component editors (single row; no duplicates)
-        addButton(30, new ItemBuilder(Material.MAP)
+        addButton(30, new ItemBuilder(XMaterial.MAP)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.component.date_range.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.component.date_range.lore", false,
                     "%value%", rule.getDateRange(),
@@ -250,7 +251,7 @@ public class ActRuleEditorMenu extends Menu {
         String enabledStatus = rule.isEnabled() ? 
             plugin.getMessageManager().getMessage("gui.common.enabled", false) : 
             plugin.getMessageManager().getMessage("gui.common.disabled", false);
-        Material statusMaterial = rule.isEnabled() ? Material.LIME_DYE : Material.GRAY_DYE;
+        Material statusMaterial = rule.isEnabled() ? XMaterial.LIME_DYE.get() : XMaterial.GRAY_DYE.get();
         
         addButton(38, new ItemBuilder(statusMaterial)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.editor.enabled.name", false))

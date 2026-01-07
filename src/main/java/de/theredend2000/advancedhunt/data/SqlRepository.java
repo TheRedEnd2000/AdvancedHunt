@@ -526,7 +526,7 @@ public class SqlRepository implements DataRepository {
         return supplyAsync(() -> {
             List<TreasureCore> cores = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
-                 PreparedStatement ps = conn.prepareStatement("SELECT id, collection_id, world, x, y, z, material FROM ah_treasures")) {
+                 PreparedStatement ps = conn.prepareStatement("SELECT id, collection_id, world, x, y, z, material, block_state FROM ah_treasures")) {
                 var rs = ps.executeQuery();
                 while (rs.next()) {
                     UUID id = UUID.fromString(rs.getString("id"));
@@ -537,7 +537,8 @@ public class SqlRepository implements DataRepository {
                     int z = rs.getInt("z");
                     Location loc = new Location(Bukkit.getWorld(world), x, y, z);
                     String material = rs.getString("material");
-                    cores.add(new TreasureCore(id, collectionId, loc, material));
+                    String blockState = rs.getString("block_state");
+                    cores.add(new TreasureCore(id, collectionId, loc, material, blockState));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

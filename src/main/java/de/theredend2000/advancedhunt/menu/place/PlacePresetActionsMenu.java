@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.place;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
@@ -8,7 +9,6 @@ import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -42,7 +42,7 @@ public class PlacePresetActionsMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        addButton(12, new ItemBuilder(Material.CHEST)
+        addButton(12, new ItemBuilder(XMaterial.CHEST)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.give.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.give.lore", false).toArray(new String[0]))
                 .build(), e -> {
@@ -50,7 +50,7 @@ public class PlacePresetActionsMenu extends Menu {
             openPreviousMenu();
         });
 
-        addButton(14, new ItemBuilder(Material.TNT)
+        addButton(14, new ItemBuilder(XMaterial.TNT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());
@@ -60,12 +60,12 @@ public class PlacePresetActionsMenu extends Menu {
 
     private void give() {
         ItemStack item = ItemSerializer.deserialize(preset.getItemData());
-        if (item == null || item.getType() == Material.AIR) {
+        if (item == null || item.getType() == XMaterial.AIR.get()) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.deserialize_failed"));
             return;
         }
 
-        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item)) {
+        if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item) && !ItemsAdderAdapter.isCustomFurniture(item)) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.not_a_block"));
             return;
         }

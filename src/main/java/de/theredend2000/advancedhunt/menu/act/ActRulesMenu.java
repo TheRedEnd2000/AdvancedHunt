@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.act;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.ActRule;
@@ -79,7 +80,7 @@ public class ActRulesMenu extends PagedMenu {
                     int finalI = i;
                     
                     // Determine material based on rule status
-                    Material material = rule.isEnabled() ? Material.LIME_DYE : Material.GRAY_DYE;
+                    Material material = rule.isEnabled() ? XMaterial.LIME_DYE.get() : XMaterial.GRAY_DYE.get();
                     
                     // Parse ACT format for display
                     String actFormat = rule.getActFormat();
@@ -153,7 +154,7 @@ public class ActRulesMenu extends PagedMenu {
         }
 
         // Add New Rule Button
-        addButton(52, new ItemBuilder(Material.EMERALD)
+        addButton(52, new ItemBuilder(XMaterial.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.list.add_rule.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.list.add_rule.lore", false).toArray(new String[0]))
                 .build(), (e) -> {

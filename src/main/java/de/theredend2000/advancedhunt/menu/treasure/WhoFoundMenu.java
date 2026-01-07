@@ -6,7 +6,6 @@ import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -53,7 +52,7 @@ public class WhoFoundMenu extends PagedMenu {
         if (isLoading) {
             // Show loading indicator
             addMenuBorder();
-            ItemStack loadingItem = new ItemBuilder(Material.HOPPER)
+            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.finders.loading", false))
                     .build();
             addStaticItem(22, loadingItem);

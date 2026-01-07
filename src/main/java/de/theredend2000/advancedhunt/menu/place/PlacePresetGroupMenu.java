@@ -1,10 +1,10 @@
 package de.theredend2000.advancedhunt.menu.place;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -52,7 +52,7 @@ public class PlacePresetGroupMenu extends PagedMenu {
             for (int i = startIndex; i < endIndex; i++) {
                 String group = groups.get(i);
 
-                ItemStack icon = new ItemBuilder(Material.CHEST)
+                ItemStack icon = new ItemBuilder(XMaterial.CHEST)
                         .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.groups.group.name", false,
                                 "%group%", group))
                         .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.groups.group.lore", false,
@@ -76,7 +76,7 @@ public class PlacePresetGroupMenu extends PagedMenu {
         }
 
         // Create group
-        addButton(52, new ItemBuilder(Material.EMERALD)
+        addButton(52, new ItemBuilder(XMaterial.EMERALD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.create.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.create.lore", false).toArray(new String[0]))
                 .build(), click -> {

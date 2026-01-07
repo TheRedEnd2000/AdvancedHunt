@@ -1,9 +1,9 @@
 package de.theredend2000.advancedhunt.menu.minigame;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -116,7 +116,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
             plugin.getMessageManager().getMessage("gui.minigame.memory.button.name", false,
                 "%number%", String.valueOf(colorIndex + 1))
         ).build());
-        playerMenuUtility.playSound(playerMenuUtility.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1 + (colorIndex * 0.2f));
+        playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.BLOCK_NOTE_BLOCK_PLING.get(), 1, 1 + (colorIndex * 0.2f));
 
         // Reset after delay
         int finalColorIndex = colorIndex;
@@ -158,10 +158,10 @@ public class MemoryMinigameMenu extends MinigameMenu {
             if (playerSequence.size() == sequence.size()) {
                 // Round complete
                 if (round >= maxRounds) {
-                    playerMenuUtility.playSound(playerMenuUtility.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.ENTITY_PLAYER_LEVELUP.get(), 1, 1);
                     finish(true);
                 } else {
-                    playerMenuUtility.playSound(playerMenuUtility.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+                    playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.get(), 1, 1);
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -173,7 +173,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
         } else {
             // Wrong
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.wrong"));
-            playerMenuUtility.playSound(playerMenuUtility.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+            playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.ENTITY_VILLAGER_NO.get(), 1, 1);
             finish(false);
         }
     }

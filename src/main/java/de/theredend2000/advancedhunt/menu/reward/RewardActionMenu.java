@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.reward;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
@@ -59,7 +60,7 @@ public class RewardActionMenu extends Menu {
         addStaticItem(4, rewardDisplay);
         
         // Edit Chance button
-        ItemStack editChance = new ItemBuilder(Material.CLOCK)
+        ItemStack editChance = new ItemBuilder(XMaterial.CLOCK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_chance.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_chance.lore", false,
                 "%chance%", formatChance(reward.getChance())))
@@ -76,7 +77,7 @@ public class RewardActionMenu extends Menu {
         String displayBroadcast = truncate(formatMessage(reward.getBroadcast()), 30);
 
         // Edit Message button (item/cmd)
-        ItemStack message = new ItemBuilder(Material.WRITABLE_BOOK)
+        ItemStack message = new ItemBuilder(XMaterial.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_message.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_message.lore", false,
                         "%message%", displayMessage))
@@ -84,7 +85,7 @@ public class RewardActionMenu extends Menu {
         addButton(canHaveMessage(reward.getType()) ? 14 : 26, message, this::editMessage);
 
         // Edit Broadcast button (item/cmd)
-        ItemStack broadcast = new ItemBuilder(Material.BELL)
+        ItemStack broadcast = new ItemBuilder(XMaterial.BELL)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_broadcast.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_broadcast.lore", false,
                         "%broadcast%", displayBroadcast))
@@ -92,7 +93,7 @@ public class RewardActionMenu extends Menu {
         addButton(canHaveMessage(reward.getType()) ? 15 : 26, broadcast, this::editBroadcast);
 
         // Edit value button
-        ItemStack value = new ItemBuilder(Material.CAULDRON)
+        ItemStack value = new ItemBuilder(XMaterial.CAULDRON)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.edit_value.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.edit_value.lore", false,
                         "%value%", displayValue))
@@ -100,7 +101,7 @@ public class RewardActionMenu extends Menu {
         addButton(canHaveMessage(reward.getType()) ? 12 : 14, value, e -> editValue());
         
         // Delete button
-        ItemStack delete = new ItemBuilder(Material.RED_CONCRETE)
+        ItemStack delete = new ItemBuilder(XMaterial.RED_CONCRETE)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.editor.delete.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.editor.delete.lore", false))
             .build();
@@ -115,7 +116,7 @@ public class RewardActionMenu extends Menu {
     private ItemStack createRewardPreview() {
         if (reward.getType() == RewardType.ITEM) {
             ItemStack item = ItemSerializer.deserialize(reward.getValue());
-            if (item != null && item.getType() != Material.AIR) {
+            if (item != null && item.getType() != XMaterial.AIR.get()) {
                 ItemBuilder builder = new ItemBuilder(item.clone());
                 List<String> lore = new ArrayList<>();
                 if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
@@ -167,14 +168,14 @@ public class RewardActionMenu extends Menu {
             lore.add(plugin.getMessageManager().getMessage("gui.rewards.broadcast_lore", false,
                     "%broadcast%", formatMessage(broadcastValue)));
 
-            return new ItemBuilder(Material.COMMAND_BLOCK)
+            return new ItemBuilder(XMaterial.COMMAND_BLOCK)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.command_name", false))
                     .setLore(lore)
                     .build();
         }else if (reward.getType() == RewardType.CHAT_MESSAGE) {
             String displayValue = reward.getValue().length() > 30 ? reward.getValue().substring(0, 27) + "..." : reward.getValue();
             
-            return new ItemBuilder(Material.WRITABLE_BOOK)
+            return new ItemBuilder(XMaterial.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.chat_message_name", false))
                 .setLore(
                     "",

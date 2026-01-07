@@ -1,6 +1,6 @@
 package de.theredend2000.advancedhunt.menu;
 
-import de.theredend2000.advancedhunt.Main;
+import com.cryptomorin.xseries.XSound;
 import de.theredend2000.advancedhunt.managers.SoundManager;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -22,7 +22,7 @@ public class Button {
     public Button(ItemStack icon, Consumer<InventoryClickEvent> action) {
         this.icon = icon;
         this.action = action;
-        this.clickSound = Sound.UI_BUTTON_CLICK; // Default sound
+        this.clickSound = XSound.UI_BUTTON_CLICK.get(); // Default sound
     }
 
     public void onClick(InventoryClickEvent event) {

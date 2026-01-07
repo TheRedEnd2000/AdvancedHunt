@@ -12,6 +12,7 @@ import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -137,7 +138,7 @@ public class CollectionListMenu extends PagedMenu {
             if (collection != null) {
                 Collection finalCollection = collection;
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    ItemStack leaderboardButton = new ItemBuilder(Material.GOLDEN_HELMET)
+                    ItemStack leaderboardButton = new ItemBuilder(XMaterial.GOLDEN_HELMET)
                             .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.view_button.name", false))
                             .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.view_button.lore", false))
                             .addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
@@ -152,14 +153,24 @@ public class CollectionListMenu extends PagedMenu {
     }
 
     private ItemStack createTreasureItem(TreasureCore treasureCore, int index, Integer playerFoundSize, SkullInfo skullInfo) {
-        // For menu display, we use the material from TreasureCore
-        // Only load full treasure if we need NBT data for heads
-        Material material = Material.matchMaterial(treasureCore.getMaterial());
-        if (material == null) material = Material.CHEST;
+        // For menu display, use the lightweight TreasureCore fields.
+        // ItemsAdder needs blockState (namespaced ID) to render correct icon.
+        ItemStack item = null;
+        if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
+            item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
+        }
+        if (item != null && MaterialUtils.isAir(item.getType())) {
+            item = null;
+        }
+        if (item == null) {
+            Material material = Material.matchMaterial(treasureCore.getMaterial());
+            if (material == null) material = XMaterial.CHEST.get();
 
-        XMaterial xMaterial = XMaterial.matchXMaterial(material);
-        ItemStack item = XMaterialHelper.getItemStack(xMaterial);
-        if (item == null) item = new ItemStack(Material.CHEST);
+            XMaterial xMaterial = XMaterial.matchXMaterial(material);
+            item = XMaterialHelper.getItemStack(xMaterial);
+            if (item == null) item = new ItemStack(XMaterial.CHEST.get());
+            if (MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
+        }
 
         ItemBuilder builder = new ItemBuilder(item);
 

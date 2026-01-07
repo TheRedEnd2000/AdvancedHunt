@@ -1,8 +1,8 @@
 package de.theredend2000.advancedhunt.listeners;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -67,7 +67,7 @@ public class MenuListener implements Listener {
             
             // 1. CURSOR SMUGGLING PREVENTION
             ItemStack cursorItem = player.getItemOnCursor();
-            if (cursorItem != null && cursorItem.getType() != Material.AIR) {
+            if (cursorItem != null && cursorItem.getType() != XMaterial.AIR.get()) {
                 player.setItemOnCursor(null);
                 for (ItemStack leftover : player.getInventory().addItem(cursorItem).values()) {
                     player.getWorld().dropItem(player.getLocation(), leftover);

@@ -1,11 +1,11 @@
 package de.theredend2000.advancedhunt.menu.reward;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.model.Reward;
 import de.theredend2000.advancedhunt.model.RewardType;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -43,25 +43,25 @@ public class AddRewardMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        ItemStack addItem = new ItemBuilder(Material.CHEST)
+        ItemStack addItem = new ItemBuilder(XMaterial.CHEST)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_item.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_item.lore", false))
             .build();
         addButton(10, addItem, e -> openAddItemRewardMenu());
 
-        ItemStack addCommand = new ItemBuilder(Material.COMMAND_BLOCK)
+        ItemStack addCommand = new ItemBuilder(XMaterial.COMMAND_BLOCK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_command.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_command.lore", false))
             .build();
         addButton(12, addCommand, e -> promptAddCommandReward());
 
-        ItemStack addChatMessage = new ItemBuilder(Material.WRITABLE_BOOK)
+        ItemStack addChatMessage = new ItemBuilder(XMaterial.WRITABLE_BOOK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_chat_message.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_chat_message.lore", false))
             .build();
         addButton(14, addChatMessage, e -> promptAddChatMessageReward());
 
-        ItemStack addBroadcast = new ItemBuilder(Material.BELL)
+        ItemStack addBroadcast = new ItemBuilder(XMaterial.BELL)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_broadcast_message.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_broadcast_message.lore", false))
             .build();

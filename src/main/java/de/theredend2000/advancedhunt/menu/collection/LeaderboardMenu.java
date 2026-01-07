@@ -8,7 +8,6 @@ import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -61,7 +60,7 @@ public class LeaderboardMenu extends PagedMenu {
         int refresh = plugin.getConfig().getInt("leaderboard.cache-refresh-interval");
         double minutes = Math.round((refresh / 60.0) * 10.0) / 10.0;
 
-        addStaticItem(8,new ItemBuilder(Material.PLAYER_HEAD)
+        addStaticItem(8,new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.info.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.info.lore", false
                         , "%display_limit%", String.valueOf(displaylimit), "%refresh_interval%",String.valueOf(refresh), "%minutes%",String.valueOf(minutes)))
@@ -71,7 +70,7 @@ public class LeaderboardMenu extends PagedMenu {
         addMenuBorder();
         if (isLoading) {
             // Show loading indicator
-            ItemStack loadingItem = new ItemBuilder(Material.HOPPER)
+            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.loading.name", false))
                     .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.loading.lore", false))
                     .build();
@@ -199,7 +198,7 @@ public class LeaderboardMenu extends PagedMenu {
         
         if (playerScore == 0 || playerRank == -1) {
             // Player has not found any treasures
-            indicatorItem = new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
+            indicatorItem = new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.not_ranked.name", false))
                     .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.not_ranked.lore", false))
                     .build();
@@ -207,7 +206,7 @@ public class LeaderboardMenu extends PagedMenu {
             // Player is ranked
             double percentage = totalTreasures > 0 ? (playerScore * 100.0 / totalTreasures) : 0;
             
-            indicatorItem = new ItemBuilder(Material.LIME_STAINED_GLASS_PANE)
+            indicatorItem = new ItemBuilder(XMaterial.LIME_STAINED_GLASS_PANE)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.your_rank.name", false))
                     .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.your_rank.lore", false,
                             "%rank%", String.valueOf(playerRank),

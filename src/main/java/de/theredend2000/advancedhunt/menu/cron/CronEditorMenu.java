@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.cron;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.model.ActRule;
@@ -8,7 +9,6 @@ import de.theredend2000.advancedhunt.util.CronUtils;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ValidationUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -100,13 +100,13 @@ public class CronEditorMenu extends Menu {
             }
         }
 
-        addStaticItem(4, new ItemBuilder(Material.CLOCK)
+        addStaticItem(4, new ItemBuilder(XMaterial.CLOCK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.editor.current.name"))
                 .setLore(currentLore.toArray(new String[0]))
                 .build());
 
         // Quick Presets Row
-        addStaticItem(10,new ItemBuilder(Material.PLAYER_HEAD)
+        addStaticItem(10,new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.information.name"))
             .setLore(plugin.getMessageManager().getMessageList(
                 "gui.cron.preset.information.lore",
@@ -117,28 +117,28 @@ public class CronEditorMenu extends Menu {
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJmOGI2Mjc3Y2QzNjI2NjI4M2NiNWE5ZTY5NDM5NTNjNzgzZTZmZjdkNmEyZDU5ZDE1YWQwNjk3ZTkxZDQzYyJ9fX0=")
                 .build());
 
-        addButton(11, new ItemBuilder(Material.SUNFLOWER)
+        addButton(11, new ItemBuilder(XMaterial.SUNFLOWER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.daily.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.daily.lore").toArray(new String[0]))
             .build(), (e) -> applyPreset("0 0 0 * * ? *", "feedback.cron.preset.daily.name"));
 
-        addButton(12, new ItemBuilder(Material.PAPER)
+        addButton(12, new ItemBuilder(XMaterial.PAPER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.weekly.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.weekly.lore").toArray(new String[0]))
             .build(), (e) -> applyPreset("0 0 0 ? * MON *", "feedback.cron.preset.weekly.name"));
 
-        addButton(13, new ItemBuilder(Material.WRITABLE_BOOK)
+        addButton(13, new ItemBuilder(XMaterial.WRITABLE_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.monthly.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.monthly.lore").toArray(new String[0]))
             .build(), (e) -> applyPreset("0 0 0 1 * ? *", "feedback.cron.preset.monthly.name"));
 
-        addButton(14, new ItemBuilder(Material.EXPERIENCE_BOTTLE)
+        addButton(14, new ItemBuilder(XMaterial.EXPERIENCE_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.yearly.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.yearly.lore").toArray(new String[0]))
             .build(), (e) -> applyPreset("0 0 0 1 1 ? *", "feedback.cron.preset.yearly.name"));
 
         // More Presets Button
-        addButton(15, new ItemBuilder(Material.BOOKSHELF)
+        addButton(15, new ItemBuilder(XMaterial.BOOKSHELF)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.preset.more.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.preset.more.lore").toArray(new String[0]))
                 .build(), (e) -> {
@@ -148,13 +148,13 @@ public class CronEditorMenu extends Menu {
         });
 
         // Advanced Options Row
-        addStaticItem(19,new ItemBuilder(Material.PLAYER_HEAD)
+        addStaticItem(19,new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.custom.information.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.custom.information.lore"))
                 .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJmOGI2Mjc3Y2QzNjI2NjI4M2NiNWE5ZTY5NDM5NTNjNzgzZTZmZjdkNmEyZDU5ZDE1YWQwNjk3ZTkxZDQzYyJ9fX0=")
                 .build());
 
-        addButton(20, new ItemBuilder(Material.REDSTONE)
+        addButton(20, new ItemBuilder(XMaterial.REDSTONE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.custom.builder.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.custom.builder.lore").toArray(new String[0]))
                 .build(), (e) -> {
@@ -164,7 +164,7 @@ public class CronEditorMenu extends Menu {
             fieldMenu.open();
         });
 
-        addButton(21, new ItemBuilder(Material.PAPER)
+        addButton(21, new ItemBuilder(XMaterial.PAPER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.custom.manual.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.custom.manual.lore").toArray(new String[0]))
                 .build(), (e) -> {
@@ -193,7 +193,7 @@ public class CronEditorMenu extends Menu {
         });
 
         // Clear Button
-        addButton(35, new ItemBuilder(Material.BARRIER)
+        addButton(35, new ItemBuilder(XMaterial.BARRIER)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.cron.clear.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.cron.clear.lore").toArray(new String[0]))
                 .build(), (e) -> {

@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.menu.reward;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
@@ -47,13 +48,13 @@ public class RewardPresetActionsMenu extends Menu {
     public void setMenuItems() {
         fillBorders(FILLER_GLASS);
 
-        addButton(10, new ItemBuilder(Material.NAME_TAG)
+        addButton(10, new ItemBuilder(XMaterial.NAME_TAG)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.rename.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.rename.lore", false,"%current%",preset.getName()).toArray(new String[0]))
                 .build(), e -> handleRename());
 
         addButton(12, buildActionItem(
-                Material.ANVIL,
+                XMaterial.ANVIL.get(),
                 isTreasurePreset() && hasCollectionContext(),
                 "gui.presets.actions.load_all.name",
                 "gui.presets.actions.load_all.lore",
@@ -78,7 +79,7 @@ public class RewardPresetActionsMenu extends Menu {
                 : "gui.presets.actions.set_default.option.available";
 
         boolean enabled = isTreasurePreset() && hasCollectionContext();
-        Material enabledMaterial = isCurrentDefault ? Material.OAK_SAPLING : Material.DEAD_BUSH;
+        Material enabledMaterial = isCurrentDefault ? XMaterial.OAK_SAPLING.get() : XMaterial.DEAD_BUSH.get();
 
         addButton(13, buildActionItem(
                         enabledMaterial,
@@ -95,7 +96,7 @@ public class RewardPresetActionsMenu extends Menu {
                     }
                 });
 
-        addButton(14, new ItemBuilder(Material.WRITTEN_BOOK)
+        addButton(14, new ItemBuilder(XMaterial.WRITTEN_BOOK)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.edit_rewards.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.edit_rewards.lore", false).toArray(new String[0]))
                 .build(), e -> {
@@ -104,7 +105,7 @@ public class RewardPresetActionsMenu extends Menu {
                     .open();
         });
 
-        addButton(16, new ItemBuilder(Material.TNT)
+        addButton(16, new ItemBuilder(XMaterial.TNT)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.actions.delete.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.presets.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());

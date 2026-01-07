@@ -1,12 +1,12 @@
 package de.theredend2000.advancedhunt.menu.reward;
 
+import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.RewardPreset;
 import de.theredend2000.advancedhunt.model.RewardPresetType;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -89,7 +89,7 @@ public class RewardPresetListMenu extends PagedMenu {
             for (int i = startIndex; i < endIndex; i++) {
                 RewardPreset preset = presets.get(i);
 
-                ItemStack icon = new ItemBuilder(Material.WRITTEN_BOOK)
+                ItemStack icon = new ItemBuilder(XMaterial.WRITTEN_BOOK)
                         .setDisplayName(plugin.getMessageManager().getMessage("gui.presets.preset.name", false,
                                 "%name%", preset.getName()))
                         .setLore(plugin.getMessageManager().getMessageList("gui.presets.preset.lore", false,

@@ -7,6 +7,7 @@ import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -71,7 +72,7 @@ public class ProgressMenu extends PagedMenu {
     public void setMenuItems() {
         if (isLoading) {
             addMenuBorder();
-            ItemStack loadingItem = new ItemBuilder(Material.HOPPER)
+            ItemStack loadingItem = new ItemBuilder(XMaterial.HOPPER)
                     .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.loading", false))
                     .build();
             addStaticItem(22, loadingItem);
@@ -181,7 +182,7 @@ public class ProgressMenu extends PagedMenu {
         int total = treasures.size();
         double percentage = total > 0 ? (foundCount * 100.0 / total) : 0;
 
-        ItemStack statsItem = new ItemBuilder(Material.BOOK)
+        ItemStack statsItem = new ItemBuilder(XMaterial.BOOK)
             .setDisplayName(plugin.getMessageManager().getMessage("gui.progress.stats.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.progress.stats.lore", false,
                 "%found%", String.valueOf(foundCount),
@@ -199,15 +200,23 @@ public class ProgressMenu extends PagedMenu {
 
         if (isFound) {
             statusColor = ChatColor.GREEN.toString();
-            Material material = Material.matchMaterial(treasureCore.getMaterial());
-            if (material == null) material = Material.CHEST;
+            ItemStack item = null;
+            if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
+                item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
+            }
 
-            XMaterial xMaterial = XMaterial.matchXMaterial(material);
-            ItemStack item = XMaterialHelper.getItemStack(xMaterial);
+            if (item == null) {
+                Material material = Material.matchMaterial(treasureCore.getMaterial());
+                if (material == null) material = XMaterial.CHEST.get();
+
+                XMaterial xMaterial = XMaterial.matchXMaterial(material);
+                item = XMaterialHelper.getItemStack(xMaterial);
+            }
+
             if (item != null) {
                 builder = new ItemBuilder(item);
             } else {
-                builder = new ItemBuilder(Material.CHEST);
+                builder = new ItemBuilder(XMaterial.CHEST);
             }
 
             if (HeadHelper.isPlayerHead(item) && skullInfo != null) {
@@ -219,7 +228,7 @@ public class ProgressMenu extends PagedMenu {
             }
         } else {
             statusColor = ChatColor.RED.toString();
-            builder = new ItemBuilder(Material.RED_STAINED_GLASS_PANE);
+            builder = new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE);
         }
         
         String status = isFound 
