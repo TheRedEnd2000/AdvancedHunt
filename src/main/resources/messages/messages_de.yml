@@ -1,0 +1,1712 @@
+config-version: 2
+common:
+  treasure: "Schatz"
+  collection: "Sammlung"
+  chance: "Chance"
+  message: "Nachricht"
+  broadcast: "Ankündigung"
+  value: "Wert"
+feedback:
+  gui:
+    first_page: "%prefix%&cSie befinden sich bereits auf der ersten Seite."
+    last_page: "%prefix%&cSie befinden sich auf der letzten Seite."
+  rewards:
+    prompt:
+      command: "%prefix%&aGeben Sie den auszuführenden Befehl ein (ohne /):"
+      chat_message: "%prefix%&aGeben Sie die zu sendende Chat-Nachricht ein (verwenden Sie & für Farben):"
+      broadcast_message: "%prefix%&aGeben Sie die Ankündigungsnachricht ein, die an alle Spieler gesendet werden soll (verwenden Sie & für Farben):"
+      new_chance: "%prefix%&aGeben Sie die neue Chance ein (aktuell: %current%%):"
+      new_message: "%prefix%&aGeben Sie die neue Nachricht ein (aktuell: %current%):"
+      new_broadcast: "%prefix%&aGeben Sie die neue Ankündigung ein (aktuell: %current%):"
+      new_value: "%prefix%&aGeben Sie den neuen Wert ein (aktuell: %current%):"
+    added: "%prefix%&aBelohnung erfolgreich hinzugefügt!"
+    deleted: "%prefix%&cBelohnung gelöscht."
+    instance_given: "%prefix%&aDer Belohnungsgegenstand wurde Ihrem Inventar hinzugefügt."
+    instance_dropped: "%prefix%&eInventar voll – das Item wurde vor Ihnen gedroppt."
+    instance_invalid: "%prefix%&cDieses Item ist ungültig und kann nicht geladen werden."
+    command_preview: "%prefix%&eBefehl: &f/%command%"
+    chat_message_preview: "%prefix%&eNachricht: &f%message%"
+    broadcast_message_preview: "%prefix%&eAnkündigungsnachricht: &f%message%"
+    updated: "%prefix%&a%type% erfolgreich aktualisiert!"
+    reset: "%prefix%&a%type% erfolgreich zurückgesetzt!"
+  teleport:
+    success: "%prefix%&aZum Schatz teleportiert!"
+    unsafe: "%prefix%&cEs konnte kein sicherer Teleport-Ort gefunden werden!"
+    invalid_location: "%prefix%&cUngültiger Schatzort!"
+    adjusted: "%prefix%&aAn einen nahegelegenen sicheren Ort teleportiert."
+  settings:
+    delete:
+      success: "%prefix%&aDie Sammlung &e%collection%&a und alle ihre Schätze wurden erfolgreich gelöscht."
+  act:
+    applied: "%prefix%&aACT-Regel erfolgreich aktualisiert!"
+    components:
+      date_range:
+        prompt: "%prefix%&aDatumsbereich eingeben (JJJJ-MM-TT:JJJJ-MM-TT oder * für immer):"
+      duration:
+        prompt: "%prefix%&aGeben Sie die Dauer ein (z. B. 2h, 30m, 1d oder * für dauerhaft):"
+      act_format:
+        prompt: "%prefix%&aGeben Sie das ACT-Format ein: [DATE_RANGE] [DURATION] [CRON] (Beispiel: [*] [2h] [0 0 9 * * ?])"
+    presets:
+      applied: "%prefix%&aAngewandte Voreinstellung: &e%preset%"
+    rules:
+      rule_deleted: "%prefix%&cRegel gelöscht: &e%name%"
+    date_range:
+      success: "%prefix%&aDatumsbereich erfolgreich aktualisiert!"
+    duration:
+      success: "%prefix%&aDauer erfolgreich aktualisiert!"
+  cron:
+    applied: "%prefix%&aZeitplan erfolgreich angewendet!"
+    cleared: "%prefix%&aZeitplan gelöscht."
+    preset_applied: "%prefix%&aAngewandte Voreinstellung: &e%preset%"
+    preset:
+      daily:
+        name: "&eTäglich"
+      weekly:
+        name: "&eWöchentlich"
+      monthly:
+        name: "&eMonatlich"
+      yearly:
+        name: "&eJährlich"
+  preset:
+    prompt_name: "%prefix%&eGeben Sie einen Namen für diese %type%-Voreinstellung ein:"
+    prompt_rename: "%prefix%&eGeben Sie einen neuen Namen für die Voreinstellung „&f%name%&e“ ein:"
+    saved: "%prefix%&aDie %type%-Voreinstellung „&f%name%&a“ wurde erfolgreich gespeichert!"
+    renamed: "%prefix%&aVoreinstellung umbenannt in „&f%name%&a“."
+    loaded: "%prefix%&aDie %type%-Voreinstellung „&f%name%&a“ wurde erfolgreich geladen!"
+    deleted: "%prefix%&cVoreinstellung „&f%name%&c“ gelöscht."
+    set_default: "%prefix%&aDie Standardvoreinstellung für &e%collection%&a wurde auf „&f%name%&a“ gesetzt."
+    override:
+      none: "%prefix%&cIn dieser Sammlung wurden keine Schätze gefunden."
+      started: "%prefix%&eÜberschreiben von &f%count%&e Schätzen mit der Voreinstellung „&f%name%&e“..."
+      progress: "&eAktueller Fortschritt: &f%percent%% &7(%current%/%total%)"
+      done: "%prefix%&aÜberschreibe &f%count%&a Schätze mit der Voreinstellung „&f%name%&a“."
+      failed: "%prefix%&cSchatzbelohnungen konnten nicht überschrieben werden. Weitere Informationen finden Sie in der Konsole."
+  place_presets:
+    prompt_group: "%prefix%&7Geben Sie den &eGruppennamen&7 im Chat ein (oder „cancel“)."
+    prompt_rename: "%prefix%&7Geben Sie einen neuen Namen für &e%name%&7 ein (oder „cancel“)."
+    prompt_rename_group: "%prefix%&7Geben Sie einen neuen Namen für die Gruppe &e%group%&7 ein (oder „cancel“)."
+    prompt_move_group: "%prefix%&7Geben Sie eine neue Gruppe für diese Voreinstellung ein (aktuell: &e%group%&7)."
+    group_created: "%prefix%&aGruppe &e%group%&a erstellt."
+    group_renamed: "%prefix%&aGruppe &e%old%&a in &e%group%&a umbenannt."
+    group_deleted: "%prefix%&aGruppe &e%group%&a gelöscht."
+    created: "%prefix%&aErstellte Ortsvoreinstellung &e%name%&a in der Gruppe &e%group%&a."
+    given: "%prefix%&aGegebene Voreinstellung &e%name%&a (&7%group%&a)."
+    deleted: "%prefix%&aVoreinstellung &e%name%&a gelöscht (&7%group%&a)."
+prefix: "&6AdvancedHunt &8>> &7"
+#Translated up to here
+error:
+  no_permission: "%prefix%&cSie haben keine Berechtigung dazu!"
+  place_presets:
+    no_item: "%prefix%&cPlatzieren Sie zuerst einen Blockgegenstand im Steckplatz."
+    not_a_block: "%prefix%&cDiese Voreinstellung ist kein Block und kann nicht zum Platzieren verwendet werden."
+    invalid_group: "%prefix%&cUngültiger Gruppenname."
+    duplicate_group: "%prefix%&cDiese Gruppe existiert bereits."
+    invalid_name: "%prefix%&cUngültiger voreingestellter Name."
+    duplicate_name: "%prefix%&cEine Voreinstellung mit diesem Namen existiert bereits in dieser Gruppe."
+    serialize_failed: "%prefix%&cDas Element konnte nicht als Voreinstellung gespeichert werden."
+    deserialize_failed: "%prefix%&cDieses voreingestellte Element konnte nicht geladen werden."
+    create_failed: "%prefix%&cDie Ortsvorgabe konnte nicht erstellt werden."
+    create_group_failed: "%prefix%&cFehler beim Erstellen der Gruppe."
+    rename_group_failed: "%prefix%&cFehler beim Umbenennen der Gruppe."
+    save_failed: "%prefix%&cDie Ortsvoreinstellung konnte nicht gespeichert werden."
+  feature_disabled: "%prefix%&cDiese Funktion ist derzeit deaktiviert."
+  validation:
+    date_range: "%prefix%&cUngültiger Datumsbereich!Verwenden Sie ISO-Daten (2024-01-01:2024-12-31) oder * für immer."
+    duration: "%prefix%&cUngültige Dauer!Verwenden Sie Formate wie 90s, 2h, 30m oder * für „Immer aktiv“."
+  rewards:
+    invalid_chance: "%prefix%&cUngültige Chance!Muss eine Zahl zwischen 0 und 100 sein."
+    command_blacklisted: "%prefix%&cDieser Befehl steht auf der schwarzen Liste und kann nicht verwendet werden!"
+    add:
+      item:
+        no_item: "%prefix%&cBitte platzieren Sie zuerst einen Artikel im Slot!"
+  cron:
+    invalid: "%prefix%&cUngültiger Cron-Ausdruck!Bitte überprüfen Sie das Format."
+  act:
+    format:
+      invalid_format: "%prefix%&cUngültiges ACT-Format!Erwartet: [DATE_RANGE] [DURATION] [CRON]"
+  preset:
+    invalid_name: "%prefix%&cUngültiger voreingestellter Name!Bitte geben Sie einen gültigen Namen ein."
+    duplicate_name: "%prefix%&cEine Voreinstellung mit diesem Namen existiert bereits."
+    save_failed: "%prefix%&cVoreinstellung %type% konnte nicht gespeichert werden!"
+command:
+  help:
+    descriptions:
+      help: "Zeigt dieses Hilfemenü an"
+      reload: "Lädt die Plugin-Konfiguration neu"
+      list: "Listet alle verfügbaren Sammlungen auf"
+      list_collection: "Alle platzierten Schätze in einer Sammlung anzeigen"
+      leaderboard: "Öffnet die Bestenliste für eine Sammlung"
+      progress: "Sehen Sie sich Ihren Fortschritt in einer Sammlung an"
+      collection: "Öffnet den Sammlungseditor"
+      collection_create: "Erstellt eine neue Sammlung"
+      collection_edit: "Bearbeiten Sie eine vorhandene Sammlung"
+      collection_delete: "Löscht eine Sammlung"
+      collection_rename: "Benennt eine Sammlung um"
+      rewards: "Sehen Sie sich Belohnungen für den Schatz an, den Sie sich ansehen"
+      placepresets: "Öffnet das Ortsvoreinstellungsmenü"
+      place: "Platziermodus umschalten (wird beendet, wenn aktiv)"
+      place_collection: "Wechselt in den Platzierungsmodus für eine Sammlung"
+      reset_all: "Setzt den Fortschritt aller Spieler zurück"
+      reset_collection: "Setzt den Fortschritt für eine Sammlung zurück"
+      reset_player: "Setzt den gesamten Fortschritt eines Spielers zurück"
+      reset_player_collection: "Setzt den Fortschritt eines Spielers in einer Sammlung zurück"
+      minigame: "Spielen Sie ein Minispiel, um Hilfe bei der Suche nach Schätzen zu erhalten"
+      hint: "Fordern Sie einen Hinweis an, um Schätze in der Nähe zu finden"
+      migrate: "Daten zwischen Speichersystemen migrieren (YAML/SQLite/MySQL)"
+      debug_hint: "Debug: Hinweissystem testen"
+      debug_placecollection: "Debug: Schätze zufällig platzieren"
+      debug_placecollection_random: "Debug: Schätze zufällig platzieren"
+      debug_placecollection_plane: "Debug: Schätze in einem Ebenengitter platzieren"
+      debug_removecollectionplaced: "Debug: Alle platzierten Schätze in einer Sammlung entfernen"
+    minecraft:
+      help: "&6AdvancedHunt &8- &7Hilfe"
+      command: "Befehl"
+      description: "Beschreibung"
+      no_description: "Keine Beschreibung"
+      arguments: "Argumente"
+      optional: "Optional"
+      showing_results_for_query: "&7Ergebnisse für die Abfrage werden angezeigt"
+      no_results_for_query: "Keine Ergebnisse für die Abfrage"
+      available_commands: "Verfügbare Befehle"
+      click_to_show_help: "Klicken Sie hier, um die Hilfe für diesen Befehl anzuzeigen"
+      page_out_of_range: "Fehler: Seite liegt nicht im Bereich."
+      click_for_next_page: "Klicken Sie für die nächste Seite"
+      click_for_previous_page: "Klicken Sie hier, um zur vorherigen Seite zu gelangen"
+  reload:
+    success: "%prefix%&aKonfiguration und Nachrichten neu geladen!"
+    failed: "%prefix%&cNeuladen fehlgeschlagen.Weitere Informationen finden Sie in der Konsole."
+  list:
+    header: "&6Verfügbare Sammlungen:"
+    format: "&7- &e%collection%"
+    hint: "&eVerwenden Sie /ah list <collection>, um Schätze anzuzeigen."
+  collection_not_found: "%prefix%&cSammlung nicht gefunden."
+  direction:
+    east: "Ost"
+    southeast: "Südost"
+    south: "Süden"
+    southwest: "Südwesten"
+    west: "Westen"
+    northwest: "Nordwest"
+    north: "Norden"
+    northeast: "Nordost"
+  rewards:
+    no_block: "%prefix%&cSie müssen sich einen Block ansehen!"
+    not_treasure: "%prefix%&cDieser Block ist kein Schatz!"
+  rename:
+    success: "%prefix%&aSammlung erfolgreich umbenannt &e%old_name% &ain &e%new_name%"
+    failed: "%prefix%&cDie Sammlung konnte nicht umbenannt werden.Überprüfen Sie, ob der alte Name existiert und der neue Name eindeutig ist."
+  create:
+    success: "%prefix%&aSammlung erfolgreich erstellt &e%name%"
+    failed: "%prefix%&cFehler beim Erstellen der Sammlung.Eine Sammlung mit diesem Namen ist möglicherweise bereits vorhanden."
+  place_mode:
+    disabled: "%prefix%&aPlatzmodus deaktiviert."
+    enabled: "%prefix%&aPlatzmodus für Sammlung aktiviert &e%collection%&a.Platziere Blöcke, um Schätze hinzuzufügen."
+    not_in_place_mode: "%prefix%&cSie befinden sich nicht im Place-Modus."
+    no_break: "%prefix%&cIm Place-Modus können keine Blöcke zerstört werden!"
+    use_command: "%prefix%&eVerwenden Sie /ah placepreset &e, um Ihre gespeicherten Schätze zu erhalten."
+  reset:
+    all_success: "%prefix%&aSchatzdatensätze für alle Spieler in allen Sammlungen zurücksetzen &e%count% &a!"
+    collection_success: "%prefix%&aZurücksetzen &e%count% &aSchatzdatensätze zur Abholung &e%collection%&a!"
+    player_success: "%prefix%&aZurücksetzen &e%count% &aSchatzdatensätze für Spieler &e%player%&a!"
+    player_collection_success: "%prefix%&aZurücksetzen &e%count% &aSchatzdatensätze für Spieler &e%player% &ain der Sammlung &e%collection%&a!"
+    player_not_found: "%prefix%&cDer Spieler wurde nicht gefunden oder hat noch nie auf diesem Server gespielt."
+  migration:
+    started: "%prefix%&aSpeichermigration gestartet (Kopieren aller Daten in den Zielspeicher)..."
+    progress: "%prefix%&eMigrationsfortschritt: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    progress_actionbar: "&eMigration: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    success: "%prefix%&aSpeichermigration erfolgreich!Alle Daten wurden in den Zielspeicher kopiert."
+    failed: "%prefix%&cSpeichermigration fehlgeschlagen.Überprüfen Sie die Konsole auf Fehler."
+    mysql_not_configured: "%prefix%&cMySQL-Migrationseinstellungen nicht konfiguriert!Bitte bearbeiten Sie config.yml im Abschnitt „migration.target“ mit Ihren Zieldatenbankdetails."
+    mysql_config_reset: "%prefix%&eMySQL-Migrationseinstellungen wurden in config.yml zurückgesetzt.Konfigurieren Sie sie erneut, wenn Sie eine weitere Migration benötigen."
+    existing_data_abort: "%prefix%&c&lMigration abgebrochen!Der Zielspeicher enthält vorhandene Daten: %collections% Sammlungen, %treasures% Schätze, %players% Spieler.Verwenden Sie „--purge“, um zuerst die Zieldaten zu löschen, oder „--force“ (nicht empfohlen), um sie zu überschreiben: /ah migrate <type> --purge"
+    warning_existing_data: "%prefix%&e&lWARNUNG: Zielspeicher enthält vorhandene Daten!(%collections% Sammlungen, %treasures% Schätze, %players% Spieler).Mit der Migration fortfahren... (--force wird nicht empfohlen)"
+treasure:
+  found: "%prefix%&aDu hast einen Schatz gefunden!"
+  already_found: "%prefix%&cSie haben diesen Schatz bereits gefunden!"
+  already_claimed_global: "%prefix%&cDieser Schatz wurde bereits von einem anderen Spieler beansprucht!"
+  added: "%prefix%&aSchatz zur Sammlung hinzugefügt!"
+  removed: "%prefix%&cSchatz aus der Sammlung entfernt."
+  protected: "%prefix%&cDu kannst keine Schatzblöcke zerbrechen!"
+  placemode: "%prefix%&cIm Ortsmodus kannst du keine Schätze sammeln!"
+collection:
+  unavailable: "%prefix%&cDie Kollektion &e%collection% &cist derzeit nicht verfügbar!"
+  available_at: "%prefix%&eEs wird verfügbar sein unter: &f%time%"
+  available: "&a ✓ Verfügbar"
+  not_available: "&c✗ Nicht verfügbar"
+  completed: "%prefix%&6Sie haben die &e%collection% &6Sammlung abgeschlossen!"
+chat_input:
+  request: "%prefix%&aBitte geben Sie Ihre Eingabe im Chat ein."
+  canceled: "%prefix%&cEingabe abgebrochen."
+  timeout: "%prefix%&cEingabezeitüberschreitung."
+gui:
+  common:
+    back: "&7« Zurück zu %menu%"
+    close: "&cSchließen"
+    previous_page: "&aVorherige Seite"
+    next_page: "&aNächste Seite"
+    page_indicator: "&7(%page%/%total%)"
+    confirm: "&aBestätigen"
+    cancel: "&cAbbrechen"
+    enabled: "&aAktiviert"
+    disabled: "&cDeaktiviert"
+    none: "&cKeine"
+  place_presets:
+    groups:
+      title: "&8Voreingestellte Gruppen platzieren"
+      none:
+        name: "&cKeine Gruppen"
+        lore:
+        - '&7Es existieren noch keine Gruppen.'
+        - '&7Erstellen Sie eines mit der Schaltfläche unten.'
+      group:
+        name: "&e%group%"
+        lore:
+        - '&7Voreinstellungen: &f%count%'
+        - ''
+        - '&a%action%'
+        - '&7%action2%'
+        action:
+          open: "Klicken Sie zum Öffnen"
+          manage: "Klicken Sie zum Verwalten mit der rechten Maustaste"
+    group_actions:
+      title: "&8Gruppe: &e%group%"
+      rename:
+        name: "&eGruppe umbenennen"
+        lore:
+        - '&7Aktuell: &f%current%'
+        - ''
+        - '&eZum Umbenennen klicken'
+      delete:
+        name: "&cGruppe löschen"
+        lore:
+        - '&7Voreinstellungen in der Gruppe: &f%count%'
+        - ''
+        - '&c&lWARNUNG: Löscht alle Voreinstellungen in dieser Gruppe!'
+        - ''
+        - '&cZum Löschen anklicken'
+        confirm_title: "&8Gruppe löschen &c%group%&8?"
+    list:
+      title: "&8Ortsvoreinstellungen: &e%group%"
+      none:
+        name: "&cKeine Voreinstellungen"
+        lore:
+        - '&7In dieser Gruppe sind keine Voreinstellungen vorhanden.'
+        - '&7Erstellen Sie eines mit der Schaltfläche unten.'
+      preset:
+        name: "&e%name%"
+        lore:
+        - '&a%action%'
+        - '&7%action2%'
+        action:
+          give: "Klicken Sie mit der linken Maustaste, um den Gegenstand zu erhalten"
+          manage: "Klicken Sie zum Verwalten mit der rechten Maustaste"
+    actions:
+      title: "&8Voreinstellung: &e%name%"
+      give:
+        name: "&aArtikel abrufen"
+        lore:
+        - '&7Fügt den voreingestellten Artikel Ihrem Inventar hinzu.'
+      rename:
+        name: "&eUmbenennen"
+        lore:
+        - '&7Aktuell: &f%current%'
+      move_group:
+        name: "&eGruppe verschieben"
+        lore:
+        - '&7Aktuell: &f%current%'
+      delete:
+        name: "&cLöschen"
+        lore:
+        - '&7Löscht diese Voreinstellung dauerhaft.'
+        confirm_title: "&8Voreinstellung löschen &c%name%&8?"
+    create:
+      name: "&aGruppe erstellen"
+      lore:
+      - '&7Erstellt eine neue leere Gruppe.'
+    create_in_group:
+      name: "&aBlockvoreinstellung hinzufügen"
+      lore:
+      - '&7Fügt eine Blockvoreinstellung zu &e%group%&7 hinzu.'
+      - '&7Platzieren Sie einen Blockgegenstand im Steckplatz'
+      - '&7und bestätigen Sie, um es zu speichern.'
+    add:
+      title: "&8Ortsvoreinstellung hinzufügen: &e%group%"
+      placeholder:
+        name: "&7Platzieren Sie hier einen Block"
+        lore:
+        - '&7Ziehen Sie ein Blockelement hinein'
+        - '&7den mittleren Schlitz.'
+      info:
+        name: "&eWie es funktioniert"
+        lore:
+        - '&7Legen Sie ein beliebiges &eBlockelement&7 in den Steckplatz.'
+        - '&7Die Voreinstellung wird als &f1 Block&7 gespeichert.'
+        - '&7Ihr Artikel ist &anicht verbraucht&7.'
+      confirm:
+        name: "&aVoreinstellung speichern"
+        lore:
+        - '&7Speichert diesen Block als Voreinstellung'
+        - '&7in der ausgewählten Gruppe.'
+      cancel:
+        name: "&cAbbrechen"
+        lore:
+        - '&7Zurück ohne zu speichern.'
+  rewards:
+    title: "&8Schatzbelohnungen"
+    collection_title: "&8Abschlussbelohnungen"
+    preset_title: "&8Belohnungsvoreinstellung"
+    open_reward_option_menu:
+      title: "&8Belohnungsoptionen"
+      name: "&6+ Belohnung hinzufügen"
+      lore:
+      - ''
+      - '&7Wählen Sie die Art der Belohnung'
+      - '&7Sie möchten Folgendes hinzufügen:'
+      - ''
+      - '&e► Gegenstandsbelohnung'
+      - '&f Verschenken Sie einen physischen Gegenstand'
+      - ''
+      - '&e► Befehlsbelohnung'
+      - '&f Führen Sie einen Serverbefehl aus'
+      - ''
+      - '&e► Chat-Nachricht'
+      - '&f Sende eine Nachricht an den Spieler'
+      - ''
+      - '&e► Broadcast-Nachricht'
+      - '&f Senden Sie eine Nachricht an alle Spieler'
+      - ''
+      - '&aKlicken Sie hier, um die Optionen zu öffnen'
+    switch_to_collection:
+      name: "&eSammlungsbelohnungen anzeigen"
+      lore:
+      - '&7Klicken Sie hier, um die Belohnungen anzuzeigen'
+      - '&7wird beim Ausfüllen des vergeben'
+      - '&7gesamte Sammlung.'
+    switch_to_treasure:
+      name: "&eSchatzbelohnungen ansehen"
+      lore:
+      - '&7Klicken Sie hier, um die Belohnungen anzuzeigen'
+      - '&7angegeben, wenn Sie dies finden'
+      - '&7spezifischer Schatz.'
+    no_rewards:
+      name: "&7Keine Belohnungen"
+      lore:
+      - '&7Dieser Schatz hat keine'
+      - '&7rewards konfiguriert.'
+    reward_number: "&7Belohnung #%number%"
+    chance_lore: "&7Chance: &e%chance%%"
+    message_lore: "&7Nachricht: &e%message%"
+    broadcast_lore: "&7Broadcast: &e%broadcast%"
+    amount_lore: "&7Betrag: &fx%amount%"
+    command_name: "&6Befehlsbelohnung"
+    command_label: "&7Führt den Befehl aus:"
+    chat_message_name: "&bChat-Nachrichtenbelohnung"
+    chat_message_label: "&7Sendet eine Nachricht:"
+    broadcast_message_name: "&dBroadcast-Nachrichtenbelohnung"
+    broadcast_message_label: "&7Broadcasts an alle:"
+    truncated:
+      command: "&8(Befehl abgeschnitten)"
+      message: "&8(Nachricht abgeschnitten)"
+    invalid_item:
+      name: "&cUngültiger Artikel"
+      lore:
+      - '&7Dieser Artikel konnte nicht geladen werden'
+      - ''
+      - '&8─────────────'
+      - '&7Chance: &e%chance%%'
+    click_to_edit: "&e&lKlicken Sie mit der linken Maustaste auf &7, um &8| zu bearbeiten&e&lKlicken Sie mit der rechten Maustaste auf &7, um %action%"
+    save_preset:
+      name: "&aVoreinstellung %Type% erstellen"
+      lore:
+      - '&7Speichern Sie die aktuelle Belohnungskonfiguration'
+      - '&7als wiederverwendbare Voreinstellung für %type%s'
+      - ''
+      - '&7Dies ermöglicht Ihnen eine schnelle Bewerbung'
+      - '&7die gleichen Belohnungen für andere %type%s'
+      - ''
+      - '&eKlicken Sie, um eine Voreinstellung zu erstellen'
+    load_preset:
+      name: "&bLaden Sie die Voreinstellung %Type%"
+      lore:
+      - '&7Laden Sie eine gespeicherte Belohnungskonfiguration'
+      - '&7aus Ihren %type%-Voreinstellungen'
+      - ''
+      - '&7Ersetzen Sie aktuelle Prämien durch'
+      - '&7eine zuvor gespeicherte Voreinstellung'
+      - ''
+      - '&eKlicken Sie, um Voreinstellungen anzuzeigen'
+    quick_action:
+      delete: "&clöschen"
+      get_instance: "&aget-Instanz"
+    quick_mode:
+      name: "&bSchnelle Aktion"
+      mode_delete: "&cLöschen"
+      mode_get_instance: "&aInstanz abrufen"
+      lore:
+      - '&7Modus: %mode%'
+      - '&7Rechtsklick auf Belohnungen für %action%'
+      - ''
+      - '&eKlicken Sie, um den Modus zu wechseln'
+    add_item:
+      name: "&a+ Artikelbelohnung hinzufügen"
+      lore:
+      - '&7Klicken Sie, um ein Element hinzuzufügen'
+      - '&7als Belohnung für diesen Schatz.'
+    add_command:
+      name: "&a+ Befehlsbelohnung hinzufügen"
+      lore:
+      - '&7Klicken Sie, um einen Befehl hinzuzufügen'
+      - '&7als Belohnung für diesen Schatz.'
+      - ''
+      - '&7Verwenden Sie &f%player% &7für den Namen des Spielers.'
+    add_chat_message:
+      name: "&a+ Chat-Nachrichtenbelohnung hinzufügen"
+      lore:
+      - '&7Klicken Sie hier, um eine Chat-Nachricht hinzuzufügen'
+      - '&7als Belohnung für diesen Schatz.'
+      - ''
+      - '&7Verwenden Sie &f%player% &7für den Namen des Spielers.'
+      - '&7Verwenden Sie &f& &7für Farbcodes und Hex-Farben.'
+    add_broadcast_message:
+      name: "&a+ Broadcast-Nachrichtenbelohnung hinzufügen"
+      lore:
+      - '&7Klicken Sie hier, um eine Broadcast-Nachricht hinzuzufügen'
+      - '&7das alle Spieler sehen werden.'
+      - ''
+      - '&7Verwenden Sie &f%player% &7für den Namen des Spielers.'
+      - '&7Verwenden Sie &f& &7für Farbcodes und Hex-Farben.'
+    editor:
+      title: "&8Belohnung #%number%"
+      edit_chance:
+        name: "&eChance bearbeiten"
+        lore:
+        - '&7Aktuell: &f%chance%%'
+        - ''
+        - '&7Klicken Sie, um die zu ändern'
+        - '&7Drop-Chance auf diese Belohnung.'
+      edit_message:
+        name: "&eNachricht bearbeiten"
+        lore:
+        - '&8Nur für diese Belohnung!'
+        - '&7Aktuell: &f%message%'
+        - ''
+        - '&eKlicken Sie zum Ändern mit der linken Maustaste auf &7'
+        - '&eKlicken Sie mit der rechten Maustaste auf &7, um es zurückzusetzen'
+        - ''
+        - '&8&m'
+        - '&7Verfügbare Platzhalter:'
+        - '&f %player% &8- &7Name des Spielers'
+        - '&f %found_treasures% &8- &7Schätze gefunden'
+        - '&f %max_treasures% &8- &7Schätze insgesamt'
+        - '&f %remaining_treasures% &8- &7Verbleibende Schätze'
+        - '&f %chance% &8- &7Belohnungschance'
+        - '&f %item% &8- &7Artikelname &c(nur Artikelprämien)'
+        - '&f \n &8- &7Neue Zeile'
+        - '&f & &8- &7Farbcodes und Hex-Farben'
+      edit_broadcast:
+        name: "&eAnkündigung bearbeiten"
+        lore:
+        - '&8Nur für diese Belohnung!'
+        - '&7Aktuell: &f%broadcast%'
+        - ''
+        - '&eKlicken Sie zum Ändern mit der linken Maustaste auf &7'
+        - '&eKlicken Sie mit der rechten Maustaste auf &7, um es zurückzusetzen'
+        - ''
+        - '&8&m'
+        - '&7Verfügbare Platzhalter:'
+        - '&f %player% &8- &7Name des Spielers'
+        - '&f %found_treasures% &8- &7Schätze gefunden'
+        - '&f %max_treasures% &8- &7Schätze insgesamt'
+        - '&f %remaining_treasures% &8- &7Verbleibende Schätze'
+        - '&f %chance% &8- &7Belohnungschance'
+        - '&f %item% &8- &7Artikelname &c(nur Artikelprämien)'
+        - '&f \n &8- &7Neue Zeile'
+        - '&f & &8- &7Farbcodes und Hex-Farben'
+      edit_value:
+        name: "&eWert bearbeiten"
+        lore:
+        - '&7Aktuell: &f%value%'
+        - ''
+        - '&7Klicken Sie, um die zu ändern'
+        - '&7Wert dieser Belohnung.'
+        - ''
+        - '&8&m'
+        - '&7Verfügbare Platzhalter:'
+        - '&f %player% &8- &7Name des Spielers'
+        - '&f %found_treasures% &8- &7Schätze gefunden'
+        - '&f %max_treasures% &8- &7Schätze insgesamt'
+        - '&f %remaining_treasures% &8- &7Verbleibende Schätze'
+        - '&f %chance% &8- &7Belohnungschance'
+        - '&f \n &8- &7Neue Zeile'
+        - '&f & &8- &7Farbcodes und Hex-Farben'
+      delete:
+        name: "&cBelohnung löschen"
+        lore:
+        - '&7Klicken Sie, um dies zu entfernen'
+        - '&7Belohnung aus dem Schatz.'
+      confirm_delete:
+        title: "&8Löschen bestätigen"
+    add:
+      item:
+        title: "&8Artikelbelohnung hinzufügen"
+        placeholder:
+          name: "&7Element hier platzieren"
+          lore:
+          - '&7Platzieren Sie den gewünschten Artikel'
+          - '&7zum Hinzufügen als Belohnung.'
+        info:
+          name: "&eSo fügen Sie eine Artikelbelohnung hinzu"
+          lore:
+          - '&7Platzieren Sie den Artikel im'
+          - '&7mittlerer Steckplatz unten.'
+          - ''
+          - '&7Der genaue Artikel (einschließlich'
+          - '&7Verzauberungen, Name, Überlieferung) wird'
+          - '&7werden als Belohnung vergeben.'
+          - ''
+          - '&7Klicken Sie auf &aBestätigen Sie &7, wenn Sie fertig sind.'
+        confirm:
+          name: "&aBestätigen"
+          lore:
+          - '&7Klicken Sie, um dieses Element hinzuzufügen'
+          - '&7als Belohnung.'
+        cancel:
+          name: "&cAbbrechen"
+          lore:
+          - '&7Klicken Sie zum Abbrechen und'
+          - '&7zurück zum Prämienmenü.'
+  collection_content:
+    title: "&8Sammlungsinhalt"
+    treasure_item:
+      name: "&6Schatz #%number%"
+      lore:
+      - '&7Spieler gefunden: &f%count%'
+      - ''
+      - '&7Standort:'
+      - '&7X: &f%x%'
+      - '&7Y: &f%y%'
+      - '&7Z: &f%z%'
+      - '&7Welt: &f%world%'
+      - ''
+      lore_teleport: "&eKlicken Sie mit der linken Maustaste auf &7, um sich zu teleportieren"
+      lore_reward: "&eUmschalt+Linksklick &7um das Belohnungsmenü zu öffnen"
+      lore_who_found: "&eKlicken Sie mit der rechten Maustaste auf &7, um zu sehen, wer es gefunden hat"
+      lore_action_menu_bedrock: "&8Grundgestein/Geysir: &7Drücken Sie &eDrücken Sie (Q) &7, um das Aktionsmenü zu öffnen"
+  minigame:
+    reaction:
+      title: "&8Reaktionsspiel"
+      click:
+        name: "&aKlick mich!"
+        lore:
+        - '&6%current%&7/&6%required%'
+    memory:
+      title: "&8Memory-Spiel"
+      button:
+        name: "&fButton %number%"
+  treasure_action:
+    title: "&8Schatzaktionen"
+    teleport:
+      name: "&aTeleportiere dich zum Schatz"
+      lore:
+      - '&7Zum Teleportieren anklicken'
+      - '&7der Standort dieses Schatzes.'
+    view_finders:
+      name: "&eSehen Sie sich an, wer es gefunden hat"
+      lore:
+      - '&7Klicken Sie hier, um die Spieler zu sehen'
+      - '&7haben diesen Schatz gefunden.'
+    rewards:
+      name: "&6Belohnungen"
+      lore:
+      - '&7Klicken Sie hier, um die Belohnungen zu öffnen'
+      - '&7für diesen Schatz.'
+  finders:
+    title: "&8Wer hat diesen Schatz gefunden?"
+    loading: "&7Spielerdaten werden geladen..."
+    empty:
+      name: "&7Noch niemand"
+      lore:
+      - '&7Dieser Schatz hat es nicht'
+      - '&7wurde bisher von jemandem gefunden.'
+    entry:
+      name: "&e%player%"
+      lore:
+      - '&7Diesen Schatz gefunden'
+  leaderboard:
+    title: "&8Bestenliste: %collection%"
+    loading:
+      name: "&7Bestenliste wird geladen..."
+      lore:
+      - '&7Bitte warten Sie, während wir abholen'
+      - '&7die Bestenlistendaten...'
+    empty:
+      name: "&7Noch keine Daten"
+      lore:
+      - '&7Es wurden keine Spieler gefunden'
+      - '&7Schätze in dieser Sammlung.'
+    player_entry:
+      name: "&e#%rank% %player%"
+      lore:
+      - '&7Schätze gefunden: &f%score%'
+    player_entry_highlighted:
+      name: "&6&l#%rank% %player% &7(Sie)"
+      lore:
+      - '&7Schätze gefunden: &f%score%'
+      - ''
+      - '&6⭐ Das ist Ihre Position!'
+    your_rank:
+      name: "&aIhre Position"
+      lore:
+      - '&7Rang: &f#%rank%'
+      - '&7Gefunden: &f%score%/%total%'
+      - '&7Fortschritt: &e%percentage%%'
+    not_ranked:
+      name: "&cNicht bewertet"
+      lore:
+      - '&7Sie haben keine gefunden'
+      - '&7Schätze in dieser Sammlung.'
+      - ''
+      - '&7Beginnen Sie mit der Erkundung, um einen Rang zu erreichen!'
+    view_button:
+      name: "&eSchatz-Rangliste"
+      lore:
+      - '&7Klicken Sie hier, um die besten Spieler anzuzeigen'
+      - '&7die am meisten gefunden haben'
+      - '&7Schätze in dieser Sammlung.'
+    info:
+      name: "&bBestenlisten-Info"
+      lore:
+      - '&7Max. angezeigte Einträge: &f%display_limit%'
+      - '&7Cache-Aktualisierung: &f%refresh_interval%s &8(%minutes%m)'
+      - ''
+      - '&8Bestenliste wird automatisch aktualisiert'
+  progress:
+    title: "&8Fortschritt: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    loading: "&7Ihr Fortschritt wird geladen..."
+    no_treasures:
+      name: "&7Keine Schätze"
+      lore:
+      - '&7Diese Sammlung hat keine'
+      - '&7treasures bereits konfiguriert.'
+    stats:
+      name: "&aIhre Fortschrittsstatistik"
+      lore:
+      - '&7Sammlung: &e%collection%'
+      - '&7Gefunden: &a%found%&7/&e%total%'
+      - '&7Abschluss: &e%percentage%&7%'
+      - ''
+      - '&7Forschen Sie weiter, um etwas zu finden'
+      - '&7alle Schätze!'
+    treasure:
+      name: "&7Schatz #%number% &7- %status%"
+      status_found: "&aGefunden"
+      status_not_found: "&cNicht gefunden"
+      lore_found:
+      - '&a ✓ Du hast diesen Schatz gefunden!'
+      - ''
+      - '&7Standort:'
+      - '&7 X: &f%x%'
+      - '&7 Y: &f%y%'
+      - '&7 Z: &f%z%'
+      - '&7 Welt: &f%world%'
+      lore_not_found:
+      - '&c✗ Das haben Sie noch nicht gefunden'
+      - ''
+      - '&7Forschen Sie weiter, um etwas zu entdecken'
+      - '&7Der Standort dieses Schatzes!'
+  editor:
+    title: "Sammlungseditor"
+    collection_item:
+      name: "&6%collection%"
+      lore:
+      - '&7Status: %status%'
+      - '&7Verfügbarkeit: %availability%'
+      - '&7Schätze: &f%treasures%'
+      - '&7Cron zurücksetzen: %cron%'
+      - ''
+      - '&eKlicken Sie hier, um die Einstellungen zu bearbeiten'
+    create:
+      name: "&aSammlung erstellen"
+      lore:
+      - '&7Klicken Sie hier, um eine neue Sammlung zu erstellen'
+  settings:
+    title: "Einstellungen: %collection%"
+    rename:
+      name: "&eSammlung umbenennen"
+      lore:
+      - '&7Aktuell: &f%name%'
+      - ''
+      - '&eZum Umbenennen klicken'
+    status:
+      name: "&eStatus umschalten"
+      lore:
+      - '&7Aktuell: %status%'
+      - ''
+      - '&eZum Umschalten klicken'
+    rewards:
+      name: "&eAbschlussbelohnungen"
+      lore:
+      - '&7Klicken Sie hier, um Belohnungen zu konfigurieren'
+      - '&7wird vergeben, wenn ein Spieler findet'
+      - '&7ALLE Schätze in dieser Sammlung.'
+      - ''
+      - '&eZum Öffnen klicken'
+    default_treasure_preset:
+      name: "&eStandard-Schatzbelohnungsvoreinstellung"
+      lore:
+      - '&7Aktuell: %preset%'
+      - ''
+      - '&7Wird auf neu geschaffene Schätze angewendet'
+      - '&7in dieser Sammlung (Platzierungsmodus).'
+      - ''
+      - '&eLinksklick zum Festlegen'
+      - '&eRechtsklick zum Löschen'
+    override_treasure_rewards:
+      name: "&cAlle Schatzbelohnungen überschreiben"
+      lore:
+      - '&7Ersetze Belohnungen für ALLE Schätze'
+      - '&7in dieser Sammlung mithilfe einer Voreinstellung.'
+      - ''
+      - '&c&lWARNUNG: Dies ersetzt bestehende Belohnungen!'
+      - ''
+      - '&eKlicken Sie, um die Voreinstellung auszuwählen'
+      confirm_title: "Belohnungen mit „%name%“ überschreiben?"
+    act_rules:
+      name: "&eZeitplanregeln"
+      lore:
+      - '&7Verfügbarkeitspläne verwalten'
+      - '&7unter Verwendung von ACT-Formatregeln.'
+      - ''
+      - '&7Aktuelle Regeln: &f%count%'
+      - ''
+      - '&eZum Verwalten klicken'
+    progress_reset_cron:
+      name: "&eProgress-Reset-Zeitplan"
+      lore:
+      - '&7Aktuell: %cron%'
+      - ''
+      - '&7Setzt den Spieler automatisch zurück'
+      - '&7Fortschritt nach einem Zeitplan.'
+      - ''
+      - '&eKlicken Sie zum Konfigurieren'
+    single_player_find:
+      name: "&eEinzelspieler-Suche"
+      lore:
+      - '&7Aktuell: %status%'
+      - ''
+      - '&7Wenn aktiviert, nur EIN Spieler'
+      - '&7global kann jeden Schatz finden.'
+      - '&7Wird nur zurückgesetzt, wenn Cron ausgelöst wird.'
+      - ''
+      - '&eZum Umschalten klicken'
+    delete:
+      name: "&cSammlung löschen"
+      lore:
+      - '&7Diese Sammlung dauerhaft löschen'
+      - '&7und ALLE seine Schätze.'
+      - ''
+      - '&c&lWARNUNG: Dies kann nicht rückgängig gemacht werden!'
+      - ''
+      - '&cZum Löschen anklicken'
+      confirm_title: "Bestätigen Sie „Sammlung löschen“."
+    hide_after_found:
+      name: "&eGefundene Schätze verstecken"
+      lore:
+      - '&7Aktuell: %status%'
+      - ''
+      - '&7Wenn aktiviert, wird dies geschätzt'
+      - '&7Sie haben es bereits gefunden'
+      - '&7in der Schatzliste versteckt.'
+      - ''
+      - '&8&m'
+      - '&7Das hilft Ihnen, sich zu konzentrieren'
+      - '&7Schätze, die Sie noch nicht gefunden haben.'
+      - ''
+      - '&eZum Umschalten klicken'
+    hide_collection_disabled:
+      name: "&eAusblenden, wenn die Sammlung deaktiviert ist"
+      lore:
+      - '&7Aktuell: %status%'
+      - ''
+      - '&7Wenn aktiviert, alle Schätze'
+      - '&7in dieser Sammlung wird sein'
+      - '&7versteckt, wenn die Sammlung'
+      - '&7ist deaktiviert oder nicht verfügbar.'
+      - ''
+      - '&8&m'
+      - '&7Dies hindert Spieler daran'
+      - '&7nicht verfügbare Inhalte werden angezeigt.'
+      - ''
+      - '&eZum Umschalten klicken'
+    hide_status:
+      enabled: "&aAktiviert"
+      disabled: "&cDeaktiviert"
+    reset_schedule:
+      title: "Zeitplan zum Zurücksetzen des Fortschritts"
+    categories:
+      basic:
+        name: "&6&lGrundeinstellungen &8------>"
+        lore:
+        - ''
+        - '&7Grundlegend konfigurieren'
+        - '&7Sammlungseigenschaften.'
+        - ''
+        - '&8&m'
+        - '&7• Sammlung umbenennen'
+        - '&7• Aktivieren/Deaktivieren'
+        - '&7• Einzelspielermodus'
+        - '&7• Sammlung löschen'
+      rewards:
+        name: "&6&lZeitplankonfiguration &8------>"
+        lore:
+        - ''
+        - '&7Abschlussbelohnungen verwalten'
+        - '&7und Zeitplan der Sammlung.'
+        - ''
+        - '&8&m'
+        - '&7• Sammelbelohnungen'
+        - '&7• Zeitplanregeln'
+        - '&7• Zeitpunkt des Zurücksetzens des Fortschritts'
+      presets:
+        name: "&6&lVoreinstellungen &8------>"
+        lore:
+        - ''
+        - '&7Standardvoreinstellung konfigurieren'
+        - '&7für die Sammlung und die'
+        - '&7Laden eines Presets insgesamt'
+        - '&7Schätze.'
+        - ''
+        - '&8&m'
+        - '&7• Standardvoreinstellung'
+        - '&7• Massenüberschreibungsprämien'
+      visibility:
+        name: "&6&lSichtbarkeitsoptionen &8------>"
+        lore:
+        - ''
+        - '&7Kontrollieren Sie, wie Schätze versteckt werden'
+        - '&7für den Spieler oder bei Nichtverfügbarkeit.'
+        - ''
+        - '&8&m'
+        - '&7• Gefundene Schätze verstecken'
+        - '&7• Ausblenden, wenn deaktiviert'
+  presets:
+    treasure:
+      title: "Schatzvoreinstellungen"
+    collection:
+      title: "Sammlungsvoreinstellungen"
+    unknown: "&cUnbekannt"
+    none:
+      name: "&7Keine Voreinstellungen"
+      lore:
+      - '&7Es wurden noch keine Prämienvoreinstellungen erstellt.'
+    preset:
+      name: "&6%name%"
+      lore:
+      - ''
+      - '&7Gesamtprämien: &f%count%'
+      - ''
+      - '&eLinksklick zu %action%'
+      - '&eRechtsklick zum Bearbeiten'
+      action:
+        select: "wählen"
+        load: "laden"
+        edit: "bearbeiten"
+    actions:
+      title: "Voreinstellung: %name%"
+      rename:
+        name: "&eVoreinstellung umbenennen"
+        lore:
+        - '&7Aktueller Name: &f%current%'
+        - ''
+        - '&7Ändern Sie den Anzeigenamen von'
+        - '&7diese Belohnungsvoreinstellung.'
+        - ''
+        - '&eZum Umbenennen klicken'
+      load_all:
+        name: "&eLoad für alle Schätze"
+        lore:
+        - ''
+        - '&7Alle Schätze überschreiben'
+        - '&7in dieser Sammlung mit'
+        - '&7die Belohnungen dieser Voreinstellung.'
+        - ''
+        - '&cDies ersetzt bestehende Belohnungen!'
+        - ''
+        - '&eKlicken Sie, um fortzufahren'
+        lore_disabled:
+        - ''
+        - '&7Diese Aktion ist nur verfügbar'
+        - '&7beim Bearbeiten einer Schatzvoreinstellung.'
+        - '&8Für Sammlungsvoreinstellungen nicht möglich!'
+        confirm_title: "Alle Schätze überschreiben?"
+      set_default:
+        option:
+          available: "&eKlicken Sie, um den Standard festzulegen"
+          already_selected: "&a ✓ Bereits als Standard festgelegt"
+        name: "&eAls Standard festlegen"
+        lore:
+        - ''
+        - '&7Aktuell: &f%current%'
+        - ''
+        - '&7Legen Sie diese Voreinstellung als fest'
+        - '&7Standardvoreinstellung für Schatzbelohnungen'
+        - '&7für diese Sammlung.'
+        - ''
+        - '%option%'
+        lore_disabled:
+        - ''
+        - '&7Diese Aktion ist nur verfügbar'
+        - '&7beim Bearbeiten einer Schatzvoreinstellung.'
+        - '&8Für Sammlungsvoreinstellungen nicht möglich!'
+      edit_rewards:
+        name: "&aBelohnungen bearbeiten"
+        lore:
+        - ''
+        - '&7Bearbeiten Sie die gespeicherten Belohnungen'
+        - '&7in dieser Voreinstellung.'
+        - ''
+        - '&eZum Bearbeiten klicken'
+      delete:
+        name: "&cLöschen"
+        lore:
+        - ''
+        - '&7Endgültig löschen'
+        - '&7diese Voreinstellung.'
+        - ''
+        - '&cDies kann nicht rückgängig gemacht werden!'
+        - ''
+        - '&eZum Löschen anklicken'
+        confirm_title: "Voreinstellung „%name%“ löschen?"
+  cron:
+    common:
+      invalid_expression: "&c&l⚠ Ungültiger Ausdruck"
+    type:
+      act: "AKT"
+      reset: "Fortschritt zurückgesetzt"
+    editor:
+      title: "%cron_type% Cron-Zeitplan-Editor"
+      current:
+        name: "&e&lAktueller Zeitplan"
+        expression: "&7Ausdruck:"
+        next_runs: "&7Nächste Ausführungen:"
+        none: "&7Kein Zeitplan festgelegt"
+    preset:
+      information:
+        name: "&e---------->"
+        lore:
+        - '&6⏰ Schnellvoreinstellungen'
+        - ''
+        - '&7Vorkonfigurierte Planungsvorlagen'
+        - '&7für allgemeine %cron_type% Zeitpläne.'
+        - ''
+        - '&e► Täglich &7- Jeden Tag um 00:00 Uhr'
+        - '&e► Wöchentlich &7- Jeden Montag um 00:00 Uhr'
+        - '&e► Monatlich &7- 1. jedes Monats'
+        - '&e► Jährlich &7- 1. Januar'
+        - '&e► Mehr... &7- Zusätzliche Optionen'
+        - ''
+        - '&a ✓ &7Sicher und einfach zu verwenden'
+        - '&8Perfekt für Anfänger!'
+      daily:
+        name: "&eTäglich"
+        lore:
+        - '&7Läuft jeden Tag um Mitternacht'
+        - '&7Expression: &f0 0 0 * * ?*'
+        - ''
+        - '&aKlicken Sie hier, um es anzuwenden'
+      weekly:
+        name: "&eWöchentlich"
+        lore:
+        - '&7Läuft jeden Montag um Mitternacht'
+        - '&7Ausdruck: &f0 0 0 ?*MO*'
+        - ''
+        - '&aKlicken Sie hier, um es anzuwenden'
+      monthly:
+        name: "&eMonatlich"
+        lore:
+        - '&7Läuft am 1. jedes Monats'
+        - '&7Ausdruck: &f0 0 0 1 * ?*'
+        - ''
+        - '&aKlicken Sie hier, um es anzuwenden'
+      yearly:
+        name: "&eJährlich"
+        lore:
+        - '&7Läuft am 1. Januar'
+        - '&7Ausdruck: &f0 0 0 1 1 ?*'
+        - ''
+        - '&aKlicken Sie hier, um es anzuwenden'
+      more:
+        name: "&6Weitere Voreinstellungen"
+        lore:
+        - '&7Zusätzliche voreingestellte Zeitpläne anzeigen'
+        - '&7Einschließlich stündlicher, wöchentlicher Tage,'
+        - '&7saisonale und besondere Termine'
+        - ''
+        - '&eKlicken Sie zum Durchsuchen'
+    presets:
+      title: "%cron_type% Cron-Voreinstellungen"
+      item:
+        name: "&e%name%"
+      list:
+        hourly:
+          name: "Stündlich"
+          lore:
+          - '&7Wird zu Beginn jeder Stunde ausgeführt'
+          - '&7Beispiel: 1:00, 2:00, 3:00...'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        every_6_hours:
+          name: "Alle 6 Stunden"
+          lore:
+          - '&7Wird alle 6 Stunden ausgeführt'
+          - '&7Beispiel: 00:00, 06:00, 12:00, 18:00'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        every_12_hours:
+          name: "Alle 12 Stunden"
+          lore:
+          - '&7Läuft zweimal täglich'
+          - '&7Beispiel: 00:00, 12:00'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        daily_midnight:
+          name: "Täglich um Mitternacht"
+          lore:
+          - '&7Läuft jeden Tag um 00:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        daily_noon:
+          name: "Täglich mittags"
+          lore:
+          - '&7Läuft jeden Tag um 12:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        daily_6am:
+          name: "Täglich um 6 Uhr"
+          lore:
+          - '&7Läuft jeden Tag um 06:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        weekdays_9am:
+          name: "Werktags um 9 Uhr"
+          lore:
+          - '&7Läuft Montag bis Freitag um 09:00 Uhr'
+          - '&7Perfekt für Veranstaltungen unter der Woche'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        monday_midnight:
+          name: "Jeden Montag um Mitternacht"
+          lore:
+          - '&7Wochenplan montags'
+          - '&7Läuft am Montag um 00:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        friday_6pm:
+          name: "Jeden Freitag um 18 Uhr"
+          lore:
+          - '&7Wochenend-Event-Starter'
+          - '&7Läuft freitags um 18:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        sunday_midnight:
+          name: "Jeden Sonntag um Mitternacht"
+          lore:
+          - '&7Wochenplan sonntags'
+          - '&7Läuft am Sonntag um 00:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        first_day_month:
+          name: "Erster Tag des Monats"
+          lore:
+          - '&7Monatlicher Zeitplan'
+          - '&7Läuft am 1. um 00:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        last_day_month:
+          name: "Letzter Tag des Monats"
+          lore:
+          - '&7Plan zum Monatsende'
+          - '&7Läuft am letzten Tag um 00:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        first_monday_month:
+          name: "Erster Montag im Monat"
+          lore:
+          - '&7Monatsplan für den ersten Montag'
+          - '&7Läuft um 00:00'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        new_year:
+          name: "Neujahr (1. Januar)"
+          lore:
+          - '&7Jahresplan für Neujahr'
+          - '&7Läuft am 1. Januar um 00:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        christmas:
+          name: "Weihnachten (25. Dezember)"
+          lore:
+          - '&7Weihnachts-Sonderereignis'
+          - '&7Läuft am 25. Dezember um 00:00 Uhr'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        quarterly:
+          name: "Vierteljährlich (1. Januar/April/Juli/Oktober)"
+          lore:
+          - '&7Saisonale Zeitpläne'
+          - '&7Läuft am 1. um 00:00 Uhr'
+          - '&7von Januar, April, Juli und Okt'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+    custom:
+      information:
+        name: "&e---------->"
+        lore:
+        - '&6⚙ Erweiterte Optionen'
+        - ''
+        - '&7Für Benutzer, die eine präzise Kontrolle benötigen'
+        - '&7über ihre Planungskonfiguration.'
+        - ''
+        - '&e► Feld-Builder'
+        - '&f Konfigurieren Sie jedes Zeitfeld einzeln'
+        - ''
+        - '&e► Manuelle Eingabe'
+        - '&f Cron-Ausdrücke direkt schreiben'
+        - ''
+        - '&c⚠ &7Erfordert Kenntnisse der Cron-Syntax'
+        - '&8Verwenden Sie Voreinstellungen, wenn Sie sich nicht sicher sind!'
+      builder:
+        name: "&dErweiterter Builder"
+        lore:
+        - '&7Erstellen Sie Ihren Cron-Ausdruck'
+        - '&7Feld für Feld mit a'
+        - '&7visuelle Schnittstelle'
+        - ''
+        - '&eKlicken Sie hier, um den Builder zu öffnen'
+      manual:
+        name: "&bManuelle Eingabe"
+        lore:
+        - '&7Geben Sie manuell einen Cron-Ausdruck ein'
+        - '&7Format: SEC MIN STUNDE TAG MONAT DOW JAHR'
+        - '&7Beispiel: &f0 0 12 * * ?*'
+        - ''
+        - '&eKlicken Sie, um einen Ausdruck einzugeben'
+    builder:
+      title: "%cron_type% Cron Expression Builder"
+      fields:
+        second:
+          name: "Zweite"
+          description: "Sekunden in Minuten"
+          values:
+            0: "Zu Beginn"
+            wildcard: "Jede Sekunde"
+            every_interval: "Alle %interval% Sekunden"
+        minute:
+          name: "Minute"
+          description: "Minuten in Stunde"
+          values:
+            0: "Zu Beginn"
+            wildcard: "Jede Minute"
+            every_interval: "Alle %interval% Minuten"
+        hour:
+          name: "Stunde"
+          description: "Stunden am Tag (0-23)"
+          values:
+            0: "Mitternacht"
+            6: "6 Uhr morgens"
+            12: "Mittag"
+            18: "18 Uhr"
+            wildcard: "Stündlich"
+            every_interval: "Alle %interval% Stunden"
+        day:
+          name: "Tag"
+          description: "Tag des Monats (1-31)"
+          values:
+            1: "Erster Tag des Monats"
+            15: "Mitte des Monats"
+            last: "Letzter Tag des Monats"
+            wildcard: "Täglich"
+            none: "Kein bestimmter Tag"
+        month:
+          name: "Monat"
+          description: "Monat des Jahres (1-12 oder JAN-DEZ)"
+          values:
+            wildcard: "Jeden Monat"
+            1: "Januar"
+            6: "Juni"
+            12: "Dezember"
+            '1_4_7_10': "Vierteljährlich (Januar/Apr/Jul/Okt)"
+        day_of_week:
+          name: "Wochentag"
+          description: "Wochentag (1-7 oder SO-SA)"
+          values:
+            none: "Kein bestimmter Tag"
+            wildcard: "Täglich"
+            mon: "Montag"
+            fri: "Freitag"
+            sat: "Samstag"
+            sun: "Sonntag"
+            mon_fri: "Wochentags"
+        year:
+          name: "Jahr"
+          description: "Jahr (optional, lassen Sie * für beliebig)"
+          values:
+            wildcard: "Jährlich"
+            specific_year: "Jahr %year%"
+        custom_value: "Benutzerdefinierter Wert"
+      preview:
+        name: "&e&lVorschau"
+        current_expression: "&7Aktueller Ausdruck:"
+        next_runs: "&7Nächste Ausführungen:"
+      field:
+        selected_name: "&a&l► %name%"
+        unselected_name: "&7%name%"
+        lore:
+        - '&7Wert: &f%value%'
+        - ''
+        - '&7%description%'
+        - ''
+        - '&e&lKlicken Sie, um dieses Feld zu bearbeiten'
+      preset:
+        current_name: "&a ✓ %value%"
+        set_name: "&f%value%"
+        current_lore:
+        - '&aAktueller Wert'
+        - ''
+        - '&7%description%'
+        set_lore:
+        - '&7Zum Festlegen klicken'
+        - ''
+        - '&7%description%'
+      custom_input:
+        name: "&e&lBenutzerdefinierter Wert"
+        lore:
+        - '&7Geben Sie einen benutzerdefinierten Wert ein'
+        - '&7für %field%'
+        - ''
+        - '&7Beispiele:'
+        - '&7 – Platzhalter: *'
+        - '&7 – Bereich: 1-5'
+        - '&7 – Liste: 1,3,5'
+        - '&7 – Inkrement: */15'
+        - ''
+        - '&eKlicken Sie, um einen benutzerdefinierten Wert einzugeben'
+      decrease:
+        name: "&c&l- Verringern"
+        lore:
+        - '&7Numerischen Wert um 1 verringern'
+      increase:
+        name: "&a&l+ Erhöhung"
+        lore:
+        - '&7Erhöhen Sie den numerischen Wert um 1'
+      save:
+        name: "&a&lSpeichern und bewerben"
+        lore:
+        - '&7Wenden Sie diesen Cron-Ausdruck an'
+        - '&7zur Sammlung'
+        - ''
+        - '&fAusdruck: &7%expression%'
+    clear:
+      name: "&cZeitplan löschen"
+      lore:
+      - '&7Entfernen Sie den Reset-Zeitplan'
+      - '&7Collection wird nicht automatisch zurückgesetzt'
+      - ''
+      - '&cKlicken Sie zum Löschen'
+  act:
+    setup:
+      title: "&8ACT-Setup"
+      date_window:
+        name: "&aDatumsfenster (immer an)"
+        lore:
+        - '&7Den ganzen Tag aktiv'
+        - '&7ein Start- und Enddatum.'
+        - ''
+        - '&7Sie wählen den Datumsbereich aus.'
+        - '&7Kein Zeitplan erforderlich.'
+        - ''
+        - '&eKlicken Sie zum Konfigurieren'
+      repeating_schedule:
+        name: "&eWiederholungsplan"
+        lore:
+        - '&7Aktiv für X Stunden'
+        - '&7zu einem festen Zeitplan.'
+        - ''
+        - '&7Sie wählen die Dauer aus'
+        - '&7wählen Sie dann den Zeitplan aus.'
+        - ''
+        - '&eKlicken Sie zum Konfigurieren'
+      advanced:
+        name: "&cErweitert"
+        lore:
+        - '&7Volle Kontrolle über'
+        - '&7Datumsbereich, Dauer,'
+        - '&7und Zeitplan.'
+        - ''
+        - '&eKlicken Sie hier, um den Editor zu öffnen'
+    editor:
+      title: "ACT-Regeleditor: %name%"
+      guided_setup:
+        name: "&bGeführte Einrichtung"
+        lore:
+        - '&7Öffnen Sie den Einrichtungsassistenten erneut'
+        - '&7für diese Regel.'
+        - ''
+        - '&eZum Öffnen klicken'
+      manual_input:
+        name: "&bManuelle ACT-Eingabe"
+        lore:
+        - '&7Geben Sie das ACT-Format ein'
+        - '&7direkt im Chat.'
+        - ''
+        - '&eZum Tippen klicken'
+      current:
+        name: "&e&lAktuelle Regelkonfiguration"
+        date_range: "&7Datumsbereich: &f%date_range%"
+        duration: "&7Dauer: &f%duration%"
+        cron: "&7Cron: &f%cron%"
+        next_activation: "&7Nächste Aktivierung:"
+        validation: "&7Validierung: %status%"
+        valid: "&a ✓ Gültig"
+        invalid: "&c✗ Ungültig"
+    preset:
+      apply:
+        name: "&6Schnelleinrichtung (Voreinstellungen)"
+        lore:
+        - '&7Wählen Sie einen gemeinsamen Zeitplan'
+        - '&7(kein ACT-Format erforderlich)'
+        - ''
+        - '&eKlicken Sie hier, um die Voreinstellungen zu durchsuchen'
+    presets:
+      title: "ACT-Regelvoreinstellungen"
+      list:
+        always_available:
+          name: "Immer verfügbar"
+          lore:
+          - '&7Sammlung ist dauerhaft verfügbar'
+          - '&7Keine Datums-, Dauer- oder Zeitplanbeschränkungen'
+          - ''
+          - '&7Format: &f[*] [*] [NONE]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        daily_2h:
+          name: "Täglich 2 Stunden (morgens)"
+          lore:
+          - '&7Täglich für 2 Stunden verfügbar'
+          - '&7Wird um 9:00 Uhr ausgelöst'
+          - ''
+          - '&7Format: &f[*] [2h] [0 0 9 * * ?]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        daily_4h:
+          name: "Täglich 4 Stunden (Nachmittag)"
+          lore:
+          - '&7Täglich für 4 Stunden verfügbar'
+          - '&7Wird um 14:00 Uhr ausgelöst'
+          - ''
+          - '&7Format: &f[*] [4h] [0 0 14 * * ?]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        weekend_8h:
+          name: "Wochenendveranstaltung (8 Stunden)"
+          lore:
+          - '&7Samstags und sonntags verfügbar'
+          - '&7Für 8 Stunden ab 10:00 Uhr'
+          - ''
+          - '&7Format: &f[*] [8h] [0 0 10 ?* SA, SO]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        weekly_24h:
+          name: "Wöchentliche Veranstaltung (24 Stunden)"
+          lore:
+          - '&7Jeden Montag verfügbar'
+          - '&7Den ganzen Tag lang'
+          - ''
+          - '&7Format: &f[*] [24h] [0 0 0 ?* MO]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        holiday_special:
+          name: "Feiertagsangebot (Weihnachten)"
+          lore:
+          - '&7Verfügbar während der Weihnachtswoche'
+          - '&7Permanente Verfügbarkeit während des Zeitraums'
+          - '&7Vom 20. bis 26. Dezember'
+          - ''
+          - '&7Format: &f[2025-12-20:2025-12-26] [*] [0 0 0 * * ?]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        seasonal_summer:
+          name: "Sommersaison"
+          lore:
+          - '&7Verfügbar während der Sommermonate'
+          - '&7Permanente Verfügbarkeit von Juni bis August'
+          - ''
+          - '&7Format: &f[2025-06-01:2025-08-31] [*] [NONE]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        hourly_30m:
+          name: "Stündlich (30 Minuten)"
+          lore:
+          - '&7Triggert jede Stunde'
+          - '&7Jedes Mal für 30 Minuten verfügbar'
+          - ''
+          - '&7Format: &f[*] [30m] [0 0 * * * ?]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        twice_daily_3h:
+          name: "Zweimal täglich (jeweils 3 Stunden)"
+          lore:
+          - '&7Zweimal täglich verfügbar'
+          - '&7Um 9:00 Uhr und 18:00 Uhr'
+          - '&7Für jeweils 3 Stunden'
+          - ''
+          - '&7Format: &f[*] [3h] [0 0 9,18 * * ?]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+        monthly_week:
+          name: "Monatlich (erste Woche)"
+          lore:
+          - '&7Verfügbar in der ersten Woche jedes Monats'
+          - '&7Vom 1. bis 7'
+          - '&7Permanent während dieses Zeitraums'
+          - ''
+          - '&7Format: &f[*-*-01:*-*-07] [*] [NONE]'
+          - ''
+          - '&aKlicken Sie hier, um es anzuwenden'
+    component:
+      date_range:
+        name: "&eDatumsbereich"
+        lore:
+        - '&7Aktuell: &f%value%'
+        - '&7%description%'
+        - ''
+        - '&7Optional: auf bestimmte Daten beschränken'
+        - ''
+        - '&eZum Bearbeiten klicken'
+      duration:
+        name: "&eDauer"
+        lore:
+        - '&7Aktuell: &f%value%'
+        - '&7%description%'
+        - ''
+        - '&7Optional: Begrenzen Sie, wie lange es aktiv ist'
+        - ''
+        - '&eZum Bearbeiten klicken'
+      cron:
+        name: "&eZeitplan"
+        description:
+          none: "Kein Zeitplan"
+          invalid: "Ungültiger Zeitplan"
+        lore:
+        - '&7Aktuell: &f%value%'
+        - '&7%description%'
+        - ''
+        - '&7Optional: Nach einem sich wiederholenden Zeitplan ausführen'
+        - ''
+        - '&eZum Bearbeiten klicken'
+    rules:
+      list:
+        title: "Zeitplanregeln: %collection%"
+        rule_item:
+          name: "&6%name%"
+          lore:
+          - '&7Status: %status%'
+          - '&7Datumsbereich: &f%date_range%'
+          - '&7Dauer: &f%duration%'
+          - '&7Cron: &f%cron%'
+          - '&7Nächster Auslöser: %next_trigger%'
+          - ''
+          - '&eLinksklick zum Bearbeiten'
+          - '&eRechtsklick zum Umschalten'
+          - '&cUmschalt+Linksklick zum Löschen'
+        add_rule:
+          name: "&aNeue Regel hinzufügen"
+          lore:
+          - '&7Erstellt eine neue Regel'
+          - '&7und öffnet das Setup'
+      editor:
+        name:
+          name: "&eName"
+          lore:
+          - '&7Aktuell: &f%name%'
+          - ''
+          - '&eZum Umbenennen klicken'
+        enabled:
+          name: "&eAktiviert"
+          lore:
+          - '&7Aktuell: %status%'
+          - ''
+          - '&eZum Umschalten klicken'
+        delete:
+          name: "&cRegel löschen"
+          lore:
+          - '&7Entfernt diese Regel dauerhaft'
+          - ''
+          - '&cZum Löschen anklicken'
+    components:
+      duration:
+        editor:
+          title: "Dauer bearbeiten"
+          current:
+            name: "&e&lAktuelle Dauer"
+            value: "&f%duration%"
+            description: "&7%description%"
+        preset:
+          permanent:
+            name: "&aPermanent"
+            lore:
+            - '&7Sammlung bleibt für immer verfügbar'
+            - '&7einmal ausgelöst (bis zum Zurücksetzen)'
+            - ''
+            - '&7Wert: &f*'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          30_minutes:
+            name: "&e30 Minuten"
+            lore:
+            - '&7Verfügbar für eine halbe Stunde'
+            - ''
+            - '&7Wert: &f30m'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          1_hour:
+            name: "&e1 Stunde"
+            lore:
+            - '&7Verfügbar für eine Stunde'
+            - ''
+            - '&7Wert: &f1h'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          2_hours:
+            name: "&e2 Stunden"
+            lore:
+            - '&7Verfügbar für zwei Stunden'
+            - ''
+            - '&7Wert: &f2h'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          4_hours:
+            name: "&e4 Stunden"
+            lore:
+            - '&7Verfügbar für vier Stunden'
+            - ''
+            - '&7Wert: &f4h'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          8_hours:
+            name: "&e8 Stunden"
+            lore:
+            - '&7Acht Stunden verfügbar'
+            - ''
+            - '&7Wert: &f8h'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          24_hours:
+            name: "&e24 Stunden (1 Tag)"
+            lore:
+            - '&7Verfügbar für einen ganzen Tag'
+            - ''
+            - '&7Wert: &f24h'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          7_days:
+            name: "&e7 Tage (1 Woche)"
+            lore:
+            - '&7Verfügbar für eine Woche'
+            - ''
+            - '&7Wert: &f7d'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+        custom:
+          name: "&dBenutzerdefinierte Dauer"
+          lore:
+          - '&7Geben Sie eine benutzerdefinierte Dauer ein'
+          - '&7Format: <Nummer><Einheit>'
+          - '&7Einheiten: s, m, h, d'
+          - '&7Beispiel: 90er, 90m, 12h, 3d'
+          - ''
+          - '&eKlicken Sie, um manuell einzugeben'
+        increase:
+          name: "&a&l+ Erhöhung"
+          lore:
+          - '&7Fügen Sie 1 zum Dauerwert hinzu'
+          - '&7(nur numerische Dauer)'
+        decrease:
+          name: "&c&l- Verringern"
+          lore:
+          - '&7Subtrahieren Sie 1 vom Dauerwert'
+          - '&7(nur numerische Dauer, min: 1)'
+      date_range:
+        manual:
+          name: "&dManuelle Datumsbereichseingabe"
+          lore:
+          - '&7Geben Sie einen benutzerdefinierten Datumsbereich ein'
+          - '&7Format: JJJJ-MM-TT:JJJJ-MM-TT'
+          - '&7Beispiel: 2025-12-24:2025-12-31'
+          - '&7Verwenden Sie &f* &7für immer aktiv'
+          - ''
+          - '&eKlicken Sie, um manuell einzugeben'
+        editor:
+          title: "Datumsbereich bearbeiten"
+          current:
+            name: "&e&lAktueller Datumsbereich"
+            value: "&f%date_range%"
+            description: "&7%description%"
+        preset:
+          always:
+            name: "&aImmer aktiv"
+            lore:
+            - '&7Keine Datumsbeschränkungen'
+            - '&7Die Regel kann an jedem Tag ausgelöst werden'
+            - ''
+            - '&7Wert: &f*'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          this_year:
+            name: "&eDieses Jahr (%year%)"
+            lore:
+            - '&7Nur im laufenden Jahr aktiv'
+            - '&7Vom 1. Januar bis 31. Dezember'
+            - ''
+            - '&7Wert: &f%year%-01-01:%year%-12-31'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          this_month:
+            name: "&eDiesen Monat"
+            lore:
+            - '&7Aktiv im aktuellen Monat'
+            - ''
+            - '&7Wert: &f%start%:%end%'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+          next_month:
+            name: "&eNächsten Monat"
+            lore:
+            - '&7Aktiv im nächsten Monat'
+            - ''
+            - '&7Wert: &f%start%:%end%'
+            - ''
+            - '&eKlicken Sie hier, um es anzuwenden'
+minigame:
+  success: "%prefix%&aMinispiel erfolgreich abgeschlossen!"
+  failed: "%prefix%&cMinispiel fehlgeschlagen."
+  reaction:
+    timeout: "%prefix%&cDu hast zu lange gebraucht!Spiel vorbei."
+    wrong_click: "%prefix%&cFalscher Block!Spiel vorbei."
+  memory:
+    watch: "%prefix%&eSehen Sie sich die Sequenz genau an!"
+    repeat: "%prefix%&aWiederholen Sie nun die Sequenz!"
+    wrong: "%prefix%&cFalsche Reihenfolge!Spiel vorbei."
+  error:
+    invalid_type: "%prefix%&cUngültiger Minispieltyp.Verfügbar: REAKTION, ERINNERUNG"
+proximity:
+  near_treasure: "&eDu bist in der Nähe eines Schatzes!"
+  in_place_mode: "&eSie befinden sich derzeit im Place-Modus!"
+hint:
+  no_unfound_nearby: "%prefix%&cKeine unentdeckten Schätze in der Nähe in aktiven Sammlungen!"
+  cooldown: "%prefix%&cSie müssen &e%time% Sekunden &cwarten, bevor Sie einen weiteren Hinweis anfordern."
+  coordinate_x: "%prefix%&aHinweis:"
+  coordinate_z: "%prefix%&aHinweis: Z-Koordinate ist &e%value% &a(&e%distance%m &a%direction%)"
+  success: "%prefix%&aDu hast einen Hinweis verdient!"
+  visual_active: "%prefix%&eVisueller Hinweis aktiviert!"
+  minigame_failed: "%prefix%&cMinispiel fehlgeschlagen.Kein Hinweis für Sie!"

@@ -53,7 +53,7 @@ public class CollectionListMenu extends PagedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        
+
         // Add leaderboard button at slot 8 (top right corner)
         addLeaderboardButton();
 
@@ -69,7 +69,7 @@ public class CollectionListMenu extends PagedMenu {
         // Calculate pagination
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, treasures.size());
-        
+
         this.hasNextPage = endIndex < treasures.size();
 
         for (int i = startIndex; i < endIndex; i++) {
@@ -112,7 +112,7 @@ public class CollectionListMenu extends PagedMenu {
                         updateSlot(slot, updated);
                     }));
         }
-        
+
         // Update index for pagination buttons
         this.index = endIndex - 1;
     }
@@ -124,7 +124,7 @@ public class CollectionListMenu extends PagedMenu {
         if (playerMenuUtility.getOpenInventory().getTopInventory() == null) return false;
         return playerMenuUtility.getOpenInventory().getTopInventory().getHolder() == this;
     }
-    
+
     /**
      * Adds a button to open the leaderboard menu for this collection.
      */
@@ -134,7 +134,7 @@ public class CollectionListMenu extends PagedMenu {
                     .filter(c -> c.getId().equals(collectionId))
                     .findFirst()
                     .orElse(null);
-            
+
             if (collection != null) {
                 Collection finalCollection = collection;
                 Bukkit.getScheduler().runTask(plugin, () -> {
@@ -143,7 +143,7 @@ public class CollectionListMenu extends PagedMenu {
                             .setLore(plugin.getMessageManager().getMessageList("gui.leaderboard.view_button.lore", false))
                             .addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
                             .build();
-                    
+
                     addButton(8, leaderboardButton, e -> {
                         new LeaderboardMenu((Player) e.getWhoClicked(), plugin, finalCollection, this).open();
                     });
@@ -159,7 +159,7 @@ public class CollectionListMenu extends PagedMenu {
         if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
             item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
         }
-        if (item != null && MaterialUtils.isAir(item.getType())) {
+        /*if (item != null && MaterialUtils.isAir(item.getType())) {
             item = null;
         }
         if (item == null) {
@@ -170,7 +170,7 @@ public class CollectionListMenu extends PagedMenu {
             item = XMaterialHelper.getItemStack(xMaterial);
             if (item == null) item = new ItemStack(XMaterial.CHEST.get());
             if (MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
-        }
+        }*/
 
         ItemBuilder builder = new ItemBuilder(item);
 
