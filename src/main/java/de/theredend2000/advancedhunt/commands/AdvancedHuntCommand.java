@@ -112,7 +112,7 @@ public class AdvancedHuntCommand {
         commandManager.command(
             playerBuilder()
                 .literal("collection")
-                .permission("advancedhunt.admin.editor")
+                .permission("advancedhunt.admin.collection.editor")
                 .handler(context -> editor((Player) context.sender()))
         );
 

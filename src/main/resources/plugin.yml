@@ -26,7 +26,7 @@ permissions:
     default: op
     children:
       advancedhunt.admin.reload: true
-      advancedhunt.admin.editor: true
+      advancedhunt.admin.collection.editor: true
       advancedhunt.admin.collection.rename: true
       advancedhunt.admin.collection.create: true
       advancedhunt.admin.place: true
@@ -41,7 +41,7 @@ permissions:
   advancedhunt.admin.reload:
     description: Allows reloading the plugin
     default: op
-  advancedhunt.admin.editor:
+  advancedhunt.admin.collection.editor:
     description: Allows opening the collection editor
     default: op
   advancedhunt.admin.collection.rename:
