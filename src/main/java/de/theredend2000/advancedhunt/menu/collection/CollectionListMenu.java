@@ -159,7 +159,7 @@ public class CollectionListMenu extends PagedMenu {
         if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
             item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
         }
-        /*if (item != null && MaterialUtils.isAir(item.getType())) {
+        if (item != null && MaterialUtils.isAir(item.getType())) {
             item = null;
         }
         if (item == null) {
@@ -170,7 +170,7 @@ public class CollectionListMenu extends PagedMenu {
             item = XMaterialHelper.getItemStack(xMaterial);
             if (item == null) item = new ItemStack(XMaterial.CHEST.get());
             if (MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
-        }*/
+        }
 
         ItemBuilder builder = new ItemBuilder(item);
 
