@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 public class ActFormatParser {
     
     private static final Pattern ACT_PATTERN = Pattern.compile(
-        "\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]"
+            "\\[([^]]+)]\\s+\\[([^]]+)]\\s+\\[([^]]+)]"
     );
     private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([smhd])");
     private static final Pattern DATE_RANGE_PATTERN = Pattern.compile(
