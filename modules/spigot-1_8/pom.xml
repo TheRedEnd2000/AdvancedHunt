@@ -8,6 +8,7 @@
         <groupId>de.theredend2000</groupId>
         <artifactId>advancedhunt-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>advancedhunt-spigot-1_8</artifactId>
