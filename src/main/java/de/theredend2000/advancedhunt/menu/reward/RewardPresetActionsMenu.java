@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
 import de.theredend2000.advancedhunt.model.*;
+import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.MessageUtils;
 import org.bukkit.Bukkit;
@@ -12,10 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 public class RewardPresetActionsMenu extends Menu {
 
@@ -196,7 +194,7 @@ public class RewardPresetActionsMenu extends Menu {
                 "%name%", preset.getName()));
 
         final List<Reward> rewardSnapshot =
-                preset.getRewards() == null ? Collections.emptyList() : List.copyOf(preset.getRewards());
+            preset.getRewards() == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(preset.getRewards()));
 
         plugin.getTreasureManager().overrideTreasureRewardsInCollection(
                 collectionContext.getId(),

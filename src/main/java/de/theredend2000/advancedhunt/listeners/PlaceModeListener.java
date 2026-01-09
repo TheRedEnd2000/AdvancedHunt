@@ -10,6 +10,7 @@ import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.RewardPresetUtils;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -68,7 +69,7 @@ public class PlaceModeListener implements Listener {
         handlePlacedBlock(player, collectionId, block.getLocation(), placedItem);
     }
 
-    private void handlePlacedBlock(Player player, UUID collectionId, org.bukkit.Location location, ItemStack placedItem) {
+    private void handlePlacedBlock(Player player, UUID collectionId, Location location, ItemStack placedItem) {
         if (player == null || collectionId == null || location == null) return;
         if (!placeModeManager.isInPlaceMode(player)) return;
 

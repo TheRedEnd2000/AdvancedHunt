@@ -18,6 +18,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.block.TileState;
 import org.bukkit.command.CommandSender;
@@ -48,7 +49,40 @@ public class AdvancedHuntCommand {
 
     private static final String DEBUG_PLACED_MARKER = "AH_DEBUG_PLACED";
 
-    private record PaletteEntry(Material type, PlayerProfile ownerProfile, String materialName, String blockState, String nbtData) {
+    private static final class PaletteEntry {
+        private final Material type;
+        private final PlayerProfile ownerProfile;
+        private final String materialName;
+        private final String blockState;
+        private final String nbtData;
+
+        private PaletteEntry(Material type, PlayerProfile ownerProfile, String materialName, String blockState, String nbtData) {
+            this.type = type;
+            this.ownerProfile = ownerProfile;
+            this.materialName = materialName;
+            this.blockState = blockState;
+            this.nbtData = nbtData;
+        }
+
+        private Material type() {
+            return type;
+        }
+
+        private PlayerProfile ownerProfile() {
+            return ownerProfile;
+        }
+
+        private String materialName() {
+            return materialName;
+        }
+
+        private String blockState() {
+            return blockState;
+        }
+
+        private String nbtData() {
+            return nbtData;
+        }
     }
 
     private final Main plugin;
@@ -337,7 +371,7 @@ public class AdvancedHuntCommand {
 
         // ==================== Migration Commands ====================
         SuggestionProvider<CommandSender> migrationTypes = (context, input) ->
-                CompletableFuture.completedFuture(List.of("yaml", "sqlite", "mysql").stream()
+            CompletableFuture.completedFuture(Arrays.asList("yaml", "sqlite", "mysql").stream()
                         .map(Suggestion::suggestion).collect(Collectors.toList()));
 
         commandManager.command(
@@ -374,9 +408,12 @@ public class AdvancedHuntCommand {
     }
 
     private void withCollection(CommandSender sender, String collectionName, Consumer<Collection> action) {
-        plugin.getCollectionManager().getCollectionByName(collectionName)
-                .ifPresentOrElse(action,
-                        () -> sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found")));
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+        if (collectionOpt.isPresent()) {
+            action.accept(collectionOpt.get());
+        } else {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
+        }
     }
 
     private void invalidateAllPlayerCaches() {
@@ -549,13 +586,15 @@ public class AdvancedHuntCommand {
             return;
         }
 
-        plugin.getCollectionManager().getCollectionByName(collectionName).ifPresentOrElse(collection -> {
+        Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
+        if (collectionOpt.isPresent()) {
+            Collection collection = collectionOpt.get();
             plugin.getPlaceModeManager().setPlaceMode(player, collection);
             player.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.enabled", "%collection%", collection.getName()));
             player.sendMessage(plugin.getMessageManager().getMessage("command.place_mode.use_command"));
-        }, () -> {
+        } else {
             player.sendMessage(plugin.getMessageManager().getMessage("command.collection_not_found"));
-        });
+        }
     }
 
     public void resetAll(CommandSender sender) {
@@ -580,8 +619,8 @@ public class AdvancedHuntCommand {
     }
 
     public void resetPlayer(CommandSender sender, String playerName) {
-        var offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
-        if (offlinePlayerOpt.isEmpty()) return;
+        Optional<OfflinePlayer> offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
+        if (!offlinePlayerOpt.isPresent()) return;
         OfflinePlayer offlinePlayer = offlinePlayerOpt.get();
 
         plugin.getDataRepository().resetPlayerProgress(offlinePlayer.getUniqueId()).thenAccept(count -> {
@@ -597,8 +636,8 @@ public class AdvancedHuntCommand {
     public void resetPlayerCollection(CommandSender sender,
                                       String playerName,
                                       String collectionName) {
-        var offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
-        if (offlinePlayerOpt.isEmpty()) return;
+        Optional<OfflinePlayer> offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
+        if (!offlinePlayerOpt.isPresent()) return;
         OfflinePlayer offlinePlayer = offlinePlayerOpt.get();
 
         withCollection(sender, collectionName, collection ->
@@ -656,7 +695,7 @@ public class AdvancedHuntCommand {
         Optional<TreasureCore> treasureOpt =
                 plugin.getHintManager().findRandomUnfoundTreasure(player);
         
-        if (treasureOpt.isEmpty()) {
+        if (!treasureOpt.isPresent()) {
             player.sendMessage(plugin.getMessageManager().getMessage("hint.no_unfound_nearby"));
             // Apply failure cooldown if configured
             plugin.getHintManager().applyFailureCooldown(player);
@@ -703,7 +742,7 @@ public class AdvancedHuntCommand {
         // Find a random unfound treasure in range
         Optional<TreasureCore> treasureOpt = plugin.getHintManager().findRandomUnfoundTreasure(player);
         
-        if (treasureOpt.isEmpty()) {
+        if (!treasureOpt.isPresent()) {
             sendDebugChat(player, "&c[DEBUG] No unfound treasures nearby in active collections!");
             return;
         }
@@ -738,7 +777,7 @@ public class AdvancedHuntCommand {
         }
 
         Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
-        if (collectionOpt.isEmpty()) {
+        if (!collectionOpt.isPresent()) {
             sendDebugChat(player, "&c[DEBUG] Unknown collection: &f" + collectionName);
             return;
         }
@@ -758,7 +797,9 @@ public class AdvancedHuntCommand {
         Optional.ofNullable(collection.getDefaultTreasureRewardPresetId())
                 .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
                 .ifPresent(preset -> defaultRewards.addAll(preset.getRewards()));
-        final List<Reward> sharedRewards = defaultRewards.isEmpty() ? Collections.emptyList() : List.copyOf(defaultRewards);
+        final List<Reward> sharedRewards = defaultRewards.isEmpty()
+            ? Collections.emptyList()
+            : Collections.unmodifiableList(new ArrayList<>(defaultRewards));
 
         final int batchSize = 250; // tuned to avoid long single-tick stalls
         final int maxAttemptsPerTick = Math.max(batchSize * 30, 500);
@@ -847,17 +888,25 @@ public class AdvancedHuntCommand {
                     PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
                     block.setType(chosen.type(), false);
 
-                    if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
-                        try {
-                            skullState.setOwnerProfile(chosen.ownerProfile());
-                        } catch (Throwable ignored) {
+                    if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null) {
+                        BlockState state = block.getState();
+                        if (state instanceof Skull) {
+                            Skull skullState = (Skull) state;
+                            try {
+                                skullState.setOwnerProfile(chosen.ownerProfile());
+                            } catch (Throwable ignored) {
+                            }
+                            skullState.update(true, false);
                         }
-                        skullState.update(true, false);
                     }
 
-                    if (block.getState() instanceof TileState tileState) {
-                        tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
-                        tileState.update(true, false);
+                    {
+                        BlockState state = block.getState();
+                        if (state instanceof TileState) {
+                            TileState tileState = (TileState) state;
+                            tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
+                            tileState.update(true, false);
+                        }
                     }
 
                     Treasure treasure = new Treasure(
@@ -925,7 +974,7 @@ public class AdvancedHuntCommand {
         }
 
         Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
-        if (collectionOpt.isEmpty()) {
+        if (!collectionOpt.isPresent()) {
             sendDebugChat(player, "&c[DEBUG] Unknown collection: &f" + collectionName);
             return;
         }
@@ -937,7 +986,9 @@ public class AdvancedHuntCommand {
         Optional.ofNullable(collection.getDefaultTreasureRewardPresetId())
                 .flatMap(defaultPresetId -> plugin.getRewardPresetManager().getPreset(RewardPresetType.TREASURE, defaultPresetId))
                 .ifPresent(preset -> defaultRewards.addAll(preset.getRewards()));
-        final List<Reward> sharedRewards = defaultRewards.isEmpty() ? Collections.emptyList() : List.copyOf(defaultRewards);
+        final List<Reward> sharedRewards = defaultRewards.isEmpty()
+            ? Collections.<Reward>emptyList()
+            : Collections.unmodifiableList(new ArrayList<>(defaultRewards));
 
         final NamespacedKey debugPlacedKey = new NamespacedKey(plugin, "debug_placed");
         final Random random = new Random();
@@ -1015,17 +1066,25 @@ public class AdvancedHuntCommand {
                         PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
                         block.setType(chosen.type(), false);
 
-                        if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null && block.getState() instanceof Skull skullState) {
-                            try {
-                                skullState.setOwnerProfile(chosen.ownerProfile());
-                            } catch (Throwable ignored) {
+                        if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null) {
+                            BlockState state = block.getState();
+                            if (state instanceof Skull) {
+                                Skull skullState = (Skull) state;
+                                try {
+                                    skullState.setOwnerProfile(chosen.ownerProfile());
+                                } catch (Throwable ignored) {
+                                }
+                                skullState.update(true, false);
                             }
-                            skullState.update(true, false);
                         }
 
-                        if (block.getState() instanceof TileState tileState) {
-                            tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
-                            tileState.update(true, false);
+                        {
+                            BlockState state = block.getState();
+                            if (state instanceof TileState) {
+                                TileState tileState = (TileState) state;
+                                tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
+                                tileState.update(true, false);
+                            }
                         }
 
                         Treasure treasure = new Treasure(
@@ -1110,7 +1169,8 @@ public class AdvancedHuntCommand {
             PlayerProfile ownerProfile = null;
             if (type == XMaterial.PLAYER_HEAD.get()) {
                 ItemMeta meta = item.getItemMeta();
-                if (meta instanceof SkullMeta skullMeta) {
+                if (meta instanceof SkullMeta) {
+                    SkullMeta skullMeta = (SkullMeta) meta;
                     try {
                         ownerProfile = skullMeta.getOwnerProfile();
                     } catch (Throwable ignored) {
@@ -1144,7 +1204,7 @@ public class AdvancedHuntCommand {
 
     private void debugRemoveCollectionPlaced(Player player, String collectionName) {
         Optional<Collection> collectionOpt = plugin.getCollectionManager().getCollectionByName(collectionName);
-        if (collectionOpt.isEmpty()) {
+        if (!collectionOpt.isPresent()) {
             sendDebugChat(player, "&c[DEBUG] Unknown collection: &f" + collectionName);
             return;
         }
@@ -1313,7 +1373,9 @@ public class AdvancedHuntCommand {
                         "%treasures%", String.valueOf(existingTreasures),
                         "%players%", String.valueOf(existingPlayerData)));
                 targetRepo.shutdown();
-                return CompletableFuture.failedFuture(new IllegalStateException("Migration aborted - existing data"));
+                CompletableFuture<Void> failed = new CompletableFuture<>();
+                failed.completeExceptionally(new IllegalStateException("Migration aborted - existing data"));
+                return failed;
             }
 
             if (hasExistingData) {
@@ -1337,7 +1399,8 @@ public class AdvancedHuntCommand {
                 final AtomicReference<MigrationService.MigrationProgress> lastProgress = new AtomicReference<>(new MigrationService.MigrationProgress(0, "loading", 0, 0));
 
                 final BukkitRunnable heartbeat;
-                if (sender instanceof Player player) {
+                if (sender instanceof Player) {
+                    final Player player = (Player) sender;
                     heartbeat = new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -1345,7 +1408,7 @@ public class AdvancedHuntCommand {
                             if (now - lastUpdateMs.get() < 4000L) {
                                 return;
                             }
-                            var p = lastProgress.get();
+                            MigrationService.MigrationProgress p = lastProgress.get();
                             sendActionBar(player, plugin.getMessageManager().getMessage(
                                     "command.migration.progress_actionbar",
                                     false,
@@ -1387,7 +1450,8 @@ public class AdvancedHuntCommand {
                     lastUpdateMs.set(now);
 
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (sender instanceof Player player) {
+                        if (sender instanceof Player) {
+                            Player player = (Player) sender;
                             sendActionBar(player, plugin.getMessageManager().getMessage(
                                     "command.migration.progress_actionbar",
                                     false,
@@ -1423,7 +1487,8 @@ public class AdvancedHuntCommand {
 
             sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.success"));
 
-            if (sender instanceof Player player) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
                 sendActionBar(player, "");
             }
 
@@ -1441,7 +1506,8 @@ public class AdvancedHuntCommand {
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.failed"));
                 e.printStackTrace();
             }
-            if (sender instanceof Player player) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
                 Bukkit.getScheduler().runTask(plugin, () -> sendActionBar(player, ""));
             }
             targetRepo.shutdown();

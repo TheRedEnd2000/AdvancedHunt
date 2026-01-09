@@ -12,7 +12,7 @@
     <name>advancedhunt</name>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -174,13 +174,13 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>7.0.2</version>
+            <version>5.0.1</version>
         </dependency>
         <!-- Caching -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.2.3</version>
+            <version>2.9.3</version>
         </dependency>
         <!-- Cross-Version Compatibility -->
         <dependency>

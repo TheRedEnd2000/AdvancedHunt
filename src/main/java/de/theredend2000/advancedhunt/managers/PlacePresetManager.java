@@ -25,7 +25,7 @@ public class PlacePresetManager {
     public CompletableFuture<Void> reloadPresets() {
         CompletableFuture<List<PlacePreset>> presetsFuture = repository.loadPlacePresets();
         CompletableFuture<Set<String>> groupsFuture = repository.loadPlacePresetGroups()
-                .exceptionally(ex -> Set.of());
+            .exceptionally(ex -> Collections.emptySet());
 
         return presetsFuture.thenCombine(groupsFuture, (list, persistedGroups) -> {
             presets.clear();
@@ -63,7 +63,7 @@ public class PlacePresetManager {
     public List<String> getGroups() {
         TreeSet<String> groups = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String group : this.groups.values()) {
-            if (group != null && !group.isBlank()) {
+            if (group != null && !group.trim().isEmpty()) {
                 groups.add(group);
             }
         }
@@ -71,12 +71,12 @@ public class PlacePresetManager {
     }
 
     public boolean hasGroup(String group) {
-        if (group == null || group.isBlank()) return false;
+        if (group == null || group.trim().isEmpty()) return false;
         return groups.containsKey(normalize(group));
     }
 
     public CompletableFuture<Boolean> createGroup(String group) {
-        if (group == null || group.isBlank()) {
+        if (group == null || group.trim().isEmpty()) {
             return CompletableFuture.completedFuture(false);
         }
         String trimmed = group.trim();
@@ -94,7 +94,7 @@ public class PlacePresetManager {
     }
 
     public CompletableFuture<Boolean> renameGroup(String oldGroup, String newGroup) {
-        if (oldGroup == null || oldGroup.isBlank() || newGroup == null || newGroup.isBlank()) {
+        if (oldGroup == null || oldGroup.trim().isEmpty() || newGroup == null || newGroup.trim().isEmpty()) {
             return CompletableFuture.completedFuture(false);
         }
 
@@ -136,7 +136,7 @@ public class PlacePresetManager {
     }
 
     public CompletableFuture<Boolean> deleteGroup(String group) {
-        if (group == null || group.isBlank()) {
+        if (group == null || group.trim().isEmpty()) {
             return CompletableFuture.completedFuture(false);
         }
 
@@ -163,7 +163,7 @@ public class PlacePresetManager {
 
     public List<PlacePreset> getPresetsInGroup(String group) {
         if (group == null) {
-            return List.of();
+            return Collections.emptyList();
         }
         List<PlacePreset> list = new ArrayList<>();
         for (PlacePreset preset : presets.values()) {
@@ -189,7 +189,7 @@ public class PlacePresetManager {
     }
 
     public CompletableFuture<Boolean> createPreset(String group, String name, String itemData) {
-        if (group == null || group.isBlank() || name == null || name.isBlank() || itemData == null || itemData.isBlank()) {
+        if (group == null || group.trim().isEmpty() || name == null || name.trim().isEmpty() || itemData == null || itemData.trim().isEmpty()) {
             return CompletableFuture.completedFuture(false);
         }
         if (hasPresetNameInGroup(group, name)) {
@@ -225,7 +225,7 @@ public class PlacePresetManager {
     }
 
     private void addGroup(String group) {
-        if (group == null || group.isBlank()) {
+        if (group == null || group.trim().isEmpty()) {
             return;
         }
         String trimmed = group.trim();

@@ -101,7 +101,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
         if (params.startsWith("max_treasures_")) {
             String collectionName = params.substring("max_treasures_".length());
             Optional<Collection> collectionOpt = collectionManager.getCollectionByName(collectionName);
-            if (collectionOpt.isEmpty()) return "0";
+            if (!collectionOpt.isPresent()) return "0";
             return String.valueOf(treasureManager.getTreasureCoresInCollection(collectionOpt.get().getId()).size());
         }
 
@@ -109,7 +109,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
         if (params.startsWith("found_treasures_")) {
             String collectionName = params.substring("found_treasures_".length());
             Optional<Collection> collectionOpt = collectionManager.getCollectionByName(collectionName);
-            if (collectionOpt.isEmpty()) return "0";
+            if (!collectionOpt.isPresent()) return "0";
 
             UUID collectionId = collectionOpt.get().getId();
             return String.valueOf(treasureManager.countFoundInCollection(data.getFoundTreasures(), collectionId));
@@ -122,7 +122,7 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             Optional<Collection> collectionOpt =
                 collectionManager.getCollectionByName(collectionName);
                 
-            if (collectionOpt.isEmpty()) return "0";
+            if (!collectionOpt.isPresent()) return "0";
 
             UUID collectionId = collectionOpt.get().getId();
             List<TreasureCore> allCores = treasureManager.getTreasureCoresInCollection(collectionId);

@@ -392,7 +392,7 @@ public class SqlRepository implements DataRepository {
                 // Load found treasures
                 try (PreparedStatement ps = conn.prepareStatement("SELECT treasure_id FROM ah_player_found WHERE player_uuid = ?")) {
                     ps.setString(1, playerUuid.toString());
-                    var rs = ps.executeQuery();
+                    ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
                         data.addFoundTreasure(UUID.fromString(rs.getString("treasure_id")));
                     }
@@ -496,7 +496,7 @@ public class SqlRepository implements DataRepository {
             List<Treasure> treasures = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_treasures")) {
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     UUID id = UUID.fromString(rs.getString("id"));
                     UUID collectionId = UUID.fromString(rs.getString("collection_id"));
@@ -527,7 +527,7 @@ public class SqlRepository implements DataRepository {
             List<TreasureCore> cores = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT id, collection_id, world, x, y, z, material, block_state FROM ah_treasures")) {
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     UUID id = UUID.fromString(rs.getString("id"));
                     UUID collectionId = UUID.fromString(rs.getString("collection_id"));
@@ -553,7 +553,7 @@ public class SqlRepository implements DataRepository {
             List<UUID> ids = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT id FROM ah_treasures")) {
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     try {
                         ids.add(UUID.fromString(rs.getString("id")));
@@ -664,7 +664,7 @@ public class SqlRepository implements DataRepository {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_treasures WHERE id = ?")) {
                 ps.setString(1, treasureId.toString());
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     UUID id = UUID.fromString(rs.getString("id"));
                     UUID collectionId = UUID.fromString(rs.getString("collection_id"));
@@ -748,7 +748,7 @@ public class SqlRepository implements DataRepository {
             List<Collection> collections = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_collections")) {
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     UUID id = UUID.fromString(rs.getString("id"));
                     String name = rs.getString("name");
@@ -758,7 +758,7 @@ public class SqlRepository implements DataRepository {
                     c.setSinglePlayerFind(rs.getBoolean("single_player_find"));
 
                     String defaultPreset = rs.getString("default_treasure_reward_preset_id");
-                    if (defaultPreset != null && !defaultPreset.isBlank()) {
+                    if (defaultPreset != null && !defaultPreset.trim().isEmpty()) {
                         try {
                             c.setDefaultTreasureRewardPresetId(UUID.fromString(defaultPreset));
                         } catch (IllegalArgumentException ignored) {
@@ -976,7 +976,7 @@ public class SqlRepository implements DataRepository {
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     String group = rs.getString("grp");
-                    if (group != null && !group.isBlank()) {
+                    if (group != null && !group.trim().isEmpty()) {
                         groups.add(group.trim());
                     }
                 }
@@ -990,7 +990,7 @@ public class SqlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> createPlacePresetGroup(String group) {
         return runAsync(() -> {
-            if (group == null || group.isBlank()) {
+            if (group == null || group.trim().isEmpty()) {
                 return;
             }
             String sql = useSqlite
@@ -1010,7 +1010,7 @@ public class SqlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup) {
         return runAsync(() -> {
-            if (oldGroup == null || oldGroup.isBlank() || newGroup == null || newGroup.isBlank()) {
+            if (oldGroup == null || oldGroup.trim().isEmpty() || newGroup == null || newGroup.trim().isEmpty()) {
                 return;
             }
             String oldTrimmed = oldGroup.trim();
@@ -1065,7 +1065,7 @@ public class SqlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> deletePlacePresetGroup(String group) {
         return runAsync(() -> {
-            if (group == null || group.isBlank()) {
+            if (group == null || group.trim().isEmpty()) {
                 return;
             }
             try (Connection conn = dataSource.getConnection();
@@ -1126,7 +1126,7 @@ public class SqlRepository implements DataRepository {
             List<PlayerData> allData = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT player_uuid, treasure_id FROM ah_player_found")) {
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 Map<UUID, PlayerData> map = new HashMap<>();
                 while (rs.next()) {
                     UUID uuid = UUID.fromString(rs.getString("player_uuid"));
@@ -1227,7 +1227,7 @@ public class SqlRepository implements DataRepository {
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, collectionId.toString());
                 ps.setInt(2, limit);
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     leaderboard.put(UUID.fromString(rs.getString("player_uuid")), rs.getInt("count"));
                 }
@@ -1245,7 +1245,7 @@ public class SqlRepository implements DataRepository {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT player_uuid FROM ah_player_found WHERE treasure_id = ?")) {
                 ps.setString(1, treasureId.toString());
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     players.add(UUID.fromString(rs.getString("player_uuid")));
                 }
@@ -1262,7 +1262,7 @@ public class SqlRepository implements DataRepository {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS cnt FROM ah_player_found WHERE treasure_id = ?")) {
                 ps.setString(1, treasureId.toString());
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     return rs.getInt("cnt");
                 }
@@ -1284,7 +1284,7 @@ public class SqlRepository implements DataRepository {
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, playerUuid.toString());
                 ps.setString(2, collectionId.toString());
-                var rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     treasures.add(UUID.fromString(rs.getString("treasure_id")));
                 }

@@ -13,7 +13,6 @@ import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
-import de.theredend2000.advancedhunt.util.XMaterialHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -217,9 +216,41 @@ public class CollectionListMenu extends PagedMenu {
         return builder.build();
     }
 
-    private record SkullInfo(String texture, String ownerName) {}
+    private static final class SkullInfo {
+        private final String texture;
+        private final String ownerName;
 
-    private record TreasureItemData(int foundCount, SkullInfo skullInfo) {}
+        private SkullInfo(String texture, String ownerName) {
+            this.texture = texture;
+            this.ownerName = ownerName;
+        }
+
+        private String texture() {
+            return texture;
+        }
+
+        private String ownerName() {
+            return ownerName;
+        }
+    }
+
+    private static final class TreasureItemData {
+        private final int foundCount;
+        private final SkullInfo skullInfo;
+
+        private TreasureItemData(int foundCount, SkullInfo skullInfo) {
+            this.foundCount = foundCount;
+            this.skullInfo = skullInfo;
+        }
+
+        private int foundCount() {
+            return foundCount;
+        }
+
+        private SkullInfo skullInfo() {
+            return skullInfo;
+        }
+    }
 
     /**
      * Handles clicks on treasure items with support for left/ right-click actions

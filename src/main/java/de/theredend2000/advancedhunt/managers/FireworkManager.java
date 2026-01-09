@@ -2,7 +2,6 @@ package de.theredend2000.advancedhunt.managers;
 
 import com.cryptomorin.xseries.XEntityType;
 import de.theredend2000.advancedhunt.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -89,7 +88,7 @@ public class FireworkManager {
         ConfigurationSection colorSec = plugin.getConfig().getConfigurationSection(path);
 
         if (colorSec == null) {
-            return List.of(Color.WHITE);
+            return Collections.singletonList(Color.WHITE);
         }
 
         List<String> colorNames = colorSec.getStringList("list");
@@ -110,7 +109,7 @@ public class FireworkManager {
         }
 
         // return random color
-        return List.of(colors.get(random.nextInt(colors.size())));
+        return Collections.singletonList(colors.get(random.nextInt(colors.size())));
     }
 
     public List<UUID> getFireworkUUIDs() {

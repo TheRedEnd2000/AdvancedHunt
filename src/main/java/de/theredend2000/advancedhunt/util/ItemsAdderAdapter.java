@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 public class ItemsAdderAdapter {
 
@@ -22,7 +23,7 @@ public class ItemsAdderAdapter {
             }
             try {
                 // Avoid loading any ItemsAdder API types unless the plugin exists AND is enabled.
-                var itemsAdderPlugin = Bukkit.getPluginManager().getPlugin("ItemsAdder");
+                Plugin itemsAdderPlugin = Bukkit.getPluginManager().getPlugin("ItemsAdder");
                 if (itemsAdderPlugin == null || !itemsAdderPlugin.isEnabled()) {
                     return null;
                 }

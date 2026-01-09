@@ -1,12 +1,11 @@
 package de.theredend2000.advancedhunt.data;
 
 import de.theredend2000.advancedhunt.model.*;
+import de.theredend2000.advancedhunt.model.Collection;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public interface DataRepository {
 
@@ -54,9 +53,9 @@ public interface DataRepository {
     default CompletableFuture<List<UUID>> getAllTreasureUUIDs() {
         return loadTreasureCores().thenApply(cores -> {
             if (cores == null || cores.isEmpty()) {
-                return List.of();
+                return Collections.emptyList();
             }
-            return cores.stream().map(TreasureCore::getId).toList();
+            return cores.stream().map(TreasureCore::getId).collect(Collectors.toList());
         });
     }
 

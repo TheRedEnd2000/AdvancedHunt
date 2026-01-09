@@ -78,7 +78,7 @@ public class ActRule {
     }
 
     public void setCronExpression(String cronExpression) {
-        if (cronExpression == null || cronExpression.isBlank()) {
+        if (cronExpression == null || cronExpression.trim().isEmpty()) {
             this.cronExpression = "NONE";
             return;
         }

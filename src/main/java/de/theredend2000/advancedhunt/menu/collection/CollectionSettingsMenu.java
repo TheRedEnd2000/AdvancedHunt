@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -274,7 +275,7 @@ public class CollectionSettingsMenu extends Menu {
                 "%name%", preset.getName()));
 
         final List<Reward> rewardSnapshot =
-                preset.getRewards() == null ? Collections.emptyList() : List.copyOf(preset.getRewards());
+            preset.getRewards() == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(preset.getRewards()));
 
         plugin.getTreasureManager().overrideTreasureRewardsInCollection(
                 collection.getId(),

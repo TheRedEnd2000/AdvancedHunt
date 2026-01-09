@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 
 public class PlacePresetListMenu extends PagedMenu {
 
@@ -108,7 +109,7 @@ public class PlacePresetListMenu extends PagedMenu {
         String base = "Preset";
         if (item != null && item.hasItemMeta() && item.getItemMeta() != null && item.getItemMeta().hasDisplayName()) {
             String display = ChatColor.stripColor(item.getItemMeta().getDisplayName());
-            if (display != null && !display.isBlank()) {
+            if (display != null && !display.trim().isEmpty()) {
                 base = display.trim();
             }
         } else if (item != null && item.getType() != null) {
@@ -138,7 +139,7 @@ public class PlacePresetListMenu extends PagedMenu {
 
         ItemStack toGive = item.clone();
         toGive.setAmount(1);
-        var leftovers = playerMenuUtility.getInventory().addItem(toGive);
+        Map<Integer, ItemStack> leftovers = playerMenuUtility.getInventory().addItem(toGive);
         for (ItemStack leftover : leftovers.values()) {
             playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), leftover);
         }

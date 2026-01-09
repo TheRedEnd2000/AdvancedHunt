@@ -70,7 +70,7 @@ public class HeadHelper {
         if (profile.hasTag("properties")) {
             // Try as a list directly (1.20.5+ component format sometimes)
              try {
-                 var list = profile.getCompoundList("properties");
+                 ReadWriteNBTCompoundList list = profile.getCompoundList("properties");
                  for (ReadWriteNBT entry : list) {
                      if (entry.hasTag("name") && "textures".equals(entry.getString("name"))) {
                          return entry.getString("value");
