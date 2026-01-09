@@ -138,27 +138,19 @@ public class LeaderboardMenu extends PagedMenu {
                     
                     // Find player's rank
                     calculatePlayerRank();
-                    
-                    this.isLoading = false;
-                    
+
                     // Refresh menu on the main thread
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (inventory != null && playerMenuUtility.getOpenInventory().getTopInventory().equals(inventory)) {
-                            refresh();
-                        }
-                    });
                 } else {
                     this.totalTreasures = 0;
                     this.playerScore = 0;
                     this.playerRank = -1;
-                    this.isLoading = false;
-                    
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (inventory != null && playerMenuUtility.getOpenInventory().getTopInventory().equals(inventory)) {
-                            refresh();
-                        }
-                    });
                 }
+                this.isLoading = false;
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (inventory != null && playerMenuUtility.getOpenInventory().getTopInventory().equals(inventory)) {
+                        refresh();
+                    }
+                });
             });
         });
     }
