@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.theredend2000</groupId>
+        <artifactId>advancedhunt-parent</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>advancedhunt</artifactId>
+    <packaging>jar</packaging>
+    <name>advancedhunt</name>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <defaultGoal>clean package</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>false</minimizeJar>
+                            <filters>
+                                <!-- Prevent removal of classes accessed via reflection or dynamically -->
+                                <filter>
+                                    <artifact>com.cronutils:cron-utils</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.github.ben-manes.caffeine:caffeine</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <!-- Adventure Filter -->
+                                <filter>
+                                    <artifact>net.kyori:*</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <!-- Exclude signature files -->
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <relocations>
+                                <!-- Adventure MUSS VOR Cloud kommen! -->
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.kyori</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.incendo.cloud</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.cloud</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.github.benmanes.caffeine</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.caffeine</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.cryptomorin.xseries</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.xseries</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.cronutils</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.cronutils</shadedPattern>
+                                </relocation>
+                                <!-- bStats MUSS relocatet werden! -->
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>de.theredend2000.advancedhunt.lib.bstats</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${spigot.version.modern}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-platform-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-spigot-1_8</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-spigot-1_9plus</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-spigot-1_13plus</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-spigot-1_14plus</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-spigot-1_15plus</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-spigot-1_20_5plus</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Cloud Command Framework -->
+        <dependency>
+            <groupId>org.incendo</groupId>
+            <artifactId>cloud-paper</artifactId>
+            <version>2.0.0-beta.14</version>
+        </dependency>
+        <!-- cloud-minecraft-extras Help -->
+        <dependency>
+            <groupId>org.incendo</groupId>
+            <artifactId>cloud-minecraft-extras</artifactId>
+            <version>2.0.0-beta.10</version>
+            <exclusions>
+                <!-- Exclude Adventure von cloud-minecraft-extras um Konflikte zu vermeiden -->
+                <exclusion>
+                    <groupId>net.kyori</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Adventure API -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.17.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Adventure Platform Bukkit -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.3.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Adventure Text Serializer Legacy -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-legacy</artifactId>
+            <version>4.17.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Adventure Text Serializer Plain -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-plain</artifactId>
+            <version>4.17.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Database -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.0.1</version>
+        </dependency>
+        <!-- Caching -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.9.3</version>
+        </dependency>
+        <!-- Cross-Version Compatibility -->
+        <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>13.6.0</version>
+        </dependency>
+        <!-- NBT API -->
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api-plugin</artifactId>
+            <version>2.15.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Cron Utils -->
+        <dependency>
+            <groupId>com.cronutils</groupId>
+            <artifactId>cron-utils</artifactId>
+            <version>9.2.1</version>
+        </dependency>
+        <!-- PlaceholderAPI -->
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JetBrains Annotations -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>26.0.2-1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- PacketEvents -->
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>2.10.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- bStats -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- ItemsAdder -->
+        <dependency>
+            <groupId>dev.lone</groupId>
+            <artifactId>api-itemsadder</artifactId>
+            <version>4.0.10</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
