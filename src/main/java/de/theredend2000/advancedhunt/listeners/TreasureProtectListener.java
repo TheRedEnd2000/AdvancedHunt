@@ -12,7 +12,6 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class TreasureProtectListener implements Listener {
@@ -54,13 +53,7 @@ public class TreasureProtectListener implements Listener {
     }
 
     private void handleExplosion(List<Block> blocks) {
-        Iterator<Block> iterator = blocks.iterator();
-        while (iterator.hasNext()) {
-            Block block = iterator.next();
-            if (treasureManager.getTreasureCoreAt(block.getLocation()) != null) {
-                iterator.remove();
-            }
-        }
+        blocks.removeIf(block -> treasureManager.getTreasureCoreAt(block.getLocation()) != null);
     }
 
     @EventHandler

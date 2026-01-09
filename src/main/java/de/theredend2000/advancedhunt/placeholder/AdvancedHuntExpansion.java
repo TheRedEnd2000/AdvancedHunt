@@ -101,18 +101,14 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
         if (params.startsWith("max_treasures_")) {
             String collectionName = params.substring("max_treasures_".length());
             Optional<Collection> collectionOpt = collectionManager.getCollectionByName(collectionName);
-            if (!collectionOpt.isPresent()) return "0";
-            return String.valueOf(treasureManager.getTreasureCoresInCollection(collectionOpt.get().getId()).size());
+            return collectionOpt.map(collection -> String.valueOf(treasureManager.getTreasureCoresInCollection(collection.getId()).size())).orElse("0");
         }
 
         // %advancedhunt_found_treasures_<collection>%
         if (params.startsWith("found_treasures_")) {
             String collectionName = params.substring("found_treasures_".length());
             Optional<Collection> collectionOpt = collectionManager.getCollectionByName(collectionName);
-            if (!collectionOpt.isPresent()) return "0";
-
-            UUID collectionId = collectionOpt.get().getId();
-            return String.valueOf(treasureManager.countFoundInCollection(data.getFoundTreasures(), collectionId));
+            return collectionOpt.map(collection -> String.valueOf(treasureManager.countFoundInCollection(data.getFoundTreasures(), collection.getId()))).orElse("0");
         }
 
         // %advancedhunt_remaining_count_<collection>% OR %advancedhunt_remaining_treasures_<collection>%
