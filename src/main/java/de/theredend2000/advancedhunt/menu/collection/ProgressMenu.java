@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.menu.collection;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
+import de.theredend2000.advancedhunt.menu.common.SkullInfo;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.HeadHelper;
@@ -252,24 +253,6 @@ public class ProgressMenu extends PagedMenu {
         builder.setLore(lore);
 
         return builder.build();
-    }
-
-    private static final class SkullInfo {
-        private final String texture;
-        private final String ownerName;
-
-        private SkullInfo(String texture, String ownerName) {
-            this.texture = texture;
-            this.ownerName = ownerName;
-        }
-
-        private String texture() {
-            return texture;
-        }
-
-        private String ownerName() {
-            return ownerName;
-        }
     }
 
     private void handleTreasureClick(InventoryClickEvent e, TreasureCore treasureCore, boolean isFound) {
