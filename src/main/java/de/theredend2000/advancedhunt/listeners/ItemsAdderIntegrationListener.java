@@ -1,7 +1,9 @@
 package de.theredend2000.advancedhunt.listeners;
 
 import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.managers.*;
+import de.theredend2000.advancedhunt.managers.PlaceModeManager;
+import de.theredend2000.advancedhunt.managers.TreasureInteractionHandler;
+import de.theredend2000.advancedhunt.managers.TreasureManager;
 import de.theredend2000.advancedhunt.model.Reward;
 import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
@@ -25,18 +27,12 @@ public class ItemsAdderIntegrationListener implements Listener {
 
     private final Main plugin;
     private final TreasureManager treasureManager;
-    private final PlayerManager playerManager;
-    private final CollectionManager collectionManager;
-    private final RewardManager rewardManager;
     private final PlaceModeManager placeModeManager;
     private final TreasureInteractionHandler treasureInteractionHandler;
 
     public ItemsAdderIntegrationListener(Main plugin) {
         this.plugin = plugin;
         this.treasureManager = plugin.getTreasureManager();
-        this.playerManager = plugin.getPlayerManager();
-        this.collectionManager = plugin.getCollectionManager();
-        this.rewardManager = plugin.getRewardManager();
         this.placeModeManager = plugin.getPlaceModeManager();
         this.treasureInteractionHandler = new TreasureInteractionHandler(plugin);
     }

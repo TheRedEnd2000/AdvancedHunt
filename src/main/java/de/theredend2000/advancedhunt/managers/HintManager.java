@@ -26,7 +26,6 @@ public class HintManager {
     private final CollectionManager collectionManager;
     private final PlayerManager playerManager;
     private final MessageManager messageManager;
-    private final ParticleManager particleManager;
 
     // Cooldown tracking: playerId -> last hint timestamp
     private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
@@ -85,7 +84,6 @@ public class HintManager {
         this.collectionManager = collectionManager;
         this.playerManager = playerManager;
         this.messageManager = messageManager;
-        this.particleManager = particleManager;
         reloadConfig();
         
         // Periodic cleanup of expired cooldowns (every 5 minutes)
