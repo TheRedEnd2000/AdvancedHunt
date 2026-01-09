@@ -136,7 +136,6 @@ public class CollectionListMenu extends PagedMenu {
                     .orElse(null);
 
             if (collection != null) {
-                Collection finalCollection = collection;
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     ItemStack leaderboardButton = new ItemBuilder(XMaterial.GOLDEN_HELMET)
                             .setDisplayName(plugin.getMessageManager().getMessage("gui.leaderboard.view_button.name", false))
@@ -145,7 +144,7 @@ public class CollectionListMenu extends PagedMenu {
                             .build();
 
                     addButton(8, leaderboardButton, e -> {
-                        new LeaderboardMenu((Player) e.getWhoClicked(), plugin, finalCollection, this).open();
+                        new LeaderboardMenu((Player) e.getWhoClicked(), plugin, collection, this).open();
                     });
                 });
             }

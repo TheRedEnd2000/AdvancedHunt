@@ -144,9 +144,8 @@ public class MigrationService {
         CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
 
         for (int i = 0; i < collections.size(); i += batchSize) {
-            int start = i;
             int end = Math.min(i + batchSize, collections.size());
-            List<Collection> batch = collections.subList(start, end);
+            List<Collection> batch = collections.subList(i, end);
 
             chain = chain.thenCompose(v -> {
                 CompletableFuture<?>[] futures = batch.stream()
@@ -185,10 +184,9 @@ public class MigrationService {
         CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
         int totalChunks = (treasureIds.size() + chunkSize - 1) / chunkSize;
 
-        for (int i = 0; i < treasureIds.size(); i += chunkSize) {
-            int start = i;
-            int end = Math.min(i + chunkSize, treasureIds.size());
-            int currentChunk = (i / chunkSize) + 1;
+        for (int start = 0; start < treasureIds.size(); start += chunkSize) {
+            int end = Math.min(start + chunkSize, treasureIds.size());
+            int currentChunk = (start / chunkSize) + 1;
             List<UUID> chunk = treasureIds.subList(start, end);
 
             future = future.thenCompose(v -> {
@@ -237,10 +235,9 @@ public class MigrationService {
         int totalChunks = (playerUUIDs.size() + chunkSize - 1) / chunkSize;
 
         for (int i = 0; i < playerUUIDs.size(); i += chunkSize) {
-            int start = i;
             int end = Math.min(i + chunkSize, playerUUIDs.size());
             int currentChunk = (i / chunkSize) + 1;
-            List<UUID> chunk = playerUUIDs.subList(start, end);
+            List<UUID> chunk = playerUUIDs.subList(i, end);
 
             future = future.thenCompose(v -> {
                 List<CompletableFuture<PlayerData>> loadFutures = new ArrayList<>();
