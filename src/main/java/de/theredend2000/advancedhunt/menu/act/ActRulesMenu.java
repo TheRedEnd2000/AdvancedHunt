@@ -77,8 +77,7 @@ public class ActRulesMenu extends PagedMenu {
                 
                 ActRule rule = rules.get(index);
                 if (rule != null) {
-                    int finalI = i;
-                    
+
                     // Determine material based on rule status
                     Material material = rule.isEnabled() ? XMaterial.LIME_DYE.get() : XMaterial.GRAY_DYE.get();
                     
@@ -102,7 +101,7 @@ public class ActRulesMenu extends PagedMenu {
                         }
                     }
 
-                    addPagedItem(finalI, new ItemBuilder(material)
+                    addPagedItem(i, new ItemBuilder(material)
                             .setDisplayName(plugin.getMessageManager().getMessage("gui.act.rules.list.rule_item.name", false, 
                                 "%name%", rule.getName()))
                             .setLore(plugin.getMessageManager().getMessageList("gui.act.rules.list.rule_item.lore", false,
