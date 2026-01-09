@@ -12,7 +12,6 @@ import de.theredend2000.advancedhunt.util.ConfigMigrationHandler;
 import de.theredend2000.advancedhunt.util.ConfigUpdater;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
-import me.clip.placeholderapi.libs.kyori.adventure.text.Component;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -29,11 +28,29 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 public final class Main extends JavaPlugin {
 
-    private record RepoSetup(DataRepository repository, String storageType) {
+    private static final class RepoSetup {
+        private final DataRepository repository;
+        private final String storageType;
+
+        private RepoSetup(DataRepository repository, String storageType) {
+            this.repository = repository;
+            this.storageType = storageType;
+        }
+
+        private DataRepository repository() {
+            return repository;
+        }
+
+        private String storageType() {
+            return storageType;
+        }
     }
 
     private LegacyPaperCommandManager<CommandSender> commandManager;
@@ -69,10 +86,10 @@ public final class Main extends JavaPlugin {
             return "YAML";
         }
         String normalized = rawType.trim().toUpperCase(Locale.ROOT);
-        return switch (normalized) {
-            case "MYSQL", "SQLITE", "YAML" -> normalized;
-            default -> "YAML";
-        };
+        if ("MYSQL".equals(normalized) || "SQLITE".equals(normalized) || "YAML".equals(normalized)) {
+            return normalized;
+        }
+        return "YAML";
     }
 
     private RepoSetup createRepositoryFromType(String normalizedType) {

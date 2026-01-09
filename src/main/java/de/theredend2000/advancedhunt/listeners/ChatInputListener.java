@@ -109,9 +109,10 @@ public class ChatInputListener implements Listener {
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
-        if (!(event.getPlayer() instanceof Player player)) {
+        if (!(event.getPlayer() instanceof Player)) {
             return;
         }
+        Player player = (Player) event.getPlayer();
         cancelRequestDueToAction(player);
     }
 
@@ -127,5 +128,21 @@ public class ChatInputListener implements Listener {
         }
     }
 
-    private record InputRequest(Consumer<String> callback, BukkitTask task) {}
+    private static final class InputRequest {
+        private final Consumer<String> callback;
+        private final BukkitTask task;
+
+        private InputRequest(Consumer<String> callback, BukkitTask task) {
+            this.callback = callback;
+            this.task = task;
+        }
+
+        private Consumer<String> callback() {
+            return callback;
+        }
+
+        private BukkitTask task() {
+            return task;
+        }
+    }
 }

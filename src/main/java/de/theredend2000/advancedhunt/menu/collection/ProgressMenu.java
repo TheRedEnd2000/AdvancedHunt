@@ -254,7 +254,23 @@ public class ProgressMenu extends PagedMenu {
         return builder.build();
     }
 
-    private record SkullInfo(String texture, String ownerName) {}
+    private static final class SkullInfo {
+        private final String texture;
+        private final String ownerName;
+
+        private SkullInfo(String texture, String ownerName) {
+            this.texture = texture;
+            this.ownerName = ownerName;
+        }
+
+        private String texture() {
+            return texture;
+        }
+
+        private String ownerName() {
+            return ownerName;
+        }
+    }
 
     private void handleTreasureClick(InventoryClickEvent e, TreasureCore treasureCore, boolean isFound) {
         // Optional: Add click functionality here, such as teleportation or showing more details

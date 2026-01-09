@@ -106,7 +106,7 @@ public class CollectionManager {
 
     public CompletableFuture<Boolean> renameCollection(String oldName, String newName) {
         Optional<Collection> c = getCollectionByName(oldName);
-        if (c.isEmpty()) return CompletableFuture.completedFuture(false);
+        if (!c.isPresent()) return CompletableFuture.completedFuture(false);
         
         return repository.renameCollection(c.get().getId(), newName).thenCompose(success -> {
             if (success) {

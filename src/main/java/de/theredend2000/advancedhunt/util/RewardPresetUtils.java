@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.model.Reward;
 import de.theredend2000.advancedhunt.model.RewardPresetType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public final class RewardPresetUtils {
     }
 
     public static List<Reward> getDefaultTreasureRewards(Main plugin, UUID collectionId) {
-        if (plugin == null || collectionId == null) return List.of();
+        if (plugin == null || collectionId == null) return Collections.emptyList();
 
         List<Reward> rewards = new ArrayList<>();
         plugin.getCollectionManager().getCollectionById(collectionId)

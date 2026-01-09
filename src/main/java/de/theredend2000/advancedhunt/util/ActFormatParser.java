@@ -174,7 +174,7 @@ public class ActFormatParser {
      * @return human-readable description
      */
     public static String getHumanReadableCron(String cron, Locale locale, String noneText, String invalidText) {
-        if (cron == null || cron.isBlank()) {
+        if (cron == null || cron.trim().isEmpty()) {
             return invalidText;
         }
         if (cron.equalsIgnoreCase("NONE")) {

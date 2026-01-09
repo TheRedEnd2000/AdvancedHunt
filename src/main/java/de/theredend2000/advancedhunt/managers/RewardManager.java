@@ -241,7 +241,7 @@ public class RewardManager {
 
         List<Pattern> compiled = new ArrayList<>(blacklist.size());
         for (String regex : blacklist) {
-            if (regex == null || regex.isBlank()) continue;
+            if (regex == null || regex.trim().isEmpty()) continue;
             try {
                 compiled.add(Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
             } catch (Exception e) {
@@ -249,8 +249,8 @@ public class RewardManager {
             }
         }
 
-        cachedCommandBlacklist = List.copyOf(blacklist);
-        cachedCommandBlacklistPatterns = List.copyOf(compiled);
+        cachedCommandBlacklist = Collections.unmodifiableList(new ArrayList<>(blacklist));
+        cachedCommandBlacklistPatterns = Collections.unmodifiableList(new ArrayList<>(compiled));
         return cachedCommandBlacklistPatterns;
     }
 

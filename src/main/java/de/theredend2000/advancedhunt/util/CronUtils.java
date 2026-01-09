@@ -93,7 +93,7 @@ public final class CronUtils {
             Locale effectiveLocale = (locale != null) ? locale : Locale.ENGLISH;
             CronDescriptor descriptor = CronDescriptor.instance(effectiveLocale);
             String description = descriptor.describe(cron);
-            if (description == null || description.isBlank()) {
+            if (description == null || description.trim().isEmpty()) {
                 return cronExpression;
             }
             return description;
@@ -103,7 +103,7 @@ public final class CronUtils {
                 Cron cron = PARSER.parse(cronExpression);
                 cron.validate();
                 String description = CronDescriptor.instance(Locale.ENGLISH).describe(cron);
-                return (description == null || description.isBlank()) ? cronExpression : description;
+                return (description == null || description.trim().isEmpty()) ? cronExpression : description;
             } catch (Exception ignored) {
                 return cronExpression;
             }
@@ -116,13 +116,13 @@ public final class CronUtils {
      * Maps a config language code (e.g. "en", "de", "pt-BR") to a Locale.
      */
     public static Locale toLocale(String languageTag) {
-        if (languageTag == null || languageTag.isBlank()) {
+        if (languageTag == null || languageTag.trim().isEmpty()) {
             return Locale.ENGLISH;
         }
 
         // Support both "pt_BR" and "pt-BR" styles.
         Locale locale = Locale.forLanguageTag(languageTag.trim().replace('_', '-'));
-        if (locale.getLanguage() == null || locale.getLanguage().isBlank() || "und".equals(locale.getLanguage())) {
+        if (locale.getLanguage() == null || locale.getLanguage().trim().isEmpty() || "und".equals(locale.getLanguage())) {
             return Locale.ENGLISH;
         }
         return locale;

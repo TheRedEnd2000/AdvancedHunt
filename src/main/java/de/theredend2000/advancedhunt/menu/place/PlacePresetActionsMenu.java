@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
 public class PlacePresetActionsMenu extends Menu {
 
     private final PlacePreset preset;
@@ -72,7 +74,7 @@ public class PlacePresetActionsMenu extends Menu {
 
         ItemStack toGive = item.clone();
         toGive.setAmount(1);
-        var leftovers = playerMenuUtility.getInventory().addItem(toGive);
+        Map<Integer, ItemStack> leftovers = playerMenuUtility.getInventory().addItem(toGive);
         for (ItemStack leftover : leftovers.values()) {
             playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), leftover);
         }

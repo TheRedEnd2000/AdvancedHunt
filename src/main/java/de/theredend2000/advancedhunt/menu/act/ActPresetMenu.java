@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +28,8 @@ public class ActPresetMenu extends PagedMenu {
     private final ActRule rule;
     
     // Static preset list - initialized once, shared across all menu instances
-    private static final List<ActPreset> PRESETS = List.of(
+        private static final List<ActPreset> PRESETS = Collections.unmodifiableList(Arrays.asList(
+            new ActPreset("always_available", "[*] [*] [NONE]", XMaterial.NETHER_STAR.get()),
             new ActPreset("always_available", "[*] [*] [NONE]", XMaterial.NETHER_STAR.get()),
             new ActPreset("daily_2h", "[*] [2h] [0 0 9 * * ?]", XMaterial.CLOCK.get()),
             new ActPreset("daily_4h", "[*] [4h] [0 0 14 * * ?]", XMaterial.GOLDEN_CARROT.get()),
@@ -36,7 +39,7 @@ public class ActPresetMenu extends PagedMenu {
             new ActPreset("seasonal_summer", "[" + getSummerDateRange() + "] [*] [NONE]", XMaterial.SUNFLOWER.get()),
             new ActPreset("hourly_30m", "[*] [30m] [0 0 * * * ?]", XMaterial.IRON_NUGGET.get()),
             new ActPreset("twice_daily_3h", "[*] [3h] [0 0 9,18 * * ?]", XMaterial.GOLDEN_APPLE.get())
-    );
+        ));
 
     public ActPresetMenu(Player player, Main plugin, Collection collection, ActRule rule) {
         super(player, plugin);

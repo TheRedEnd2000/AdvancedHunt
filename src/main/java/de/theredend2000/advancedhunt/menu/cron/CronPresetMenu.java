@@ -11,6 +11,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CronPresetMenu extends PagedMenu {
@@ -19,7 +21,7 @@ public class CronPresetMenu extends PagedMenu {
     private final CronEditPolicy policy;
     
     // Static preset list - initialized once, shared across all menu instances
-    private static final List<CronPreset> PRESETS = List.of(
+        private static final List<CronPreset> PRESETS = Collections.unmodifiableList(Arrays.asList(
             new CronPreset("hourly", "0 0 * * * ? *", XMaterial.CLOCK.get()),
             new CronPreset("every_6_hours", "0 0 */6 * * ? *", XMaterial.CLOCK.get()),
             new CronPreset("every_12_hours", "0 0 */12 * * ? *", XMaterial.CLOCK.get()),
@@ -36,7 +38,7 @@ public class CronPresetMenu extends PagedMenu {
             new CronPreset("new_year", "0 0 0 1 1 ? *", XMaterial.EXPERIENCE_BOTTLE.get()),
             new CronPreset("christmas", "0 0 0 25 12 ? *", XMaterial.PLAYER_HEAD.get()),
             new CronPreset("quarterly", "0 0 0 1 1,4,7,10 ? *", XMaterial.COMPASS.get())
-    );
+        ));
 
     // Constructor for Collection context
     public CronPresetMenu(Player playerMenuUtility, Main plugin, Collection collection) {
@@ -98,9 +100,12 @@ public class CronPresetMenu extends PagedMenu {
                     holder.save().thenRun(() -> {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.cron.preset_applied", "%preset%", preset.getName(plugin)));
-                            if (previousMenu instanceof CronEditorMenu cronEditorMenu && cronEditorMenu.getAfterApplyMenu() != null) {
-                                cronEditorMenu.getAfterApplyMenu().open();
-                                return;
+                            if (previousMenu instanceof CronEditorMenu) {
+                                CronEditorMenu cronEditorMenu = (CronEditorMenu) previousMenu;
+                                if (cronEditorMenu.getAfterApplyMenu() != null) {
+                                    cronEditorMenu.getAfterApplyMenu().open();
+                                    return;
+                                }
                             }
                             if (previousMenu != null) {
                                 previousMenu.open();

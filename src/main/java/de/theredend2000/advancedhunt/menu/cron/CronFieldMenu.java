@@ -12,10 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CronFieldMenu extends Menu {
 
@@ -255,9 +252,12 @@ public class CronFieldMenu extends Menu {
     }
     
     private void navigateBack() {
-        if (previousMenu instanceof CronEditorMenu cronEditorMenu && cronEditorMenu.getAfterApplyMenu() != null) {
-            cronEditorMenu.getAfterApplyMenu().open();
-            return;
+        if (previousMenu instanceof CronEditorMenu) {
+            CronEditorMenu cronEditorMenu = (CronEditorMenu) previousMenu;
+            if (cronEditorMenu.getAfterApplyMenu() != null) {
+                cronEditorMenu.getAfterApplyMenu().open();
+                return;
+            }
         }
         if (previousMenu != null) {
             previousMenu.open();
@@ -268,19 +268,19 @@ public class CronFieldMenu extends Menu {
 
     private enum CronField {
         SECOND("second", "0", 0, 59,
-                List.of("0", "*/5", "*/10", "*/15", "*/30", "*")),
+            Arrays.asList("0", "*/5", "*/10", "*/15", "*/30", "*")),
         MINUTE("minute", "0", 0, 59,
-                List.of("0", "*/5", "*/10", "*/15", "*/30", "*")),
+            Arrays.asList("0", "*/5", "*/10", "*/15", "*/30", "*")),
         HOUR("hour", "0", 0, 23,
-                List.of("0", "6", "12", "18", "*/6", "*/12", "*")),
+            Arrays.asList("0", "6", "12", "18", "*/6", "*/12", "*")),
         DAY("day", "*", 1, 31,
-                List.of("1", "15", "L", "*", "?")),
+            Arrays.asList("1", "15", "L", "*", "?")),
         MONTH("month", "*", 1, 12,
-                List.of("*", "1", "6", "12", "1,4,7,10")),
+            Arrays.asList("*", "1", "6", "12", "1,4,7,10")),
         DAY_OF_WEEK("day_of_week", "?", 1, 7,
-                List.of("?", "*", "MON", "FRI", "SAT", "SUN", "MON-FRI")),
+            Arrays.asList("?", "*", "MON", "FRI", "SAT", "SUN", "MON-FRI")),
         YEAR("year", "*", 1970, 2099,
-                List.of("*", "2025", "2026", "2027", "2030"));
+            Arrays.asList("*", "2025", "2026", "2027", "2030"));
 
         final String key;
         final String defaultValue;

@@ -4,6 +4,7 @@ import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -139,12 +140,12 @@ public class YamlRepository implements DataRepository {
     }
 
     private static String sanitizeGroupFolderName(String group) {
-        if (group == null || group.isBlank()) {
+        if (group == null || group.trim().isEmpty()) {
             return "default";
         }
         String trimmed = group.trim();
         String sanitized = trimmed.replaceAll("[^a-zA-Z0-9_-]", "_");
-        if (sanitized.isBlank()) {
+        if (sanitized.trim().isEmpty()) {
             return "default";
         }
         return sanitized;
@@ -225,7 +226,7 @@ public class YamlRepository implements DataRepository {
     }
 
     private int migrateLegacySection(FileConfiguration legacy, String rootKey, RewardPresetType type) {
-        var section = legacy.getConfigurationSection(rootKey);
+        ConfigurationSection section = legacy.getConfigurationSection(rootKey);
         if (section == null) {
             return 0;
         }
@@ -237,7 +238,7 @@ public class YamlRepository implements DataRepository {
                 String name = section.getString(idStr + ".name");
                 List<Map<?, ?>> rewardList = section.getMapList(idStr + ".rewards");
                 List<Reward> rewards = deserializeRewards(rewardList);
-                if (name == null || name.isBlank()) {
+                if (name == null || name.trim().isEmpty()) {
                     continue;
                 }
 
@@ -355,7 +356,7 @@ public class YamlRepository implements DataRepository {
         treasureToFindersIndex.clear();
         if (finderIndexFile != null && finderIndexFile.exists()) {
             FileConfiguration config = YamlConfiguration.loadConfiguration(finderIndexFile);
-            var treasuresSection = config.getConfigurationSection("treasures");
+            ConfigurationSection treasuresSection = config.getConfigurationSection("treasures");
             if (treasuresSection != null) {
                 for (String treasureIdStr : treasuresSection.getKeys(false)) {
                     try {
@@ -910,7 +911,7 @@ public class YamlRepository implements DataRepository {
                             c.setSinglePlayerFind(config.getBoolean("single-player-find"));
 
                             String defaultPresetId = config.getString("default-treasure-reward-preset-id");
-                            if (defaultPresetId != null && !defaultPresetId.isBlank()) {
+                            if (defaultPresetId != null && !defaultPresetId.trim().isEmpty()) {
                                 try {
                                     c.setDefaultTreasureRewardPresetId(UUID.fromString(defaultPresetId));
                                 } catch (IllegalArgumentException ignored) {
@@ -1008,7 +1009,7 @@ public class YamlRepository implements DataRepository {
                             String name = config.getString("name");
                             List<Map<?, ?>> rewardList = config.getMapList("rewards");
                             List<Reward> rewards = deserializeRewards(rewardList);
-                            if (name != null && !name.isBlank()) {
+                            if (name != null && !name.trim().isEmpty()) {
                                 presets.add(new RewardPreset(id, type, name, rewards));
                             }
                         } catch (Exception e) {
@@ -1022,7 +1023,7 @@ public class YamlRepository implements DataRepository {
             if (presets.isEmpty() && legacyRewardPresetsFile != null && legacyRewardPresetsFile.exists()) {
                 FileConfiguration legacy = YamlConfiguration.loadConfiguration(legacyRewardPresetsFile);
                 String rootKey = type == RewardPresetType.COLLECTION ? "collection" : "treasure";
-                var section = legacy.getConfigurationSection(rootKey);
+                ConfigurationSection section = legacy.getConfigurationSection(rootKey);
                 if (section != null) {
                     for (String idStr : section.getKeys(false)) {
                         try {
@@ -1030,7 +1031,7 @@ public class YamlRepository implements DataRepository {
                             String name = section.getString(idStr + ".name");
                             List<Map<?, ?>> rewardList = section.getMapList(idStr + ".rewards");
                             List<Reward> rewards = deserializeRewards(rewardList);
-                            if (name != null && !name.isBlank()) {
+                            if (name != null && !name.trim().isEmpty()) {
                                 presets.add(new RewardPreset(id, type, name, rewards));
                             }
                         } catch (Exception e) {
@@ -1113,11 +1114,11 @@ public class YamlRepository implements DataRepository {
                         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
                         String name = config.getString("name");
                         String group = config.getString("group");
-                        if (group == null || group.isBlank()) {
+                        if (group == null || group.trim().isEmpty()) {
                             group = groupDir.getName();
                         }
                         String itemData = config.getString("item");
-                        if (name != null && !name.isBlank() && itemData != null && !itemData.isBlank()) {
+                        if (name != null && !name.trim().isEmpty() && itemData != null && !itemData.trim().isEmpty()) {
                             presets.add(new PlacePreset(id, group, name, itemData));
                         }
                     } catch (Exception e) {
@@ -1185,18 +1186,18 @@ public class YamlRepository implements DataRepository {
                 placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
             }
             if (!placePresetGroupsFile.exists()) {
-                return Set.of();
+                return Collections.emptySet();
             }
 
             FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
             List<String> groups = config.getStringList("groups");
             if (groups == null || groups.isEmpty()) {
-                return Set.of();
+                return Collections.emptySet();
             }
 
             LinkedHashSet<String> result = new LinkedHashSet<>();
             for (String group : groups) {
-                if (group != null && !group.isBlank()) {
+                if (group != null && !group.trim().isEmpty()) {
                     result.add(group.trim());
                 }
             }
@@ -1207,7 +1208,7 @@ public class YamlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> createPlacePresetGroup(String group) {
         return CompletableFuture.runAsync(() -> {
-            if (group == null || group.isBlank()) {
+            if (group == null || group.trim().isEmpty()) {
                 return;
             }
             if (placePresetGroupsFile == null) {
@@ -1230,7 +1231,7 @@ public class YamlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup) {
         return CompletableFuture.runAsync(() -> {
-            if (oldGroup == null || oldGroup.isBlank() || newGroup == null || newGroup.isBlank()) {
+            if (oldGroup == null || oldGroup.trim().isEmpty() || newGroup == null || newGroup.trim().isEmpty()) {
                 return;
             }
             if (placePresetGroupsFile == null) {
@@ -1289,7 +1290,7 @@ public class YamlRepository implements DataRepository {
     @Override
     public CompletableFuture<Void> deletePlacePresetGroup(String group) {
         return CompletableFuture.runAsync(() -> {
-            if (group == null || group.isBlank()) {
+            if (group == null || group.trim().isEmpty()) {
                 return;
             }
             if (placePresetGroupsFile == null) {

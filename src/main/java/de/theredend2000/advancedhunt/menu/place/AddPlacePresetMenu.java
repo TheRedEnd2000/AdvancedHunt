@@ -63,7 +63,7 @@ public class AddPlacePresetMenu extends SingleItemInputMenu {
         blockSnapshot.setAmount(1);
 
         String itemData = ItemSerializer.serialize(blockSnapshot);
-        if (itemData == null || itemData.isBlank()) {
+        if (itemData == null || itemData.trim().isEmpty()) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.serialize_failed"));
             return;
         }

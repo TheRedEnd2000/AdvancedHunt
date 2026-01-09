@@ -5,6 +5,7 @@ import de.theredend2000.advancedhunt.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +24,57 @@ public class MigrationService {
         return migrate(source, target, null);
     }
 
-    public record MigrationProgress(int percent, String stage, int current, int total) {
+    public static final class MigrationProgress {
+        private final int percent;
+        private final String stage;
+        private final int current;
+        private final int total;
+
+        public MigrationProgress(int percent, String stage, int current, int total) {
+            this.percent = percent;
+            this.stage = stage;
+            this.current = current;
+            this.total = total;
+        }
+
+        public int percent() {
+            return percent;
+        }
+
+        public String stage() {
+            return stage;
+        }
+
+        public int current() {
+            return current;
+        }
+
+        public int total() {
+            return total;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof MigrationProgress)) return false;
+            MigrationProgress that = (MigrationProgress) o;
+            return percent == that.percent && current == that.current && total == that.total && Objects.equals(stage, that.stage);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(percent, stage, current, total);
+        }
+
+        @Override
+        public String toString() {
+            return "MigrationProgress{" +
+                    "percent=" + percent +
+                    ", stage='" + stage + '\'' +
+                    ", current=" + current +
+                    ", total=" + total +
+                    '}';
+        }
     }
 
     public CompletableFuture<Void> migrate(DataRepository source, DataRepository target, Consumer<MigrationProgress> progressCallback) {

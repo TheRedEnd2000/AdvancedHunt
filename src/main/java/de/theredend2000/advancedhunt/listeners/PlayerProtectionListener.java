@@ -4,9 +4,7 @@ import com.cryptomorin.xseries.XEntityType;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.FireworkManager;
 import de.theredend2000.advancedhunt.managers.PlaceModeManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FireworkExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 public class PlayerProtectionListener implements Listener {
@@ -44,19 +41,23 @@ public class PlayerProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            if (placeModeManager.isInPlaceMode(player)) {
-                event.setCancelled(true);
-            }
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        if (placeModeManager.isInPlaceMode(player)) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            if (placeModeManager.isInPlaceMode(player)) {
-                event.setCancelled(true);
-            }
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        if (placeModeManager.isInPlaceMode(player)) {
+            event.setCancelled(true);
         }
     }
 

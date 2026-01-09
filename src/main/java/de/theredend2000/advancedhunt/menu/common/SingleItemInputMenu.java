@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -154,7 +155,7 @@ public abstract class SingleItemInputMenu extends Menu {
 
         if (!isValidItem(item)) {
             String invalidKey = getInvalidItemErrorKey();
-            if (invalidKey != null && !invalidKey.isBlank()) {
+            if (invalidKey != null && !invalidKey.trim().isEmpty()) {
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(invalidKey));
             }
             return;
@@ -186,7 +187,7 @@ public abstract class SingleItemInputMenu extends Menu {
     private void giveItemBack(ItemStack item) {
         if (item == null || item.getType() == XMaterial.AIR.get()) return;
 
-        var leftover = playerMenuUtility.getInventory().addItem(item);
+        Map<Integer, ItemStack> leftover = playerMenuUtility.getInventory().addItem(item);
         if (!leftover.isEmpty()) {
             leftover.values().forEach(i -> playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), i));
         }

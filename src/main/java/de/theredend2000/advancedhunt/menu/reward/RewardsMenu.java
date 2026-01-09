@@ -185,10 +185,10 @@ public class RewardsMenu extends PagedMenu {
                     .build(), e -> {
 
                 Collection collectionContext = null;
-                if (holder instanceof CollectionRewardHolder collectionRewardHolder) {
-                    collectionContext = collectionRewardHolder.getCollection();
-                } else if (alternateHolder instanceof CollectionRewardHolder collectionRewardHolder) {
-                    collectionContext = collectionRewardHolder.getCollection();
+                if (holder instanceof CollectionRewardHolder) {
+                    collectionContext = ((CollectionRewardHolder) holder).getCollection();
+                } else if (alternateHolder instanceof CollectionRewardHolder) {
+                    collectionContext = ((CollectionRewardHolder) alternateHolder).getCollection();
                 }
 
                 new RewardPresetListMenu(playerMenuUtility, plugin, presetType, selected -> {
