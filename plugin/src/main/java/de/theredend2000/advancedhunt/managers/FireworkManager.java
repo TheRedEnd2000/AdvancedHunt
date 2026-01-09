@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.managers;
 
 import com.cryptomorin.xseries.XEntityType;
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -9,7 +10,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class FireworkManager {
@@ -34,14 +34,7 @@ public class FireworkManager {
         );
 
         boolean silent = plugin.getConfig().getBoolean("fireworks.silent", false);
-        // 1.8.x does not have Firework#setSilent(boolean)
-        if (silent) {
-            try {
-                Method setSilent = firework.getClass().getMethod("setSilent", boolean.class);
-                setSilent.invoke(firework, true);
-            } catch (Throwable ignored) {
-            }
-        }
+        PlatformAccess.get().setFireworkSilent(firework, silent);
 
         FireworkMeta meta = firework.getFireworkMeta();
         meta.setPower(getRandomPower());
