@@ -4,14 +4,13 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.managers.TreasureInteractionHandler;
 import de.theredend2000.advancedhunt.managers.TreasureManager;
 import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import java.lang.reflect.Method;
 
 public class PlayerInteractListener implements Listener {
 
@@ -28,7 +27,7 @@ public class PlayerInteractListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (!isMainHandInteract(event)) return;
+        if (!PlatformAccess.get().isMainHandInteract(event)) return;
         Block block = event.getClickedBlock();
         if (block == null) return;
 
@@ -46,20 +45,5 @@ public class PlayerInteractListener implements Listener {
         }
 
         treasureInteractionHandler.handleTreasureCollect(player, treasureCore);
-    }
-
-    private boolean isMainHandInteract(PlayerInteractEvent event) {
-        // 1.8.x does not have offhand and also does not expose PlayerInteractEvent#getHand().
-        // Newer versions may fire the event twice (main-hand + offhand), so we ignore offhand.
-        try {
-            Method getHand = event.getClass().getMethod("getHand");
-            Object slot = getHand.invoke(event);
-            return slot == null || "HAND".equals(slot.toString());
-        } catch (NoSuchMethodException ignored) {
-            return true;
-        } catch (Throwable ignored) {
-            // Be permissive: never break interaction on version edge cases.
-            return true;
-        }
     }
 }

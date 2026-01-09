@@ -7,6 +7,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -152,5 +153,25 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
         } catch (Throwable ignored) {
         }
         return item;
+    }
+
+    @Override
+    public boolean isMainHandInteract(org.bukkit.event.player.PlayerInteractEvent event) {
+        return true;
+    }
+
+    @Override
+    public String getBlockStateString(Block block) {
+        if (block == null) return "0";
+        try {
+            return String.valueOf(block.getData());
+        } catch (Throwable ignored) {
+            return "0";
+        }
+    }
+
+    @Override
+    public void setFireworkSilent(org.bukkit.entity.Firework firework, boolean silent) {
+        // 1.8 does not support silent entities.
     }
 }

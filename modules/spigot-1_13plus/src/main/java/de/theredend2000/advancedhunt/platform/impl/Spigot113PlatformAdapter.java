@@ -2,6 +2,8 @@ package de.theredend2000.advancedhunt.platform.impl;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -44,5 +46,16 @@ public class Spigot113PlatformAdapter extends Spigot19PlatformAdapter {
         } catch (Throwable ignored) {
         }
         return item;
+    }
+
+    @Override
+    public String getBlockStateString(Block block) {
+        if (block == null) return "";
+        try {
+            BlockData data = block.getBlockData();
+            return data != null ? data.getAsString() : "";
+        } catch (Throwable ignored) {
+            return "";
+        }
     }
 }

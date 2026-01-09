@@ -9,7 +9,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -26,6 +30,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Spigot19PlatformAdapter implements PlatformAdapter {
 
     private static final Map<String, Particle> PARTICLE_CACHE = new ConcurrentHashMap<>();
+
+    @Override
+    public boolean isAir(Material material) {
+        if (material == null) return true;
+        return "AIR".equals(material.name());
+    }
 
     @Override
     public void sendActionBar(Player player, String message) {
@@ -79,6 +89,26 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
     }
 
     @Override
+    public void applyHideTooltip(ItemMeta meta, boolean hide) {
+        // Not supported in 1.9-1.20.4 base adapter.
+    }
+
+    @Override
+    public void applyUnbreakable(ItemMeta meta, boolean unbreakable) {
+        // Supported in later adapters.
+    }
+
+    @Override
+    public void applyCustomModelData(ItemMeta meta, Integer customModelData) {
+        // Supported in later adapters.
+    }
+
+    @Override
+    public void applySkullOwner(ItemMeta meta, java.util.UUID ownerUuid) {
+        // Supported in 1.13+ adapter.
+    }
+
+    @Override
     public ItemStack ensurePlayerHeadItem(ItemStack item) {
         if (item == null) return null;
         try {
@@ -91,6 +121,35 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         } catch (Throwable ignored) {
         }
         return item;
+    }
+
+    @Override
+    public boolean isMainHandInteract(PlayerInteractEvent event) {
+        if (event == null) return true;
+        try {
+            return event.getHand() == EquipmentSlot.HAND;
+        } catch (Throwable ignored) {
+            return true;
+        }
+    }
+
+    @Override
+    public String getBlockStateString(Block block) {
+        if (block == null) return "0";
+        try {
+            return String.valueOf(block.getData());
+        } catch (Throwable ignored) {
+            return "0";
+        }
+    }
+
+    @Override
+    public void setFireworkSilent(Firework firework, boolean silent) {
+        if (firework == null) return;
+        try {
+            firework.setSilent(silent);
+        } catch (Throwable ignored) {
+        }
     }
 
     private static Particle resolveParticle(String particleName) {
