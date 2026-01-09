@@ -111,9 +111,7 @@ public class ActRuleEditorMenu extends Menu {
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
                 rule.setName(input);
                 plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        this.open();
-                    });
+                    Bukkit.getScheduler().runTask(plugin, this::open);
                 });
             });
         });
@@ -261,9 +259,7 @@ public class ActRuleEditorMenu extends Menu {
                 .build(), (e) -> {
             rule.setEnabled(!rule.isEnabled());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    refresh();
-                });
+                Bukkit.getScheduler().runTask(plugin, this::refresh);
             });
         });
 

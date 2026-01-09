@@ -103,7 +103,7 @@ public class CollectionListMenu extends PagedMenu {
 
             int finalI = i;
             foundCountFuture
-                    .thenCombine(skullInfoFuture, (count, skullInfo) -> new TreasureItemData(count, skullInfo))
+                    .thenCombine(skullInfoFuture, TreasureItemData::new)
                     .thenAccept(data -> Bukkit.getScheduler().runTask(plugin, () -> {
                         if (!isViewingThisMenu()) {
                             return;
