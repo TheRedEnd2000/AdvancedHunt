@@ -22,14 +22,13 @@ public class LeaderboardManager {
     private final Map<String, List<LeaderboardEntry>> leaderboardCache = new ConcurrentHashMap<>();
     private final Cache<UUID, String> nameCache;
     private final int displayLimit;
-    private final int refreshInterval;
     private BukkitTask updateTask;
 
     public LeaderboardManager(JavaPlugin plugin, DataRepository repository) {
         this.plugin = plugin;
         this.repository = repository;
         this.displayLimit = plugin.getConfig().getInt("leaderboard.display-limit", 100);
-        this.refreshInterval = plugin.getConfig().getInt("leaderboard.cache-refresh-interval", 300);
+        int refreshInterval = plugin.getConfig().getInt("leaderboard.cache-refresh-interval", 300);
         
         // Name cache: UUID -> PlayerName, expires after 30 minutes, max 5000 entries
         this.nameCache = Caffeine.newBuilder()
