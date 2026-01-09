@@ -16,12 +16,10 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 public class PlayerProtectionListener implements Listener {
 
-    private final Main plugin;
     private final FireworkManager fireworkManager;
     private final PlaceModeManager placeModeManager;
 
     public PlayerProtectionListener(Main plugin){
-        this.plugin = plugin;
         this.fireworkManager = plugin.getFireworkManager();
         this.placeModeManager = plugin.getPlaceModeManager();
     }
