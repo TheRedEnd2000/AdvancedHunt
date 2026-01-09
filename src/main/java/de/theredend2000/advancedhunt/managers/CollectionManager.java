@@ -106,14 +106,13 @@ public class CollectionManager {
 
     public CompletableFuture<Boolean> renameCollection(String oldName, String newName) {
         Optional<Collection> c = getCollectionByName(oldName);
-        if (!c.isPresent()) return CompletableFuture.completedFuture(false);
-        
-        return repository.renameCollection(c.get().getId(), newName).thenCompose(success -> {
+        return c.map(collection -> repository.renameCollection(collection.getId(), newName).thenCompose(success -> {
             if (success) {
                 return reloadCollections().thenApply(v -> true);
             }
             return CompletableFuture.completedFuture(false);
-        });
+        })).orElseGet(() -> CompletableFuture.completedFuture(false));
+
     }
 
     public UUID generateUniqueCollectionId() {
