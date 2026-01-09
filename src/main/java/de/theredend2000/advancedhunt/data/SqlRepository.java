@@ -110,7 +110,7 @@ public class SqlRepository implements DataRepository {
             } catch (SQLException ignored) {}
         });
         
-        schemaMigrations.put(4, conn -> this.createPerformanceIndexes(conn));
+        schemaMigrations.put(4, this::createPerformanceIndexes);
         
         schemaMigrations.put(5, conn -> {
             try {
