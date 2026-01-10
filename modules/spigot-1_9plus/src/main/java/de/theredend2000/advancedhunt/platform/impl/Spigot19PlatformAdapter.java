@@ -158,7 +158,9 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
 
             // Entity flags: 0x20 = invisible, 0x40 = glowing (1.9+)
             final byte invisibleFlag = (byte) (0x20 | 0x40);
-            final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
+            // Note: marker armor stands (0x10) don't render a model, so there's nothing to outline.
+            // If we want the client-side glow outline to be visible, don't use the marker flag.
+            final byte armorStandFlags = (byte) (0x01 | 0x08);
 
             // 1.9-1.12: custom name is a plain string.
             // Armor stand flags index is 11 in this tier.

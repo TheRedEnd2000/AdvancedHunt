@@ -54,7 +54,9 @@ public class Spigot114PlatformAdapter extends Spigot113PlatformAdapter {
 
             // Entity flags: 0x20 = invisible, 0x40 = glowing
             final byte invisibleFlag = (byte) (0x20 | 0x40);
-            final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
+            // Note: marker armor stands (0x10) don't render a model, so there's nothing to outline.
+            // If we want the client-side glow outline to be visible, don't use the marker flag.
+            final byte armorStandFlags = (byte) (0x01 | 0x08);
 
             // 1.14+: armor stand-specific metadata indices shifted (base entity gained additional tracked data).
             // Armor stand flags are expected at index 14 in this tier.
