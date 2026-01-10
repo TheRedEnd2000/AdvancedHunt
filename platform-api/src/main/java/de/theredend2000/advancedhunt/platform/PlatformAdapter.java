@@ -54,4 +54,20 @@ public interface PlatformAdapter {
      */
 
     void setFireworkSilent(Firework firework, boolean silent);
+
+    /**
+     * Spawns a client-side (packet-only) armor stand hologram for a single player.
+     * Implementations may require PacketEvents to be installed.
+     *
+     * Expected properties: CustomNameVisible, Invisible, Small, NoBasePlate, NoGravity, Marker.
+     *
+     * @return true if the packets were sent successfully
+     */
+    boolean spawnHologramArmorStandForPlayer(Player player, int entityId, UUID entityUuid, Location location, String customName);
+
+    /**
+     * Destroys one or more client-side entities for a single player.
+     * Implementations may require PacketEvents to be installed.
+     */
+    boolean destroyEntitiesForPlayer(Player player, int... entityIds);
 }

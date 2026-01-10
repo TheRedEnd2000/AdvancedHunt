@@ -12,6 +12,7 @@ import de.theredend2000.advancedhunt.menu.place.PlacePresetGroupMenu;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import de.theredend2000.advancedhunt.util.MaterialUtils;
 import de.theredend2000.advancedhunt.util.MessageUtils;
 import de.tr7zw.nbtapi.NBT;
@@ -22,6 +23,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.block.TileState;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -33,12 +35,14 @@ import org.incendo.cloud.Command;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.description.CommandDescription;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
+import org.incendo.cloud.parser.standard.IntegerParser;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -134,6 +138,16 @@ public class AdvancedHuntCommand {
                         .permission("advancedhunt.admin.reload")
                         .commandDescription(desc("reload"))
                         .handler(context -> reload(context.sender()))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("show")
+                .required("seconds", IntegerParser.integerParser())
+                .required("text", StringParser.greedyStringParser())
+                .permission("advancedhunt.admin.show")
+                .commandDescription(desc("show"))
+                .handler(context -> show((Player) context.sender(), context.get("seconds"), context.get("text")))
         );
 
         commandManager.command(
@@ -388,6 +402,64 @@ public class AdvancedHuntCommand {
                             migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
                         })
         );
+    }
+
+    private void show(Player player, int seconds, String text) {
+        if (player == null) return;
+
+        if (seconds < 1 || seconds > 300) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.show.invalid_duration"));
+            return;
+        }
+
+        Location loc = player.getLocation().clone().add(0.0, 2.0, 0.0);
+        int entityId = allocateClientSideEntityId(player.getWorld());
+        UUID entityUuid = UUID.randomUUID();
+
+        boolean spawned = PlatformAccess.get().spawnHologramArmorStandForPlayer(player, entityId, entityUuid, loc, text);
+        if (!spawned) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.show.packetevents_missing"));
+            return;
+        }
+
+        long delayTicks = seconds * 20L;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!player.isOnline()) return;
+                    PlatformAccess.get().destroyEntitiesForPlayer(player, entityId);
+                } catch (Throwable ignored) {
+                }
+            }
+        }.runTaskLater(plugin, delayTicks);
+
+        player.sendMessage(plugin.getMessageManager().getMessage("command.show.success",
+                "%seconds%", String.valueOf(seconds)));
+    }
+
+    private static int allocateClientSideEntityId(World world) {
+        int min = 1_000_000_000;
+        int max = Integer.MAX_VALUE;
+
+        Set<Integer> used = new HashSet<>();
+        try {
+            if (world != null) {
+                for (Entity e : world.getEntities()) {
+                    used.add(e.getEntityId());
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        for (int i = 0; i < 1000; i++) {
+            int candidate = ThreadLocalRandom.current().nextInt(min, max);
+            if (!used.contains(candidate)) {
+                return candidate;
+            }
+        }
+
+        return ThreadLocalRandom.current().nextInt(min, max);
     }
 
 

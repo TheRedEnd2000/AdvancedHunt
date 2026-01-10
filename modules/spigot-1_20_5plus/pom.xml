@@ -32,5 +32,11 @@
             <version>${spigot.version.modern}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>${packetevents.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

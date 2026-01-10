@@ -1,6 +1,21 @@
 package de.theredend2000.advancedhunt.platform.impl;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Adapter for Spigot 1.20.5+ API.
@@ -12,5 +27,60 @@ public final class SpigotModernPlatformAdapter extends Spigot115PlatformAdapter 
     public void applyHideTooltip(ItemMeta meta, boolean hide) {
         if (meta == null) return;
         meta.setHideTooltip(hide);
+    }
+
+    @Override
+    public boolean spawnHologramArmorStandForPlayer(Player player, int entityId, UUID entityUuid, Location location, String customName) {
+        if (player == null || location == null) return false;
+        if (location.getWorld() == null) return false;
+
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+                return false;
+            }
+        } catch (Throwable ignored) {
+            return false;
+        }
+
+        try {
+            if (!PacketEvents.getAPI().isInitialized()) return false;
+
+            final byte invisibleFlag = (byte) 0x20;
+            final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
+
+            // 1.20.5+ (component-era) may shift tracked-data indices again.
+            // Armor stand flags are expected at index 15 in this tier.
+            List<EntityData<?>> meta = new ArrayList<>();
+            meta.add(new EntityData<>(0,
+                    EntityDataTypes.BYTE, invisibleFlag));
+            meta.add(new EntityData<>(2,
+                    EntityDataTypes.OPTIONAL_ADV_COMPONENT,
+                    Optional.of(Component.text(customName == null ? "" : customName))));
+            meta.add(new EntityData<>(3,
+                    EntityDataTypes.BOOLEAN, true));
+            meta.add(new EntityData<>(5,
+                    EntityDataTypes.BOOLEAN, true));
+            meta.add(new EntityData<>(15,
+                    EntityDataTypes.BYTE, armorStandFlags));
+
+            WrapperPlayServerSpawnLivingEntity packet =
+                    new WrapperPlayServerSpawnLivingEntity(
+                            entityId,
+                            entityUuid,
+                            EntityTypes.ARMOR_STAND,
+                            new Vector3d(location.getX(), location.getY(), location.getZ()),
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            new Vector3d(0.0, 0.0, 0.0),
+                            meta
+                    );
+
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
     }
 }

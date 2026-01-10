@@ -26,6 +26,7 @@ permissions:
     default: op
     children:
       advancedhunt.admin.reload: true
+      advancedhunt.admin.show: true
       advancedhunt.admin.collection.editor: true
       advancedhunt.admin.collection.rename: true
       advancedhunt.admin.collection.create: true
@@ -35,6 +36,9 @@ permissions:
       advancedhunt.admin.teleport: true
       advancedhunt.admin.view_finders: true
       advancedhunt.admin.rewards: true
+  advancedhunt.admin.show:
+    description: Allows showing a temporary hologram via PacketEvents
+    default: op
   advancedhunt.admin.rewards:
     description: Allows viewing and editing treasure rewards
     default: op
