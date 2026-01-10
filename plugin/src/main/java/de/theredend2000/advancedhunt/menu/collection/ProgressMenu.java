@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.menu.common.SkullInfo;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
+import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
@@ -112,7 +113,8 @@ public class ProgressMenu extends PagedMenu {
             ItemStack item = createTreasureItem(treasureCore, i, isFound, null);
             addButton(slot, item, e -> handleTreasureClick(e, treasureCore, isFound));
 
-            if (isFound && HeadHelper.isPlayerHead(item)) {
+            boolean isHeadTreasure = HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) || HeadHelper.isPlayerHead(item);
+            if (isFound && isHeadTreasure) {
                 UUID treasureId = treasureCore.getId();
                 int finalI = i;
                 plugin.getTreasureManager().getFullTreasureAsync(treasureId)
@@ -212,6 +214,10 @@ public class ProgressMenu extends PagedMenu {
 
                 XMaterial xMaterial = XMaterial.matchXMaterial(material);
                 item = XMaterialHelper.getItemStack(xMaterial);
+            }
+
+            if (HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) && item != null) {
+                item = PlatformAccess.get().ensurePlayerHeadItem(item);
             }
 
             if (item != null) {

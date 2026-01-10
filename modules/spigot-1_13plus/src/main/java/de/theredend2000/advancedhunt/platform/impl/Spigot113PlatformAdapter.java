@@ -36,6 +36,15 @@ public class Spigot113PlatformAdapter extends Spigot19PlatformAdapter {
         if (item == null) return null;
         try {
             Material type = item.getType();
+            if (type != null && "PLAYER_WALL_HEAD".equals(type.name())) {
+                ItemMeta meta = item.getItemMeta();
+                item.setType(Material.PLAYER_HEAD);
+                if (meta != null) {
+                    item.setItemMeta(meta);
+                }
+                return item;
+            }
+
             if (type != null && ("SKULL_ITEM".equals(type.name()) || "LEGACY_SKULL_ITEM".equals(type.name()))) {
                 ItemMeta meta = item.getItemMeta();
                 item.setType(Material.PLAYER_HEAD);
