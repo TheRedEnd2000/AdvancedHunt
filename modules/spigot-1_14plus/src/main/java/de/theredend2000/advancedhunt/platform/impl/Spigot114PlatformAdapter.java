@@ -53,7 +53,8 @@ public class Spigot114PlatformAdapter extends Spigot113PlatformAdapter {
         try {
             if (!PacketEvents.getAPI().isInitialized()) return false;
 
-            final byte invisibleFlag = (byte) 0x20;
+            // Entity flags: 0x20 = invisible, 0x40 = glowing
+            final byte invisibleFlag = (byte) (0x20 | 0x40);
             final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
 
             // 1.14+: armor stand-specific metadata indices shifted (base entity gained additional tracked data).

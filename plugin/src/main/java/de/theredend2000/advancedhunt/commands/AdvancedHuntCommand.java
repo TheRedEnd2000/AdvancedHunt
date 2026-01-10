@@ -143,11 +143,11 @@ public class AdvancedHuntCommand {
         commandManager.command(
             playerBuilder()
                 .literal("show")
+                .required("radius", IntegerParser.integerParser())
                 .required("seconds", IntegerParser.integerParser())
-                .required("text", StringParser.greedyStringParser())
                 .permission("advancedhunt.admin.show")
                 .commandDescription(desc("show"))
-                .handler(context -> show((Player) context.sender(), context.get("seconds"), context.get("text")))
+                .handler(context -> showNearbyTreasures((Player) context.sender(), context.get("radius"), context.get("seconds")))
         );
 
         commandManager.command(
@@ -404,38 +404,105 @@ public class AdvancedHuntCommand {
         );
     }
 
-    private void show(Player player, int seconds, String text) {
+    private void showNearbyTreasures(Player player, int radius, int seconds) {
         if (player == null) return;
+
+        if (radius < 1 || radius > 500) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.show.invalid_radius"));
+            return;
+        }
 
         if (seconds < 1 || seconds > 300) {
             player.sendMessage(plugin.getMessageManager().getMessage("command.show.invalid_duration"));
             return;
         }
 
-        Location loc = player.getLocation().clone().add(0.0, 2.0, 0.0);
-        int entityId = allocateClientSideEntityId(player.getWorld());
-        UUID entityUuid = UUID.randomUUID();
+        Location playerLoc = player.getLocation();
+        if (playerLoc.getWorld() == null) return;
 
-        boolean spawned = PlatformAccess.get().spawnHologramArmorStandForPlayer(player, entityId, entityUuid, loc, text);
-        if (!spawned) {
+        int playerChunkX = playerLoc.getBlockX() >> 4;
+        int playerChunkZ = playerLoc.getBlockZ() >> 4;
+        int chunkRadius = (radius >> 4) + 1;
+        double radiusSq = (double) radius * (double) radius;
+
+        List<TreasureCore> nearby = new ArrayList<>();
+        for (int cx = playerChunkX - chunkRadius; cx <= playerChunkX + chunkRadius; cx++) {
+            for (int cz = playerChunkZ - chunkRadius; cz <= playerChunkZ + chunkRadius; cz++) {
+                for (TreasureCore core : plugin.getTreasureManager().getTreasureCoresInChunk(cx, cz)) {
+                    if (core == null) continue;
+                    Location loc = core.getLocation();
+                    if (loc == null || loc.getWorld() == null) continue;
+                    if (!loc.getWorld().equals(playerLoc.getWorld())) continue;
+                    if (loc.distanceSquared(playerLoc) > radiusSq) continue;
+                    nearby.add(core);
+                }
+            }
+        }
+
+        if (nearby.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.show.none_found",
+                    "%radius%", String.valueOf(radius)));
+            return;
+        }
+
+        // Cap to avoid sending hundreds/thousands of packets.
+        int maxMarkers = 80;
+        boolean truncated = nearby.size() > maxMarkers;
+        if (truncated) {
+            nearby = nearby.subList(0, maxMarkers);
+        }
+
+        int[] entityIds = new int[nearby.size()];
+        int spawnedCount = 0;
+        for (TreasureCore core : nearby) {
+            Location loc = core.getLocation();
+            if (loc == null || loc.getWorld() == null) continue;
+
+            Location hologramLoc = loc.clone().add(0.5, 1.5, 0.5);
+            int entityId = allocateClientSideEntityId(player.getWorld());
+            UUID entityUuid = UUID.randomUUID();
+
+            int x = loc.getBlockX();
+            int y = loc.getBlockY();
+            int z = loc.getBlockZ();
+            String name = "Treasure: " + x + " " + y + " " + z;
+
+            boolean spawned = PlatformAccess.get().spawnHologramArmorStandForPlayer(player, entityId, entityUuid, hologramLoc, name);
+            if (!spawned) {
+                if (spawnedCount == 0) {
+                    player.sendMessage(plugin.getMessageManager().getMessage("command.show.packetevents_missing"));
+                    return;
+                }
+                break;
+            }
+
+            entityIds[spawnedCount++] = entityId;
+        }
+
+        if (spawnedCount == 0) {
             player.sendMessage(plugin.getMessageManager().getMessage("command.show.packetevents_missing"));
             return;
         }
 
+        int[] finalEntityIds = spawnedCount == entityIds.length ? entityIds : Arrays.copyOf(entityIds, spawnedCount);
         long delayTicks = seconds * 20L;
         new BukkitRunnable() {
             @Override
             public void run() {
                 try {
                     if (!player.isOnline()) return;
-                    PlatformAccess.get().destroyEntitiesForPlayer(player, entityId);
+                    PlatformAccess.get().destroyEntitiesForPlayer(player, finalEntityIds);
                 } catch (Throwable ignored) {
                 }
             }
         }.runTaskLater(plugin, delayTicks);
 
-        player.sendMessage(plugin.getMessageManager().getMessage("command.show.success",
-                "%seconds%", String.valueOf(seconds)));
+        String successKey = truncated ? "command.show.success_truncated" : "command.show.success";
+        player.sendMessage(plugin.getMessageManager().getMessage(successKey,
+                "%seconds%", String.valueOf(seconds),
+                "%radius%", String.valueOf(radius),
+                "%count%", String.valueOf(spawnedCount),
+                "%max%", String.valueOf(maxMarkers)));
     }
 
     private static int allocateClientSideEntityId(World world) {

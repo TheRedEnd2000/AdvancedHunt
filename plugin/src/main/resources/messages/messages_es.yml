@@ -137,6 +137,7 @@ command:
     descriptions:
       help: "Muestra este menú de ayuda."
       reload: "Vuelve a cargar la configuración del complemento."
+      show: "Muestra ubicaciones de tesoros cercanos como hologramas"
       list: "Enumera todas las colecciones disponibles"
       list_collection: "Ver todos los tesoros colocados en una colección"
       leaderboard: "Abre la tabla de clasificación de una colección."
@@ -179,6 +180,14 @@ command:
   reload:
     success: "%prefix%&a¡Configuración y mensajes recargados!"
     failed: "%prefix%&cError en la recarga.Consulte la consola para obtener más detalles."
+
+  show:
+    success: "%prefix%&aMostrando &e%count%&a ubicaciones de tesoros dentro de &e%radius%&a bloques por &e%seconds%s&a."
+    success_truncated: "%prefix%&aMostrando &e%count%&a ubicaciones de tesoros dentro de &e%radius%&a bloques por &e%seconds%s&a. &7(Mostrando los primeros %max%)"
+    none_found: "%prefix%&eNo se encontraron tesoros dentro de &6%radius%&e bloques."
+    invalid_radius: "%prefix%&cEl radio debe estar entre &e1&c y &e500&c bloques."
+    invalid_duration: "%prefix%&cLa duración debe estar entre &e1&c y &e300&c segundos."
+    packetevents_missing: "%prefix%&cNo se pueden mostrar marcadores. Instale/active &ePacketEvents&c."
   list:
     header: "&6Colecciones disponibles:"
     format: "&7- &e%collection%"
