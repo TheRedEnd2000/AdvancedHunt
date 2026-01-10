@@ -5,8 +5,8 @@ import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
-import net.kyori.adventure.text.Component;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -56,8 +56,8 @@ public final class SpigotModernPlatformAdapter extends Spigot115PlatformAdapter 
             meta.add(new EntityData<>(0,
                     EntityDataTypes.BYTE, invisibleFlag));
             meta.add(new EntityData<>(2,
-                    EntityDataTypes.OPTIONAL_ADV_COMPONENT,
-                    Optional.of(Component.text(customName == null ? "" : customName))));
+                    EntityDataTypes.OPTIONAL_COMPONENT,
+                    Optional.of(toJsonTextComponent(customName))));
             meta.add(new EntityData<>(3,
                     EntityDataTypes.BOOLEAN, true));
             meta.add(new EntityData<>(5,
@@ -65,20 +65,26 @@ public final class SpigotModernPlatformAdapter extends Spigot115PlatformAdapter 
             meta.add(new EntityData<>(15,
                     EntityDataTypes.BYTE, armorStandFlags));
 
-            WrapperPlayServerSpawnLivingEntity packet =
-                    new WrapperPlayServerSpawnLivingEntity(
-                            entityId,
-                            entityUuid,
-                            EntityTypes.ARMOR_STAND,
-                            new Vector3d(location.getX(), location.getY(), location.getZ()),
-                            0.0f,
-                            0.0f,
-                            0.0f,
-                            new Vector3d(0.0, 0.0, 0.0),
-                            meta
+                // 1.21.x: ArmorStands are spawned using the generic spawn-entity packet (not spawn-living-entity).
+                // Also, metadata is not guaranteed to be accepted inline with the spawn packet on newer protocol tiers.
+                WrapperPlayServerSpawnEntity spawnPacket =
+                    new WrapperPlayServerSpawnEntity(
+                        entityId,
+                        Optional.of(entityUuid),
+                        EntityTypes.ARMOR_STAND,
+                        new Vector3d(location.getX(), location.getY(), location.getZ()),
+                        0.0f,
+                        0.0f,
+                        0.0f,
+                        0,
+                        Optional.of(new Vector3d(0.0, 0.0, 0.0))
                     );
 
-            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+                WrapperPlayServerEntityMetadata metaPacket =
+                    new WrapperPlayServerEntityMetadata(entityId, meta);
+
+                PacketEvents.getAPI().getPlayerManager().sendPacket(player, spawnPacket);
+                PacketEvents.getAPI().getPlayerManager().sendPacket(player, metaPacket);
             return true;
         } catch (Throwable ignored) {
             return false;
