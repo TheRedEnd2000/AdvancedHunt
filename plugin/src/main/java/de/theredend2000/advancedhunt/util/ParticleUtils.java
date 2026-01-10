@@ -68,7 +68,7 @@ public class ParticleUtils {
     public static boolean isLegacy() {
         // Kept for backward compatibility with existing callers.
         // Legacy means 1.8.x.
-        String base = org.bukkit.Bukkit.getBukkitVersion().split("-")[0];
+        String base = Bukkit.getBukkitVersion().split("-")[0];
         return base.startsWith("1.8");
     }
 
