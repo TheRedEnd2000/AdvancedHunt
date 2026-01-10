@@ -14,6 +14,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <packetevents.version>2.11.1</packetevents.version>
         <spigot.version.modern>1.21.1-R0.1-SNAPSHOT</spigot.version.modern>
         <spigot.version.legacy>1.8.8-R0.1-SNAPSHOT</spigot.version.legacy>
         <spigot.version.1_9>1.9.4-R0.1-SNAPSHOT</spigot.version.1_9>

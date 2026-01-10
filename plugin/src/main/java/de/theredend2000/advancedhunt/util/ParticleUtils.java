@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.util;
 
 import de.theredend2000.advancedhunt.platform.PlatformAccess;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -28,8 +29,7 @@ public class ParticleUtils {
     /**
      * Spawns a particle at the given location visible only to the specified player.
      * This allows different players to see different particles at the same location.
-     * Note: This method is only supported on modern versions (1.9+).
-     * For legacy versions (1.8), use the simplified global particle system instead.
+        * Note: On legacy versions (1.8.x), this requires PacketEvents to be installed.
      *
      * @param player       The player who will see the particle
      * @param location     The location to spawn the particle at
@@ -43,6 +43,21 @@ public class ParticleUtils {
     public static void spawnParticleForPlayer(Player player, Location location, String particleName,
                                               int count, double offsetX, double offsetY, double offsetZ, double speed) {
         PlatformAccess.get().spawnParticleForPlayer(player, location, particleName, count, offsetX, offsetY, offsetZ, speed);
+    }
+
+    /**
+     * True if per-player particles are expected to work on this server.
+     * - 1.9+ : supported natively
+     * - 1.8.x: supported only when PacketEvents is installed
+     */
+    public static boolean supportsPerPlayerParticles() {
+        if (!isLegacy()) return true;
+        try {
+            return Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    || Bukkit.getPluginManager().isPluginEnabled("PacketEvents");
+        } catch (Throwable ignored) {
+            return false;
+        }
     }
 
     /**

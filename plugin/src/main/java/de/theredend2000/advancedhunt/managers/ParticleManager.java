@@ -221,7 +221,7 @@ public class ParticleManager {
         }
 
         // For legacy versions (1.8), use simplified global particles
-        if (ParticleUtils.isLegacy()) {
+        if (ParticleUtils.isLegacy() && !ParticleUtils.supportsPerPlayerParticles()) {
             tickParticlesLegacy(snapshots, availableCollections);
             return;
         }
