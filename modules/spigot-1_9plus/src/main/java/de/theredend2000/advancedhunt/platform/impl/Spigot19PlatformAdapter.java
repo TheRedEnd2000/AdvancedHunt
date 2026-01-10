@@ -14,23 +14,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * Adapter for Spigot 1.9+ API.
- * - ActionBar via Spigot API
  * - Particles via Bukkit Particle API (XParticle name mapping)
  */
 public class Spigot19PlatformAdapter implements PlatformAdapter {
-
-    private final ModernActionBarSender actionBarSender = new ModernActionBarSender();
     private final ModernParticleSpawner particleSpawner = new ModernParticleSpawner();
 
     @Override
     public boolean isAir(Material material) {
         if (material == null) return true;
         return "AIR".equals(material.name());
-    }
-
-    @Override
-    public void sendActionBar(Player player, String message) {
-        actionBarSender.send(player, message);
     }
 
     @Override

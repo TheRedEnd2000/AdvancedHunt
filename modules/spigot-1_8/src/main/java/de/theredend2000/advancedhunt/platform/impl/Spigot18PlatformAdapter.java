@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -14,20 +13,12 @@ import java.util.UUID;
 
 public final class Spigot18PlatformAdapter implements PlatformAdapter {
 
-    // Delegates keep 1.8-specific NMS/effect logic out of the adapter surface.
-
-    private final LegacyActionBarSender actionBarSender = new LegacyActionBarSender();
     private final LegacyParticleSpawner particleSpawner = new LegacyParticleSpawner();
 
     @Override
     public boolean isAir(Material material) {
         if (material == null) return true;
         return "AIR".equals(material.name());
-    }
-
-    @Override
-    public void sendActionBar(Player player, String message) {
-        actionBarSender.send(player, message);
     }
 
     @Override
