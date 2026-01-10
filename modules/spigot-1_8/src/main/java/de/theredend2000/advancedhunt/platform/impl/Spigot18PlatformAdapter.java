@@ -1,14 +1,26 @@
 package de.theredend2000.advancedhunt.platform.impl;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import de.theredend2000.advancedhunt.platform.PlatformAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public final class Spigot18PlatformAdapter implements PlatformAdapter {
@@ -28,7 +40,7 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
     }
 
     @Override
-    public void spawnParticleForPlayer(org.bukkit.entity.Player player, Location location, String particleName, int count,
+    public void spawnParticleForPlayer(Player player, Location location, String particleName, int count,
                                        double offsetX, double offsetY, double offsetZ, double speed) {
         // Optional: use PacketEvents (if installed) to send per-player particle packets.
         // Fallback remains a no-op to preserve prior behavior when PacketEvents is absent.
@@ -104,7 +116,7 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
     }
 
     @Override
-    public boolean isMainHandInteract(org.bukkit.event.player.PlayerInteractEvent event) {
+    public boolean isMainHandInteract(PlayerInteractEvent event) {
         return true;
     }
 
@@ -119,7 +131,88 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
     }
 
     @Override
-    public void setFireworkSilent(org.bukkit.entity.Firework firework, boolean silent) {
+    public void setFireworkSilent(Firework firework, boolean silent) {
         // 1.8 does not support silent entities.
+    }
+
+    @Override
+    public boolean spawnHologramArmorStandForPlayer(Player player, int entityId, UUID entityUuid, Location location, String customName) {
+        if (player == null || location == null) return false;
+        if (location.getWorld() == null) return false;
+
+        // Only reference PacketEvents classes after confirming the plugin is enabled.
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+                return false;
+            }
+        } catch (Throwable ignored) {
+            return false;
+        }
+
+        try {
+            if (!PacketEvents.getAPI().isInitialized()) return false;
+
+            // Legacy 1.8 metadata indices/types.
+            // 0: entity flags (byte) -> invis
+            // 2: custom name (string)
+            // 3: custom name visible (byte)
+            // 10: armor stand flags (byte) -> small + no baseplate + marker
+            final byte invisibleFlag = (byte) 0x20;
+            final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
+
+            List<EntityData<?>> meta = new ArrayList<>();
+            meta.add(new EntityData<>(0,
+                    EntityDataTypes.BYTE, invisibleFlag));
+            meta.add(new EntityData<>(2,
+                    EntityDataTypes.STRING, customName == null ? "" : customName));
+            meta.add(new EntityData<>(3,
+                    EntityDataTypes.BYTE, (byte) 1));
+            meta.add(new EntityData<>(10,
+                    EntityDataTypes.BYTE, armorStandFlags));
+
+            WrapperPlayServerSpawnLivingEntity packet =
+                    new WrapperPlayServerSpawnLivingEntity(
+                            entityId,
+                            entityUuid,
+                            EntityTypes.ARMOR_STAND,
+                            new Vector3d(location.getX(), location.getY(), location.getZ()),
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            new Vector3d(0.0, 0.0, 0.0),
+                            meta
+                    );
+
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean destroyEntitiesForPlayer(Player player, int... entityIds) {
+        if (player == null) return false;
+        if (entityIds == null || entityIds.length == 0) return false;
+
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+                return false;
+            }
+        } catch (Throwable ignored) {
+            return false;
+        }
+
+        try {
+            if (!PacketEvents.getAPI().isInitialized()) return false;
+            WrapperPlayServerDestroyEntities packet =
+                    new WrapperPlayServerDestroyEntities(entityIds);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
     }
 }

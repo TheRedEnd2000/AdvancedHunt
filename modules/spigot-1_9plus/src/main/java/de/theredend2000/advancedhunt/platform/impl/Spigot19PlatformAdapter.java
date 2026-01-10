@@ -1,6 +1,14 @@
 package de.theredend2000.advancedhunt.platform.impl;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import de.theredend2000.advancedhunt.platform.PlatformAdapter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,6 +19,10 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Adapter for Spigot 1.9+ API.
@@ -123,6 +135,84 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         try {
             firework.setSilent(silent);
         } catch (Throwable ignored) {
+        }
+    }
+
+    @Override
+    public boolean spawnHologramArmorStandForPlayer(Player player, int entityId, UUID entityUuid, Location location, String customName) {
+        if (player == null || location == null) return false;
+        if (location.getWorld() == null) return false;
+
+        // Only reference PacketEvents classes after confirming the plugin is enabled.
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+                return false;
+            }
+        } catch (Throwable ignored) {
+            return false;
+        }
+
+        try {
+            if (!PacketEvents.getAPI().isInitialized()) return false;
+
+            final byte invisibleFlag = (byte) 0x20;
+            final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
+
+            // 1.9-1.12: custom name is a plain string.
+            // Armor stand flags index is 11 in this tier.
+            List<EntityData<?>> meta = new ArrayList<>();
+            meta.add(new EntityData<>(0,
+                    EntityDataTypes.BYTE, invisibleFlag));
+            meta.add(new EntityData<>(2,
+                    EntityDataTypes.STRING, customName == null ? "" : customName));
+            meta.add(new EntityData<>(3,
+                    EntityDataTypes.BOOLEAN, true));
+            meta.add(new EntityData<>(11,
+                    EntityDataTypes.BYTE, armorStandFlags));
+
+            WrapperPlayServerSpawnLivingEntity packet =
+                    new WrapperPlayServerSpawnLivingEntity(
+                            entityId,
+                            entityUuid,
+                            EntityTypes.ARMOR_STAND,
+                            new Vector3d(location.getX(), location.getY(), location.getZ()),
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            new Vector3d(0, 0.0, 0.0),
+                            meta
+                    );
+
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean destroyEntitiesForPlayer(Player player, int... entityIds) {
+        if (player == null) return false;
+        if (entityIds == null || entityIds.length == 0) return false;
+
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+                return false;
+            }
+        } catch (Throwable ignored) {
+            return false;
+        }
+
+        try {
+            if (!PacketEvents.getAPI().isInitialized()) return false;
+            WrapperPlayServerDestroyEntities packet =
+                    new WrapperPlayServerDestroyEntities(entityIds);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
         }
     }
 
