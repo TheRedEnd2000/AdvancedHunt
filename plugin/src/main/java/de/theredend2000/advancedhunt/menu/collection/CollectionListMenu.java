@@ -11,6 +11,7 @@ import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
+import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import de.theredend2000.advancedhunt.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -81,7 +82,7 @@ public class CollectionListMenu extends PagedMenu {
             UUID treasureId = treasureCore.getId();
             CompletableFuture<Integer> foundCountFuture = plugin.getDataRepository().getFoundPlayerCount(treasureId);
 
-            boolean isHead = HeadHelper.isPlayerHead(item);
+            boolean isHead = HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) || HeadHelper.isPlayerHead(item);
             CompletableFuture<SkullInfo> skullInfoFuture = isHead
                     ? plugin.getTreasureManager().getFullTreasureAsync(treasureId).thenApply(fullTreasure -> {
                         if (fullTreasure == null) {
@@ -167,6 +168,10 @@ public class CollectionListMenu extends PagedMenu {
             item = XMaterialHelper.getItemStack(xMaterial);
             if (item == null) item = new ItemStack(XMaterial.CHEST.get());
             if (MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
+        }
+
+        if (HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) && item != null) {
+            item = PlatformAccess.get().ensurePlayerHeadItem(item);
         }
 
         ItemBuilder builder = new ItemBuilder(item);

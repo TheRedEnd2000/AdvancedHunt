@@ -76,7 +76,24 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
         if (item == null) return null;
         try {
             Material type = item.getType();
+            if (type == null) return item;
+
+            // Legacy: heads can be stored as the block material (SKULL) in some code paths.
+            if ("SKULL".equals(type.name())) {
+                Material skullItem = Material.getMaterial("SKULL_ITEM");
+                if (skullItem != null) {
+                    ItemMeta meta = item.getItemMeta();
+                    ItemStack converted = new ItemStack(skullItem, item.getAmount());
+                    if (meta != null) {
+                        converted.setItemMeta(meta);
+                    }
+                    item = converted;
+                    type = item.getType();
+                }
+            }
+
             if (type != null && "SKULL_ITEM".equals(type.name())) {
+                // 3 = player head (0 skeleton, 1 wither, 2 zombie, 3 player, 4 creeper, 5 dragon)
                 if (item.getDurability() != (short) 3) {
                     item.setDurability((short) 3);
                 }

@@ -72,6 +72,21 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         if (item == null) return null;
         try {
             Material type = item.getType();
+            if (type == null) return item;
+
+            if ("SKULL".equals(type.name())) {
+                Material skullItem = Material.getMaterial("SKULL_ITEM");
+                if (skullItem != null) {
+                    ItemMeta meta = item.getItemMeta();
+                    ItemStack converted = new ItemStack(skullItem, item.getAmount());
+                    if (meta != null) {
+                        converted.setItemMeta(meta);
+                    }
+                    item = converted;
+                    type = item.getType();
+                }
+            }
+
             if (type != null && "SKULL_ITEM".equals(type.name())) {
                 if (item.getDurability() != (short) 3) {
                     item.setDurability((short) 3);

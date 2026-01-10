@@ -8,6 +8,27 @@ import org.bukkit.inventory.ItemStack;
 
 public class HeadHelper {
 
+    /**
+     * Fast heuristic for determining whether a stored material name represents a head/skull.
+     * This is important for legacy versions (1.8-1.12) where skulls are represented by
+     * {@code SKULL}/{@code SKULL_ITEM} + durability, and XMaterial matching can otherwise
+     * resolve to a non-player skull type (e.g. creeper).
+     */
+    public static boolean isHeadMaterialName(String materialName) {
+        if (materialName == null) return false;
+        String name = materialName.trim();
+        if (name.isEmpty()) return false;
+        name = name.toUpperCase(java.util.Locale.ROOT);
+
+        if ("SKULL".equals(name) || "SKULL_ITEM".equals(name) || "LEGACY_SKULL".equals(name) || "LEGACY_SKULL_ITEM".equals(name)) {
+            return true;
+        }
+        return name.endsWith("_HEAD")
+                || name.endsWith("_WALL_HEAD")
+                || name.endsWith("_SKULL")
+                || name.endsWith("_WALL_SKULL");
+    }
+
     public static boolean isPlayerHead(ItemStack item) {
         XMaterial material = XMaterial.matchXMaterial(item);
         return material == XMaterial.PLAYER_HEAD || material == XMaterial.PLAYER_WALL_HEAD;
