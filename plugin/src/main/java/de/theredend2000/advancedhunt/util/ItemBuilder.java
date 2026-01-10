@@ -135,6 +135,7 @@ public class ItemBuilder {
 
     public ItemBuilder hideTooltip(boolean tooltip) {
         ItemMeta meta = ensureMeta();
+        meta.setDisplayName(" ");
         PlatformAccess.get().applyHideTooltip(meta, tooltip);
         return this;
     }
