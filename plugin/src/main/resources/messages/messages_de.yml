@@ -133,6 +133,7 @@ command:
     descriptions:
       help: "Zeigt dieses Hilfemenü an"
       reload: "Lädt die Plugin-Konfiguration neu"
+      show: "Zeigt nahe Schatz-Standorte als Hologramme"
       list: "Listet alle verfügbaren Sammlungen auf"
       list_collection: "Alle platzierten Schätze in einer Sammlung anzeigen"
       leaderboard: "Öffnet die Bestenliste für eine Sammlung"
@@ -175,6 +176,14 @@ command:
   reload:
     success: "%prefix%&aKonfiguration und Nachrichten neu geladen!"
     failed: "%prefix%&cNeuladen fehlgeschlagen.Weitere Informationen finden Sie in der Konsole."
+
+  show:
+    success: "%prefix%&aZeige &e%count%&a Schatz-Standorte in &e%radius%&a Blöcken für &e%seconds%s&a."
+    success_truncated: "%prefix%&aZeige &e%count%&a Schatz-Standorte in &e%radius%&a Blöcken für &e%seconds%s&a. &7(Zeige die ersten %max%)"
+    none_found: "%prefix%&eKeine Schätze innerhalb von &6%radius%&e Blöcken gefunden."
+    invalid_radius: "%prefix%&cRadius muss zwischen &e1&c und &e500&c Blöcken liegen."
+    invalid_duration: "%prefix%&cDauer muss zwischen &e1&c und &e300&c Sekunden liegen."
+    packetevents_missing: "%prefix%&cMarker konnten nicht angezeigt werden. Installiere/aktiviere &ePacketEvents&c."
   list:
     header: "&6Verfügbare Sammlungen:"
     format: "&7- &e%collection%"

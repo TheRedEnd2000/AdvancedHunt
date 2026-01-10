@@ -156,7 +156,8 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         try {
             if (!PacketEvents.getAPI().isInitialized()) return false;
 
-            final byte invisibleFlag = (byte) 0x20;
+            // Entity flags: 0x20 = invisible, 0x40 = glowing (1.9+)
+            final byte invisibleFlag = (byte) (0x20 | 0x40);
             final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
 
             // 1.9-1.12: custom name is a plain string.

@@ -137,6 +137,7 @@ command:
     descriptions:
       help: "Affiche ce menu d'aide"
       reload: "Recharge la configuration du plugin"
+      show: "Affiche les emplacements de trésors proches en hologrammes"
       list: "Répertorie toutes les collections disponibles"
       list_collection: "Afficher tous les trésors placés dans une collection"
       leaderboard: "Ouvre le classement d'une collection"
@@ -179,6 +180,14 @@ command:
   reload:
     success: "%prefix%&aConfiguration et messages rechargés !"
     failed: "%prefix%&cÉchec du rechargement.Vérifiez la console pour plus de détails."
+
+  show:
+    success: "%prefix%&aAffichage de &e%count%&a emplacements de trésors dans &e%radius%&a blocs pendant &e%seconds%s&a."
+    success_truncated: "%prefix%&aAffichage de &e%count%&a emplacements de trésors dans &e%radius%&a blocs pendant &e%seconds%s&a. &7(Affiche les %max% premiers)"
+    none_found: "%prefix%&eAucun trésor trouvé dans un rayon de &6%radius%&e blocs."
+    invalid_radius: "%prefix%&cLe rayon doit être entre &e1&c et &e500&c blocs."
+    invalid_duration: "%prefix%&cLa durée doit être entre &e1&c et &e300&c secondes."
+    packetevents_missing: "%prefix%&cImpossible d'afficher les marqueurs. Installez/activez &ePacketEvents&c."
   list:
     header: "&6Collections disponibles :"
     format: "&7- &e%collection%"

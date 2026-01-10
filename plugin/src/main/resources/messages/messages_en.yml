@@ -144,7 +144,7 @@ command:
     descriptions:
       help: "Shows this help menu"
       reload: "Reloads the plugin configuration"
-      show: "Shows a temporary hologram (PacketEvents)"
+      show: "Shows nearby treasure locations as holograms"
       list: "Lists all available collections"
       list_collection: "View all placed treasures in a collection"
       leaderboard: "Opens the leaderboard for a collection"
@@ -190,9 +190,12 @@ command:
     failed: "%prefix%&cReload failed. Check console for details."
 
   show:
-    success: "%prefix%&aShown hologram for &e%seconds%s&a."
+    success: "%prefix%&aShowing &e%count%&a treasure locations within &e%radius%&a blocks for &e%seconds%s&a."
+    success_truncated: "%prefix%&aShowing &e%count%&a treasure locations within &e%radius%&a blocks for &e%seconds%s&a. &7(Showing first %max%)"
+    none_found: "%prefix%&eNo treasures found within &6%radius%&e blocks."
+    invalid_radius: "%prefix%&cRadius must be between &e1&c and &e500&c blocks."
     invalid_duration: "%prefix%&cDuration must be between &e1&c and &e300&c seconds."
-    packetevents_missing: "%prefix%&cUnable to show hologram. Install/enable &ePacketEvents&c."
+    packetevents_missing: "%prefix%&cUnable to show markers. Install/enable &ePacketEvents&c."
   list:
     header: "&6Available Collections:"
     format: "&7- &e%collection%"
