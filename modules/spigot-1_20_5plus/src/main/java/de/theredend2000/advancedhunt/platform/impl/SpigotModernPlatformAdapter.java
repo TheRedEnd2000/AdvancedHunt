@@ -48,7 +48,9 @@ public final class SpigotModernPlatformAdapter extends Spigot115PlatformAdapter 
 
             // Entity flags: 0x20 = invisible, 0x40 = glowing
             final byte invisibleFlag = (byte) (0x20 | 0x40);
-            final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
+            // Note: marker armor stands (0x10) don't render a model, so there's nothing to outline.
+            // If we want the client-side glow outline to be visible, don't use the marker flag.
+            final byte armorStandFlags = (byte) (0x01 | 0x08);
 
             // 1.20.5+ (component-era) may shift tracked-data indices again.
             // Armor stand flags are expected at index 15 in this tier.

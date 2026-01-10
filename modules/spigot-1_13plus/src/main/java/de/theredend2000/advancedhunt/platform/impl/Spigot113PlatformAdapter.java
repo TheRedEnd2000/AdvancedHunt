@@ -109,7 +109,9 @@ public class Spigot113PlatformAdapter extends Spigot19PlatformAdapter {
 
             // Entity flags: 0x20 = invisible, 0x40 = glowing
             final byte invisibleFlag = (byte) (0x20 | 0x40);
-            final byte armorStandFlags = (byte) (0x01 | 0x08 | 0x10);
+            // Note: marker armor stands (0x10) don't render a model, so there's nothing to outline.
+            // If we want the client-side glow outline to be visible, don't use the marker flag.
+            final byte armorStandFlags = (byte) (0x01 | 0x08);
 
             // 1.13+: custom name is an optional chat component.
             // Armor stand flags are still at index 11 in 13.x.
