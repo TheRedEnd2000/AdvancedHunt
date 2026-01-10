@@ -6,7 +6,6 @@ import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,6 +27,17 @@ import java.util.UUID;
  * - SkullMeta#setOwningPlayer
  */
 public class Spigot113PlatformAdapter extends Spigot19PlatformAdapter {
+
+    protected String toJsonTextComponent(String text) {
+        String safe = text == null ? "" : text;
+        // Minimal JSON escape for our usage (plain text).
+        safe = safe.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+        return "{\"text\":\"" + safe + "\"}";
+    }
 
     @Override
     public boolean isAir(Material material) {
@@ -107,8 +117,8 @@ public class Spigot113PlatformAdapter extends Spigot19PlatformAdapter {
             meta.add(new EntityData<>(0,
                     EntityDataTypes.BYTE, invisibleFlag));
             meta.add(new EntityData<>(2,
-                    EntityDataTypes.OPTIONAL_ADV_COMPONENT,
-                    Optional.of(Component.text(customName == null ? "" : customName))));
+                    EntityDataTypes.OPTIONAL_COMPONENT,
+                    Optional.of(toJsonTextComponent(customName))));
             meta.add(new EntityData<>(3,
                     EntityDataTypes.BOOLEAN, true));
             meta.add(new EntityData<>(5,
