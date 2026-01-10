@@ -462,4 +462,8 @@ public final class Main extends JavaPlugin {
     public MinecraftHelp<CommandSender> getMinecraftHelp() {
         return minecraftHelp;
     }
+
+    public BukkitAudiences getAdventure() {
+        return adventure;
+    }
 }

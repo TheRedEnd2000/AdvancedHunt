@@ -27,8 +27,8 @@ public final class PlatformAccess {
         MinecraftVersion version = MinecraftVersion.detect();
 
         // Select the highest applicable adapter tier.
-        // 1.8.x -> NMS actionbar, legacy effect-based particles.
-        // 1.9+  -> Particle API + actionbar ChatMessageType.
+        // 1.8.x -> legacy effect-based particles.
+        // 1.9+  -> Particle API.
         // 1.13+ -> modern head material + UUID skull owner.
         // 1.14+ -> custom model data + unbreakable.
         // 1.15+ -> Material#isAir().

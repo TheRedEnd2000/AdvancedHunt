@@ -15,8 +15,6 @@ public interface PlatformAdapter {
 
     boolean isAir(Material material);
 
-    void sendActionBar(Player player, String message);
-
     void spawnParticle(Location location, String particleName, int count,
                        double offsetX, double offsetY, double offsetZ, double speed);
 

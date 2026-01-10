@@ -15,7 +15,8 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <packetevents.version>2.11.1</packetevents.version>
-        <spigot.version.modern>1.21.1-R0.1-SNAPSHOT</spigot.version.modern>
+        <bungeecord.chat.version>1.16-R0.4</bungeecord.chat.version>
+        <spigot.version.modern>1.20.5-R0.1-SNAPSHOT</spigot.version.modern>
         <spigot.version.legacy>1.8.8-R0.1-SNAPSHOT</spigot.version.legacy>
         <spigot.version.1_9>1.9.4-R0.1-SNAPSHOT</spigot.version.1_9>
         <spigot.version.1_13>1.13.2-R0.1-SNAPSHOT</spigot.version.1_13>
@@ -37,6 +38,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>net.md-5</groupId>
+                <artifactId>bungeecord-chat</artifactId>
+                <version>${bungeecord.chat.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.spigotmc</groupId>
                 <artifactId>spigot-api</artifactId>
                 <version>${spigot.version.modern}</version>
@@ -49,6 +55,26 @@
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>md-5-releases</id>
+            <url>https://repo.md-5.net/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>md-5-snapshots</id>
+            <url>https://repo.md-5.net/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>sonatype</id>
