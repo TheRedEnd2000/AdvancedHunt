@@ -15,6 +15,7 @@ import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import de.theredend2000.advancedhunt.util.MaterialUtils;
 import de.theredend2000.advancedhunt.util.MessageUtils;
+import de.theredend2000.advancedhunt.util.ParticleUtils;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import org.bukkit.*;
@@ -23,7 +24,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.block.TileState;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -1732,14 +1732,94 @@ public class AdvancedHuntCommand {
     }
 
     private void glowBlock(Player player){
+        if (player == null) return;
+
+        final int seconds = 10;
         Block block = player.getTargetBlockExact(10);
-        if(block == null){
+
+        if (block == null) {
             player.sendMessage("§cLook at a block.");
             return;
         }
-        BlockDisplay display = (BlockDisplay) block.getWorld().spawn(block.getLocation(), BlockDisplay.class);
-        display.setBlock(block.getBlockData());
-        display.setGlowing(true);
-        display.setGlowColorOverride(Color.LIME);
+
+        Location blockLoc = block.getLocation();
+        World world = blockLoc.getWorld();
+        if (world == null) return;
+
+        // Prefer a true client-side glow outline (1.9+ via PacketEvents).
+        int entityId = allocateClientSideEntityId(world);
+        UUID entityUuid = UUID.randomUUID();
+
+        boolean spawned = PlatformAccess.get().spawnGlowingBlockMarkerForPlayer(player, entityId, entityUuid, blockLoc);
+        if (spawned) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (!player.isOnline()) return;
+                        PlatformAccess.get().destroyEntitiesForPlayer(player, entityId);
+                    } catch (Throwable ignored) {
+                    }
+                }
+            }.runTaskLater(plugin, seconds * 20L);
+
+            player.sendMessage("§aGlowing block marker shown for " + seconds + "s.");
+            return;
+        }
+
+        // Fallback: per-player particles (legacy / when PacketEvents isn't available).
+        if (!ParticleUtils.supportsPerPlayerParticles()) {
+            player.sendMessage("§cPacketEvents missing; cannot show client-side marker.");
+            return;
+        }
+
+        final int iterations = seconds * 10; // task runs every 2 ticks
+        new BukkitRunnable() {
+            int remaining = iterations;
+
+            @Override
+            public void run() {
+                try {
+                    if (!player.isOnline() || remaining-- <= 0) {
+                        cancel();
+                        return;
+                    }
+
+                    // Draw a simple outline using particles around the block.
+                    // Keep it lightweight: top + bottom perimeters + vertical corners.
+                    double step = 0.25;
+                    double x0 = blockLoc.getX();
+                    double y0 = blockLoc.getY();
+                    double z0 = blockLoc.getZ();
+
+                    // Top perimeter
+                    for (double t = 0.0; t <= 1.0; t += step) {
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + t, y0 + 1.01, z0), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + t, y0 + 1.01, z0 + 1.0), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0, y0 + 1.01, z0 + t), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + 1.0, y0 + 1.01, z0 + t), "REDSTONE", 1, 0, 0, 0, 0);
+                    }
+
+                    // Bottom perimeter
+                    for (double t = 0.0; t <= 1.0; t += step) {
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + t, y0 + 0.01, z0), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + t, y0 + 0.01, z0 + 1.0), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0, y0 + 0.01, z0 + t), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + 1.0, y0 + 0.01, z0 + t), "REDSTONE", 1, 0, 0, 0, 0);
+                    }
+
+                    // Vertical corners
+                    for (double y = 0.0; y <= 1.0; y += step) {
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0, y0 + y, z0), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + 1.0, y0 + y, z0), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0, y0 + y, z0 + 1.0), "REDSTONE", 1, 0, 0, 0, 0);
+                        ParticleUtils.spawnParticleForPlayer(player, new Location(world, x0 + 1.0, y0 + y, z0 + 1.0), "REDSTONE", 1, 0, 0, 0, 0);
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 2L);
+
+        player.sendMessage("§eParticle block marker shown for " + seconds + "s.");
     }
 }

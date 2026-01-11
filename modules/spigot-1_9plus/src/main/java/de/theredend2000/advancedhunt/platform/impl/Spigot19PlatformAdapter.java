@@ -219,4 +219,52 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         }
     }
 
+    @Override
+    public boolean spawnGlowingBlockMarkerForPlayer(Player player, int entityId, UUID entityUuid, Location blockLocation) {
+        if (player == null || blockLocation == null) return false;
+        if (blockLocation.getWorld() == null) return false;
+
+        // Only reference PacketEvents classes after confirming the plugin is enabled.
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+                return false;
+            }
+        } catch (Throwable ignored) {
+            return false;
+        }
+
+        try {
+            if (!PacketEvents.getAPI().isInitialized()) return false;
+
+            // Entity flags: 0x20 = invisible, 0x40 = glowing (1.9+)
+            final byte flags = (byte) (0x20 | 0x40);
+
+            List<EntityData<?>> meta = new ArrayList<>();
+            meta.add(new EntityData<>(0, EntityDataTypes.BYTE, flags));
+
+            // Spawn a shulker at the center of the block.
+            // Shulkers are cube-like, so the glow outline reads close to a block outline.
+                // Use the block base Y (entity position is at feet).
+                Location spawnLoc = blockLocation.clone().add(0.5, 0.0, 0.5);
+            WrapperPlayServerSpawnLivingEntity packet =
+                    new WrapperPlayServerSpawnLivingEntity(
+                            entityId,
+                            entityUuid,
+                            EntityTypes.SHULKER,
+                            new Vector3d(spawnLoc.getX(), spawnLoc.getY(), spawnLoc.getZ()),
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            new Vector3d(0.0, 0.0, 0.0),
+                            meta
+                    );
+
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
 }

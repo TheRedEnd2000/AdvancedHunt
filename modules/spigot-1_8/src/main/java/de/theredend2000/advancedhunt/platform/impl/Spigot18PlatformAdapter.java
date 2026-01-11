@@ -215,4 +215,11 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
             return false;
         }
     }
+
+    @Override
+    public boolean spawnGlowingBlockMarkerForPlayer(Player player, int entityId, UUID entityUuid, Location blockLocation) {
+        // 1.8 does not support the glowing outline feature.
+        // Callers should provide a fallback (e.g., per-player particles).
+        return false;
+    }
 }
