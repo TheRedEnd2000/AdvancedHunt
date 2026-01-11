@@ -33,6 +33,7 @@ public final class PlatformAccess {
         // 1.14+ -> custom model data + unbreakable.
         // 1.15+ -> Material#isAir().
         // 1.20.5+ -> hide tooltip (and other component-era meta changes).
+        // 1.21+ -> protocol changes for packet-only entities (e.g. hologram armor stands).
         String implClass;
         if (version.isLessThan(1, 9, 0)) {
             implClass = "de.theredend2000.advancedhunt.platform.impl.Spigot18PlatformAdapter";
@@ -44,8 +45,10 @@ public final class PlatformAccess {
             implClass = "de.theredend2000.advancedhunt.platform.impl.Spigot114PlatformAdapter";
         } else if (version.isLessThan(1, 20, 5)) {
             implClass = "de.theredend2000.advancedhunt.platform.impl.Spigot115PlatformAdapter";
+        } else if (version.isLessThan(1, 21, 0)) {
+            implClass = "de.theredend2000.advancedhunt.platform.impl.Spigot1205PlusPlatformAdapter";
         } else {
-            implClass = "de.theredend2000.advancedhunt.platform.impl.SpigotModernPlatformAdapter";
+            implClass = "de.theredend2000.advancedhunt.platform.impl.Spigot121PlusPlatformAdapter";
         }
 
         try {

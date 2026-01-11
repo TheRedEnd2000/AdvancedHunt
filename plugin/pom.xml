@@ -177,6 +177,11 @@
             <artifactId>advancedhunt-spigot-1_20_5plus</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.theredend2000</groupId>
+            <artifactId>advancedhunt-spigot-1_21plus</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Cloud Command Framework -->
         <dependency>

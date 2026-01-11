@@ -33,6 +33,7 @@
         <module>modules/spigot-1_14plus</module>
         <module>modules/spigot-1_15plus</module>
         <module>modules/spigot-1_20_5plus</module>
+        <module>modules/spigot-1_21plus</module>
     </modules>
 
     <dependencyManagement>
