@@ -23,6 +23,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.block.TileState;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -381,6 +382,14 @@ public class AdvancedHuntCommand {
                         .permission("advancedhunt.admin")
                         .commandDescription(desc("debug_removecollectionplaced"))
                         .handler(context -> debugRemoveCollectionPlaced((Player) context.sender(), context.get("collection")))
+        );
+
+        commandManager.command(
+                playerBuilder()
+                        .literal("debug")
+                        .literal("glow")
+                        .permission("advancedhunt.admin")
+                        .handler(context -> glowBlock((Player) context.sender()))
         );
 
         // ==================== Migration Commands ====================
@@ -1720,5 +1729,17 @@ public class AdvancedHuntCommand {
         plugin.getConfig().set("migration.target.password", "password");
         plugin.saveConfig();
         sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.mysql_config_reset"));
+    }
+
+    private void glowBlock(Player player){
+        Block block = player.getTargetBlockExact(10);
+        if(block == null){
+            player.sendMessage("§cLook at a block.");
+            return;
+        }
+        BlockDisplay display = (BlockDisplay) block.getWorld().spawn(block.getLocation(), BlockDisplay.class);
+        display.setBlock(block.getBlockData());
+        display.setGlowing(true);
+        display.setGlowColorOverride(Color.LIME);
     }
 }
