@@ -4,10 +4,17 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.util.Vector3f;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -103,6 +110,106 @@ public class Spigot1205PlusPlatformAdapter extends Spigot115PlatformAdapter {
             return true;
         } catch (Throwable ignored) {
             return false;
+        }
+    }
+
+    @Override
+    public boolean spawnGlowingBlockMarkerForPlayer(Player player, int entityId, UUID entityUuid, Location blockLocation) {
+        if (player == null || blockLocation == null) return false;
+        if (blockLocation.getWorld() == null) return false;
+        if (!isPacketEventsReady()) {
+            return super.spawnGlowingBlockMarkerForPlayer(player, entityId, entityUuid, blockLocation);
+        }
+
+        try {
+            Block block = blockLocation.getBlock();
+            if (block == null) {
+                return super.spawnGlowingBlockMarkerForPlayer(player, entityId, entityUuid, blockLocation);
+            }
+
+            // Resolve the block state id for the BlockDisplay.
+            int globalBlockStateId = 0;
+            try {
+                if (block.getBlockData() != null) {
+                    WrappedBlockState wrapped = SpigotConversionUtil.fromBukkitBlockData(block.getBlockData());
+                    globalBlockStateId = wrapped != null ? wrapped.getGlobalId() : 0;
+                }
+            } catch (Throwable ignored) {
+            }
+
+            // Base entity flags: 0x40 = glowing (do NOT set invisible; we want the block model rendered).
+            final byte entityFlags = (byte) 0x40;
+
+            // Display entity metadata indices:
+            // - 11: translation (Vector3f)
+            // - 12: scale (Vector3f)
+            // - 16: brightness override (type differs by protocol tier)
+            // BlockDisplay:
+            // - 23: block state (int)
+            List<EntityData<?>> meta = new ArrayList<>();
+            meta.add(new EntityData<>(0, EntityDataTypes.BYTE, entityFlags));
+
+            // Prevent the display from sampling block-internal lighting (which can look very dark on solid blocks).
+            // Minecraft uses packed light coordinates: LightTexture.pack(blockLight, skyLight) == (sky << 20) | (block << 4)
+            // Use full brightness (15,15) so the marker is consistently visible.
+            final int packedFullBright = (15 << 20) | (15 << 4);
+            try {
+                ClientVersion clientVersion = PacketEvents.getAPI().getPlayerManager().getClientVersion(player);
+                // 1.21+ uses an INT (default -1). Earlier component-era tiers used OptionalInt.
+                if (clientVersion != null && clientVersion.isNewerThanOrEquals(ClientVersion.V_1_21)) {
+                    meta.add(new EntityData<>(16, EntityDataTypes.INT, packedFullBright));
+                } else {
+                    meta.add(new EntityData<>(16, EntityDataTypes.OPTIONAL_INT, Optional.of(packedFullBright)));
+                }
+            } catch (Throwable ignored) {
+                // Safe fallback: don't set brightness if we can't determine the client protocol.
+            }
+
+            // Slightly upscale to avoid z-fighting with the real world block.
+            // Important: scaling is applied from the entity origin. Because we spawn at the block corner
+            // (integer coords), we must apply a small negative translation so the upscale expands equally
+            // towards all sides (+/-X, +/-Y, +/-Z) instead of only into the positive direction.
+            //
+            // Heads/skulls have thin top geometry that tends to z-fight more, so we add a bit more Y-scale
+            // (still centered) to separate the top face.
+            final String typeName = block.getType().name();
+            final boolean isHeadOrSkull = typeName.endsWith("_HEAD") || typeName.endsWith("_SKULL");
+
+            final float scaleX = isHeadOrSkull ? 1.0030f : 1.0025f;
+            final float scaleY = isHeadOrSkull ? 1.0060f : 1.0025f;
+            final float scaleZ = isHeadOrSkull ? 1.0030f : 1.0025f;
+
+            final float halfExpandX = (scaleX - 1.0f) / 2.0f;
+            final float halfExpandY = (scaleY - 1.0f) / 2.0f;
+            final float halfExpandZ = (scaleZ - 1.0f) / 2.0f;
+            meta.add(new EntityData<>(11, EntityDataTypes.VECTOR3F, new Vector3f(-halfExpandX, -halfExpandY, -halfExpandZ)));
+            meta.add(new EntityData<>(12, EntityDataTypes.VECTOR3F, new Vector3f(scaleX, scaleY, scaleZ)));
+            meta.add(new EntityData<>(23, EntityDataTypes.BLOCK_STATE, globalBlockStateId));
+
+            // Spawn at the block corner (integer coords).
+            Location spawnLoc = blockLocation.clone();
+
+            WrapperPlayServerSpawnEntity spawnPacket =
+                    new WrapperPlayServerSpawnEntity(
+                            entityId,
+                            Optional.of(entityUuid),
+                            EntityTypes.BLOCK_DISPLAY,
+                            new Vector3d(spawnLoc.getX(), spawnLoc.getY(), spawnLoc.getZ()),
+                            0.0f,
+                            0.0f,
+                            0.0f,
+                            0,
+                            Optional.of(new Vector3d(0.0, 0.0, 0.0))
+                    );
+
+            WrapperPlayServerEntityMetadata metaPacket =
+                    new WrapperPlayServerEntityMetadata(entityId, meta);
+
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, spawnPacket);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, metaPacket);
+            return true;
+        } catch (Throwable ignored) {
+            return super.spawnGlowingBlockMarkerForPlayer(player, entityId, entityUuid, blockLocation);
         }
     }
 }

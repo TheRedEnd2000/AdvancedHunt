@@ -70,4 +70,18 @@ public interface PlatformAdapter {
      * Implementations may require PacketEvents to be installed.
      */
     boolean destroyEntitiesForPlayer(Player player, int... entityIds);
+
+    /**
+     * Spawns a client-side (packet-only) glowing marker for a block for a single player.
+     * <p>
+     * Intended usage is a "block outline" effect without placing fake blocks (to avoid z-fighting).
+     * Implementations may require PacketEvents to be installed.
+     * <p>
+     * Notes:
+     * - 1.9+ can use an invisible + glowing entity (typically a shulker) to get a cube-like outline.
+     * - 1.8.x has no built-in glowing outline; implementations may return false.
+     *
+     * @return true if packets were sent successfully
+     */
+    boolean spawnGlowingBlockMarkerForPlayer(Player player, int entityId, UUID entityUuid, Location blockLocation);
 }
