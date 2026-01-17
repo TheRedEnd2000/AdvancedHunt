@@ -1,4 +1,4 @@
-config-version: 1
+config-version: 4
 
 storage:
   # Options: SQLITE, MYSQL, YAML
