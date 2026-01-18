@@ -7,6 +7,8 @@ import de.theredend2000.advancedhunt.data.YamlRepository;
 import de.theredend2000.advancedhunt.listeners.*;
 import de.theredend2000.advancedhunt.managers.*;
 import de.theredend2000.advancedhunt.managers.minigame.MinigameManager;
+import de.theredend2000.advancedhunt.migration.legacy.LegacyDataMigrator;
+import de.theredend2000.advancedhunt.migration.legacy.LegacyMigrationConfig;
 import de.theredend2000.advancedhunt.placeholder.AdvancedHuntExpansion;
 import de.theredend2000.advancedhunt.util.ConfigMigrationHandler;
 import de.theredend2000.advancedhunt.util.ConfigUpdater;
@@ -19,6 +21,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -148,8 +151,18 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         random = new Random();
+
+        File configFile = new File(getDataFolder(), "config.yml");
+        YamlConfiguration previousConfig = YamlConfiguration.loadConfiguration(configFile);
+        int previousConfigVersion = previousConfig.getInt("config-version", 0);
+        boolean hadLegacyMigrationKey = previousConfig.contains("migration.legacy.enabled");
+
+        LegacyMigrationConfig legacyCfg = LegacyMigrationConfig.fromConfig(previousConfig, getDataFolder());
+        legacyCfg = maybeAutoEnableLegacyMigration(previousConfigVersion, hadLegacyMigrationKey, legacyCfg);
+        final LegacyMigrationConfig finalLegacyCfg = legacyCfg;
+
         saveDefaultConfig();
-        ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"), ConfigMigrationHandler::migrateConfig);
+        ConfigUpdater.update(this, "config.yml", configFile, ConfigMigrationHandler::migrateConfig);
         reloadConfig();
 
         // Initialize Adventure
@@ -166,6 +179,68 @@ public final class Main extends JavaPlugin {
         currentStorageType = repoSetup.storageType();
         initRepository(dataRepository);
 
+        // Legacy migration config was already loaded before ConfigUpdater ran
+        if (finalLegacyCfg.enabled()) {
+            getLogger().warning("Legacy migration is enabled. Startup will continue after migration finishes.");
+            LegacyDataMigrator migrator = new LegacyDataMigrator(this, dataRepository, finalLegacyCfg);
+            migrator.run().whenComplete((result, ex) -> {
+                if (ex != null) {
+                    getLogger().severe("Legacy migration failed: " + ex.getMessage());
+                    if (finalLegacyCfg.failFast()) {
+                        Bukkit.getScheduler().runTask(this, () -> Bukkit.getPluginManager().disablePlugin(this));
+                        return;
+                    }
+                    // Continue startup anyway (best-effort).
+                } else if (result != null) {
+                    getLogger().info("Legacy migration complete: collections=" + result.collectionsImported()
+                        + ", treasures=" + result.treasuresImported()
+                        + ", players=" + result.playersImported()
+                        + ", links=" + result.playerFoundLinks()
+                        + ", missing-links=" + result.missingTreasureLinks());
+                }
+
+                Bukkit.getScheduler().runTask(this, this::finishStartup);
+            });
+            return;
+        }
+
+        finishStartup();
+    }
+
+    private LegacyMigrationConfig maybeAutoEnableLegacyMigration(int previousConfigVersion, boolean hadLegacyMigrationKey, LegacyMigrationConfig legacyCfg) {
+        if (legacyCfg.enabled()) {
+            return legacyCfg;
+        }
+
+        // Respect explicit config choice.
+        if (hadLegacyMigrationKey) {
+            return legacyCfg;
+        }
+
+        // Only auto-run when upgrading from older configs.
+        if (previousConfigVersion <= 0 || previousConfigVersion >= 4) {
+            return legacyCfg;
+        }
+
+        // Auto-detect legacy data in plugin folder
+        if (looksLikeLegacyDataFolder(getDataFolder())) {
+            getLogger().warning("Auto-detected legacy data (upgrade from config-version " + previousConfigVersion + ")");
+            getLogger().warning("Running legacy migration automatically. Set migration.legacy.enabled=false to force-disable.");
+            return legacyCfg.withEnabled(true);
+        }
+
+        return legacyCfg;
+    }
+
+    private static boolean looksLikeLegacyDataFolder(File folder) {
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            return false;
+        }
+        File eggs = new File(folder, "eggs");
+        return eggs.exists() && eggs.isDirectory();
+    }
+
+    private void finishStartup() {
         // Initialize Managers
         rewardManager = new RewardManager(this);
         placeModeManager = new PlaceModeManager(this);
