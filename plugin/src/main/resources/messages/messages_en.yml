@@ -223,7 +223,7 @@ command:
     failed: "%prefix%&cFailed to create collection. A collection with that name might already exist."
   info:
     lines:
-      - "%prefix%&6━━━━━━ Collection Info: &e%collection% &6━━━━━━"
+      - "&6━━━━━━ Collection Info: &e%collection% &6━━━━━━"
       - "%uuid%"
       - "&7Treasures: &f%count%"
       - "%status%"
