@@ -323,6 +323,26 @@ public final class LegacyDataMigrator {
     }
 
     /**
+     * Writes a marker file recording the successful migration.
+     */
+    private void writeMarker(File marker, File legacyRoot, int collections, int treasures, int players, File targetBackup) {
+        try {
+            String summary = "Legacy migration completed successfully.\n"
+                + "Date: " + java.time.Instant.now() + "\n"
+                + "Source: " + legacyRoot.getAbsolutePath() + "\n"
+                + "Collections: " + collections + "\n"
+                + "Treasures: " + treasures + "\n"
+                + "Players: " + players + "\n"
+                + (targetBackup != null ? "Backup: " + targetBackup.getAbsolutePath() + "\n" : "");
+            
+            Files.write(marker.toPath(), summary.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            plugin.getLogger().info("Migration marker written: " + marker.getName());
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to write migration marker", e);
+        }
+    }
+
+    /**
      * Clean up all legacy files from the source folder.
      * Always runs after successful migration or when marker file exists.
      */

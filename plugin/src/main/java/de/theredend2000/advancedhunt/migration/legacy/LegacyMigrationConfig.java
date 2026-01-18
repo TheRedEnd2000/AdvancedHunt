@@ -69,6 +69,10 @@ public final class LegacyMigrationConfig {
         return snapshotBatchPerTick;
     }
 
+    public String markerFileName() {
+        return ".legacy-migration-complete";
+    }
+
     public LegacyMigrationConfig withEnabled(boolean enabled) {
         return new LegacyMigrationConfig(
             enabled,
