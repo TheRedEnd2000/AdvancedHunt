@@ -62,8 +62,23 @@ public class CollectionManager {
         });
     }
 
+    /**
+     * Normalizes a collection name for consistent comparison by replacing spaces with underscores
+     * and converting to lowercase.
+     * 
+     * @param name the collection name to normalize
+     * @return the normalized name
+     */
+    public static String normalizeCollectionName(String name) {
+        if (name == null) return "";
+        return name.replace(" ", "_").toLowerCase();
+    }
+
     public Optional<Collection> getCollectionByName(String name) {
-        return cachedCollections.stream().filter(c -> c.getName().equalsIgnoreCase(name)).findFirst();
+        String normalizedInput = normalizeCollectionName(name);
+        return cachedCollections.stream()
+                .filter(c -> normalizeCollectionName(c.getName()).equals(normalizedInput))
+                .findFirst();
     }
 
     public Optional<Collection> getCollectionById(UUID id) {
@@ -105,8 +120,17 @@ public class CollectionManager {
     }
 
     public CompletableFuture<Boolean> renameCollection(String oldName, String newName) {
+        // Normalize the new name (replace spaces with underscores)
+        String normalizedNewName = newName.replace(" ", "_");
+        
+        // Check if normalized new name already exists (and is not the same collection)
+        Optional<Collection> existing = getCollectionByName(normalizedNewName);
+        if (existing.isPresent() && !normalizeCollectionName(existing.get().getName()).equals(normalizeCollectionName(oldName))) {
+            return CompletableFuture.completedFuture(false);
+        }
+        
         Optional<Collection> c = getCollectionByName(oldName);
-        return c.map(collection -> repository.renameCollection(collection.getId(), newName).thenCompose(success -> {
+        return c.map(collection -> repository.renameCollection(collection.getId(), normalizedNewName).thenCompose(success -> {
             if (success) {
                 return reloadCollections().thenApply(v -> true);
             }
@@ -143,11 +167,15 @@ public class CollectionManager {
     }
 
     public CompletableFuture<Boolean> createCollection(String name) {
-        if (getCollectionByName(name).isPresent()) {
+        // Normalize the name (replace spaces with underscores)
+        String normalizedName = name.replace(" ", "_");
+        
+        // Check for duplicate (using normalized comparison)
+        if (getCollectionByName(normalizedName).isPresent()) {
             return CompletableFuture.completedFuture(false);
         }
 
-        Collection collection = new Collection(generateUniqueCollectionId(), name, true);
+        Collection collection = new Collection(generateUniqueCollectionId(), normalizedName, true);
         return repository.saveCollection(collection).thenCompose(v -> 
             reloadCollections().thenApply(x -> true)
         );

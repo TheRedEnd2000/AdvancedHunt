@@ -84,4 +84,15 @@ public interface PlatformAdapter {
      * @return true if packets were sent successfully
      */
     boolean spawnGlowingBlockMarkerForPlayer(Player player, int entityId, UUID entityUuid, Location blockLocation);
+
+    /**
+     * Sends a clickable text message to the player. On 1.15+, the text will have a click event
+     * to copy the value to clipboard. On older versions, returns a plain formatted message.
+     *
+     * @param player the player to send the message to
+     * @param displayText the text to display in chat
+     * @param copyText the text to copy when clicked (1.15+ only)
+     * @param hoverText the tooltip text when hovering (can be null)
+     */
+    void sendClickableCopyText(Player player, String displayText, String copyText, String hoverText);
 }

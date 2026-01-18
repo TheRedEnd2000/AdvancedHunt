@@ -8,6 +8,10 @@ import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import de.theredend2000.advancedhunt.platform.PlatformAdapter;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -265,6 +269,20 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         } catch (Throwable ignored) {
             return false;
         }
+    }
+
+    @Override
+    public void sendClickableCopyText(Player player, String displayText, String copyText, String hoverText) {
+        // 1.9-1.14 doesn't support COPY_TO_CLIPBOARD, use SUGGEST_COMMAND instead
+        // When clicked, it will populate the player's chat box with the text
+        TextComponent component = new TextComponent(displayText);
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, copyText));
+        
+        if (hoverText != null && !hoverText.isEmpty()) {
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+        }
+        
+        player.spigot().sendMessage(component);
     }
 
 }
