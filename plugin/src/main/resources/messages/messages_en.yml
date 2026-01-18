@@ -154,6 +154,7 @@ command:
       collection_edit: "Edit an existing collection"
       collection_delete: "Deletes a collection"
       collection_rename: "Renames a collection"
+      collection_info: "Display detailed collection information"
       rewards: "View rewards for the treasure you're looking at"
       placepresets: "Opens the place presets menu"
       place: "Toggle place mode (exits if active)"
@@ -220,6 +221,24 @@ command:
   create:
     success: "%prefix%&aSuccessfully created collection &e%name%"
     failed: "%prefix%&cFailed to create collection. A collection with that name might already exist."
+  info:
+    lines:
+      - "%prefix%&6━━━━━━ Collection Info: &e%collection% &6━━━━━━"
+      - "%uuid%"
+      - "&7Treasures: &f%count%"
+      - "%status%"
+      - "%timing%"
+      - "%reset%"
+      - "&7Use UUID in PlaceholderAPI: &e%%advancedhunt_found_treasures_<uuid>%%"
+    uuid: "&7UUID: &f%uuid%"
+    click_to_copy: "&eClick to copy/suggest UUID"
+    status_available: "&7Status: &aCurrently Available"
+    status_unavailable: "&7Status: &cCurrently Unavailable"
+    active_until_note: "&7  &8(Active duration set by ACT rules)"
+    next_activation: "&7Next Active: &f%time%"
+    next_reset: "&7Next Reset: &f%time%"
+    no_reset: "&7Next Reset: &fNever &8(no reset schedule)"
+    invalid_reset_schedule: "&7Next Reset: &cInvalid schedule"
   place_mode:
     disabled: "%prefix%&aPlace mode disabled."
     enabled: "%prefix%&aPlace mode enabled for collection &e%collection%&a. Place blocks to add treasures."

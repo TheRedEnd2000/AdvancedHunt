@@ -18,6 +18,9 @@ permissions:
   advancedhunt.progress:
     description: Allows viewing collection progress
     default: true
+  advancedhunt.collection.info:
+    description: Allows viewing collection information and UUID
+    default: op
   advancedhunt.hint:
     description: Allows requesting hints via minigame
     default: true

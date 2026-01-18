@@ -283,7 +283,7 @@ migration:
 
 
   legacy:
-    enabled: true
+    enabled: false
 
     # If false, migration will refuse to run unless the current storage is empty.
     allow-merge: false

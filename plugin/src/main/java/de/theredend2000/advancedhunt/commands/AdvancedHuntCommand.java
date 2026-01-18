@@ -1,5 +1,7 @@
 package de.theredend2000.advancedhunt.commands;
 
+import com.cronutils.model.Cron;
+import com.cronutils.model.time.ExecutionTime;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.data.DataRepository;
@@ -13,6 +15,7 @@ import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.platform.PlatformAccess;
+import de.theredend2000.advancedhunt.util.CronUtils;
 import de.theredend2000.advancedhunt.util.MaterialUtils;
 import de.theredend2000.advancedhunt.util.MessageUtils;
 import de.theredend2000.advancedhunt.util.ParticleUtils;
@@ -41,6 +44,7 @@ import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -103,6 +107,7 @@ public class AdvancedHuntCommand {
         // Setup suggestion providers inline
         SuggestionProvider<CommandSender> collectionsSuggestions = (context, input) ->
                 CompletableFuture.completedFuture(plugin.getCollectionManager().getAllCollectionNames().stream()
+                        .map(name -> name.replace(" ", "_"))
                         .map(Suggestion::suggestion).collect(Collectors.toList()));
 
         SuggestionProvider<CommandSender> playerNameSuggestions = (context, input) ->
@@ -215,6 +220,16 @@ public class AdvancedHuntCommand {
                         .permission("advancedhunt.admin.collection.rename")
                         .commandDescription(desc("collection_rename"))
                         .handler(context -> renameCollection(context.sender(), context.get("oldName"), context.get("newName")))
+        );
+
+        commandManager.command(
+                playerBuilder()
+                        .literal("collection")
+                        .literal("info")
+                        .required("name", StringParser.stringParser(), collectionsSuggestions)
+                        .permission("advancedhunt.collection.info")
+                        .commandDescription(desc("collection_info"))
+                        .handler(context -> showCollectionInfo((Player) context.sender(), context.get("name")))
         );
 
         // ==================== Player Commands ====================
@@ -683,6 +698,76 @@ public class AdvancedHuntCommand {
             }
 
             new ProgressMenu(player, collection.getId(), collection.getName(), plugin).open();
+        });
+    }
+
+    public void showCollectionInfo(Player player, String collectionName) {
+        withCollection(player, collectionName, collection -> {
+            String uuid = collection.getId().toString();
+            int treasureCount = plugin.getTreasureManager().getTreasureCoresInCollection(collection.getId()).size();
+            boolean isAvailable = plugin.getCollectionManager().isCollectionAvailable(collection);
+            
+            // Build status line
+            String statusKey = isAvailable ? "command.info.status_available" : "command.info.status_unavailable";
+            
+            // Build next activation/deactivation line
+            String timingLine = "";
+            if (!isAvailable) {
+                java.util.Optional<java.time.ZonedDateTime> nextActivation = plugin.getCollectionManager().getNextActivation(collection);
+                if (nextActivation.isPresent()) {
+                    String timeStr = plugin.getMessageManager().formatDateTime(nextActivation.get());
+                    timingLine = plugin.getMessageManager().getMessage("command.info.next_activation", false, "%time%", timeStr);
+                }
+            } else if (collection.getEnabledActRules() != null && !collection.getEnabledActRules().isEmpty()) {
+                timingLine = plugin.getMessageManager().getMessage("command.info.active_until_note", false);
+            }
+            
+            // Build reset line
+            String resetLine;
+            if (collection.getProgressResetCron() != null && !collection.getProgressResetCron().isEmpty()) {
+                try {
+                    Cron cron = CronUtils.getParser()
+                            .parse(collection.getProgressResetCron());
+                    ExecutionTime executionTime = com.cronutils.model.time.ExecutionTime.forCron(cron);
+                   Optional<ZonedDateTime> nextReset = executionTime.nextExecution(java.time.ZonedDateTime.now());
+                    
+                    if (nextReset.isPresent()) {
+                        String resetTimeStr = plugin.getMessageManager().formatDateTime(nextReset.get());
+                        resetLine = plugin.getMessageManager().getMessage("command.info.next_reset", false, "%time%", resetTimeStr);
+                    } else {
+                        resetLine = plugin.getMessageManager().getMessage("command.info.no_reset", false);
+                    }
+                } catch (Exception e) {
+                    resetLine = plugin.getMessageManager().getMessage("command.info.invalid_reset_schedule", false);
+                }
+            } else {
+                resetLine = plugin.getMessageManager().getMessage("command.info.no_reset", false);
+            }
+            
+            // Get the UUID display text for clickable line
+            String uuidDisplay = plugin.getMessageManager().getMessage("command.info.uuid", false, "%uuid%", uuid);
+            String hoverText = plugin.getMessageManager().getMessage("command.info.click_to_copy", false);
+            
+            // Get all info lines with placeholders
+            List<String> infoLines = plugin.getMessageManager().getMessageList("command.info.lines", false,
+                    "%collection%", collection.getName(),
+                    "%count%", String.valueOf(treasureCount),
+                    "%status%", plugin.getMessageManager().getMessage(statusKey, false),
+                    "%timing%", timingLine,
+                    "%reset%", resetLine,
+                    "%uuid%", uuidDisplay);
+            
+            // Send each line, handling UUID line specially for clickable functionality
+            for (String line : infoLines) {
+                if (line.equals(uuidDisplay)) {
+                    // Send UUID line with clickable copy functionality
+                    PlatformAccess.get()
+                            .sendClickableCopyText(player, line, uuid, hoverText);
+                } else {
+                    // Send normal line
+                    player.sendMessage(line);
+                }
+            }
         });
     }
 

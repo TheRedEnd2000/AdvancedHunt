@@ -24,15 +24,18 @@ import java.util.UUID;
  *     <li>%advancedhunt_found_count% - Total found treasures (global)</li>
  *     <li>%advancedhunt_collection_size% - Total number of collections</li>
  *     <li>%advancedhunt_has_found_<treasure_id>% - "true"/"false" if found</li>
- *     <li>%advancedhunt_max_treasures_<collection>% - Max treasures in a specific collection</li>
- *     <li>%advancedhunt_found_treasures_<collection>% - Found treasures in a specific collection</li>
- *     <li>%advancedhunt_remaining_count_<collection>% - Remaining treasures in a specific collection</li>
- *     <li>%advancedhunt_remaining_treasures_<collection>% - Alias for remaining_count</li>
- *     <li>%advancedhunt_leaderboard_name_<collection>_<rank>% - Player name at rank</li>
- *     <li>%advancedhunt_top_player_<collection>_<rank>% - Alias for leaderboard_name</li>
- *     <li>%advancedhunt_leaderboard_score_<collection>_<rank>% - Score at rank</li>
- *     <li>%advancedhunt_top_score_<collection>_<rank>% - Alias for leaderboard_score</li>
+ *     <li>%advancedhunt_max_treasures_<collection>% - Max treasures in a collection (UUID or name)</li>
+ *     <li>%advancedhunt_found_treasures_<collection>% - Found treasures in a collection (UUID or name)</li>
+ *     <li>%advancedhunt_remaining_count_<collection>% - Remaining treasures in a collection (UUID or name)</li>
+ *     <li>%advancedhunt_remaining_treasures_<collection>% - Alias for remaining_count (UUID or name)</li>
+ *     <li>%advancedhunt_leaderboard_name_<collection>_<rank>% - Player name at rank (UUID or name)</li>
+ *     <li>%advancedhunt_top_player_<collection>_<rank>% - Alias for leaderboard_name (UUID or name)</li>
+ *     <li>%advancedhunt_leaderboard_score_<collection>_<rank>% - Score at rank (UUID or name)</li>
+ *     <li>%advancedhunt_top_score_<collection>_<rank>% - Alias for leaderboard_score (UUID or name)</li>
  * </ul>
+ * <p>
+ * Note: Collection identifiers can be either UUID (preferred) or collection name (backwards compatibility).
+ * UUID format is recommended to avoid ambiguity with collections containing underscores.
  */
 public class AdvancedHuntExpansion extends PlaceholderExpansion {
 
@@ -70,6 +73,24 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
         return true;
     }
 
+    /**
+     * Resolves a collection by UUID or name. Tries UUID first, then falls back to name lookup
+     * for backwards compatibility.
+     *
+     * @param identifier the UUID string or collection name
+     * @return Optional containing the collection if found
+     */
+    private Optional<Collection> resolveCollection(String identifier) {
+        // Try UUID first (preferred format)
+        try {
+            UUID uuid = UUID.fromString(identifier);
+            return collectionManager.getCollectionById(uuid);
+        } catch (IllegalArgumentException e) {
+            // Not a valid UUID, fall back to name lookup
+            return collectionManager.getCollectionByName(identifier);
+        }
+    }
+
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
         if (player == null) return "";
@@ -99,24 +120,23 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
 
         // %advancedhunt_max_treasures_<collection>%
         if (params.startsWith("max_treasures_")) {
-            String collectionName = params.substring("max_treasures_".length());
-            Optional<Collection> collectionOpt = collectionManager.getCollectionByName(collectionName);
+            String collectionIdentifier = params.substring("max_treasures_".length());
+            Optional<Collection> collectionOpt = resolveCollection(collectionIdentifier);
             return collectionOpt.map(collection -> String.valueOf(treasureManager.getTreasureCoresInCollection(collection.getId()).size())).orElse("0");
         }
 
         // %advancedhunt_found_treasures_<collection>%
         if (params.startsWith("found_treasures_")) {
-            String collectionName = params.substring("found_treasures_".length());
-            Optional<Collection> collectionOpt = collectionManager.getCollectionByName(collectionName);
+            String collectionIdentifier = params.substring("found_treasures_".length());
+            Optional<Collection> collectionOpt = resolveCollection(collectionIdentifier);
             return collectionOpt.map(collection -> String.valueOf(treasureManager.countFoundInCollection(data.getFoundTreasures(), collection.getId()))).orElse("0");
         }
 
         // %advancedhunt_remaining_count_<collection>% OR %advancedhunt_remaining_treasures_<collection>%
         if (params.startsWith("remaining_count_") || params.startsWith("remaining_treasures_")) {
             String prefix = params.startsWith("remaining_count_") ? "remaining_count_" : "remaining_treasures_";
-            String collectionName = params.substring(prefix.length());
-            Optional<Collection> collectionOpt =
-                collectionManager.getCollectionByName(collectionName);
+            String collectionIdentifier = params.substring(prefix.length());
+            Optional<Collection> collectionOpt = resolveCollection(collectionIdentifier);
                 
             if (!collectionOpt.isPresent()) return "0";
 
@@ -131,18 +151,21 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
         if (params.startsWith("leaderboard_name_") || params.startsWith("top_player_")) {
             String prefix = params.startsWith("leaderboard_name_") ? "leaderboard_name_" : "top_player_";
             String remaining = params.substring(prefix.length());
-            // Expected format: <collection>_<rank>
-            // Since collection names might contain underscores, we need to be careful.
-            // However, the previous implementation assumed simple split. 
-            // Let's try to find the last underscore to separate rank.
+            // Expected format: <collection_identifier>_<rank>
+            // Find the last underscore to separate rank from collection identifier
             int lastUnderscore = remaining.lastIndexOf('_');
             if (lastUnderscore != -1 && lastUnderscore < remaining.length() - 1) {
-                String collectionName = remaining.substring(0, lastUnderscore);
+                String collectionIdentifier = remaining.substring(0, lastUnderscore);
                 String rankStr = remaining.substring(lastUnderscore + 1);
                 try {
                     int rank = Integer.parseInt(rankStr);
-                    LeaderboardManager.LeaderboardEntry entry = leaderboardManager.getEntry(collectionName, rank);
-                    return entry != null ? entry.getPlayerName() : "---";
+                    // Resolve collection and use its name for leaderboard lookup
+                    Optional<Collection> collectionOpt = resolveCollection(collectionIdentifier);
+                    if (collectionOpt.isPresent()) {
+                        LeaderboardManager.LeaderboardEntry entry = leaderboardManager.getEntry(collectionOpt.get().getName(), rank);
+                        return entry != null ? entry.getPlayerName() : "---";
+                    }
+                    return "---";
                 } catch (NumberFormatException e) {
                     return "invalid_rank";
                 }
@@ -155,12 +178,17 @@ public class AdvancedHuntExpansion extends PlaceholderExpansion {
             String remaining = params.substring(prefix.length());
             int lastUnderscore = remaining.lastIndexOf('_');
             if (lastUnderscore != -1 && lastUnderscore < remaining.length() - 1) {
-                String collectionName = remaining.substring(0, lastUnderscore);
+                String collectionIdentifier = remaining.substring(0, lastUnderscore);
                 String rankStr = remaining.substring(lastUnderscore + 1);
                 try {
                     int rank = Integer.parseInt(rankStr);
-                    LeaderboardManager.LeaderboardEntry entry = leaderboardManager.getEntry(collectionName, rank);
-                    return entry != null ? String.valueOf(entry.getScore()) : "0";
+                    // Resolve collection and use its name for leaderboard lookup
+                    Optional<Collection> collectionOpt = resolveCollection(collectionIdentifier);
+                    if (collectionOpt.isPresent()) {
+                        LeaderboardManager.LeaderboardEntry entry = leaderboardManager.getEntry(collectionOpt.get().getName(), rank);
+                        return entry != null ? String.valueOf(entry.getScore()) : "0";
+                    }
+                    return "0";
                 } catch (NumberFormatException e) {
                     return "invalid_rank";
                 }
