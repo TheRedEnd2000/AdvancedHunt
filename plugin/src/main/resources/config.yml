@@ -281,23 +281,7 @@ migration:
     username: "root"
     password: "password"
 
-  # One-time legacy data migration (old AdvancedHunt "eggs/" + "playerdata/").
-  #
-  # IMPORTANT:
-  # - Migrates legacy data from plugins/AdvancedHunt/ (same folder)
-  # - Creates zip backup before writing (backups/ folder automatically excluded)
-  # - Reads actual blocks in-world to fill material/block-state/nbt-data
-  # - ALWAYS cleans up legacy files after successful migration
-  # - Legacy config loaded BEFORE config updates to preserve original state in backups
-  # - Disable after first successful migration to prevent re-running
-  #
-  # TYPICAL WORKFLOW:
-  # 1. Backup your server
-  # 2. Replace old AdvancedHunt jar with new jar (legacy data stays in plugins/AdvancedHunt/)
-  # 3. Enable this migration option
-  # 4. Start server - migration runs automatically
-  # 5. Legacy files cleaned up after successful migration
-  # 6. Disable this option to prevent re-running on next startup
+
   legacy:
     enabled: true
 
