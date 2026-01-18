@@ -156,10 +156,77 @@ public final class Main extends JavaPlugin {
         YamlConfiguration previousConfig = YamlConfiguration.loadConfiguration(configFile);
         int previousConfigVersion = previousConfig.getInt("config-version", 0);
 
+        // Check if legacy migration is needed BEFORE any config updates
         LegacyMigrationConfig legacyCfg = LegacyMigrationConfig.create(getDataFolder());
         legacyCfg = maybeAutoEnableLegacyMigration(previousConfigVersion, legacyCfg);
-        final LegacyMigrationConfig finalLegacyCfg = legacyCfg;
 
+        if (legacyCfg.enabled()) {
+            // Run legacy migration BEFORE ConfigUpdater to preserve original config for backup
+            runLegacyMigrationThenStartup(configFile, previousConfig, legacyCfg);
+            return;
+        }
+
+        // Normal startup path (no legacy migration)
+        normalStartup(configFile);
+    }
+
+    /**
+     * Runs legacy migration BEFORE ConfigUpdater, so the backup contains the original config.yml
+     * with Place: section and other legacy data intact.
+     */
+    private void runLegacyMigrationThenStartup(File configFile, YamlConfiguration previousConfig, LegacyMigrationConfig legacyCfg) {
+        getLogger().warning("Legacy migration detected. Running BEFORE config update to preserve backup...");
+
+        // Initialize Adventure early (needed for some components)
+        adventure = BukkitAudiences.create(this);
+        migrationService = new MigrationService(getLogger());
+
+        // Create repository - use storage.type from legacy config if present, else default to YAML
+        String storageType = normalizeStorageType(previousConfig.getString("storage.type", "YAML"));
+        RepoSetup repoSetup = createRepositoryFromType(storageType);
+        dataRepository = repoSetup.repository();
+        currentStorageType = repoSetup.storageType();
+        initRepository(dataRepository);
+
+        // Run legacy migration on ORIGINAL files (before ConfigUpdater modifies them)
+        LegacyDataMigrator migrator = new LegacyDataMigrator(this, dataRepository, legacyCfg);
+        migrator.run().whenComplete((result, ex) -> {
+            if (ex != null) {
+                getLogger().severe("Legacy migration failed: " + ex.getMessage());
+                if (legacyCfg.failFast()) {
+                    Bukkit.getScheduler().runTask(this, () -> Bukkit.getPluginManager().disablePlugin(this));
+                    return;
+                }
+                // Continue startup anyway (best-effort).
+            } else if (result != null) {
+                getLogger().info("Legacy migration complete: collections=" + result.collectionsImported()
+                    + ", treasures=" + result.treasuresImported()
+                    + ", players=" + result.playersImported()
+                    + ", rewardPresets=" + result.rewardPresetsImported()
+                    + ", placePresets=" + result.placePresetsImported()
+                    + ", links=" + result.playerFoundLinks()
+                    + ", missing-links=" + result.missingTreasureLinks());
+            }
+
+            // NOW run config update and finish startup on main thread
+            Bukkit.getScheduler().runTask(this, () -> {
+                saveDefaultConfig();
+                ConfigUpdater.update(this, "config.yml", configFile, ConfigMigrationHandler::migrateConfig);
+                reloadConfig();
+
+                // MessageManager needs config, initialize after update
+                messageManager = new MessageManager(this);
+                soundManager = new SoundManager(this);
+
+                finishStartup();
+            });
+        });
+    }
+
+    /**
+     * Normal startup path when no legacy migration is needed.
+     */
+    private void normalStartup(File configFile) {
         saveDefaultConfig();
         ConfigUpdater.update(this, "config.yml", configFile, ConfigMigrationHandler::migrateConfig);
         reloadConfig();
@@ -177,33 +244,6 @@ public final class Main extends JavaPlugin {
         dataRepository = repoSetup.repository();
         currentStorageType = repoSetup.storageType();
         initRepository(dataRepository);
-
-        // Legacy migration runs automatically if legacy data is detected
-        if (finalLegacyCfg.enabled()) {
-            getLogger().warning("Legacy migration is enabled. Startup will continue after migration finishes.");
-            LegacyDataMigrator migrator = new LegacyDataMigrator(this, dataRepository, finalLegacyCfg);
-            migrator.run().whenComplete((result, ex) -> {
-                if (ex != null) {
-                    getLogger().severe("Legacy migration failed: " + ex.getMessage());
-                    if (finalLegacyCfg.failFast()) {
-                        Bukkit.getScheduler().runTask(this, () -> Bukkit.getPluginManager().disablePlugin(this));
-                        return;
-                    }
-                    // Continue startup anyway (best-effort).
-                } else if (result != null) {
-                    getLogger().info("Legacy migration complete: collections=" + result.collectionsImported()
-                        + ", treasures=" + result.treasuresImported()
-                        + ", players=" + result.playersImported()
-                        + ", rewardPresets=" + result.rewardPresetsImported()
-                        + ", placePresets=" + result.placePresetsImported()
-                        + ", links=" + result.playerFoundLinks()
-                        + ", missing-links=" + result.missingTreasureLinks());
-                }
-
-                Bukkit.getScheduler().runTask(this, this::finishStartup);
-            });
-            return;
-        }
 
         finishStartup();
     }
