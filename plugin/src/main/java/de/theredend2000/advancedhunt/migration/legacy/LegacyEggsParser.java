@@ -191,6 +191,9 @@ public final class LegacyEggsParser {
                 continue;
             }
 
+            // Migrate legacy placeholders to modern format
+            command = migrateLegacyPlaceholders(command);
+
             // Legacy rewards are command-based.
             out.add(new Reward(RewardType.COMMAND, chance, null, null, command));
         }
@@ -198,5 +201,22 @@ public final class LegacyEggsParser {
         // Preserve numeric ordering if possible
         out.removeIf(Objects::isNull);
         return out;
+    }
+
+    /**
+     * Migrates legacy placeholder names to their modern equivalents.
+     * Normalizes all placeholders to lowercase format.
+     * 
+     * @param command The command string containing placeholders
+     * @return The command with migrated and normalized placeholders
+     */
+    private static String migrateLegacyPlaceholders(String command) {
+        return command
+                .replace("%EGGS_FOUND%", "%found_treasures%")
+                .replace("%EGGS_MAX%", "%max_treasures%")
+                .replace("%TREASURES_FOUND%", "%found_treasures%")
+                .replace("%TREASURES_MAX%", "%max_treasures%")
+                .replace("%PLAYER%", "%player%")
+                .replace("%PREFIX%", "%prefix%");
     }
 }
