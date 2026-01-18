@@ -155,10 +155,9 @@ public final class Main extends JavaPlugin {
         File configFile = new File(getDataFolder(), "config.yml");
         YamlConfiguration previousConfig = YamlConfiguration.loadConfiguration(configFile);
         int previousConfigVersion = previousConfig.getInt("config-version", 0);
-        boolean hadLegacyMigrationKey = previousConfig.contains("migration.legacy.enabled");
 
-        LegacyMigrationConfig legacyCfg = LegacyMigrationConfig.fromConfig(previousConfig, getDataFolder());
-        legacyCfg = maybeAutoEnableLegacyMigration(previousConfigVersion, hadLegacyMigrationKey, legacyCfg);
+        LegacyMigrationConfig legacyCfg = LegacyMigrationConfig.create(getDataFolder());
+        legacyCfg = maybeAutoEnableLegacyMigration(previousConfigVersion, legacyCfg);
         final LegacyMigrationConfig finalLegacyCfg = legacyCfg;
 
         saveDefaultConfig();
@@ -179,7 +178,7 @@ public final class Main extends JavaPlugin {
         currentStorageType = repoSetup.storageType();
         initRepository(dataRepository);
 
-        // Legacy migration config was already loaded before ConfigUpdater ran
+        // Legacy migration runs automatically if legacy data is detected
         if (finalLegacyCfg.enabled()) {
             getLogger().warning("Legacy migration is enabled. Startup will continue after migration finishes.");
             LegacyDataMigrator migrator = new LegacyDataMigrator(this, dataRepository, finalLegacyCfg);
@@ -195,6 +194,8 @@ public final class Main extends JavaPlugin {
                     getLogger().info("Legacy migration complete: collections=" + result.collectionsImported()
                         + ", treasures=" + result.treasuresImported()
                         + ", players=" + result.playersImported()
+                        + ", rewardPresets=" + result.rewardPresetsImported()
+                        + ", placePresets=" + result.placePresetsImported()
                         + ", links=" + result.playerFoundLinks()
                         + ", missing-links=" + result.missingTreasureLinks());
                 }
@@ -207,28 +208,21 @@ public final class Main extends JavaPlugin {
         finishStartup();
     }
 
-    private LegacyMigrationConfig maybeAutoEnableLegacyMigration(int previousConfigVersion, boolean hadLegacyMigrationKey, LegacyMigrationConfig legacyCfg) {
+    private LegacyMigrationConfig maybeAutoEnableLegacyMigration(int previousConfigVersion, LegacyMigrationConfig legacyCfg) {
         if (legacyCfg.enabled()) {
             return legacyCfg;
         }
 
-        // Respect explicit config choice.
-        if (hadLegacyMigrationKey) {
-            return legacyCfg;
-        }
-
-        // Only auto-run when upgrading from older configs.
+        // Only auto-run when upgrading from older configs (1-3).
         if (previousConfigVersion <= 0 || previousConfigVersion >= 4) {
             return legacyCfg;
         }
 
         // Auto-detect legacy data in plugin folder
-        if (looksLikeLegacyDataFolder(getDataFolder())) {
+        if (looksLikeLegacyDataFolder(legacyCfg.sourceFolder())) {
             getLogger().warning("Auto-detected legacy data (upgrade from config-version " + previousConfigVersion + ")");
-            getLogger().warning("Running legacy migration automatically. Set migration.legacy.enabled=false to force-disable.");
-            // Also allow merge when auto-enabling: user didn't configure this, so any existing
-            // data is likely from a previous partial migration or default plugin setup.
-            return legacyCfg.withEnabled(true).withAllowMerge(true);
+            getLogger().warning("Running legacy migration automatically.");
+            return legacyCfg.withEnabled(true);
         }
 
         return legacyCfg;

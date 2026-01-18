@@ -1,0 +1,93 @@
+package de.theredend2000.advancedhunt.migration.legacy;
+
+import com.cryptomorin.xseries.XMaterial;
+import de.theredend2000.advancedhunt.model.PlacePreset;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
+import de.theredend2000.advancedhunt.util.ItemSerializer;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.util.*;
+
+/**
+ * Parses legacy place presets from the config.yml Place: section.
+ * These are the default treasure appearance items (player heads with textures).
+ */
+public final class LegacyPlacePresetParser {
+
+    private static final String DEFAULT_GROUP = "Default";
+
+    private LegacyPlacePresetParser() {
+    }
+
+    /**
+     * Parses place presets from the legacy config.yml file.
+     *
+     * @param legacyRootFolder The plugin data folder containing the legacy config.yml
+     * @return List of parsed place presets
+     */
+    public static List<PlacePreset> parseAll(File legacyRootFolder) {
+        File configFile = new File(legacyRootFolder, "config.yml");
+        if (!configFile.exists()) {
+            return Collections.emptyList();
+        }
+
+        FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        ConfigurationSection placeSection = config.getConfigurationSection("Place");
+        if (placeSection == null) {
+            return Collections.emptyList();
+        }
+
+        List<PlacePreset> presets = new ArrayList<>();
+        Set<String> keys = placeSection.getKeys(false);
+
+        for (String key : keys) {
+            ConfigurationSection entry = placeSection.getConfigurationSection(key);
+            if (entry == null) continue;
+
+            PlacePreset preset = parseEntry(key, entry);
+            if (preset != null) {
+                presets.add(preset);
+            }
+        }
+
+        return presets;
+    }
+
+    private static PlacePreset parseEntry(String key, ConfigurationSection entry) {
+        String typeStr = entry.getString("type", "PLAYER_HEAD");
+        String texture = entry.getString("texture");
+
+        XMaterial material;
+        try {
+            material = XMaterial.valueOf(typeStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            material = XMaterial.PLAYER_HEAD;
+        }
+
+        ItemStack item;
+        if (material == XMaterial.PLAYER_HEAD && texture != null && !texture.isEmpty()) {
+            item = new ItemBuilder(XMaterial.PLAYER_HEAD)
+                    .setSkullTexture(texture)
+                    .build();
+        } else {
+            item = material.parseItem();
+            if (item == null) {
+                item = XMaterial.PLAYER_HEAD.parseItem();
+            }
+        }
+
+        String serialized = ItemSerializer.serialize(item);
+        if (serialized == null) {
+            return null;
+        }
+
+        // Use index as name (e.g., "Treasure 0", "Treasure 1")
+        String name = "Treasure " + key;
+
+        return new PlacePreset(UUID.randomUUID(), DEFAULT_GROUP, name, serialized);
+    }
+}
