@@ -102,7 +102,6 @@ public final class LegacyRewardPresetParser {
                 continue;
             }
 
-            // Migrate legacy EGGS_FOUND/EGGS_MAX placeholders to TREASURES_FOUND/TREASURES_MAX
             command = migrateLegacyPlaceholders(command);
 
             rewards.add(new Reward(RewardType.COMMAND, chance, null, null, command));
