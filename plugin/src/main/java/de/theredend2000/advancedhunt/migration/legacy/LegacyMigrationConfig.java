@@ -1,44 +1,30 @@
 package de.theredend2000.advancedhunt.migration.legacy;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
 import java.io.File;
 
+/**
+ * Configuration for legacy data migration.
+ * Uses sensible defaults - migration auto-detects legacy data and runs automatically.
+ */
 public final class LegacyMigrationConfig {
 
+    private static final boolean DEFAULT_CREATE_BACKUPS = true;
+    private static final boolean DEFAULT_FAIL_FAST = true;
+    private static final int DEFAULT_SNAPSHOT_BATCH_PER_TICK = 250;
+
     private final boolean enabled;
-    private final boolean allowMerge;
-    private final boolean dryRun;
-    private final boolean createBackups;
-    private final boolean failFast;
-    private final int snapshotBatchPerTick;
     private final File pluginDataFolder;
 
-    private LegacyMigrationConfig(boolean enabled,
-                                 boolean allowMerge,
-                                 boolean dryRun,
-                                 boolean createBackups,
-                                 boolean failFast,
-                                 int snapshotBatchPerTick,
-                                 File pluginDataFolder) {
+    private LegacyMigrationConfig(boolean enabled, File pluginDataFolder) {
         this.enabled = enabled;
-        this.allowMerge = allowMerge;
-        this.dryRun = dryRun;
-        this.createBackups = createBackups;
-        this.failFast = failFast;
-        this.snapshotBatchPerTick = snapshotBatchPerTick;
         this.pluginDataFolder = pluginDataFolder;
     }
 
-    public static LegacyMigrationConfig fromConfig(FileConfiguration config, File pluginDataFolder) {
-        boolean enabled = config.getBoolean("migration.legacy.enabled", false);
-        boolean allowMerge = config.getBoolean("migration.legacy.allow-merge", false);
-        boolean dryRun = config.getBoolean("migration.legacy.dry-run", false);
-        boolean createBackups = config.getBoolean("migration.legacy.create-backup", true);
-        boolean failFast = config.getBoolean("migration.legacy.fail-fast", true);
-        int perTick = Math.max(1, config.getInt("migration.legacy.snapshot-batch-per-tick", 250));
-
-        return new LegacyMigrationConfig(enabled, allowMerge, dryRun, createBackups, failFast, perTick, pluginDataFolder);
+    /**
+     * Creates a disabled migration config. Auto-detection in Main will enable if needed.
+     */
+    public static LegacyMigrationConfig create(File pluginDataFolder) {
+        return new LegacyMigrationConfig(false, pluginDataFolder);
     }
 
     public boolean enabled() {
@@ -49,24 +35,16 @@ public final class LegacyMigrationConfig {
         return pluginDataFolder;
     }
 
-    public boolean allowMerge() {
-        return allowMerge;
-    }
-
-    public boolean dryRun() {
-        return dryRun;
-    }
-
     public boolean createBackups() {
-        return createBackups;
+        return DEFAULT_CREATE_BACKUPS;
     }
 
     public boolean failFast() {
-        return failFast;
+        return DEFAULT_FAIL_FAST;
     }
 
     public int snapshotBatchPerTick() {
-        return snapshotBatchPerTick;
+        return DEFAULT_SNAPSHOT_BATCH_PER_TICK;
     }
 
     public String markerFileName() {
@@ -74,26 +52,6 @@ public final class LegacyMigrationConfig {
     }
 
     public LegacyMigrationConfig withEnabled(boolean enabled) {
-        return new LegacyMigrationConfig(
-            enabled,
-            this.allowMerge,
-            this.dryRun,
-            this.createBackups,
-            this.failFast,
-            this.snapshotBatchPerTick,
-            this.pluginDataFolder
-        );
-    }
-
-    public LegacyMigrationConfig withAllowMerge(boolean allowMerge) {
-        return new LegacyMigrationConfig(
-            this.enabled,
-            allowMerge,
-            this.dryRun,
-            this.createBackups,
-            this.failFast,
-            this.snapshotBatchPerTick,
-            this.pluginDataFolder
-        );
+        return new LegacyMigrationConfig(enabled, this.pluginDataFolder);
     }
 }

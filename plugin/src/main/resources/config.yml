@@ -280,18 +280,3 @@ migration:
     database: "advancedhunt_target"
     username: "root"
     password: "password"
-
-
-  legacy:
-    enabled: false
-
-    # If false, migration will refuse to run unless the current storage is empty.
-    allow-merge: false
-    # If true, parse + snapshot blocks but do not write anything (no cleanup performed).
-    dry-run: false
-    # Create zip backups under plugins/AdvancedHunt/backups (previous backups excluded automatically).
-    create-backup: true
-    # If true, disable the plugin when migration fails.
-    fail-fast: true
-    # How many blocks to snapshot per tick during migration.
-    snapshot-batch-per-tick: 250

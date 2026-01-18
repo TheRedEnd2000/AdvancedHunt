@@ -1,9 +1,8 @@
 package de.theredend2000.advancedhunt.migration.legacy;
 
 import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
-import de.theredend2000.advancedhunt.model.PlayerData;
-import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.util.ZipBackupUtil;
 import org.bukkit.plugin.Plugin;
 
@@ -49,7 +48,7 @@ public final class LegacyDataMigrator {
 
     public CompletableFuture<LegacyMigratorResult> run() {
         if (!config.enabled()) {
-            return CompletableFuture.completedFuture(new LegacyMigratorResult(0, 0, 0, 0, 0, null));
+            return CompletableFuture.completedFuture(new LegacyMigratorResult(0, 0, 0, 0, 0, 0, 0, null));
         }
 
         File marker = new File(plugin.getDataFolder(), config.markerFileName());
@@ -63,7 +62,7 @@ public final class LegacyDataMigrator {
                 cleanupLegacyFiles(legacyRoot);
             }
             
-            return CompletableFuture.completedFuture(new LegacyMigratorResult(0, 0, 0, 0, 0, null));
+            return CompletableFuture.completedFuture(new LegacyMigratorResult(0, 0, 0, 0, 0, 0, 0, null));
         }
 
         File legacyRoot = config.sourceFolder();
@@ -71,201 +70,176 @@ public final class LegacyDataMigrator {
             return failed("Legacy migration source folder not found: " + legacyRoot);
         }
 
-        // Safety: refuse to run into non-empty target unless explicitly allowed.
-        CompletableFuture<Void> safety = config.allowMerge()
-            ? CompletableFuture.completedFuture(null)
-            : ensureTargetEmpty();
+        return doMigration(marker, legacyRoot);
+    }
 
-        return safety.thenCompose(v -> {
-            if (config.dryRun()) {
-                plugin.getLogger().warning("Legacy migration is running in DRY-RUN mode (no writes)."
-                    + " This still snapshots blocks and parses files.");
+    private CompletableFuture<LegacyMigratorResult> doMigration(File marker, File legacyRoot) {
+        File backupsDir = new File(plugin.getDataFolder(), "backups");
+        File targetBackup = null;
+
+        if (config.createBackups()) {
+            try {
+                targetBackup = ZipBackupUtil.createZipBackup(plugin.getDataFolder(), backupsDir, "legacy-migration-target");
+                plugin.getLogger().info("Created migration backup: " + targetBackup.getAbsolutePath());
+            } catch (IOException e) {
+                return failedFuture(e);
             }
+        }
 
-            File backupsDir = new File(plugin.getDataFolder(), "backups");
-            File targetBackup = null;
+        final File finalTargetBackup = targetBackup;
 
-            if (config.createBackups()) {
-                try {
-                    targetBackup = ZipBackupUtil.createZipBackup(plugin.getDataFolder(), backupsDir, "legacy-migration-target");
-                    plugin.getLogger().info("Created migration backup: " + targetBackup.getAbsolutePath());
-                } catch (IOException e) {
-                    return failedFuture(e);
+        // Parse legacy data
+        List<LegacyEggsParser.LegacyCollection> legacyCollections = LegacyEggsParser.parseAll(legacyRoot);
+        List<LegacyPlayerDataParser.LegacyPlayerData> legacyPlayers = LegacyPlayerDataParser.parseAll(legacyRoot);
+        List<RewardPreset> rewardPresets = LegacyRewardPresetParser.parseAll(legacyRoot);
+        List<PlacePreset> placePresets = LegacyPlacePresetParser.parseAll(legacyRoot);
+
+        plugin.getLogger().info("Legacy migration loaded " + legacyCollections.size() + " collection(s), "
+            + legacyPlayers.size() + " player(s), "
+            + rewardPresets.size() + " reward preset(s), "
+            + placePresets.size() + " place preset(s).");
+
+        // Build new collections and gather placed eggs
+        Map<String, UUID> legacyNameToCollectionId = new HashMap<>();
+        List<Collection> newCollections = new ArrayList<>();
+        List<PlacedEggToCreate> eggsToCreate = new ArrayList<>();
+
+        for (LegacyEggsParser.LegacyCollection lc : legacyCollections) {
+            UUID newCollectionId = UUID.randomUUID();
+            legacyNameToCollectionId.put(lc.name, newCollectionId);
+
+            Collection collection = new Collection(newCollectionId, lc.name, lc.enabled);
+            collection.setSinglePlayerFind(lc.onePlayer);
+            collection.setCompletionRewards(lc.globalRewards);
+            collection.setActRules(LegacyActRuleTranslator.translate(newCollectionId, lc.requirements));
+            collection.setProgressResetCron(translateProgressResetCron(lc.reset));
+
+            newCollections.add(collection);
+
+            for (LegacyEggsParser.LegacyPlacedEgg egg : lc.placedEggs) {
+                eggsToCreate.add(new PlacedEggToCreate(lc.name, newCollectionId, egg));
+            }
+        }
+
+        // Snapshot blocks on main thread
+        List<LegacyLocationKey> snapshotKeys = new ArrayList<>();
+        for (PlacedEggToCreate e : eggsToCreate) {
+            snapshotKeys.add(new LegacyLocationKey(e.legacyCollectionName, e.egg.world, e.egg.x, e.egg.y, e.egg.z));
+        }
+
+        return LegacyBlockSnapshotter.snapshotBlocks(plugin, snapshotKeys, config.snapshotBatchPerTick())
+            .thenCompose(snapshots -> {
+                // Create treasures with snapshot data
+                List<Treasure> treasures = new ArrayList<>();
+                Map<LegacyLocationKey, UUID> legacyToTreasureId = new HashMap<>();
+
+                Set<UUID> usedTreasureIds = new HashSet<>();
+                for (PlacedEggToCreate e : eggsToCreate) {
+                    LegacyLocationKey key = new LegacyLocationKey(e.legacyCollectionName, e.egg.world, e.egg.x, e.egg.y, e.egg.z);
+                    LegacyBlockSnapshotter.Snapshot snap = snapshots.get(key);
+                    if (snap == null) {
+                        plugin.getLogger().warning("Skipping legacy egg (no world/block snapshot): " + key);
+                        continue;
+                    }
+
+                    UUID treasureId = generateUniqueId(usedTreasureIds);
+                    usedTreasureIds.add(treasureId);
+
+                    org.bukkit.World world = org.bukkit.Bukkit.getWorld(e.egg.world);
+                    if (world == null) {
+                        plugin.getLogger().warning("Skipping legacy egg (world not loaded): " + key);
+                        continue;
+                    }
+
+                    org.bukkit.Location loc = new org.bukkit.Location(world, e.egg.x, e.egg.y, e.egg.z);
+
+                    Treasure treasure = new Treasure(
+                        treasureId,
+                        e.collectionId,
+                        loc,
+                        e.egg.rewards,
+                        snap.nbtData,
+                        snap.material,
+                        snap.blockState
+                    );
+
+                    treasures.add(treasure);
+                    legacyToTreasureId.put(key, treasureId);
                 }
-            }
 
-            final File finalTargetBackup = targetBackup;
+                // Convert players
+                List<PlayerData> playerDataList = new ArrayList<>();
+                int foundLinks = 0;
+                int missingLinks = 0;
 
-            List<LegacyEggsParser.LegacyCollection> legacyCollections = LegacyEggsParser.parseAll(legacyRoot);
-            List<LegacyPlayerDataParser.LegacyPlayerData> legacyPlayers = LegacyPlayerDataParser.parseAll(legacyRoot);
+                for (LegacyPlayerDataParser.LegacyPlayerData lp : legacyPlayers) {
+                    PlayerData pd = new PlayerData(lp.playerUuid);
 
-            plugin.getLogger().info("Legacy migration loaded " + legacyCollections.size() + " legacy collection(s) and "
-                + legacyPlayers.size() + " legacy player file(s)." );
-
-            // Build new collections and gather placed eggs
-            Map<String, UUID> legacyNameToCollectionId = new HashMap<>();
-            List<Collection> newCollections = new ArrayList<>();
-
-            // placed eggs to convert
-            List<PlacedEggToCreate> eggsToCreate = new ArrayList<>();
-
-            for (LegacyEggsParser.LegacyCollection lc : legacyCollections) {
-                UUID newCollectionId = UUID.randomUUID();
-                legacyNameToCollectionId.put(lc.name, newCollectionId);
-
-                Collection collection = new Collection(newCollectionId, lc.name, lc.enabled);
-                collection.setSinglePlayerFind(lc.onePlayer);
-                collection.setCompletionRewards(lc.globalRewards);
-                collection.setActRules(LegacyActRuleTranslator.translate(newCollectionId, lc.requirements));
-                collection.setProgressResetCron(translateProgressResetCron(lc.reset));
-
-                newCollections.add(collection);
-
-                for (LegacyEggsParser.LegacyPlacedEgg egg : lc.placedEggs) {
-                    eggsToCreate.add(new PlacedEggToCreate(lc.name, newCollectionId, egg));
-                }
-            }
-
-            // Snapshot blocks on main thread
-            List<LegacyLocationKey> snapshotKeys = new ArrayList<>();
-            for (PlacedEggToCreate e : eggsToCreate) {
-                snapshotKeys.add(new LegacyLocationKey(e.legacyCollectionName, e.egg.world, e.egg.x, e.egg.y, e.egg.z));
-            }
-
-            return LegacyBlockSnapshotter.snapshotBlocks(plugin, snapshotKeys, config.snapshotBatchPerTick())
-                .thenCompose(snapshots -> {
-                    // Create treasures with snapshot data
-                    List<Treasure> treasures = new ArrayList<>();
-                    Map<LegacyLocationKey, UUID> legacyToTreasureId = new HashMap<>();
-
-                    Set<UUID> usedTreasureIds = new HashSet<>();
-                    for (PlacedEggToCreate e : eggsToCreate) {
-                        LegacyLocationKey key = new LegacyLocationKey(e.legacyCollectionName, e.egg.world, e.egg.x, e.egg.y, e.egg.z);
-                        LegacyBlockSnapshotter.Snapshot snap = snapshots.get(key);
-                        if (snap == null) {
-                            plugin.getLogger().warning("Skipping legacy egg (no world/block snapshot): " + key);
+                    for (LegacyPlayerDataParser.LegacyFoundEgg fe : lp.found) {
+                        if (!legacyNameToCollectionId.containsKey(fe.collectionName)) {
                             continue;
                         }
 
-                        UUID treasureId = generateUniqueId(usedTreasureIds);
-                        usedTreasureIds.add(treasureId);
-
-                        org.bukkit.World world = org.bukkit.Bukkit.getWorld(e.egg.world);
-                        if (world == null) {
-                            plugin.getLogger().warning("Skipping legacy egg (world not loaded): " + key);
+                        LegacyLocationKey key = new LegacyLocationKey(fe.collectionName, fe.world, fe.x, fe.y, fe.z);
+                        UUID treasureId = legacyToTreasureId.get(key);
+                        if (treasureId == null) {
+                            missingLinks++;
                             continue;
                         }
-
-                        org.bukkit.Location loc = new org.bukkit.Location(world, e.egg.x, e.egg.y, e.egg.z);
-
-                        Treasure treasure = new Treasure(
-                            treasureId,
-                            e.collectionId,
-                            loc,
-                            e.egg.rewards,
-                            snap.nbtData,
-                            snap.material,
-                            snap.blockState
-                        );
-
-                        treasures.add(treasure);
-                        legacyToTreasureId.put(key, treasureId);
+                        pd.addFoundTreasure(treasureId);
+                        foundLinks++;
                     }
 
-                    // Convert players
-                    List<PlayerData> playerDataList = new ArrayList<>();
-                    int foundLinks = 0;
-                    int missingLinks = 0;
+                    playerDataList.add(pd);
+                }
 
-                    for (LegacyPlayerDataParser.LegacyPlayerData lp : legacyPlayers) {
-                        PlayerData pd = new PlayerData(lp.playerUuid);
+                // Persist all data
+                CompletableFuture<?>[] saveCollections = newCollections.stream()
+                    .map(repository::saveCollection)
+                    .toArray(CompletableFuture[]::new);
 
-                        for (LegacyPlayerDataParser.LegacyFoundEgg fe : lp.found) {
-                            // Only migrate if we created that collection.
-                            if (!legacyNameToCollectionId.containsKey(fe.collectionName)) {
-                                continue;
-                            }
+                CompletableFuture<?>[] saveRewardPresets = rewardPresets.stream()
+                    .map(repository::saveRewardPreset)
+                    .toArray(CompletableFuture[]::new);
 
-                            LegacyLocationKey key = new LegacyLocationKey(fe.collectionName, fe.world, fe.x, fe.y, fe.z);
-                            UUID treasureId = legacyToTreasureId.get(key);
-                            if (treasureId == null) {
-                                missingLinks++;
-                                continue;
-                            }
-                            pd.addFoundTreasure(treasureId);
-                            foundLinks++;
-                        }
+                CompletableFuture<?>[] savePlacePresets = placePresets.stream()
+                    .map(repository::savePlacePreset)
+                    .toArray(CompletableFuture[]::new);
 
-                        playerDataList.add(pd);
-                    }
+                int finalFoundLinks = foundLinks;
+                int finalMissingLinks = missingLinks;
+                int rewardPresetCount = rewardPresets.size();
+                int placePresetCount = placePresets.size();
 
-                    // Persist
-                    if (config.dryRun()) {
-                        plugin.getLogger().info("Dry-run complete. Would import: " + newCollections.size() + " collections, "
-                            + treasures.size() + " treasures, " + playerDataList.size() + " players.");
-                        return CompletableFuture.completedFuture(new LegacyMigratorResult(
+                return CompletableFuture.allOf(saveCollections)
+                    .thenCompose(v2 -> repository.saveTreasuresBatch(treasures))
+                    .thenCompose(v2 -> repository.savePlayerDataBatch(playerDataList))
+                    .thenCompose(v2 -> CompletableFuture.allOf(saveRewardPresets))
+                    .thenCompose(v2 -> CompletableFuture.allOf(savePlacePresets))
+                    .thenApply(v2 -> {
+                        writeMarker(marker, legacyRoot, newCollections.size(), treasures.size(), 
+                            playerDataList.size(), rewardPresetCount, placePresetCount, finalTargetBackup);
+
+                        cleanupLegacyFiles(legacyRoot);
+
+                        return new LegacyMigratorResult(
                             newCollections.size(),
                             treasures.size(),
                             playerDataList.size(),
-                            foundLinks,
-                            missingLinks,
+                            rewardPresetCount,
+                            placePresetCount,
+                            finalFoundLinks,
+                            finalMissingLinks,
                             finalTargetBackup
-                        ));
-                    }
-
-                    CompletableFuture<?>[] saveCollections = newCollections.stream()
-                        .map(repository::saveCollection)
-                        .toArray(CompletableFuture[]::new);
-
-                    int finalFoundLinks = foundLinks;
-                    int finalMissingLinks = missingLinks;
-                    return CompletableFuture.allOf(saveCollections)
-                        .thenCompose(v2 -> repository.saveTreasuresBatch(treasures))
-                        .thenCompose(v2 -> repository.savePlayerDataBatch(playerDataList))
-                        .thenApply(v2 -> {
-                            writeMarker(marker, legacyRoot, newCollections.size(), treasures.size(), playerDataList.size(), finalTargetBackup);
-
-                            cleanupLegacyFiles(legacyRoot);
-
-                            return new LegacyMigratorResult(
-                                newCollections.size(),
-                                treasures.size(),
-                                playerDataList.size(),
-                                finalFoundLinks,
-                                finalMissingLinks,
-                                finalTargetBackup
-                            );
-                        });
-                });
-        }).handle((result, ex) -> {
-            if (ex != null) {
-                plugin.getLogger().log(Level.SEVERE, "Legacy migration failed", ex);
-                return LegacyDataMigrator.<LegacyMigratorResult>failedFuture(ex);
-            }
-            return CompletableFuture.completedFuture(result);
-        }).thenCompose(f -> f);
-    }
-
-    private CompletableFuture<Void> ensureTargetEmpty() {
-        CompletableFuture<List<Collection>> collectionsFuture = repository.loadCollections();
-        CompletableFuture<List<UUID>> treasureIdsFuture = repository.getAllTreasureUUIDs();
-        CompletableFuture<List<UUID>> playerIdsFuture = repository.getAllPlayerUUIDs();
-
-        return CompletableFuture.allOf(collectionsFuture, treasureIdsFuture, playerIdsFuture).thenCompose(v -> {
-            List<Collection> collections = collectionsFuture.join();
-            List<UUID> treasures = treasureIdsFuture.join();
-            List<UUID> players = playerIdsFuture.join();
-
-            boolean empty = (collections == null || collections.isEmpty())
-                && (treasures == null || treasures.isEmpty())
-                && (players == null || players.isEmpty());
-
-            if (empty) {
-                return CompletableFuture.completedFuture(null);
-            }
-
-            return failed("Target repository is not empty. Set migration.legacy.allow-merge=true to override.");
-        });
+                        );
+                    });
+            }).handle((result, ex) -> {
+                if (ex != null) {
+                    plugin.getLogger().log(Level.SEVERE, "Legacy migration failed", ex);
+                    return LegacyDataMigrator.<LegacyMigratorResult>failedFuture(ex);
+                }
+                return CompletableFuture.completedFuture(result);
+            }).thenCompose(f -> f);
     }
 
     private <T> CompletableFuture<T> failed(String message) {
@@ -305,7 +279,7 @@ public final class LegacyDataMigrator {
             return null;
         }
 
-        // Best-effort: support simple interval-only resets (hourly/minutely/secondly).
+        // Best-effort: support simple interval-only resets
         if (year == 0 && month == 0 && date == 0) {
             if (hour > 0 && minute == 0 && second == 0) {
                 return "0 0 0/" + hour + " * * ?";
@@ -318,14 +292,14 @@ public final class LegacyDataMigrator {
             }
         }
 
-        // Complex legacy reset settings are not translated automatically.
         return null;
     }
 
     /**
      * Writes a marker file recording the successful migration.
      */
-    private void writeMarker(File marker, File legacyRoot, int collections, int treasures, int players, File targetBackup) {
+    private void writeMarker(File marker, File legacyRoot, int collections, int treasures, 
+                            int players, int rewardPresets, int placePresets, File targetBackup) {
         try {
             String summary = "Legacy migration completed successfully.\n"
                 + "Date: " + java.time.Instant.now() + "\n"
@@ -333,6 +307,8 @@ public final class LegacyDataMigrator {
                 + "Collections: " + collections + "\n"
                 + "Treasures: " + treasures + "\n"
                 + "Players: " + players + "\n"
+                + "Reward Presets: " + rewardPresets + "\n"
+                + "Place Presets: " + placePresets + "\n"
                 + (targetBackup != null ? "Backup: " + targetBackup.getAbsolutePath() + "\n" : "");
             
             Files.write(marker.toPath(), summary.getBytes(java.nio.charset.StandardCharsets.UTF_8));
