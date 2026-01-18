@@ -214,6 +214,11 @@ public final class Main extends JavaPlugin {
                 ConfigUpdater.update(this, "config.yml", configFile, ConfigMigrationHandler::migrateConfig);
                 reloadConfig();
 
+                // Force storage type to YAML after legacy migration to avoid data backend changes
+                getConfig().set("storage.type", "YAML");
+                saveConfig();
+                getLogger().info("Storage type set to YAML after legacy migration.");
+
                 // MessageManager needs config, initialize after update
                 messageManager = new MessageManager(this);
                 soundManager = new SoundManager(this);
