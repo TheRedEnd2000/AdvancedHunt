@@ -74,8 +74,22 @@ public class CollectionManager {
         return name.replace(" ", "_").toLowerCase();
     }
 
-    public Optional<Collection> getCollectionByName(String name) {
-        String normalizedInput = normalizeCollectionName(name);
+    /**
+     * Gets a collection by name or UUID. First checks if the input matches UUID format,
+     * and if so, looks up by ID. Otherwise treats it as a collection name.
+     * 
+     * @param nameOrUuid the collection name or UUID string
+     * @return the collection if found
+     */
+    public Optional<Collection> getCollectionByName(String nameOrUuid) {
+        // Check if input matches UUID format (8-4-4-4-12 hex digits with dashes)
+        if (nameOrUuid != null && nameOrUuid.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) {
+            UUID uuid = UUID.fromString(nameOrUuid);
+            return getCollectionById(uuid);
+        }
+        
+        // Fall back to name lookup
+        String normalizedInput = normalizeCollectionName(nameOrUuid);
         return cachedCollections.stream()
                 .filter(c -> normalizeCollectionName(c.getName()).equals(normalizedInput))
                 .findFirst();
