@@ -84,4 +84,16 @@ public final class LegacyMigrationConfig {
             this.pluginDataFolder
         );
     }
+
+    public LegacyMigrationConfig withAllowMerge(boolean allowMerge) {
+        return new LegacyMigrationConfig(
+            this.enabled,
+            allowMerge,
+            this.dryRun,
+            this.createBackups,
+            this.failFast,
+            this.snapshotBatchPerTick,
+            this.pluginDataFolder
+        );
+    }
 }
