@@ -70,7 +70,7 @@ public class RewardManager {
     private String processReward(Player player, Reward reward, CollectionStats stats) {
         switch (reward.getType()) {
             case COMMAND:
-                executeCommand(player, reward);
+                executeCommand(player, reward, stats);
                 return null;
 
             case ITEM:
@@ -91,10 +91,10 @@ public class RewardManager {
     }
 
     /**
-     * Executes a command reward.
+     * Executes a command reward with placeholder replacement.
      */
-    private void executeCommand(Player player, Reward reward) {
-        String cmd = reward.getValue().replace("%player%", player.getName());
+    private void executeCommand(Player player, Reward reward, CollectionStats stats) {
+        String cmd = replacePlaceholders(reward.getValue(), player.getName(), stats, 0, null);
 
         if (plugin.getConfig().getBoolean("rewards.block-execution", true) && isCommandBlacklisted(cmd)) {
             plugin.getLogger().warning("Blocked execution of blacklisted command reward: " + cmd);
@@ -259,8 +259,10 @@ public class RewardManager {
      */
     private String replacePlaceholders(String message, String playerName, CollectionStats stats,
                                        double chance, String itemName) {
+        String prefix = plugin.getConfig().getString("prefix", "[AdvancedHunt]");
         return message
                 .replace("%player%", playerName)
+                .replace("%prefix%", prefix)
                 .replace("%found_treasures%", String.valueOf(stats.foundTreasures))
                 .replace("%max_treasures%", String.valueOf(stats.maxTreasures))
                 .replace("%remaining_treasures%", String.valueOf(stats.remainingTreasures))
