@@ -102,9 +102,29 @@ public final class LegacyRewardPresetParser {
                 continue;
             }
 
+            // Migrate legacy EGGS_FOUND/EGGS_MAX placeholders to TREASURES_FOUND/TREASURES_MAX
+            command = migrateLegacyPlaceholders(command);
+
             rewards.add(new Reward(RewardType.COMMAND, chance, null, null, command));
         }
 
         return rewards;
+    }
+
+    /**
+     * Migrates legacy placeholder names to their modern equivalents.
+     * Normalizes all placeholders to lowercase format.
+     * 
+     * @param command The command string containing placeholders
+     * @return The command with migrated and normalized placeholders
+     */
+    private static String migrateLegacyPlaceholders(String command) {
+        return command
+                .replace("%EGGS_FOUND%", "%found_treasures%")
+                .replace("%EGGS_MAX%", "%max_treasures%")
+                .replace("%TREASURES_FOUND%", "%found_treasures%")
+                .replace("%TREASURES_MAX%", "%max_treasures%")
+                .replace("%PLAYER%", "%player%")
+                .replace("%PREFIX%", "%prefix%");
     }
 }
