@@ -261,6 +261,7 @@ public class RewardManager {
                                        double chance, String itemName) {
         String prefix = plugin.getConfig().getString("prefix", "[AdvancedHunt]");
         return message
+                .replaceAll("&", "§")
                 .replace("%player%", playerName)
                 .replace("%prefix%", prefix)
                 .replace("%found_treasures%", String.valueOf(stats.foundTreasures))
