@@ -19,6 +19,11 @@ import java.util.*;
 public final class LegacyPlacePresetParser {
 
     private static final String DEFAULT_GROUP = "Default";
+    /**
+     * Legacy config stores texture suffixes without this prefix to save space.
+     * The prefix must be added when creating skull textures.
+     */
+    private static final String TEXTURE_PREFIX = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUv";
 
     private LegacyPlacePresetParser() {
     }
@@ -70,8 +75,10 @@ public final class LegacyPlacePresetParser {
 
         ItemStack item;
         if (material == XMaterial.PLAYER_HEAD && texture != null && !texture.isEmpty()) {
+            // Legacy config stores texture suffix only; add the base64 prefix
+            String fullTexture = TEXTURE_PREFIX + texture;
             item = new ItemBuilder(XMaterial.PLAYER_HEAD)
-                    .setSkullTexture(texture)
+                    .setSkullTexture(fullTexture)
                     .build();
         } else {
             item = material.parseItem();
