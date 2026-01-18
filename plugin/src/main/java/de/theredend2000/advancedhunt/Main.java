@@ -226,7 +226,9 @@ public final class Main extends JavaPlugin {
         if (looksLikeLegacyDataFolder(getDataFolder())) {
             getLogger().warning("Auto-detected legacy data (upgrade from config-version " + previousConfigVersion + ")");
             getLogger().warning("Running legacy migration automatically. Set migration.legacy.enabled=false to force-disable.");
-            return legacyCfg.withEnabled(true);
+            // Also allow merge when auto-enabling: user didn't configure this, so any existing
+            // data is likely from a previous partial migration or default plugin setup.
+            return legacyCfg.withEnabled(true).withAllowMerge(true);
         }
 
         return legacyCfg;
