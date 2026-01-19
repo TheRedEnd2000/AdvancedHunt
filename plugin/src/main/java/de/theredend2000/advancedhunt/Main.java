@@ -313,10 +313,8 @@ public final class Main extends JavaPlugin {
         setupCommands();
 
         // Initialize bStats
-        if (!getConfig().getBoolean("dev-mode")) {
-            int pluginId = 19495;
-            new Metrics(this, pluginId);
-        }
+        int pluginId = 19495;
+        new Metrics(this, pluginId);
 
         // Initialize Updater
         if (getConfig().getBoolean("updater.enabled", true)) {
