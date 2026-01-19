@@ -108,7 +108,7 @@ public class ModrinthSource implements UpdateSource {
                 return true;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Bukkit.getLogger().severe("Failed to download file from Modrinth: " + e.getMessage());
             return false;
         }
     }

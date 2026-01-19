@@ -261,7 +261,7 @@ public class SqlRepository implements DataRepository {
                     "uuid VARCHAR(36) PRIMARY KEY)");
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            plugin.getLogger().severe("Failed to initialize database: " + e.getMessage());
         }
     }
 
@@ -276,7 +276,7 @@ public class SqlRepository implements DataRepository {
                 return cachedSchemaVersion;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            plugin.getLogger().severe("Failed to get schema version: " + e.getMessage());
         }
         return 0;
     }
@@ -302,7 +302,6 @@ public class SqlRepository implements DataRepository {
                         plugin.getLogger().info("Upgraded database schema to version " + i);
                     } catch (Exception e) {
                         plugin.getLogger().severe("Failed to apply schema migration for version " + i);
-                        e.printStackTrace();
                         break; // Stop migration on error
                     }
                 }
@@ -314,7 +313,7 @@ public class SqlRepository implements DataRepository {
                 cachedSchemaVersion = i;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            plugin.getLogger().severe("Failed to upgrade schema: " + e.getMessage());
         }
     }
     
@@ -398,7 +397,7 @@ public class SqlRepository implements DataRepository {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load player data for " + playerUuid + ": " + e.getMessage());
             }
             return data;
         });
@@ -432,7 +431,7 @@ public class SqlRepository implements DataRepository {
                     ps.executeBatch();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save player data for " + playerData.getPlayerUuid() + ": " + e.getMessage());
             }
         });
     }
@@ -485,7 +484,7 @@ public class SqlRepository implements DataRepository {
                     conn.setAutoCommit(originalAutoCommit);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to batch save player data: " + e.getMessage());
             }
         });
     }
@@ -515,7 +514,7 @@ public class SqlRepository implements DataRepository {
                     treasures.add(new Treasure(id, collectionId, loc, rewards, nbtData, material, blockState));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load treasures: " + e.getMessage());
             }
             return treasures;
         });
@@ -541,7 +540,7 @@ public class SqlRepository implements DataRepository {
                     cores.add(new TreasureCore(id, collectionId, loc, material, blockState));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load treasure cores: " + e.getMessage());
             }
             return cores;
         });
@@ -561,7 +560,7 @@ public class SqlRepository implements DataRepository {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to get treasure IDs by collection: " + e.getMessage());
             }
             return ids;
         });
@@ -584,7 +583,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(10, treasure.getBlockState());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save treasure: " + e.getMessage());
             }
         });
     }
@@ -626,7 +625,7 @@ public class SqlRepository implements DataRepository {
                     conn.setAutoCommit(originalAutoCommit);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save treasures batch: " + e.getMessage());
             }
         });
     }
@@ -639,7 +638,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(1, treasureId.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to delete treasure: " + e.getMessage());
             }
         });
     }
@@ -652,7 +651,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(1, collectionId.toString());
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to delete treasures by collection ID: " + e.getMessage());
                 return 0;
             }
         });
@@ -683,7 +682,7 @@ public class SqlRepository implements DataRepository {
                     return new Treasure(id, collectionId, loc, rewards, nbtData, material, blockState);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load treasure: " + e.getMessage());
             }
             return null;
         });
@@ -698,7 +697,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(2, treasureId.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to update treasure rewards: " + e.getMessage());
             }
         });
     }
@@ -737,7 +736,7 @@ public class SqlRepository implements DataRepository {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to update treasure rewards batch: " + e.getMessage());
             }
         });
     }
@@ -777,7 +776,7 @@ public class SqlRepository implements DataRepository {
                     collections.add(c);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load collections: " + e.getMessage());
             }
             return collections;
         });
@@ -819,7 +818,7 @@ public class SqlRepository implements DataRepository {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save collection: " + e.getMessage());
             }
         });
     }
@@ -840,7 +839,7 @@ public class SqlRepository implements DataRepository {
                     presets.add(new RewardPreset(id, type, name, rewards));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load reward presets: " + e.getMessage());
             }
             return presets;
         });
@@ -857,7 +856,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(4, gson.toJson(preset.getRewards()));
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save reward preset: " + e.getMessage());
             }
         });
     }
@@ -893,7 +892,7 @@ public class SqlRepository implements DataRepository {
                     conn.setAutoCommit(originalAutoCommit);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save reward presets batch: " + e.getMessage());
             }
         });
     }
@@ -907,7 +906,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(2, type.name());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to delete reward preset: " + e.getMessage());
             }
         });
     }
@@ -927,7 +926,7 @@ public class SqlRepository implements DataRepository {
                     presets.add(new PlacePreset(id, group, name, item));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load place presets: " + e.getMessage());
             }
 
             presets.sort(Comparator
@@ -949,7 +948,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(4, preset.getItemData());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save place preset: " + e.getMessage());
             }
         });
     }
@@ -962,7 +961,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(1, presetId.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to delete place preset: " + e.getMessage());
             }
         });
     }
@@ -1002,7 +1001,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(1, group.trim());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to save place preset group: " + e.getMessage());
             }
         });
     }
@@ -1057,7 +1056,7 @@ public class SqlRepository implements DataRepository {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to rename place preset group: " + e.getMessage());
             }
         });
     }
@@ -1073,7 +1072,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(1, group.trim());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to delete place preset group: " + e.getMessage());
             }
         });
     }
@@ -1093,7 +1092,7 @@ public class SqlRepository implements DataRepository {
                     ps.executeUpdate();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to delete collection: " + e.getMessage());
             }
         });
     }
@@ -1114,7 +1113,7 @@ public class SqlRepository implements DataRepository {
                     return ps.executeUpdate() > 0;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to rename collection: " + e.getMessage());
                 return false;
             }
         });
@@ -1135,7 +1134,7 @@ public class SqlRepository implements DataRepository {
                 }
                 allData.addAll(map.values());
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to load all player data: " + e.getMessage());
             }
             return allData;
         });
@@ -1151,7 +1150,7 @@ public class SqlRepository implements DataRepository {
                     uuids.add(UUID.fromString(rs.getString("uuid")));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to get all player UUIDs: " + e.getMessage());
             }
             return uuids;
         });
@@ -1164,7 +1163,7 @@ public class SqlRepository implements DataRepository {
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_player_found")) {
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to reset all progress: " + e.getMessage());
                 return 0;
             }
         });
@@ -1179,7 +1178,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(1, collectionId.toString());
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to reset collection progress: " + e.getMessage());
                 return 0;
             }
         });
@@ -1193,7 +1192,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(1, playerUuid.toString());
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to reset player progress: " + e.getMessage());
                 return 0;
             }
         });
@@ -1209,7 +1208,7 @@ public class SqlRepository implements DataRepository {
                 ps.setString(2, collectionId.toString());
                 return ps.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to reset player collection progress: " + e.getMessage());
                 return 0;
             }
         });
@@ -1232,7 +1231,7 @@ public class SqlRepository implements DataRepository {
                     leaderboard.put(UUID.fromString(rs.getString("player_uuid")), rs.getInt("count"));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to get leaderboard: " + e.getMessage());
             }
             return leaderboard;
         });
@@ -1250,7 +1249,7 @@ public class SqlRepository implements DataRepository {
                     players.add(UUID.fromString(rs.getString("player_uuid")));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to get players who found treasure: " + e.getMessage());
             }
             return players;
         });
@@ -1267,7 +1266,7 @@ public class SqlRepository implements DataRepository {
                     return rs.getInt("cnt");
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to get found player count: " + e.getMessage());
             }
             return 0;
         });
@@ -1289,7 +1288,7 @@ public class SqlRepository implements DataRepository {
                     treasures.add(UUID.fromString(rs.getString("treasure_id")));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to get player found in collection: " + e.getMessage());
             }
             return treasures;
         });
