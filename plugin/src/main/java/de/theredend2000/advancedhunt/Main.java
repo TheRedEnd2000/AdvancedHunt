@@ -582,4 +582,13 @@ public final class Main extends JavaPlugin {
     public BukkitAudiences getAdventure() {
         return adventure;
     }
+
+    /**
+     * Returns whether debug mode is enabled in the config.
+     * When debug mode is enabled, verbose logging messages will be shown.
+     * @return true if dev-mode is enabled in config.yml, false otherwise
+     */
+    public boolean isDebugMode() {
+        return getConfig().getBoolean("dev-mode", false);
+    }
 }
