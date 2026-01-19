@@ -26,7 +26,7 @@ public class RewardManager {
     private final Main plugin;
     private final Random random = new Random();
 
-    // Cache für deserialisierte Items um wiederholte Deserialisierung zu vermeiden
+    // Cache for deserialized items to avoid repeated deserialization
     private final Map<String, ItemStack> itemCache = new ConcurrentHashMap<>();
 
     // Cache compiled command blacklist patterns to avoid recompiling on every reward.
