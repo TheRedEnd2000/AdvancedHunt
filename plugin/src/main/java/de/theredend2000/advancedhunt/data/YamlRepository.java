@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.data;
 
+import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
 import org.bukkit.Bukkit;
@@ -1726,8 +1727,9 @@ public class YamlRepository implements DataRepository {
     public void rebuildLeaderboardCache() {
         // Rebuild leaderboard.yml by scanning all player data
         CompletableFuture.runAsync(() -> {
-            plugin.getLogger().info("Rebuilding YAML leaderboard cache...");
-            
+            if (((Main) plugin).isDebugMode()) {
+                plugin.getLogger().info("Rebuilding YAML leaderboard cache...");
+            }
             FileConfiguration config = new YamlConfiguration();
             
             // Get all unique collection IDs
@@ -1765,7 +1767,9 @@ public class YamlRepository implements DataRepository {
             }
             
             saveConfig(config, leaderboardFile);
-            plugin.getLogger().info("YAML leaderboard cache rebuilt successfully");
+            if (((Main) plugin).isDebugMode()) {
+                plugin.getLogger().info("YAML leaderboard cache rebuilt successfully");
+            }
         });
     }
     
