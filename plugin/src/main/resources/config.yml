@@ -20,6 +20,11 @@ command:
   # Defines the main command and its aliases for the plugin.
   # The first value is used as the primary command, all following values (separated by "|") are registered as aliases.
   name: advancedhunt|ah|ahunt|treasure|treasures
+  
+  # Enable Brigadier command integration for enhanced command completion.
+  # Brigadier provides native Minecraft command suggestions and validation.
+  # Disable this if you experience command-related issues or prefer legacy completion.
+  brigadier-integration: true
 
 rewards:
   # Commands matching these regex patterns will be blocked from being added or executed.
