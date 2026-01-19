@@ -450,7 +450,8 @@ public final class Main extends JavaPlugin {
                 executionCoordinator
         );
 
-        if (!getConfig().getBoolean("dev-mode") && commandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+        if (getConfig().getBoolean("command.brigadier-integration", true)
+                && commandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
             commandManager.registerBrigadier();
         } else if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
             commandManager.registerAsynchronousCompletions();
