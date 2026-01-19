@@ -127,7 +127,7 @@ public class SpigotSource implements UpdateSource {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Bukkit.getLogger().severe("Failed to get version ID from Spigot: " + e.getMessage());
         }
         return null;
     }
@@ -143,7 +143,7 @@ public class SpigotSource implements UpdateSource {
                 return true;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Bukkit.getLogger().severe("Failed to download file from Spigot: " + e.getMessage());
             return false;
         }
     }

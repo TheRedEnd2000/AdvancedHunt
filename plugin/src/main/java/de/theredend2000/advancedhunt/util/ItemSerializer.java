@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -18,7 +19,7 @@ public class ItemSerializer {
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
-            e.printStackTrace();
+            Bukkit.getLogger().severe("Failed to serialize item: " + e.getMessage());
             return null;
         }
     }
@@ -31,7 +32,7 @@ public class ItemSerializer {
             dataInput.close();
             return item;
         } catch (Exception e) {
-            e.printStackTrace();
+            Bukkit.getLogger().severe("Failed to deserialize item: " + e.getMessage());
             return null;
         }
     }

@@ -136,7 +136,7 @@ public class BukkitSource implements UpdateSource {
                 return true;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Bukkit.getLogger().severe("Failed to download file from Bukkit: " + e.getMessage());
             return false;
         }
     }

@@ -91,7 +91,7 @@ public class YamlRepository implements DataRepository {
             try {
                 leaderboardFile.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to create leaderboard file: " + e.getMessage());
             }
         }
         finderIndexFile = new File(plugin.getDataFolder(), "finder-index.yml");
@@ -288,8 +288,7 @@ public class YamlRepository implements DataRepository {
                 migration.run();
                 plugin.getLogger().info("Upgraded YAML data schema to version " + i);
             } catch (Exception e) {
-                plugin.getLogger().severe("Failed to apply YAML schema migration for version " + i);
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to apply YAML schema migration for version " + i + ": " + e.getMessage());
                 break;
             }
 
@@ -298,8 +297,7 @@ public class YamlRepository implements DataRepository {
                 config.save(systemFile);
                 cachedSchemaVersion = i;
             } catch (IOException e) {
-                plugin.getLogger().severe("Failed to persist YAML schema version " + i + " to system.yml; aborting upgrade");
-                e.printStackTrace();
+                plugin.getLogger().severe("Failed to persist YAML schema version " + i + " to system.yml; aborting upgrade: " + e.getMessage());
                 break;
             }
         }

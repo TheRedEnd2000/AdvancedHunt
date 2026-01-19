@@ -1736,7 +1736,7 @@ public class AdvancedHuntCommand {
             if (!(e.getCause() instanceof IllegalStateException &&
                     e.getCause().getMessage().equals("Migration aborted - existing data"))) {
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.migration.failed"));
-                e.printStackTrace();
+                plugin.getLogger().severe("Migration failed: " + e.getMessage());
             }
             if (sender instanceof Player) {
                 Player player = (Player) sender;

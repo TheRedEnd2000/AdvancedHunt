@@ -91,7 +91,6 @@ public class ConfigUpdater {
             plugin.getLogger().info("Successfully updated " + resourceName);
         } catch (IOException e) {
             plugin.getLogger().severe("Failed to update " + resourceName + ": " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
