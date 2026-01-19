@@ -94,19 +94,19 @@ public class ProgressMenu extends PagedMenu {
 
         addPagedButtons(treasures.size());
 
-        // WICHTIG: Berechne Start und End Index für diese Seite
+        // IMPORTANT: Calculate the start and end index for this page
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, treasures.size());
 
-        // WICHTIG: Setze hasNextPage Flag
+        // IMPORTANT: Set the hasNextPage flag
         this.hasNextPage = endIndex < treasures.size();
 
-        // Zeige nur Items für die aktuelle Seite
+        // Show only items for the current page
         for (int i = startIndex; i < endIndex; i++) {
             TreasureCore treasureCore = treasures.get(i);
             boolean isFound = playerData.getFoundTreasures().contains(treasureCore.getId());
 
-            // Page index ist relativ zur aktuellen Seite
+            // Page index is relative to the current page.
             int pageIndex = i - startIndex;
 
             int slot = getSlotForPagedIndex(pageIndex);
