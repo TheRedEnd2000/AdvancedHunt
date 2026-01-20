@@ -1087,9 +1087,9 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<List<PlacePreset>> loadPlacePresets() {
+    public CompletableFuture<List<PlaceItem>> loadPlaceItems() {
         return CompletableFuture.supplyAsync(() -> {
-            List<PlacePreset> presets = new ArrayList<>();
+            List<PlaceItem> presets = new ArrayList<>();
 
             if (placePresetsFolder == null) {
                 placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
@@ -1119,7 +1119,7 @@ public class YamlRepository implements DataRepository {
                         }
                         String itemData = config.getString("item");
                         if (name != null && !name.trim().isEmpty() && itemData != null && !itemData.trim().isEmpty()) {
-                            presets.add(new PlacePreset(id, group, name, itemData));
+                            presets.add(new PlaceItem(id, group, name, itemData));
                         }
                     } catch (Exception e) {
                         plugin.getLogger().warning("Failed to load place preset file " + file.getName() + ": " + e.getMessage());
@@ -1128,14 +1128,14 @@ public class YamlRepository implements DataRepository {
             }
 
             presets.sort(Comparator
-                    .comparing(PlacePreset::getGroup, String.CASE_INSENSITIVE_ORDER)
-                    .thenComparing(PlacePreset::getName, String.CASE_INSENSITIVE_ORDER));
+                    .comparing(PlaceItem::getGroup, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(PlaceItem::getName, String.CASE_INSENSITIVE_ORDER));
             return presets;
         });
     }
 
     @Override
-    public CompletableFuture<Void> savePlacePreset(PlacePreset preset) {
+    public CompletableFuture<Void> savePlaceItem(PlaceItem preset) {
         return CompletableFuture.runAsync(() -> {
             if (placePresetsFolder == null) {
                 placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
@@ -1155,7 +1155,7 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> deletePlacePreset(UUID presetId) {
+    public CompletableFuture<Void> deletePlaceItem(UUID presetId) {
         return CompletableFuture.runAsync(() -> {
             if (placePresetsFolder == null) {
                 placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
@@ -1180,7 +1180,7 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Set<String>> loadPlacePresetGroups() {
+    public CompletableFuture<Set<String>> loadPlaceItemGroups() {
         return CompletableFuture.supplyAsync(() -> {
             if (placePresetGroupsFile == null) {
                 placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
@@ -1206,7 +1206,7 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> createPlacePresetGroup(String group) {
+    public CompletableFuture<Void> createPlaceItemGroup(String group) {
         return CompletableFuture.runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;
@@ -1229,7 +1229,7 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup) {
+    public CompletableFuture<Void> renamePlaceItemGroup(String oldGroup, String newGroup) {
         return CompletableFuture.runAsync(() -> {
             if (oldGroup == null || oldGroup.trim().isEmpty() || newGroup == null || newGroup.trim().isEmpty()) {
                 return;
@@ -1288,7 +1288,7 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> deletePlacePresetGroup(String group) {
+    public CompletableFuture<Void> deletePlaceItemGroup(String group) {
         return CompletableFuture.runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;

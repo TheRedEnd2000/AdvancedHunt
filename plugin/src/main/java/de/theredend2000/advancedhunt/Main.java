@@ -67,7 +67,7 @@ public final class Main extends JavaPlugin {
     private RewardManager rewardManager;
     private PlaceModeManager placeModeManager;
     private RewardPresetManager rewardPresetManager;
-    private PlacePresetManager placePresetManager;
+    private PlaceItemManager placeItemManager;
     private ParticleManager particleManager;
     private MigrationService migrationService;
     private MessageManager messageManager;
@@ -132,7 +132,7 @@ public final class Main extends JavaPlugin {
 
     private void rebuildRepositoryDependentManagers() {
         rewardPresetManager = new RewardPresetManager(this, dataRepository);
-        placePresetManager = new PlacePresetManager(this, dataRepository);
+        placeItemManager = new PlaceItemManager(this, dataRepository);
         treasureManager = new TreasureManager(dataRepository);
         playerManager = new PlayerManager(this, dataRepository);
         leaderboardManager = new LeaderboardManager(this, dataRepository);
@@ -287,7 +287,7 @@ public final class Main extends JavaPlugin {
         placeModeManager = new PlaceModeManager(this);
         rebuildRepositoryDependentManagers();
         rewardPresetManager.reloadPresets();
-        placePresetManager.reloadPresets();
+        placeItemManager.reloadItems();
         treasureManager.loadTreasures();
         minigameManager = new MinigameManager(this);
         fireworkManager = new FireworkManager(this);
@@ -358,8 +358,8 @@ public final class Main extends JavaPlugin {
         }
     }
 
-    public PlacePresetManager getPlacePresetManager() {
-        return placePresetManager;
+    public PlaceItemManager getPlaceItemManager() {
+        return placeItemManager;
     }
 
     /**
