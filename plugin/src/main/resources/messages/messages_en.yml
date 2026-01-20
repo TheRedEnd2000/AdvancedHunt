@@ -88,7 +88,7 @@ feedback:
       done: "%prefix%&aOverrode &f%count%&a treasures with preset '&f%name%&a'."
       failed: "%prefix%&cFailed to override treasure rewards. Check console for details."
 
-  place_presets:
+  place_items:
     prompt_group: "%prefix%&7Type the &egroup name&7 in chat (or 'cancel')."
     prompt_rename: "%prefix%&7Type a new name for &e%name%&7 (or 'cancel')."
     prompt_rename_group: "%prefix%&7Type a new name for group &e%group%&7 (or 'cancel')."
@@ -96,27 +96,27 @@ feedback:
     group_created: "%prefix%&aCreated group &e%group%&a."
     group_renamed: "%prefix%&aRenamed group &e%old%&a to &e%group%&a."
     group_deleted: "%prefix%&aDeleted group &e%group%&a."
-    created: "%prefix%&aCreated place preset &e%name%&a in group &e%group%&a."
-    given: "%prefix%&aGiven preset &e%name%&a (&7%group%&a)."
-    deleted: "%prefix%&aDeleted preset &e%name%&a (&7%group%&a)."
+    created: "%prefix%&aCreated place item &e%name%&a in group &e%group%&a."
+    given: "%prefix%&aGiven item &e%name%&a (&7%group%&a)."
+    deleted: "%prefix%&aDeleted item &e%name%&a (&7%group%&a)."
 
 prefix: "&6AdvancedHunt &8>> &7"
 
 error:
   no_permission: "%prefix%&cYou do not have permission to do this!"
-  place_presets:
+  place_items:
     no_item: "%prefix%&cPlace a block item into the slot first."
-    not_a_block: "%prefix%&cThat preset isn't a block and can't be used for placing."
+    not_a_block: "%prefix%&cThat item isn't a block and can't be used for placing."
     invalid_group: "%prefix%&cInvalid group name."
     duplicate_group: "%prefix%&cThat group already exists."
     invalid_name: "%prefix%&cInvalid preset name."
     duplicate_name: "%prefix%&cA preset with that name already exists in that group."
-    serialize_failed: "%prefix%&cFailed to save that item as a preset."
-    deserialize_failed: "%prefix%&cFailed to load that preset item."
-    create_failed: "%prefix%&cFailed to create the place preset."
+    serialize_failed: "%prefix%&cFailed to save that item."
+    deserialize_failed: "%prefix%&cFailed to load that item."
+    create_failed: "%prefix%&cFailed to create the place item."
     create_group_failed: "%prefix%&cFailed to create the group."
     rename_group_failed: "%prefix%&cFailed to rename the group."
-    save_failed: "%prefix%&cFailed to save the place preset."
+    save_failed: "%prefix%&cFailed to save the place item."
 
   feature_disabled: "%prefix%&cThat feature is currently disabled."
 
@@ -156,7 +156,7 @@ command:
       collection_rename: "Renames a collection"
       collection_info: "Display detailed collection information"
       rewards: "View rewards for the treasure you're looking at"
-      placepresets: "Opens the place presets menu"
+      placeitems: "Opens the place items menu"
       place: "Toggle place mode (exits if active)"
       place_collection: "Enters place mode for a collection"
       reset_all: "Resets all player progress"
@@ -229,7 +229,7 @@ command:
       - "%status%"
       - "%timing%"
       - "%reset%"
-      - "&7Use UUID in PlaceholderAPI: &e%%advancedhunt_found_treasures_<uuid>%%"
+      - "&7Use UUID in PlaceholderAPI: &e%advancedhunt_found_treasures_<uuid>%"
     uuid: "&7UUID: &f%uuid%"
     click_to_copy: "&eClick to copy/suggest UUID"
     status_available: "&7Status: &aCurrently Available"
@@ -244,7 +244,7 @@ command:
     enabled: "%prefix%&aPlace mode enabled for collection &e%collection%&a. Place blocks to add treasures."
     not_in_place_mode: "%prefix%&cYou are not in place mode."
     no_break: "%prefix%&cYou cannot break blocks in place mode!"
-    use_command: "%prefix%&eUse /ah placepreset &eto receive your saved treasures."
+    use_command: "%prefix%&eUse /ah placeitems &eto receive your saved treasures."
   reset:
     all_success: "%prefix%&aReset &e%count% &atreasure records for all players across all collections!"
     collection_success: "%prefix%&aReset &e%count% &atreasure records for collection &e%collection%&a!"
@@ -295,9 +295,9 @@ gui:
     enabled: "&aEnabled"
     disabled: "&cDisabled"
     none: "&cNone"
-  place_presets:
+  place_items:
     groups:
-      title: "&8Place Preset Groups"
+      title: "&8Place Items Groups"
       none:
         name: "&cNo groups"
         lore:
@@ -306,7 +306,7 @@ gui:
       group:
         name: "&e%group%"
         lore:
-          - "&7Presets: &f%count%"
+          - "&7Item count: &f%count%"
           - ""
           - "&a%action%"
           - "&7%action2%"
@@ -333,11 +333,11 @@ gui:
         confirm_title: "&8Delete group &c%group%&8?"
 
     list:
-      title: "&8Place Presets: &e%group%"
+      title: "&8Place Items: &e%group%"
       none:
-        name: "&cNo presets"
+        name: "&cNo items"
         lore:
-          - "&7No presets exist in this group."
+          - "&7No items exist in this group."
           - "&7Create one with the button below."
       preset:
         name: "&e%name%"
@@ -349,11 +349,11 @@ gui:
           manage: "Right-click to manage"
 
     actions:
-      title: "&8Preset: &e%name%"
+      title: "&8Item: &e%name%"
       give:
         name: "&aGet item"
         lore:
-          - "&7Adds the preset item to your inventory."
+          - "&7Adds the item to your inventory."
       rename:
         name: "&eRename"
         lore:
@@ -373,14 +373,14 @@ gui:
       lore:
         - "&7Creates a new empty group."
     create_in_group:
-      name: "&aAdd block preset"
+      name: "&aAdd block item"
       lore:
-        - "&7Adds a block preset to &e%group%&7."
+        - "&7Adds a block item to &e%group%&7."
         - "&7Place a block item in the slot"
         - "&7and confirm to save it."
 
     add:
-      title: "&8Add Place Preset: &e%group%"
+      title: "&8Add Place Item: &e%group%"
       placeholder:
         name: "&7Place a block here"
         lore:
@@ -390,12 +390,12 @@ gui:
         name: "&eHow it works"
         lore:
           - "&7Put any &eblock item&7 in the slot."
-          - "&7The preset is saved as &f1 block&7."
+          - "&7The item is saved as &f1 block&7."
           - "&7Your item is &anot consumed&7."
       confirm:
-        name: "&aSave preset"
+        name: "&aSave item"
         lore:
-          - "&7Saves this block as a preset"
+          - "&7Saves this block as an item"
           - "&7in the selected group."
       cancel:
         name: "&cCancel"

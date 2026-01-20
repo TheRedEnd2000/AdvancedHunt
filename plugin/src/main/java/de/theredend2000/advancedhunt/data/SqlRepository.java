@@ -134,7 +134,7 @@ public class SqlRepository implements DataRepository {
 
             schemaMigrations.put(7, conn -> {
                 try {
-                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_presets (" +
+                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_items (" +
                             "id VARCHAR(36) PRIMARY KEY, " +
                             "grp VARCHAR(64) NOT NULL, " +
                             "name VARCHAR(64) NOT NULL, " +
@@ -144,7 +144,7 @@ public class SqlRepository implements DataRepository {
 
         schemaMigrations.put(8, conn -> {
             try {
-                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_preset_groups (" +
+                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_items_groups (" +
                         "grp VARCHAR(64) PRIMARY KEY)");
             } catch (SQLException ignored) {}
         });
@@ -228,7 +228,7 @@ public class SqlRepository implements DataRepository {
                     "FOREIGN KEY (collection_id) REFERENCES ah_collections(id) ON DELETE CASCADE)");
 
                     // Place Presets Table
-                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_presets (" +
+                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_items (" +
                         "id VARCHAR(36) PRIMARY KEY, " +
                         "grp VARCHAR(64) NOT NULL, " +
                         "name VARCHAR(64) NOT NULL, " +
@@ -268,7 +268,7 @@ public class SqlRepository implements DataRepository {
     @Override
     public int getSchemaVersion() {
         if (cachedSchemaVersion != -1) return cachedSchemaVersion;
-        
+
         try (Connection conn = dataSource.getConnection();
              ResultSet rs = conn.createStatement().executeQuery("SELECT version FROM ah_schema_version")) {
             if (rs.next()) {
@@ -292,9 +292,9 @@ public class SqlRepository implements DataRepository {
                     conn.createStatement().execute("INSERT INTO ah_schema_version (version) VALUES (0)");
                 }
             }
-            
+
             int latestVersion = schemaMigrations.keySet().stream().mapToInt(v -> v).max().orElse(0);
-            
+
             for (int i = currentVersion + 1; i <= latestVersion; i++) {
                 if (schemaMigrations.containsKey(i)) {
                     try {
@@ -316,7 +316,7 @@ public class SqlRepository implements DataRepository {
             plugin.getLogger().severe("Failed to upgrade schema: " + e.getMessage());
         }
     }
-    
+
     /**
      * Creates database indexes to optimize leaderboard query performance.
      * These indexes significantly improve JOIN, GROUP BY, and ORDER BY operations.
@@ -335,7 +335,7 @@ public class SqlRepository implements DataRepository {
             "CREATE INDEX idx_treasures_collection ON ah_treasures(collection_id)",
             "CREATE INDEX idx_leaderboard_query ON ah_treasures(collection_id, id)"
         };
-        
+
         for (String indexSql : indexes) {
             try {
                 conn.createStatement().execute(indexSql);
@@ -418,10 +418,10 @@ public class SqlRepository implements DataRepository {
                 }
 
                 // Save found treasures (Batch insert new ones)
-                String insertSql = useSqlite 
+                String insertSql = useSqlite
                     ? "INSERT OR IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)"
                     : "INSERT IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)";
-                
+
                 try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
                     for (UUID treasureId : playerData.getFoundTreasures()) {
                         ps.setString(1, playerData.getPlayerUuid().toString());
@@ -440,11 +440,11 @@ public class SqlRepository implements DataRepository {
     public CompletableFuture<Void> savePlayerDataBatch(List<PlayerData> playerDataList) {
         return runAsync(() -> {
             if (playerDataList.isEmpty()) return;
-            
+
             try (Connection conn = dataSource.getConnection()) {
                 boolean originalAutoCommit = conn.getAutoCommit();
                 conn.setAutoCommit(false);
-                
+
                 try {
                     // 1. Ensure player rows exist
                     String ensurePlayerSql = useSqlite
@@ -460,10 +460,10 @@ public class SqlRepository implements DataRepository {
                     }
 
                     // 2. Batch save found treasures
-                    String insertSql = useSqlite 
+                    String insertSql = useSqlite
                         ? "INSERT OR IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)"
                         : "INSERT IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)";
-                    
+
                     try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
                         for (PlayerData pd : playerDataList) {
                             String uuidStr = pd.getPlayerUuid().toString();
@@ -475,7 +475,7 @@ public class SqlRepository implements DataRepository {
                         }
                         ps.executeBatch();
                     }
-                    
+
                     conn.commit();
                 } catch (SQLException e) {
                     conn.rollback();
@@ -504,13 +504,13 @@ public class SqlRepository implements DataRepository {
                     int y = rs.getInt("y");
                     int z = rs.getInt("z");
                     Location loc = new Location(Bukkit.getWorld(world), x, y, z);
-                    
+
                     String rewardsJson = rs.getString("rewards");
                     List<Reward> rewards = gson.fromJson(rewardsJson, REWARD_LIST_TYPE);
                     String nbtData = rs.getString("block_data");
                     String material = rs.getString("material");
                     String blockState = rs.getString("block_state");
-                    
+
                     treasures.add(new Treasure(id, collectionId, loc, rewards, nbtData, material, blockState));
                 }
             } catch (SQLException e) {
@@ -672,13 +672,13 @@ public class SqlRepository implements DataRepository {
                     int y = rs.getInt("y");
                     int z = rs.getInt("z");
                     Location loc = new Location(Bukkit.getWorld(world), x, y, z);
-                    
+
                     String rewardsJson = rs.getString("rewards");
                     List<Reward> rewards = gson.fromJson(rewardsJson, REWARD_LIST_TYPE);
                     String nbtData = rs.getString("block_data");
                     String material = rs.getString("material");
                     String blockState = rs.getString("block_state");
-                    
+
                     return new Treasure(id, collectionId, loc, rewards, nbtData, material, blockState);
                 }
             } catch (SQLException e) {
@@ -764,15 +764,15 @@ public class SqlRepository implements DataRepository {
                             c.setDefaultTreasureRewardPresetId(null);
                         }
                     }
-                    
+
                     String rewardsJson = rs.getString("rewards");
                     List<Reward> rewards = gson.fromJson(rewardsJson, REWARD_LIST_TYPE);
                     c.setCompletionRewards(rewards);
-                    
+
                     // Load ACT rules for this collection
                     List<ActRule> actRules = loadActRules(conn, id);
                     c.setActRules(actRules);
-                    
+
                     collections.add(c);
                 }
             } catch (SQLException e) {
@@ -797,13 +797,13 @@ public class SqlRepository implements DataRepository {
                     ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
                     ps.executeUpdate();
                 }
-                
+
                 // Delete existing ACT rules for this collection
                 try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_act_rules WHERE collection_id = ?")) {
                     ps.setString(1, collection.getId().toString());
                     ps.executeUpdate();
                 }
-                
+
                 // Save ACT rules
                 for (ActRule rule : collection.getActRules()) {
                     try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
@@ -912,36 +912,36 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<List<PlacePreset>> loadPlacePresets() {
+    public CompletableFuture<List<PlaceItem>> loadPlaceItems() {
         return supplyAsync(() -> {
-            List<PlacePreset> presets = new ArrayList<>();
+            List<PlaceItem> presets = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
-                 PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_place_presets")) {
+                 PreparedStatement ps = conn.prepareStatement("SELECT * FROM ah_place_items")) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     UUID id = UUID.fromString(rs.getString("id"));
                     String group = rs.getString("grp");
                     String name = rs.getString("name");
                     String item = rs.getString("item");
-                    presets.add(new PlacePreset(id, group, name, item));
+                    presets.add(new PlaceItem(id, group, name, item));
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to load place presets: " + e.getMessage());
             }
 
             presets.sort(Comparator
-                    .comparing(PlacePreset::getGroup, String.CASE_INSENSITIVE_ORDER)
-                    .thenComparing(PlacePreset::getName, String.CASE_INSENSITIVE_ORDER));
+                    .comparing(PlaceItem::getGroup, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(PlaceItem::getName, String.CASE_INSENSITIVE_ORDER));
             return presets;
         });
     }
 
     @Override
-    public CompletableFuture<Void> savePlacePreset(PlacePreset preset) {
+    public CompletableFuture<Void> savePlaceItem(PlaceItem preset) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement ps = conn.prepareStatement(
-                         "REPLACE INTO ah_place_presets (id, grp, name, item) VALUES (?, ?, ?, ?)")) {
+                         "REPLACE INTO ah_place_items (id, grp, name, item) VALUES (?, ?, ?, ?)")) {
                 ps.setString(1, preset.getId().toString());
                 ps.setString(2, preset.getGroup());
                 ps.setString(3, preset.getName());
@@ -954,10 +954,10 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> deletePlacePreset(UUID presetId) {
+    public CompletableFuture<Void> deletePlaceItem(UUID presetId) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection();
-                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_presets WHERE id = ?")) {
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_items WHERE id = ?")) {
                 ps.setString(1, presetId.toString());
                 ps.executeUpdate();
             } catch (SQLException e) {
@@ -967,7 +967,7 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Set<String>> loadPlacePresetGroups() {
+    public CompletableFuture<Set<String>> loadPlaceItemGroups() {
         return supplyAsync(() -> {
             LinkedHashSet<String> groups = new LinkedHashSet<>();
             try (Connection conn = dataSource.getConnection();
@@ -987,7 +987,7 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> createPlacePresetGroup(String group) {
+    public CompletableFuture<Void> createPlaceItemGroup(String group) {
         return runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;
@@ -1007,7 +1007,7 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup) {
+    public CompletableFuture<Void> renamePlaceItemGroup(String oldGroup, String newGroup) {
         return runAsync(() -> {
             if (oldGroup == null || oldGroup.trim().isEmpty() || newGroup == null || newGroup.trim().isEmpty()) {
                 return;
@@ -1030,7 +1030,7 @@ public class SqlRepository implements DataRepository {
                     }
 
                     // Best-effort: update any remaining presets (manager usually handles this too)
-                    try (PreparedStatement ps = conn.prepareStatement("UPDATE ah_place_presets SET grp = ? WHERE LOWER(grp) = LOWER(?)")) {
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE ah_place_items SET grp = ? WHERE LOWER(grp) = LOWER(?)")) {
                         ps.setString(1, newTrimmed);
                         ps.setString(2, oldTrimmed);
                         ps.executeUpdate();
@@ -1062,7 +1062,7 @@ public class SqlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> deletePlacePresetGroup(String group) {
+    public CompletableFuture<Void> deletePlaceItemGroup(String group) {
         return runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;

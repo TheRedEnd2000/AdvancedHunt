@@ -39,7 +39,7 @@ public abstract class SingleItemInputMenu extends Menu {
     }
 
     /**
-     * Prefix for GUI keys, e.g. "gui.rewards.add.item" or "gui.place_presets.add".
+     * Prefix for GUI keys, e.g. "gui.rewards.add.item" or "gui.place_items.add".
      */
     protected abstract String getGuiKeyBase();
 
