@@ -2,7 +2,7 @@ package de.theredend2000.advancedhunt.model;
 
 import java.util.UUID;
 
-public class PlacePreset {
+public class PlaceItem {
     private final UUID id;
     private String group;
     private String name;
@@ -12,7 +12,7 @@ public class PlacePreset {
      */
     private String itemData;
 
-    public PlacePreset(UUID id, String group, String name, String itemData) {
+    public PlaceItem(UUID id, String group, String name, String itemData) {
         this.id = id;
         this.group = group;
         this.name = name;

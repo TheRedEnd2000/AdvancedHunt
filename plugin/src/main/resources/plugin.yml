@@ -34,7 +34,7 @@ permissions:
       advancedhunt.admin.collection.rename: true
       advancedhunt.admin.collection.create: true
       advancedhunt.admin.place: true
-      advancedhunt.admin.place_presets: true
+      advancedhunt.admin.place_items: true
       advancedhunt.admin.reset: true
       advancedhunt.admin.teleport: true
       advancedhunt.admin.view_finders: true
@@ -60,8 +60,8 @@ permissions:
   advancedhunt.admin.place:
     description: Allows entering place mode
     default: op
-  advancedhunt.admin.place_presets:
-    description: Allows managing place presets
+  advancedhunt.admin.place_items:
+    description: Allows managing place items
     default: op
   advancedhunt.admin.reset:
     description: Allows resetting player data

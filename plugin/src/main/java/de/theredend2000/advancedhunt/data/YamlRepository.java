@@ -35,7 +35,7 @@ public class YamlRepository implements DataRepository {
     private File rewardPresetsFolder;
     private File treasureRewardPresetsFolder;
     private File collectionRewardPresetsFolder;
-    private File placePresetsFolder;
+    private File placeItemsFolder;
     private File placePresetGroupsFile;
     private BukkitTask flushTask;
     
@@ -108,10 +108,10 @@ public class YamlRepository implements DataRepository {
             collectionRewardPresetsFolder.mkdirs();
         }
 
-        // Place presets are stored under place-presets/<group>/<id>.yml
-        placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
-        if (!placePresetsFolder.exists()) {
-            placePresetsFolder.mkdirs();
+        // Place items are stored under place-items/<group>/<id>.yml
+        placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
+        if (!placeItemsFolder.exists()) {
+            placeItemsFolder.mkdirs();
         }
 
         placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
@@ -1086,18 +1086,18 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<List<PlacePreset>> loadPlacePresets() {
+    public CompletableFuture<List<PlaceItem>> loadPlaceItems() {
         return CompletableFuture.supplyAsync(() -> {
-            List<PlacePreset> presets = new ArrayList<>();
+            List<PlaceItem> presets = new ArrayList<>();
 
-            if (placePresetsFolder == null) {
-                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            if (placeItemsFolder == null) {
+                placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
             }
-            if (!placePresetsFolder.exists() || !placePresetsFolder.isDirectory()) {
+            if (!placeItemsFolder.exists() || !placeItemsFolder.isDirectory()) {
                 return presets;
             }
 
-            File[] groupDirs = placePresetsFolder.listFiles(File::isDirectory);
+            File[] groupDirs = placeItemsFolder.listFiles(File::isDirectory);
             if (groupDirs == null) {
                 return presets;
             }
@@ -1118,28 +1118,28 @@ public class YamlRepository implements DataRepository {
                         }
                         String itemData = config.getString("item");
                         if (name != null && !name.trim().isEmpty() && itemData != null && !itemData.trim().isEmpty()) {
-                            presets.add(new PlacePreset(id, group, name, itemData));
+                            presets.add(new PlaceItem(id, group, name, itemData));
                         }
                     } catch (Exception e) {
-                        plugin.getLogger().warning("Failed to load place preset file " + file.getName() + ": " + e.getMessage());
+                        plugin.getLogger().warning("Failed to load place items file " + file.getName() + ": " + e.getMessage());
                     }
                 }
             }
 
             presets.sort(Comparator
-                    .comparing(PlacePreset::getGroup, String.CASE_INSENSITIVE_ORDER)
-                    .thenComparing(PlacePreset::getName, String.CASE_INSENSITIVE_ORDER));
+                    .comparing(PlaceItem::getGroup, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(PlaceItem::getName, String.CASE_INSENSITIVE_ORDER));
             return presets;
         });
     }
 
     @Override
-    public CompletableFuture<Void> savePlacePreset(PlacePreset preset) {
+    public CompletableFuture<Void> savePlaceItem(PlaceItem preset) {
         return CompletableFuture.runAsync(() -> {
-            if (placePresetsFolder == null) {
-                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            if (placeItemsFolder == null) {
+                placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
             }
-            File groupDir = new File(placePresetsFolder, sanitizeGroupFolderName(preset.getGroup()));
+            File groupDir = new File(placeItemsFolder, sanitizeGroupFolderName(preset.getGroup()));
             if (!groupDir.exists()) {
                 groupDir.mkdirs();
             }
@@ -1154,16 +1154,16 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> deletePlacePreset(UUID presetId) {
+    public CompletableFuture<Void> deletePlaceItem(UUID presetId) {
         return CompletableFuture.runAsync(() -> {
-            if (placePresetsFolder == null) {
-                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            if (placeItemsFolder == null) {
+                placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
             }
-            if (!placePresetsFolder.exists() || !placePresetsFolder.isDirectory()) {
+            if (!placeItemsFolder.exists() || !placeItemsFolder.isDirectory()) {
                 return;
             }
 
-            File[] groupDirs = placePresetsFolder.listFiles(File::isDirectory);
+            File[] groupDirs = placeItemsFolder.listFiles(File::isDirectory);
             if (groupDirs == null) return;
 
             String filename = presetId.toString() + YML_EXTENSION;
@@ -1179,10 +1179,10 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Set<String>> loadPlacePresetGroups() {
+    public CompletableFuture<Set<String>> loadPlaceItemGroups() {
         return CompletableFuture.supplyAsync(() -> {
             if (placePresetGroupsFile == null) {
-                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-item-groups.yml");
             }
             if (!placePresetGroupsFile.exists()) {
                 return Collections.emptySet();
@@ -1205,13 +1205,13 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> createPlacePresetGroup(String group) {
+    public CompletableFuture<Void> createPlaceItemGroup(String group) {
         return CompletableFuture.runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;
             }
             if (placePresetGroupsFile == null) {
-                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-item-groups.yml");
             }
 
             FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
@@ -1228,13 +1228,13 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup) {
+    public CompletableFuture<Void> renamePlaceItemGroup(String oldGroup, String newGroup) {
         return CompletableFuture.runAsync(() -> {
             if (oldGroup == null || oldGroup.trim().isEmpty() || newGroup == null || newGroup.trim().isEmpty()) {
                 return;
             }
             if (placePresetGroupsFile == null) {
-                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-item-groups.yml");
             }
 
             String oldTrimmed = oldGroup.trim();
@@ -1257,11 +1257,11 @@ public class YamlRepository implements DataRepository {
             }
 
             // Best-effort folder rename/move to keep filesystem tidy.
-            if (placePresetsFolder == null) {
-                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            if (placeItemsFolder == null) {
+                placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
             }
-            File oldDir = new File(placePresetsFolder, sanitizeGroupFolderName(oldTrimmed));
-            File newDir = new File(placePresetsFolder, sanitizeGroupFolderName(newTrimmed));
+            File oldDir = new File(placeItemsFolder, sanitizeGroupFolderName(oldTrimmed));
+            File newDir = new File(placeItemsFolder, sanitizeGroupFolderName(newTrimmed));
 
             if (oldDir.exists() && oldDir.isDirectory() && !oldDir.equals(newDir)) {
                 if (!newDir.exists()) {
@@ -1287,13 +1287,13 @@ public class YamlRepository implements DataRepository {
     }
 
     @Override
-    public CompletableFuture<Void> deletePlacePresetGroup(String group) {
+    public CompletableFuture<Void> deletePlaceItemGroup(String group) {
         return CompletableFuture.runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;
             }
             if (placePresetGroupsFile == null) {
-                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-preset-groups.yml");
+                placePresetGroupsFile = new File(plugin.getDataFolder(), "place-item-groups.yml");
             }
 
             String trimmed = group.trim();
@@ -1306,10 +1306,10 @@ public class YamlRepository implements DataRepository {
                 saveConfigAtomic(config, placePresetGroupsFile);
             }
 
-            if (placePresetsFolder == null) {
-                placePresetsFolder = new File(plugin.getDataFolder(), "place-presets");
+            if (placeItemsFolder == null) {
+                placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
             }
-            File dir = new File(placePresetsFolder, sanitizeGroupFolderName(trimmed));
+            File dir = new File(placeItemsFolder, sanitizeGroupFolderName(trimmed));
             if (dir.exists() && dir.isDirectory()) {
                 deleteDirectoryRecursively(dir);
             }

@@ -92,12 +92,12 @@ public final class LegacyDataMigrator {
         List<LegacyEggsParser.LegacyCollection> legacyCollections = LegacyEggsParser.parseAll(legacyRoot);
         List<LegacyPlayerDataParser.LegacyPlayerData> legacyPlayers = LegacyPlayerDataParser.parseAll(legacyRoot);
         List<RewardPreset> rewardPresets = LegacyRewardPresetParser.parseAll(legacyRoot);
-        List<PlacePreset> placePresets = LegacyPlacePresetParser.parseAll(legacyRoot);
+        List<PlaceItem> placeItems = LegacyPlacePresetParser.parseAll(legacyRoot);
 
         plugin.getLogger().info("Legacy migration loaded " + legacyCollections.size() + " collection(s), "
             + legacyPlayers.size() + " player(s), "
             + rewardPresets.size() + " reward preset(s), "
-            + placePresets.size() + " place preset(s).");
+            + placeItems.size() + " place preset(s).");
 
         // Build new collections and gather placed eggs
         Map<String, UUID> legacyNameToCollectionId = new HashMap<>();
@@ -202,20 +202,20 @@ public final class LegacyDataMigrator {
                     .map(repository::saveRewardPreset)
                     .toArray(CompletableFuture[]::new);
 
-                CompletableFuture<?>[] savePlacePresets = placePresets.stream()
-                    .map(repository::savePlacePreset)
+                CompletableFuture<?>[] savePlaceItems = placeItems.stream()
+                    .map(repository::savePlaceItem)
                     .toArray(CompletableFuture[]::new);
 
                 int finalFoundLinks = foundLinks;
                 int finalMissingLinks = missingLinks;
                 int rewardPresetCount = rewardPresets.size();
-                int placePresetCount = placePresets.size();
+                int placePresetCount = placeItems.size();
 
                 return CompletableFuture.allOf(saveCollections)
                     .thenCompose(v2 -> repository.saveTreasuresBatch(treasures))
                     .thenCompose(v2 -> repository.savePlayerDataBatch(playerDataList))
                     .thenCompose(v2 -> CompletableFuture.allOf(saveRewardPresets))
-                    .thenCompose(v2 -> CompletableFuture.allOf(savePlacePresets))
+                    .thenCompose(v2 -> CompletableFuture.allOf(savePlaceItems))
                     .thenApply(v2 -> {
                         writeMarker(marker, legacyRoot, newCollections.size(), treasures.size(), 
                             playerDataList.size(), rewardPresetCount, placePresetCount, finalTargetBackup);

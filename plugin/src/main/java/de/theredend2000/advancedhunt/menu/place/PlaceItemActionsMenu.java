@@ -4,7 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
 import de.theredend2000.advancedhunt.menu.common.ConfirmationMenu;
-import de.theredend2000.advancedhunt.model.PlacePreset;
+import de.theredend2000.advancedhunt.model.PlaceItem;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
@@ -15,18 +15,18 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public class PlacePresetActionsMenu extends Menu {
+public class PlaceItemActionsMenu extends Menu {
 
-    private final PlacePreset preset;
+    private final PlaceItem preset;
 
-    public PlacePresetActionsMenu(Player player, Main plugin, PlacePreset preset) {
+    public PlaceItemActionsMenu(Player player, Main plugin, PlaceItem preset) {
         super(player, plugin);
         this.preset = preset;
     }
 
     @Override
     public String getMenuName() {
-        return plugin.getMessageManager().getMessage("gui.place_presets.actions.title", false,
+        return plugin.getMessageManager().getMessage("gui.place_items.actions.title", false,
                 "%name%", preset.getName());
     }
 
@@ -45,16 +45,16 @@ public class PlacePresetActionsMenu extends Menu {
         fillBorders(FILLER_GLASS);
 
         addButton(12, new ItemBuilder(XMaterial.CHEST)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.give.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.give.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.place_items.actions.give.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.place_items.actions.give.lore", false).toArray(new String[0]))
                 .build(), e -> {
             give();
             openPreviousMenu();
         });
 
         addButton(14, new ItemBuilder(XMaterial.TNT)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.place_presets.actions.delete.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.place_presets.actions.delete.lore", false).toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.place_items.actions.delete.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.place_items.actions.delete.lore", false).toArray(new String[0]))
                 .build(), e -> handleDelete());
 
         fillBackground(FILLER_GLASS);
@@ -63,12 +63,12 @@ public class PlacePresetActionsMenu extends Menu {
     private void give() {
         ItemStack item = ItemSerializer.deserialize(preset.getItemData());
         if (item == null || item.getType() == XMaterial.AIR.get()) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.deserialize_failed"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_items.deserialize_failed"));
             return;
         }
 
         if (!item.getType().isBlock() && !ItemsAdderAdapter.isCustomBlockItem(item) && !ItemsAdderAdapter.isCustomFurniture(item)) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_presets.not_a_block"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.place_items.not_a_block"));
             return;
         }
 
@@ -79,23 +79,23 @@ public class PlacePresetActionsMenu extends Menu {
             playerMenuUtility.getWorld().dropItemNaturally(playerMenuUtility.getLocation(), leftover);
         }
 
-        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.given",
+        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_items.given",
                 "%group%", preset.getGroup(),
                 "%name%", preset.getName()));
     }
 
     private void handleDelete() {
-        if (!playerMenuUtility.hasPermission("advancedhunt.admin.place_presets")) {
+        if (!playerMenuUtility.hasPermission("advancedhunt.admin.place_items")) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
             return;
         }
 
         new ConfirmationMenu(playerMenuUtility, plugin,
-                plugin.getMessageManager().getMessage("gui.place_presets.actions.delete.confirm_title", false,
+                plugin.getMessageManager().getMessage("gui.place_items.actions.delete.confirm_title", false,
                         "%name%", preset.getName()),
-                confirmEvent -> plugin.getPlacePresetManager().deletePreset(preset.getId()).thenRun(() ->
+                confirmEvent -> plugin.getPlaceItemManager().deleteItem(preset.getId()).thenRun(() ->
                         Bukkit.getScheduler().runTask(plugin, () -> {
-                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_presets.deleted",
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.place_items.deleted",
                                     "%group%", preset.getGroup(),
                                     "%name%", preset.getName()));
                             openPreviousMenu();

@@ -169,15 +169,15 @@ public interface DataRepository {
     CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId);
 
     // Place Presets
-    CompletableFuture<List<PlacePreset>> loadPlacePresets();
-    CompletableFuture<Void> savePlacePreset(PlacePreset preset);
-    CompletableFuture<Void> deletePlacePreset(UUID presetId);
+    CompletableFuture<List<PlaceItem>> loadPlaceItems();
+    CompletableFuture<Void> savePlaceItem(PlaceItem preset);
+    CompletableFuture<Void> deletePlaceItem(UUID presetId);
 
     // Place Preset Groups (persist empty groups)
-    CompletableFuture<Set<String>> loadPlacePresetGroups();
-    CompletableFuture<Void> createPlacePresetGroup(String group);
-    CompletableFuture<Void> renamePlacePresetGroup(String oldGroup, String newGroup);
-    CompletableFuture<Void> deletePlacePresetGroup(String group);
+    CompletableFuture<Set<String>> loadPlaceItemGroups();
+    CompletableFuture<Void> createPlaceItemGroup(String group);
+    CompletableFuture<Void> renamePlaceItemGroup(String oldGroup, String newGroup);
+    CompletableFuture<Void> deletePlaceItemGroup(String group);
 
     /**
      * Saves multiple reward presets in a batch.

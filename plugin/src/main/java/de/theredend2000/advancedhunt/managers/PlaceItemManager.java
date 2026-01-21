@@ -2,33 +2,33 @@ package de.theredend2000.advancedhunt.managers;
 
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.data.DataRepository;
-import de.theredend2000.advancedhunt.model.PlacePreset;
+import de.theredend2000.advancedhunt.model.PlaceItem;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PlacePresetManager {
+public class PlaceItemManager {
 
     private final Main plugin;
     private final DataRepository repository;
 
-    private final Map<UUID, PlacePreset> presets = new ConcurrentHashMap<>();
+    private final Map<UUID, PlaceItem> items = new ConcurrentHashMap<>();
     // normalized group name -> display group name
     private final Map<String, String> groups = new ConcurrentHashMap<>();
 
-    public PlacePresetManager(Main plugin, DataRepository repository) {
+    public PlaceItemManager(Main plugin, DataRepository repository) {
         this.plugin = plugin;
         this.repository = repository;
     }
 
-    public CompletableFuture<Void> reloadPresets() {
-        CompletableFuture<List<PlacePreset>> presetsFuture = repository.loadPlacePresets();
-        CompletableFuture<Set<String>> groupsFuture = repository.loadPlacePresetGroups()
+    public CompletableFuture<Void> reloadItems() {
+        CompletableFuture<List<PlaceItem>> itemsFuture = repository.loadPlaceItems();
+        CompletableFuture<Set<String>> groupsFuture = repository.loadPlaceItemGroups()
             .exceptionally(ex -> Collections.emptySet());
 
-        return presetsFuture.thenCombine(groupsFuture, (list, persistedGroups) -> {
-            presets.clear();
+        return itemsFuture.thenCombine(groupsFuture, (list, persistedGroups) -> {
+            items.clear();
             groups.clear();
 
             if (persistedGroups != null) {
@@ -38,9 +38,9 @@ public class PlacePresetManager {
             }
 
             if (list != null) {
-                for (PlacePreset preset : list) {
+                for (PlaceItem preset : list) {
                     if (preset != null) {
-                        presets.put(preset.getId(), preset);
+                        items.put(preset.getId(), preset);
                         addGroup(preset.getGroup());
                     }
                 }
@@ -51,13 +51,13 @@ public class PlacePresetManager {
         });
     }
 
-    public Optional<PlacePreset> getPreset(UUID id) {
+    public Optional<PlaceItem> getItem(UUID id) {
         if (id == null) return Optional.empty();
-        return Optional.ofNullable(presets.get(id));
+        return Optional.ofNullable(items.get(id));
     }
 
-    public List<PlacePreset> getAllPresets() {
-        return new ArrayList<>(presets.values());
+    public List<PlaceItem> getAllItems() {
+        return new ArrayList<>(items.values());
     }
 
     public List<String> getGroups() {
@@ -84,8 +84,8 @@ public class PlacePresetManager {
             return CompletableFuture.completedFuture(false);
         }
 
-        return repository.createPlacePresetGroup(trimmed)
-                .thenCompose(v -> reloadPresets())
+        return repository.createPlaceItemGroup(trimmed)
+                .thenCompose(v -> reloadItems())
                 .thenApply(v -> true)
                 .exceptionally(ex -> {
                     plugin.getLogger().warning("Failed to create place preset group: " + ex.getMessage());
@@ -112,22 +112,22 @@ public class PlacePresetManager {
         }
 
         // Update group persistence first (covers empty groups)
-        return repository.renamePlacePresetGroup(oldTrimmed, newTrimmed)
+        return repository.renamePlaceItemGroup(oldTrimmed, newTrimmed)
                 .thenCompose(v -> {
-                    List<PlacePreset> toMove = getPresetsInGroup(oldTrimmed);
+                    List<PlaceItem> toMove = getItemsInGroup(oldTrimmed);
                     if (toMove.isEmpty()) {
                         return CompletableFuture.completedFuture(null);
                     }
 
                     CompletableFuture<?>[] futures = new CompletableFuture[toMove.size()];
                     for (int i = 0; i < toMove.size(); i++) {
-                        PlacePreset preset = toMove.get(i);
+                        PlaceItem preset = toMove.get(i);
                         preset.setGroup(newTrimmed);
-                        futures[i] = repository.savePlacePreset(preset);
+                        futures[i] = repository.savePlaceItem(preset);
                     }
                     return CompletableFuture.allOf(futures);
                 })
-                .thenCompose(v -> reloadPresets())
+                .thenCompose(v -> reloadItems())
                 .thenApply(v -> true)
                 .exceptionally(ex -> {
                     plugin.getLogger().warning("Failed to rename place preset group: " + ex.getMessage());
@@ -145,15 +145,15 @@ public class PlacePresetManager {
             return CompletableFuture.completedFuture(false);
         }
 
-        List<PlacePreset> inGroup = getPresetsInGroup(trimmed);
+        List<PlaceItem> inGroup = getItemsInGroup(trimmed);
         CompletableFuture<?>[] deleteFutures = new CompletableFuture[inGroup.size()];
         for (int i = 0; i < inGroup.size(); i++) {
-            deleteFutures[i] = repository.deletePlacePreset(inGroup.get(i).getId());
+            deleteFutures[i] = repository.deletePlaceItem(inGroup.get(i).getId());
         }
 
         return CompletableFuture.allOf(deleteFutures)
-                .thenCompose(v -> repository.deletePlacePresetGroup(trimmed))
-                .thenCompose(v -> reloadPresets())
+                .thenCompose(v -> repository.deletePlaceItemGroup(trimmed))
+                .thenCompose(v -> reloadItems())
                 .thenApply(v -> true)
                 .exceptionally(ex -> {
                     plugin.getLogger().warning("Failed to delete place preset group: " + ex.getMessage());
@@ -161,17 +161,17 @@ public class PlacePresetManager {
                 });
     }
 
-    public List<PlacePreset> getPresetsInGroup(String group) {
+    public List<PlaceItem> getItemsInGroup(String group) {
         if (group == null) {
             return Collections.emptyList();
         }
-        List<PlacePreset> list = new ArrayList<>();
-        for (PlacePreset preset : presets.values()) {
+        List<PlaceItem> list = new ArrayList<>();
+        for (PlaceItem preset : items.values()) {
             if (preset.getGroup() != null && preset.getGroup().equalsIgnoreCase(group)) {
                 list.add(preset);
             }
         }
-        list.sort(Comparator.comparing(PlacePreset::getName, String.CASE_INSENSITIVE_ORDER));
+        list.sort(Comparator.comparing(PlaceItem::getName, String.CASE_INSENSITIVE_ORDER));
         return list;
     }
 
@@ -179,7 +179,7 @@ public class PlacePresetManager {
         if (group == null || name == null) return false;
         String g = normalize(group);
         String n = normalize(name);
-        for (PlacePreset preset : presets.values()) {
+        for (PlaceItem preset : items.values()) {
             if (preset.getGroup() == null || preset.getName() == null) continue;
             if (normalize(preset.getGroup()).equals(g) && normalize(preset.getName()).equals(n)) {
                 return true;
@@ -188,7 +188,7 @@ public class PlacePresetManager {
         return false;
     }
 
-    public CompletableFuture<Boolean> createPreset(String group, String name, String itemData) {
+    public CompletableFuture<Boolean> createItem(String group, String name, String itemData) {
         if (group == null || group.trim().isEmpty() || name == null || name.trim().isEmpty() || itemData == null || itemData.trim().isEmpty()) {
             return CompletableFuture.completedFuture(false);
         }
@@ -196,9 +196,9 @@ public class PlacePresetManager {
             return CompletableFuture.completedFuture(false);
         }
 
-        PlacePreset preset = new PlacePreset(UUID.randomUUID(), group.trim(), name.trim(), itemData);
-        return repository.savePlacePreset(preset)
-                .thenCompose(v -> reloadPresets())
+        PlaceItem preset = new PlaceItem(UUID.randomUUID(), group.trim(), name.trim(), itemData);
+        return repository.savePlaceItem(preset)
+                .thenCompose(v -> reloadItems())
                 .thenApply(v -> true)
                 .exceptionally(ex -> {
                     plugin.getLogger().warning("Failed to create place preset: " + ex.getMessage());
@@ -206,18 +206,18 @@ public class PlacePresetManager {
                 });
     }
 
-    public CompletableFuture<Void> savePreset(PlacePreset preset) {
+    public CompletableFuture<Void> saveItem(PlaceItem preset) {
         if (preset == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return repository.savePlacePreset(preset).thenCompose(v -> reloadPresets());
+        return repository.savePlaceItem(preset).thenCompose(v -> reloadItems());
     }
 
-    public CompletableFuture<Void> deletePreset(UUID presetId) {
+    public CompletableFuture<Void> deleteItem(UUID presetId) {
         if (presetId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return repository.deletePlacePreset(presetId).thenCompose(v -> reloadPresets());
+        return repository.deletePlaceItem(presetId).thenCompose(v -> reloadItems());
     }
 
     private static String normalize(String value) {
