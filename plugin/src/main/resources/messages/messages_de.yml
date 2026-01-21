@@ -51,7 +51,7 @@ feedback:
         prompt: "%prefix%&aGebe das ACT-FORMAT an: [DATE_RANGE] [DURATION] [CRON] (beispiel: [*] [2h] [0 0 9 * * ?])"
 
     presets:
-      applied: "%prefix%&aPreset angewandt: &e%preset%"
+      applied: "%prefix%&aVorlage angewandt: &e%preset%"
 
     rules:
       rule_deleted: "%prefix%&cRegel gelöscht: &e%name%"
@@ -63,7 +63,7 @@ feedback:
   cron:
     applied: "%prefix%&aZeitplan erfolgreich aktualisiert!"
     cleared: "%prefix%&aZeitplan gelöscht."
-    preset_applied: "%prefix%&aPreset angewandt: &e%preset%"
+    preset_applied: "%prefix%&aVorlage angewandt: &e%preset%"
     preset:
       daily:
         name: "&eTäglich"
@@ -74,13 +74,13 @@ feedback:
       yearly:
         name: "&eJährlich"
   preset:
-    prompt_name: "%prefix%&eGebe ein Name für dieses %type%-Preset an:"
-    prompt_rename: "%prefix%&eGebe einen neuen Name für das Preset '&f%name%&e' an:"
-    saved: "%prefix%&aErfolgreich das %type%-Preset '&f%name%&a' gespeichert!"
+    prompt_name: "%prefix%&eGebe ein Name für diese %type%-Vorlage an:"
+    prompt_rename: "%prefix%&eGebe einen neuen Name für die Vorlage '&f%name%&e' an:"
+    saved: "%prefix%&aErfolgreich die %type%-Vorlage '&f%name%&a' gespeichert!"
     renamed: "%prefix%&aUmbenannt zu '&f%name%&a'."
-    loaded: "%prefix%&aErfolgreich das %type%-Preset '&f%name%&a' geladen!"
-    deleted: "%prefix%&cPreset '&f%name%&c' gelöscht."
-    set_default: "%prefix%&aDas Default-Preset für &e%collection%&a wurde zu '&f%name%&a' gesetzt."
+    loaded: "%prefix%&aErfolgreich die %type%-Vorlage '&f%name%&a' geladen!"
+    deleted: "%prefix%&cVorlage '&f%name%&c' gelöscht."
+    set_default: "%prefix%&aDas Default-Vorlage für &e%collection%&a wurde zu '&f%name%&a' gesetzt."
     override:
       none: "%prefix%&cKeine Treasures in dieser Collection gefunden."
       started: "%prefix%&eÜberschreibe &f%count%&e Treasures mit dem Preset '&f%name%&e'..."
@@ -88,17 +88,16 @@ feedback:
       done: "%prefix%&aEs wurden &f%count%&a Treasures mit dem Preset '&f%name%&a' überschrieben."
       failed: "%prefix%&cFehler beim Überschreiben. Bitte überprüfe die Konsole für mehr Informationen."
 
-  place_items: # check here if needed
+  place_items:
     prompt_group: "%prefix%&7Schreibe den &eGruppennamen&7 in Chat (oder 'cancel')."
     prompt_rename: "%prefix%&7Schreibe einen neuen Namen für &e%name%&7 (oder 'cancel')."
     prompt_rename_group: "%prefix%&7Gebe einen neuen Namen für die Gruppe &e%group%&7 an (oder 'cancel')."
-    prompt_move_group: "%prefix%&7Type a new group for this preset (current: &e%group%&7)."
-    group_created: "%prefix%&aCreated group &e%group%&a."
-    group_renamed: "%prefix%&aRenamed group &e%old%&a to &e%group%&a."
-    group_deleted: "%prefix%&aDeleted group &e%group%&a."
-    created: "%prefix%&aCreated place preset &e%name%&a in group &e%group%&a."
-    given: "%prefix%&aGiven preset &e%name%&a (&7%group%&a)."
-    deleted: "%prefix%&aDeleted preset &e%name%&a (&7%group%&a)."
+    group_created: "%prefix%&aGruppe &e%group%&a erstellt."
+    group_renamed: "%prefix%&aGruppe &e%old%&a wurde zu &e%group%&a umbenannt."
+    group_deleted: "%prefix%&aGruppe &e%group%&a gelöscht."
+    created: "%prefix%&aNeues Place-Item &e%name%&a in Gruppe &e%group%&a erstellt."
+    given: "%prefix%&aItem &e%name%&a gegeben (&7%group%&a)."
+    deleted: "%prefix%&aItem &e%name%&a gelöscht (&7%group%&a)."
 
 prefix: "&6AdvancedHunt &8>> &7"
 
@@ -135,9 +134,9 @@ error:
     format:
       invalid_format: "%prefix%&cUngültiges ACT-Format! Erwartet: [DATE_RANGE] [DURATION] [CRON]"
   preset:
-    invalid_name: "%prefix%&cUngültiger Preset Name! Bitte gebe einen gültigen Namen an."
-    duplicate_name: "%prefix%&cEin Preset mit dem Name existiert bereits."
-    save_failed: "%prefix%&cSpeichern des %type%-Preset ist fehlgeschlagen!"
+    invalid_name: "%prefix%&cUngültiger Vorlagenname! Bitte gebe einen gültigen Namen an."
+    duplicate_name: "%prefix%&cEine Vorlage mit dem Name existiert bereits."
+    save_failed: "%prefix%&cSpeichern der %type%-Vorlage ist fehlgeschlagen!"
 
 command:
   help:
@@ -155,7 +154,7 @@ command:
       collection_delete: "Löscht eine Collection"
       collection_rename: "Benennt eine Collection um"
       collection_info: "Zeigt detaillierte Informationen über eine Collection"
-      rewards: "Zeigt dir die Rewards einer Treasure, die du Anschaust"
+      rewards: "Zeigt dir die Belohnungen einer Treasure, die du Anschaust"
       placepresets: "Öffnet das Place-Item Menu"
       place: "Toggelt den Place-Mode (wird beendet wenn aktiv)"
       place_collection: "Toggelt den Place-Mode für eine bestimmte Collection"
@@ -252,254 +251,254 @@ command:
     player_collection_success: "%prefix%&aSetzte &e%count% &aTreasure(s) für den Spieler &e%player% &ain der Collection &e%collection%&a zurück!"
     player_not_found: "%prefix%&cSpieler konnte nicht gefunden werden."
   migration:
-    started: "%prefix%&aStorage migration started (copying all data to target storage)..."
-    progress: "%prefix%&eMigration progress: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    started: "%prefix%&aSpeichermigration gestartet (alle Daten werden in den Zielspeicher kopiert)..."
+    progress: "%prefix%&eMigration Fortschritt: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
     progress_actionbar: "&eMigration: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
-    success: "%prefix%&aStorage migration successful! All data has been copied to the target storage."
-    failed: "%prefix%&cStorage migration failed. Check console for errors."
-    mysql_not_configured: "%prefix%&cMySQL migration settings not configured! Please edit config.yml under 'migration.target' section with your target database details."
-    mysql_config_reset: "%prefix%&eMySQL migration settings have been reset in config.yml. Configure them again if you need another migration."
-    existing_data_abort: "%prefix%&c&lMigration aborted! Target storage contains existing data: %collections% collections, %treasures% treasures, %players% players. Use '--purge' to delete target data first, or '--force' (not recommended) to overwrite: /ah migrate <type> --purge"
-    warning_existing_data: "%prefix%&e&lWARNING: Target storage contains existing data! (%collections% collections, %treasures% treasures, %players% players). Proceeding with migration... (--force is not recommended)"
+    success: "%prefix%&aSpeichermigration erfolgreich! Alle Daten wurden an den Zielspeicher kopiert."
+    failed: "%prefix%&cSpeichermigration fehlgeschlagen. Bitte überprüfe die Konsole für mehr Informationen."
+    mysql_not_configured: "%prefix%&cMySQL-Migrationseinstellungen wurden nicht konfiguriert! Bitte bearbeite die config.yml unter 'migration.target' mit deiner Ziel-Datenbank."
+    mysql_config_reset: "%prefix%&eDie MySQL-Migrationseinstellungen wurden in der config.yml zurückgesetzt.  Konfiguriere sie erneuert wenn du eine neue Migration brauchst."
+    existing_data_abort: "%prefix%&c&lMigration abgebrochen! Der Zielspeicher enthält bereits vorhandene Daten: %collections% Collections, %treasures% Treasures, %players% Spieler. Nutze '--purge' um die Zieldaten zuerst zu löschen, oder '--force' (nicht empfohlen) um sie zu überschreiben: /ah migrate <type> --purge"
+    warning_existing_data: "%prefix%&e&lWARNUNG: Zielspeicher enthält bereits vorhandene Daten! (%collections% Collections, %treasures% Treasures, %players% Spieler). Migration wird Fortgesetzt... (--force ist nicht empfohlen)"
 
 treasure:
-  found: "%prefix%&aYou found a treasure!"
-  already_found: "%prefix%&cYou have already found this treasure!"
-  already_claimed_global: "%prefix%&cThis treasure has already been claimed by another player!"
-  added: "%prefix%&aTreasure added to collection!"
-  removed: "%prefix%&cTreasure removed from collection."
-  protected: "%prefix%&cYou cannot break treasure blocks!"
-  placemode: "%prefix%&cYou cannot collect treasures in place mode!"
+  found: "%prefix%&aDu hast eine Treasure gefunden!"
+  already_found: "%prefix%&cDu hast diese Treasure bereits gefunden!"
+  already_claimed_global: "%prefix%&cDiese Treasure wurde bereits von einem anderen Spieler gefunden!"
+  added: "%prefix%&aDie Treasure wurde zur Collection hinzugefügt!"
+  removed: "%prefix%&cDie Treasure wurde von der Collection entfernt."
+  protected: "%prefix%&cDu kannst keine Treasures zerstören!"
+  placemode: "%prefix%&cDu kannst keine Treasures in Place-Mode sammeln!"
 
 collection:
-  unavailable: "%prefix%&cThe collection &e%collection% &cis not currently available!"
-  available_at: "%prefix%&eIt will be available at: &f%time%"
-  available: "&a✓ Available"
-  not_available: "&c✗ Not Available"
-  completed: "%prefix%&6You have completed the &e%collection% &6collection!"
+  unavailable: "%prefix%&cDie Collection &e%collection% &cist aktuell nicht verfügbar!"
+  available_at: "%prefix%&eNächste Verfügbarkeit: &f%time%"
+  available: "&a✓ Verfügbar"
+  not_available: "&c✗ Nicht Verfügbar"
+  completed: "%prefix%&6Du hast die Collection &e%collection% &6abgeschlossen!"
 
 chat_input:
-  request: "%prefix%&aPlease type your input in chat."
-  canceled: "%prefix%&cInput canceled."
-  timeout: "%prefix%&cInput timed out."
+  request: "%prefix%&aBitte gebe dein Eingabe in Chat ein."
+  canceled: "%prefix%&cEingabe abgebrochen."
+  timeout: "%prefix%&cEingabe abgelaufen."
 
 gui:
   common:
-    back: "&7« Back to %menu%"
-    close: "&cClose"
-    previous_page: "&aPrevious Page"
-    next_page: "&aNext Page"
+    back: "&7« Zurück zu %menu%"
+    close: "&cSchließen"
+    previous_page: "&aVorherige Seite"
+    next_page: "&aNächste Seite"
     page_indicator: "&7(%page%/%total%)"
-    confirm: "&aConfirm"
-    cancel: "&cCancel"
-    enabled: "&aEnabled"
-    disabled: "&cDisabled"
-    none: "&cNone"
+    confirm: "&aBestätigen"
+    cancel: "&cAbbrechen"
+    enabled: "&aAktivieren"
+    disabled: "&cDeaktivieren"
+    none: "&cKeine"
   place_items:
     groups:
-      title: "&8Place Items Groups"
+      title: "&8Place-Items Gruppen"
       none:
-        name: "&cNo groups"
+        name: "&cKeine Gruppen"
         lore:
-          - "&7No groups exist yet."
-          - "&7Create one with the button below."
+          - "&7Es existiert keine Gruppe."
+          - "&7Erstelle einen mit dem Knopf drunter."
       group:
         name: "&e%group%"
         lore:
-          - "&7Item count: &f%count%"
+          - "&7Item Anzahl: &f%count%"
           - ""
           - "&a%action%"
           - "&7%action2%"
         action:
-          open: "Click to open"
-          manage: "Right-click to manage"
+          open: "Klicke zum Öffnen"
+          manage: "Rechtsklick um zu verwalten"
 
     group_actions:
-      title: "&8Group: &e%group%"
+      title: "&8Gruppe: &e%group%"
       rename:
-        name: "&eRename group"
+        name: "&eBenne die Gruppe um"
         lore:
-          - "&7Current: &f%current%"
+          - "&7Aktuell: &f%current%"
           - ""
-          - "&eClick to rename"
+          - "&eKlicke zum Umbenennen"
       delete:
-        name: "&cDelete group"
+        name: "&cGruppe löschen"
         lore:
-          - "&7Presets in group: &f%count%"
+          - "&7Items in dieser Gruppe: &f%count%"
           - ""
-          - "&c&lWARNING: deletes all presets in this group!"
+          - "&c&lWARNUNG: Löscht alle Items in dieser Gruppe!"
           - ""
-          - "&cClick to delete"
-        confirm_title: "&8Delete group &c%group%&8?"
+          - "&cKlicke zum Löschen"
+        confirm_title: "&8Lösche Gruppe &c%group%&8?"
 
     list:
-      title: "&8Place Items: &e%group%"
+      title: "&8Place-Items: &e%group%"
       none:
-        name: "&cNo items"
+        name: "&cKeine Items"
         lore:
-          - "&7No items exist in this group."
-          - "&7Create one with the button below."
+          - "&7Es existieren keine Items in dieser Gruppe."
+          - "&7Erstelle einen mit dem Knopf drunter."
       preset:
         name: "&e%name%"
         lore:
           - "&a%action%"
           - "&7%action2%"
         action:
-          give: "Left-click to get the item"
-          manage: "Right-click to manage"
+          give: "Linksklick um das Item zu bekommen"
+          manage: "Rechtsklick um zu verwalten"
 
     actions:
       title: "&8Item: &e%name%"
       give:
-        name: "&aGet item"
+        name: "&aItem erhalten"
         lore:
-          - "&7Adds the item to your inventory."
+          - "&7Fügt das Item zu deinem Inventar hinzu."
       rename:
-        name: "&eRename"
+        name: "&eUmbenennen"
         lore:
-          - "&7Current: &f%current%"
+          - "&7Aktuell: &f%current%"
       move_group:
-        name: "&eMove group"
+        name: "&eGruppe verschieben"
         lore:
-          - "&7Current: &f%current%"
+          - "&7Aktuell: &f%current%"
       delete:
-        name: "&cDelete"
+        name: "&cLöschen"
         lore:
-          - "&7Permanently deletes this preset."
-        confirm_title: "&8Delete preset &c%name%&8?"
+          - "&7Löscht dieses Item für immer."
+        confirm_title: "&8Lösche Item &c%name%&8?"
 
     create:
-      name: "&aCreate group"
+      name: "&aGruppe erstellen"
       lore:
-        - "&7Creates a new empty group."
+        - "&7Erstellt eine neue leere Gruppe."
     create_in_group:
-      name: "&aAdd block item"
+      name: "&aFüge ein Item hinzu"
       lore:
-        - "&7Adds a block item to &e%group%&7."
-        - "&7Place a block item in the slot"
-        - "&7and confirm to save it."
+        - "&7Fügt ein Block-Item zu Gruppe &e%group%&7 hinzu."
+        - "&7Setzte ein Block-Item in den Slot"
+        - "&7und bestätige es um zu speichern."
 
     add:
-      title: "&8Add Place Item: &e%group%"
+      title: "&8Place-Item hinzufügen: &e%group%"
       placeholder:
-        name: "&7Place a block here"
+        name: "&7Setzte das Item hier"
         lore:
-          - "&7Drag a block item into"
-          - "&7the center slot."
+          - "&7Ziehe ein Item in den Slot"
+          - "&7in der Mitte."
       info:
-        name: "&eHow it works"
+        name: "&eWie es Funktioniert"
         lore:
-          - "&7Put any &eblock item&7 in the slot."
-          - "&7The item is saved as &f1 block&7."
-          - "&7Your item is &anot consumed&7."
+          - "&7Setzte jedes &eBlock-Item&7 in den Slot."
+          - "&7Das Item wird gespeichert als &f1 Block&7."
+          - "&7Das Item wird &anicht konsumiert&7."
       confirm:
-        name: "&aSave item"
+        name: "&aItem speichern"
         lore:
-          - "&7Saves this block as an item"
-          - "&7in the selected group."
+          - "&7Speicher den Block as ein Item"
+          - "&7in der ausgewählten Gruppe."
       cancel:
-        name: "&cCancel"
+        name: "&cAbbrechen"
         lore:
-          - "&7Return without saving."
+          - "&7Kehre ohne Speichern zurück."
   rewards:
-    title: "&8Treasure Rewards"
-    collection_title: "&8Completion Rewards"
-    preset_title: "&8Reward Preset"
+    title: "&8Treasure Belohnungen"
+    collection_title: "&8Abschließungsbelohnungen"
+    preset_title: "&8Belohnungs-Vorlage"
     open_reward_option_menu:
-      title: "&8Reward Options"
-      name: "&6+ Add Reward"
+      title: "&8Belohnungsoptionen"
+      name: "&6+ Belohnung hinzufügen"
       lore:
         - ""
-        - "&7Choose the type of reward"
-        - "&7you want to add:"
+        - "&7Wähle die Art der Belohnung,"
+        - "&7die du hinzufügen möchtest:"
         - ""
-        - "&e► Item Reward"
-        - "&f  Give a physical item"
+        - "&e► Item-Belohnung"
+        - "&f  Gib einen physisches Item"
         - ""
-        - "&e► Command Reward"
-        - "&f  Execute a server command"
+        - "&e► Command-Belohnung"
+        - "&f  Führe einen Server-Command aus"
         - ""
-        - "&e► Chat Message"
-        - "&f  Send a message to the player"
+        - "&e► Chat-Nachricht"
+        - "&f  Sende eine Nachricht an den Spieler"
         - ""
-        - "&e► Broadcast Message"
-        - "&f  Send a message to all players"
+        - "&e► Broadcast-Nachricht"
+        - "&f  Sende eine Nachricht an alle Spieler"
         - ""
-        - "&aClick to open options"
+        - "&aKlicke zum Öffnen der Optionen"
     switch_to_collection:
-      name: "&eView Collection Rewards"
+      name: "&eCollection Belohnungen anzeigen"
       lore:
-        - "&7Click to view the rewards"
-        - "&7given when completing the"
-        - "&7entire collection."
+        - "&7Klicke zum Anzeigen der Belohnungen,"
+        - "&7die beim Abschließen der gesamten"
+        - "&7Sammlung vergeben werden."
     switch_to_treasure:
-      name: "&eView Treasure Rewards"
+      name: "&eTreasure Belohnungen anzeigen"
       lore:
-        - "&7Click to view the rewards"
-        - "&7given when finding this"
-        - "&7specific treasure."
+        - "&7Klicke zum Anzeigen der Belohnungen,"
+        - "&7die beim Finden dieser"
+        - "&7Belohnung vergeben wird."
     no_rewards:
-      name: "&7No Rewards"
+      name: "&7Keine Belohnungen"
       lore:
-        - "&7This treasure has no"
-        - "&7rewards configured."
-    reward_number: "&7Reward #%number%"
+        - "&7Diese Treasure hat keine"
+        - "&7Belohnungen konfiguriert."
+    reward_number: "&7Belohnung #%number%"
     chance_lore: "&7Chance: &e%chance%%"
-    message_lore: "&7Message: &e%message%"
+    message_lore: "&7Nachricht: &e%message%"
     broadcast_lore: "&7Broadcast: &e%broadcast%"
-    amount_lore: "&7Amount: &fx%amount%"
-    command_name: "&6Command Reward"
-    command_label: "&7Executes command:"
-    chat_message_name: "&bChat Message Reward"
-    chat_message_label: "&7Sends message:"
-    broadcast_message_name: "&dBroadcast Message Reward"
-    broadcast_message_label: "&7Broadcasts to all:"
+    amount_lore: "&7Anzahl: &fx%amount%"
+    command_name: "&6Command Belohnung"
+    command_label: "&7Führt folgenden Befehl aus:"
+    chat_message_name: "&bChat-Nachricht Belohnung"
+    chat_message_label: "&7Führt folgende Nachricht aus:"
+    broadcast_message_name: "&dBroadcast Belohnung"
+    broadcast_message_label: "&7Führt folgenden Broadcast aus:"
     truncated:
-      command: "&8(Command truncated)"
-      message: "&8(Message truncated)"
+      command: "&8(Command gekürzt)"
+      message: "&8(Nachricht gekürzt)"
     invalid_item:
-      name: "&cInvalid Item"
+      name: "&cUngültiges Item"
       lore:
-        - "&7This item could not be loaded"
+        - "&7Dieses item konnte nicht geladen werden"
         - ""
         - "&8─────────────"
         - "&7Chance: &e%chance%%"
     # Edit mode
-    click_to_edit: "&e&lLeft-Click &7to edit  &8|  &e&lRight-Click &7to %action%"
+    click_to_edit: "&e&lLinksklick &7zum bearbeiten  &8|  &e&lRechtsklick &7um %action%"
     save_preset:
-      name: "&aCreate %Type% Preset"
+      name: "&aErstelle %Type%-Vorlage"
       lore:
-        - "&7Save the current reward configuration"
-        - "&7as a reusable preset for %type%s"
+        - "&7Speichere die aktuelle Belohnungskonfiguration"
+        - "&7als wiederverwendbare Vorlage für %type%s"
         - ""
-        - "&7This allows you to quickly apply"
-        - "&7the same rewards to other %type%s"
+        - "&7Dies ermöglicht es dir, die gleichen"
+        - "&7Belohnungen schnell auf andere %type%s anzuwenden"
         - ""
-        - "&eClick to create preset"
+        - "&eKlicke zum Erstellen der Vorlage"
     load_preset:
-      name: "&bLoad %Type% Preset"
+      name: "&bLade %Type%-Vorlage"
       lore:
-        - "&7Load a saved reward configuration"
-        - "&7from your %type% presets"
+        - "&7Lade eine gespeicherte Belohnungskonfiguration"
+        - "&7aus deinen %type%-Vorlagen"
         - ""
-        - "&7Replace current rewards with"
-        - "&7a previously saved preset"
+        - "&7Ersetze aktuelle Belohnungen durch"
+        - "&7eine zuvor gespeicherte Vorlage"
         - ""
-        - "&eClick to view presets"
+        - "&eKlicke zum Anzeigen der Vorlagen"
     quick_action:
-      delete: "&cdelete"
-      get_instance: "&aget instance"
+      delete: "&czu löschen"
+      get_instance: "&aum das Item zu bekommen"
     quick_mode:
-      name: "&bQuick Action"
-      mode_delete: "&cDelete"
-      mode_get_instance: "&aGet Instance"
+      name: "&bSchnelle Aktion"
+      mode_delete: "&cLöschen"
+      mode_get_instance: "&aItem bekommen"
       lore:
-        - "&7Mode: %mode%"
-        - "&7Right-click rewards to %action%"
+        - "&7Modus: %mode%"
+        - "&7Rechtsklicke Belohnungen um %action%"
         - ""
-        - "&eClick to switch mode"
+        - "&eKlicke zum Wechseln des Modus"
     add_item:
-      name: "&a+ Add Item Reward"
+      name: "&a+ Add Item Reward" # HERE TRANS
       lore:
         - "&7Click to add an item"
         - "&7as a reward for this treasure."
@@ -532,7 +531,7 @@ gui:
       edit_chance:
         name: "&eEdit Chance"
         lore:
-          - "&7Current: &f%chance%%"
+          - "&7Aktuell: &f%chance%%"
           - ""
           - "&7Click to change the"
           - "&7drop chance of this reward."
@@ -540,7 +539,7 @@ gui:
         name: "&eEdit Message"
         lore:
           - "&8Only for this reward!"
-          - "&7Current: &f%message%"
+          - "&7Aktuell: &f%message%"
           - ""
           - "&eLeft-Click &7to change"
           - "&eRight-Click &7to reset"
@@ -559,7 +558,7 @@ gui:
         name: "&eEdit Broadcast"
         lore:
           - "&8Only for this reward!"
-          - "&7Current: &f%broadcast%"
+          - "&7Aktuell: &f%broadcast%"
           - ""
           - "&eLeft-Click &7to change"
           - "&eRight-Click &7to reset"
@@ -577,7 +576,7 @@ gui:
       edit_value:
         name: "&eEdit Value"
         lore:
-          - "&7Current: &f%value%"
+          - "&7Aktuell: &f%value%"
           - ""
           - "&7Click to change the"
           - "&7value of this reward."
@@ -787,13 +786,13 @@ gui:
     rename:
       name: "&eRename Collection"
       lore:
-        - "&7Current: &f%name%"
+        - "&7Aktuell: &f%name%"
         - ""
         - "&eClick to rename"
     status:
       name: "&eToggle Status"
       lore:
-        - "&7Current: %status%"
+        - "&7Aktuell: %status%"
         - ""
         - "&eClick to toggle"
     rewards:
@@ -807,7 +806,7 @@ gui:
     default_treasure_preset:
       name: "&eDefault Treasure Reward Preset"
       lore:
-        - "&7Current: %preset%"
+        - "&7Aktuell: %preset%"
         - ""
         - "&7Applied to newly created treasures"
         - "&7in this collection (place mode)."
@@ -830,13 +829,13 @@ gui:
         - "&7Manage availability schedules"
         - "&7using ACT format rules."
         - ""
-        - "&7Current rules: &f%count%"
+        - "&7Aktuell rules: &f%count%"
         - ""
         - "&eClick to manage"
     progress_reset_cron:
       name: "&eProgress Reset Schedule"
       lore:
-        - "&7Current: %cron%"
+        - "&7Aktuell: %cron%"
         - ""
         - "&7Automatically resets player"
         - "&7progress on a schedule."
@@ -845,7 +844,7 @@ gui:
     single_player_find:
       name: "&eSingle Player Find"
       lore:
-        - "&7Current: %status%"
+        - "&7Aktuell: %status%"
         - ""
         - "&7When enabled, only ONE player"
         - "&7globally can find each treasure."
@@ -865,7 +864,7 @@ gui:
     hide_after_found:
       name: "&eHide Found Treasures"
       lore:
-        - "&7Current: %status%"
+        - "&7Aktuell: %status%"
         - ""
         - "&7When enabled, treasures that"
         - "&7you've already found will be"
@@ -879,7 +878,7 @@ gui:
     hide_collection_disabled:
       name: "&eHide When Collection Disabled"
       lore:
-        - "&7Current: %status%"
+        - "&7Aktuell: %status%"
         - ""
         - "&7When enabled, all treasures"
         - "&7in this collection will be"
@@ -971,7 +970,7 @@ gui:
       rename:
         name: "&eRename Preset"
         lore:
-          - "&7Current name: &f%current%"
+          - "&7Aktuell name: &f%current%"
           - ""
           - "&7Change the display name of"
           - "&7this reward preset."
@@ -1001,7 +1000,7 @@ gui:
         name: "&eSet As Default"
         lore:
           - ""
-          - "&7Current: &f%current%"
+          - "&7Aktuell: &f%current%"
           - ""
           - "&7Set this preset as the"
           - "&7default treasure reward preset"
@@ -1041,7 +1040,7 @@ gui:
     editor:
       title: "%cron_type% Cron Schedule Editor"
       current:
-        name: "&e&lCurrent Schedule"
+        name: "&e&lAktuell Schedule"
         expression: "&7Expression:"
         next_runs: "&7Next executions:"
         none: "&7No schedule set"
@@ -1311,7 +1310,7 @@ gui:
         custom_value: "Custom value"
       preview:
         name: "&e&lPreview"
-        current_expression: "&7Current Expression:"
+        current_expression: "&7Aktuell Expression:"
         next_runs: "&7Next runs:"
       field:
         selected_name: "&a&l► %name%"
@@ -1326,7 +1325,7 @@ gui:
         current_name: "&a✓ %value%"
         set_name: "&f%value%"
         current_lore:
-          - "&aCurrent value"
+          - "&aAktuell value"
           - ""
           - "&7%description%"
         set_lore:
@@ -1417,7 +1416,7 @@ gui:
           - ""
           - "&eClick to type"
       current:
-        name: "&e&lCurrent Rule Configuration"
+        name: "&e&lAktuell Rule Configuration"
         date_range: "&7Date Range: &f%date_range%"
         duration: "&7Duration: &f%duration%"
         cron: "&7Cron: &f%cron%"
@@ -1533,7 +1532,7 @@ gui:
       date_range:
         name: "&eDate Range"
         lore:
-          - "&7Current: &f%value%"
+          - "&7Aktuell: &f%value%"
           - "&7%description%"
           - ""
           - "&7Optional: limit to specific dates"
@@ -1542,7 +1541,7 @@ gui:
       duration:
         name: "&eDuration"
         lore:
-          - "&7Current: &f%value%"
+          - "&7Aktuell: &f%value%"
           - "&7%description%"
           - ""
           - "&7Optional: limit how long it's active"
@@ -1554,7 +1553,7 @@ gui:
           none: "No schedule"
           invalid: "Invalid schedule"
         lore:
-          - "&7Current: &f%value%"
+          - "&7Aktuell: &f%value%"
           - "&7%description%"
           - ""
           - "&7Optional: run on a repeating schedule"
@@ -1584,13 +1583,13 @@ gui:
         name:
           name: "&eName"
           lore:
-            - "&7Current: &f%name%"
+            - "&7Aktuell: &f%name%"
             - ""
             - "&eClick to rename"
         enabled:
           name: "&eEnabled"
           lore:
-            - "&7Current: %status%"
+            - "&7Aktuell: %status%"
             - ""
             - "&eClick to toggle"
         delete:
@@ -1604,7 +1603,7 @@ gui:
         editor:
           title: "Edit Duration"
           current:
-            name: "&e&lCurrent Duration"
+            name: "&e&lAktuell Duration"
             value: "&f%duration%"
             description: "&7%description%"
         preset:
@@ -1705,7 +1704,7 @@ gui:
         editor:
           title: "Edit Date Range"
           current:
-            name: "&e&lCurrent Date Range"
+            name: "&e&lAktuell Date Range"
             value: "&f%date_range%"
             description: "&7%description%"
         preset:
