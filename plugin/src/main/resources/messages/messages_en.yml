@@ -762,7 +762,7 @@ gui:
         - "&7  Z: &f%z%"
         - "&7  World: &f%world%"
       lore_not_found:
-        - "&c✗ You haven't found this yet"
+        - "&c✗ You haven't found this yet!"
         - ""
         - "&7Keep exploring to discover"
         - "&7this treasure's location!"
@@ -868,7 +868,7 @@ gui:
         - ""
         - "&7When enabled, treasures that"
         - "&7you've already found will be"
-        - "&7hidden in the treasure list."
+        - "&7hidden Client-Side."
         - ""
         - "&8&m                    "
         - "&7This helps you focus on"
@@ -890,9 +890,6 @@ gui:
         - "&7seeing unavailable content."
         - ""
         - "&eClick to toggle"
-    hide_status:
-      enabled: "&aEnabled"
-      disabled: "&cDisabled"
     reset_schedule:
       title: "Progress Reset Schedule"
     categories:
