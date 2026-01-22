@@ -600,73 +600,73 @@ gui:
 
     add:
       item:
-        title: "&8Add Item Reward"
+        title: "&8Itm-Belohnung hinzufügen"
         placeholder:
-          name: "&7Place Item Here"
+          name: "&7Setzte das Item hier"
           lore:
-            - "&7Place the item you want"
-            - "&7to add as a reward."
+            - "&7Setze das Item, was du"
+            - "&7als Belohnung hizufügen willst."
         info:
-          name: "&eHow to Add Item Reward"
+          name: "&eSo fügst du Item-Belohnungen hinzu"
           lore:
-            - "&7Place the item in the"
-            - "&7center slot below."
+            - "&7Platziere das Item in den"
+            - "&7Mittleren Slot drunter."
             - ""
-            - "&7The exact item (including"
-            - "&7enchants, name, lore) will"
-            - "&7be given as a reward."
+            - "&7Das genau gleiche Item (mit"
+            - "&7Verzauberungen, Name, Lore) wird"
+            - "&7dann als Belohung gegeben."
             - ""
-            - "&7Click &aConfirm &7when ready."
+            - "&7Klick um zu &aBestätigen &7wenn du Bereit bist."
         confirm:
-          name: "&aConfirm"
+          name: "&aBestätigen"
           lore:
-            - "&7Click to add this item"
-            - "&7as a reward."
+            - "&7Klicke um das Item"
+            - "&7als Belohnung zu setzten."
         cancel:
-          name: "&cCancel"
+          name: "&cAbbrechen"
           lore:
-            - "&7Click to cancel and"
-            - "&7return to rewards menu."
+            - "&7Klicke um abzubrechen und"
+            - "&7kehre in das Belohnungsmenu zurück."
   collection_content:
-    title: "&8Collection Content"
+    title: "&8Collection Inhalt"
     treasure_item:
       name: "&6Treasure #%number%"
       lore:
-        - "&7Players found: &f%count%"
+        - "&7Spieler gefunden: &f%count%"
         - ""
-        - "&7Location:"
+        - "&7Ort:"
         - "&7X: &f%x%"
         - "&7Y: &f%y%"
         - "&7Z: &f%z%"
-        - "&7World: &f%world%"
+        - "&7Welt: &f%world%"
         - ""
-      lore_teleport: "&eLeft-Click &7to teleport"
-      lore_reward: "&eShift+Left-Click &7to open the reward menu"
-      lore_who_found: "&eRight-Click &7to see who found"
-      lore_action_menu_bedrock: "&8Bedrock/Geyser: &7Press &eDrop (Q) &7to open action menu"
+      lore_teleport: "&eLinksklick &7zum Teleportieren"
+      lore_reward: "&eShift+Linksklick &7um das Belohnungsmenu zu öffnen"
+      lore_who_found: "&eRechtsklick &7um zu sehen wer es gefunden hat"
+      lore_action_menu_bedrock: "&8Bedrock/Geyser: &7Drücke &eDrop (Q) &7um das Aktionsmenu zu öffnen"
   minigame:
     reaction:
-      title: "&8Reaction Game"
+      title: "&8Reaktionsspiel"
       click:
-        name: "&aClick Me!"
+        name: "&aKlick mich!"
         lore:
           - "&6%current%&7/&6%required%"
     memory:
-      title: "&8Memory Game"
+      title: "&8Erinnerungsspiel"
       button:
-        name: "&fButton %number%"
+        name: "&fKnopf %number%"
   treasure_action:
-    title: "&8Treasure Actions"
+    title: "&8Treasure Aktionen"
     teleport:
-      name: "&aTeleport to Treasure"
+      name: "&aZur Treasure teleportieren"
       lore:
-        - "&7Click to teleport to"
-        - "&7this treasure's location."
+        - "&7Klicke um dich zu dieser"
+        - "&7Treasure zu teleportieren."
     view_finders:
-      name: "&eView Who Found"
+      name: "&eSiehe wer es gefunden hat"
       lore:
-        - "&7Click to see which players"
-        - "&7have found this treasure."
+        - "&7Klicke um zu sehen, wer"
+        - "&7diese Treasure gefunden hat."
     rewards:
       name: "&6Rewards"
       lore:
