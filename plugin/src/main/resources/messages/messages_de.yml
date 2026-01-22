@@ -705,13 +705,13 @@ gui:
       lore:
         - "&7Treasures gefunden: &f%score%"
         - ""
-        - "&6⭐ Das ist keine Position!"
+        - "&6⭐ Dies ist deine Position!"
     your_rank:
       name: "&aDeine Position"
       lore:
         - "&7Rang: &f#%rank%"
         - "&7Gefunden: &f%score%/%total%"
-        - "&7Progress: &e%percentage%%"
+        - "&7Fortschritt: &e%percentage%%"
     not_ranked:
       name: "&cKeine Platzierung"
       lore:
