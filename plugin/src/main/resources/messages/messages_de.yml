@@ -668,80 +668,80 @@ gui:
         - "&7Klicke um zu sehen, wer"
         - "&7diese Treasure gefunden hat."
     rewards:
-      name: "&6Rewards"
+      name: "&6Belohnungen"
       lore:
-        - "&7Click to open the rewards"
-        - "&7for that treasure."
+        - "&7Klicke um die Belohnungen"
+        - "&7für diese Treasure zu sehen."
   finders:
-    title: "&8Who Found This Treasure"
-    loading: "&7Loading player data..."
+    title: "&8Wer hat diese Treasure gefunden"
+    loading: "&7Lade die Spielerdaten..."
     empty:
-      name: "&7No One Yet"
+      name: "&7Keine Daten"
       lore:
-        - "&7This treasure has not"
-        - "&7been found by anyone yet."
+        - "&7Diese Treasure wurde noch"
+        - "&7von keinem Gefunden."
     entry:
       name: "&e%player%"
       lore:
-        - "&7Found this treasure"
+        - "&7Hat die Treasure gefunden"
   leaderboard:
-    title: "&8Leaderboard: %collection%"
+    title: "&8Rangliste: %collection%"
     loading:
-      name: "&7Loading leaderboard..."
+      name: "&7Lade die Rangliste..."
       lore:
-        - "&7Please wait while we fetch"
-        - "&7the leaderboard data..."
+        - "&7Bitte warte bis die Daten"
+        - "&7zusammengefasst werden..."
     empty:
-      name: "&7No Data Yet"
+      name: "&7Keine Daten"
       lore:
-        - "&7No players have found"
-        - "&7treasures in this collection yet."
+        - "&7Keine Spieler haben bisher die"
+        - "&7Treasure in der Collection gefunden."
     player_entry:
       name: "&e#%rank% %player%"
       lore:
-        - "&7Treasures found: &f%score%"
+        - "&7Treasures gefunden: &f%score%"
     player_entry_highlighted:
-      name: "&6&l#%rank% %player% &7(You)"
+      name: "&6&l#%rank% %player% &7(Du)"
       lore:
-        - "&7Treasures found: &f%score%"
+        - "&7Treasures gefunden: &f%score%"
         - ""
-        - "&6⭐ This is your position!"
+        - "&6⭐ Das ist keine Position!"
     your_rank:
-      name: "&aYour Position"
+      name: "&aDeine Position"
       lore:
-        - "&7Rank: &f#%rank%"
-        - "&7Found: &f%score%/%total%"
+        - "&7Rang: &f#%rank%"
+        - "&7Gefunden: &f%score%/%total%"
         - "&7Progress: &e%percentage%%"
     not_ranked:
-      name: "&cNot Ranked"
+      name: "&cKeine Platzierung"
       lore:
-        - "&7You haven't found any"
-        - "&7treasures in this collection yet."
+        - "&7Du hast noch keine Treasures in"
+        - "&7in dieser Collection gefunden."
         - ""
-        - "&7Start exploring to get ranked!"
+        - "&7Erkunde um Platziert zu werden!"
     view_button:
-      name: "&eTreasure Leaderboard"
+      name: "&eTreasure Rangliste"
       lore:
-        - "&7Click to view the top players"
-        - "&7who have found the most"
-        - "&7treasures in this collection."
+        - "&7Klicke um die besten Spieler,"
+        - "&7die am meisten Treasures in der"
+        - "&7Collection gefunden haben, zu sehen."
     info:
-      name: "&bLeaderboard Info"
+      name: "&bRanglisten Info"
       lore:
-        - "&7Max entries shown: &f%display_limit%"
-        - "&7Cache refresh: &f%refresh_interval%s &8(%minutes%m)"
+        - "&7Maximale Einträge die Angezeigt werden: &f%display_limit%"
+        - "&7Datenspeicher Aktualisierung: &f%refresh_interval%s &8(%minutes%m)"
         - ""
-        - "&8Leaderboard updates automatically"
+        - "&8Das Leaderboard aktualisiert von selber"
   progress:
-    title: "&8Progress: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
-    loading: "&7Loading your progress..."
+    title: "&8Fortschritt: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    loading: "&7Dein Fortschritt wird geladen..."
     no_treasures:
-      name: "&7No Treasures"
+      name: "&7Keine Treasures"
       lore:
-        - "&7This collection has no"
-        - "&7treasures configured yet."
+        - "&7Diese Collection besitzt"
+        - "&7noch keine Treasures."
     stats:
-      name: "&aYour Progress Statistics"
+      name: "&aDeine Fortschritt Statistiken" # here
       lore:
         - "&7Collection: &e%collection%"
         - "&7Found: &a%found%&7/&e%total%"
