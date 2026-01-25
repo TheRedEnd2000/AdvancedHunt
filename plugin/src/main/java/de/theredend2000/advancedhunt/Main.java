@@ -17,7 +17,6 @@ import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -79,6 +78,7 @@ public final class Main extends JavaPlugin {
     private ScanManager scanManager;
     private HintManager hintManager;
     private FireworkManager fireworkManager;
+    private TreasureVisibilityManager treasureVisibilityManager;
 
     private Random random;
 
@@ -143,6 +143,7 @@ public final class Main extends JavaPlugin {
         proximityManager = new ProximityManager(this, treasureManager, playerManager);
         placeModeManager = new PlaceModeManager(this);
         scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
+        treasureVisibilityManager = new TreasureVisibilityManager(this, treasureManager, collectionManager);
 
         particleManager.start();
         scanManager.start();
@@ -289,6 +290,7 @@ public final class Main extends JavaPlugin {
         rewardPresetManager.reloadPresets();
         placeItemManager.reloadItems();
         treasureManager.loadTreasures();
+        treasureVisibilityManager.start();
         minigameManager = new MinigameManager(this);
         fireworkManager = new FireworkManager(this);
 
@@ -313,8 +315,7 @@ public final class Main extends JavaPlugin {
         setupCommands();
 
         // Initialize bStats
-        int pluginId = 19495;
-        new Metrics(this, pluginId);
+    //        new Metrics(this, 19495);
 
         // Initialize Updater
         if (getConfig().getBoolean("updater.enabled", true)) {
@@ -389,6 +390,9 @@ public final class Main extends JavaPlugin {
         if (scanManager != null) {
             scanManager.stop();
         }
+        if (treasureVisibilityManager != null) {
+            treasureVisibilityManager.stop();
+        }
         if (particleManager != null) {
             particleManager.stop();
         }
@@ -414,6 +418,10 @@ public final class Main extends JavaPlugin {
 
         // Rebuild managers that depend on the repository and/or each other
         rebuildRepositoryDependentManagers();
+
+        if (treasureVisibilityManager != null) {
+            treasureVisibilityManager.start();
+        }
 
         return true;
     }
@@ -483,6 +491,9 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         if (hintManager != null) {
             hintManager.cancelAllVisualHints();
+        }
+        if (treasureVisibilityManager != null) {
+            treasureVisibilityManager.stop();
         }
         if (scanManager != null) {
             scanManager.stop();
@@ -572,6 +583,10 @@ public final class Main extends JavaPlugin {
 
     public FireworkManager getFireworkManager() {
         return fireworkManager;
+    }
+
+    public TreasureVisibilityManager getTreasureVisibilityManager() {
+        return treasureVisibilityManager;
     }
 
     public MinecraftHelp<CommandSender> getMinecraftHelp() {

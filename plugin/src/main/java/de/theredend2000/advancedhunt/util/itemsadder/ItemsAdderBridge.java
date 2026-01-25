@@ -1,6 +1,8 @@
 package de.theredend2000.advancedhunt.util.itemsadder;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,4 +29,16 @@ public interface ItemsAdderBridge {
     String getCustomFurnitureId(Entity entity);
 
     ItemStack getCustomItem(String namespacedId);
+
+    BlockData getCustomBlockData(String namespacedId);
+
+    boolean isCustomFurnitureId(String namespacedId);
+
+    boolean placeCustomBlock(String namespacedId, Location location);
+
+    boolean removeCustomBlock(Location location);
+
+    boolean spawnCustomFurniture(String namespacedId, Location location);
+
+    boolean removeCustomFurniture(Location location);
 }

@@ -122,6 +122,10 @@ public class AdvancedHuntCommand {
                 CompletableFuture.completedFuture(Arrays.stream(MinigameType.values())
                         .map(Enum::name).map(Suggestion::suggestion).collect(Collectors.toList()));
 
+        SuggestionProvider<CommandSender> bypassSuggestions = (context, input) ->
+            CompletableFuture.completedFuture(Arrays.asList("on", "off").stream()
+                .map(Suggestion::suggestion).collect(Collectors.toList()));
+
         CommandComponent.Builder<CommandSender, String> collectionArg = CommandComponent.<CommandSender, String>builder()
                 .name("collection").parser(StringParser.stringParser()).suggestionProvider(collectionsSuggestions);
 
@@ -154,6 +158,15 @@ public class AdvancedHuntCommand {
                 .permission("advancedhunt.admin.show")
                 .commandDescription(desc("show"))
                 .handler(context -> showNearbyTreasures((Player) context.sender(), context.get("radius"), context.get("seconds")))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("bypass")
+                .required("state", StringParser.stringParser(), bypassSuggestions)
+                .permission("advancedhunt.treasure.bypass")
+                .commandDescription(desc("bypass"))
+                .handler(context -> toggleBypass((Player) context.sender(), context.get("state")))
         );
 
         commandManager.command(
@@ -527,6 +540,29 @@ public class AdvancedHuntCommand {
                 "%radius%", String.valueOf(radius),
                 "%count%", String.valueOf(spawnedCount),
                 "%max%", String.valueOf(maxMarkers)));
+    }
+
+    private void toggleBypass(Player player, String stateRaw) {
+        if (player == null) return;
+        if (stateRaw == null || stateRaw.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.usage"));
+            return;
+        }
+
+        String state = stateRaw.toLowerCase(Locale.ROOT);
+        if ("on".equals(state)) {
+            plugin.getTreasureVisibilityManager().setBypass(player, true);
+            player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.enabled"));
+            return;
+        }
+
+        if ("off".equals(state)) {
+            plugin.getTreasureVisibilityManager().setBypass(player, false);
+            player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.disabled"));
+            return;
+        }
+
+        player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.usage"));
     }
 
     private static int allocateClientSideEntityId(World world) {

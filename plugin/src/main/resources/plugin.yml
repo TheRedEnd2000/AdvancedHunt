@@ -39,6 +39,7 @@ permissions:
       advancedhunt.admin.teleport: true
       advancedhunt.admin.view_finders: true
       advancedhunt.admin.rewards: true
+      advancedhunt.treasure.bypass: true
   advancedhunt.admin.show:
     description: Allows showing a temporary hologram via PacketEvents
     default: op
@@ -71,4 +72,7 @@ permissions:
     default: op
   advancedhunt.admin.view_finders:
     description: Allows viewing who found a treasure
+    default: op
+  advancedhunt.treasure.bypass:
+    description: Allows toggling treasure visibility bypass
     default: op
