@@ -2,7 +2,9 @@ package de.theredend2000.advancedhunt.util;
 
 import de.theredend2000.advancedhunt.util.itemsadder.ItemsAdderBridge;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -95,5 +97,41 @@ public class ItemsAdderAdapter {
         ItemsAdderBridge bridge = getBridge();
         if (bridge == null) return null;
         return bridge.getCustomItem(id);
+    }
+
+    public static BlockData getCustomBlockData(String namespacedId) {
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return null;
+        return bridge.getCustomBlockData(namespacedId);
+    }
+
+    public static boolean isCustomFurnitureId(String namespacedId) {
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.isCustomFurnitureId(namespacedId);
+    }
+
+    public static boolean placeCustomBlock(String namespacedId, Location location) {
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.placeCustomBlock(namespacedId, location);
+    }
+
+    public static boolean removeCustomBlock(Location location) {
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.removeCustomBlock(location);
+    }
+
+    public static boolean spawnCustomFurniture(String namespacedId, Location location) {
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.spawnCustomFurniture(namespacedId, location);
+    }
+
+    public static boolean removeCustomFurniture(Location location) {
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.removeCustomFurniture(location);
     }
 }

@@ -144,6 +144,7 @@ command:
       help: "Zeigt dieses Hilfe Menu"
       reload: "Läd die Plugin-Config neu"
       show: "Zeit nahegelegene Treasures mit einem Hologramm"
+      bypass: "Schaltet die Schatz-Bypass-Ansicht um"
       list: "Zeigt eine Liste aller verfügbaren Collections"
       list_collection: "Zeigt eine Liste alle Treasures in einer Collection"
       leaderboard: "Öffnet das Leaderboard für eine Collection"
@@ -196,6 +197,10 @@ command:
     invalid_radius: "%prefix%&cRadius muss zwischen &e1&c und &e500&c Blöcken sein."
     invalid_duration: "%prefix%&cDauer muss zwischen &e1s&c und &e300s&c sein."
     packetevents_missing: "%prefix%&cMarkierung nicht möglich anzuzeigen. Bitte Installiere oder Aktiviere &ePacketEvents&c."
+  bypass:
+    enabled: "%prefix%&aSchatz-Bypass aktiviert."
+    disabled: "%prefix%&cSchatz-Bypass deaktiviert."
+    usage: "%prefix%&eNutzung: /ah bypass <on|off>"
   list:
     header: "&6Verfügbare Collections:"
     format: "&7- &e%collection%"
