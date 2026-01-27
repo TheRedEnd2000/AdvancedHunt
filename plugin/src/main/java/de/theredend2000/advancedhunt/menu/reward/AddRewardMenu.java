@@ -49,7 +49,8 @@ public class AddRewardMenu extends Menu {
             .build();
         addButton(10, addItem, e -> openAddItemRewardMenu());
 
-        ItemStack addCommand = new ItemBuilder(XMaterial.COMMAND_BLOCK)
+        ItemStack addCommand = new ItemBuilder(XMaterial.PLAYER_HEAD)
+            .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWI2Y2VlOGZkYTdlZjBiM2FlMGViMDU3OWQ1Njc2Y2UzNmFmN2VmYzU3NGQ4ODcyOGYzODk0ZjZiMTY2NTM4In19fQ==")
             .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.add_command.name", false))
             .setLore(plugin.getMessageManager().getMessageList("gui.rewards.add_command.lore", false))
             .build();

@@ -149,7 +149,8 @@ public class CollectionSettingsMenu extends Menu {
 
         // ACT Schedule Rules
         int ruleCount = collection.getActRules().size();
-        addButton(22, new ItemBuilder(XMaterial.REPEATING_COMMAND_BLOCK)
+        addButton(22, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY4N2EyYmNhZjgzZWE4YTMxNzRkMDNkMzkwMDk5MWI2N2U2NWM4Y2ExY2M0ZDk1YTBiMmNiNzE3OTY3YTYyNyJ9fX0=")
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.act_rules.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.act_rules.lore", false,
                         "%count%", String.valueOf(ruleCount)
@@ -248,7 +249,7 @@ public class CollectionSettingsMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
                         "%status%", disabled).toArray(new String[0]))
                 .build(), (e) -> {
-            playerMenuUtility.sendMessage("§4§lCOMING SOON");
+            playerMenuUtility.sendMessage("§c§lThis feature is currently in development.");
         });
 
         // Hide Collection Disabled
