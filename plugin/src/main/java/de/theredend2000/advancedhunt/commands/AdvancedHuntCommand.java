@@ -101,7 +101,7 @@ public class AdvancedHuntCommand {
         this.plugin = plugin;
     }
 
-    public void register(final LegacyPaperCommandManager<CommandSender> commandManager) {
+    public void register(final LegacyPaperCommandManager<CommandSender> commandManager, boolean debugEnabled) {
         this.commandManager = commandManager;
 
         // Setup suggestion providers inline
@@ -339,15 +339,7 @@ public class AdvancedHuntCommand {
                         .handler(context -> resetPlayerCollection(context.sender(), context.get("player"), context.get("collection")))
         );
 
-        // ==================== Minigame & Hint Commands ====================
-        commandManager.command(
-                playerBuilder()
-                        .literal("minigame")
-                        .required("type", StringParser.stringParser(), minigameSuggestions)
-                        .permission("advancedhunt.minigame")
-                        .commandDescription(desc("minigame"))
-                        .handler(context -> minigame((Player) context.sender(), context.get("type")))
-        );
+        // ==================== Hint Commands ====================
 
         commandManager.command(
                 playerBuilder()
@@ -357,7 +349,47 @@ public class AdvancedHuntCommand {
                         .handler(context -> hint((Player) context.sender()))
         );
 
-        // ==================== Debug Commands ====================
+        // ==================== Debug Commands (Conditional) ====================
+        if (debugEnabled) {
+            registerDebugCommands(minigameSuggestions, collectionsSuggestions);
+        }
+
+        // ==================== Migration Commands ====================
+        SuggestionProvider<CommandSender> migrationTypes = (context, input) ->
+            CompletableFuture.completedFuture(Arrays.asList("yaml", "sqlite", "mysql").stream()
+                        .map(Suggestion::suggestion).collect(Collectors.toList()));
+
+        commandManager.command(
+                baseBuilder()
+                        .literal("migrate")
+                        .required("type", StringParser.stringParser(), migrationTypes)
+                        .flag(commandManager.flagBuilder("force"))
+                        .flag(commandManager.flagBuilder("purge"))
+                        .permission("advancedhunt.admin.migrate")
+                        .commandDescription(desc("migrate"))
+                        .handler(context -> {
+                            boolean force = context.flags().isPresent("force");
+                            boolean purge = context.flags().isPresent("purge");
+                            migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
+                        })
+        );
+    }
+
+    private void registerDebugCommands(SuggestionProvider<CommandSender> minigameSuggestions,
+                                       SuggestionProvider<CommandSender> collectionsSuggestions) {
+        CommandComponent.Builder<CommandSender, String> collectionArg = CommandComponent.<CommandSender, String>builder()
+                .name("collection").parser(StringParser.stringParser()).suggestionProvider(collectionsSuggestions);
+
+        commandManager.command(
+                playerBuilder()
+                        .literal("debug")
+                        .literal("minigame")
+                        .required("type", StringParser.stringParser(), minigameSuggestions)
+                        .permission("advancedhunt.admin")
+                        .commandDescription(desc("debug_minigame"))
+                        .handler(context -> minigame((Player) context.sender(), context.get("type")))
+        );
+
         commandManager.command(
                 playerBuilder()
                         .literal("debug")
@@ -418,26 +450,6 @@ public class AdvancedHuntCommand {
                         .literal("glow")
                         .permission("advancedhunt.admin")
                         .handler(context -> glowBlock((Player) context.sender()))
-        );
-
-        // ==================== Migration Commands ====================
-        SuggestionProvider<CommandSender> migrationTypes = (context, input) ->
-            CompletableFuture.completedFuture(Arrays.asList("yaml", "sqlite", "mysql").stream()
-                        .map(Suggestion::suggestion).collect(Collectors.toList()));
-
-        commandManager.command(
-                baseBuilder()
-                        .literal("migrate")
-                        .required("type", StringParser.stringParser(), migrationTypes)
-                        .flag(commandManager.flagBuilder("force"))
-                        .flag(commandManager.flagBuilder("purge"))
-                        .permission("advancedhunt.admin.migrate")
-                        .commandDescription(desc("migrate"))
-                        .handler(context -> {
-                            boolean force = context.flags().isPresent("force");
-                            boolean purge = context.flags().isPresent("purge");
-                            migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
-                        })
         );
     }
 
