@@ -44,11 +44,11 @@ feedback:
 
     components:
       date_range:
-        prompt: "%prefix%&aGebe eine Datumsbereich an (beispiel: YYYY-MM-DD:YYYY-MM-DD oder * für immer):"
+        prompt: "%prefix%&aGebe einen Datumsbereich an (Beispiel: YYYY-MM-DD:YYYY-MM-DD oder * für immer):"
       duration:
-        prompt: "%prefix%&aGebe eine Dauer an (beispiel:, 2h, 30m, 1d oder * für immer):"
+        prompt: "%prefix%&aGebe eine Dauer an (Beispiel:, 2h, 30m, 1d oder * für immer):"
       act_format:
-        prompt: "%prefix%&aGebe das ACT-FORMAT an: [DATE_RANGE] [DURATION] [CRON] (beispiel: [*] [2h] [0 0 9 * * ?])"
+        prompt: "%prefix%&aGebe das ACT-FORMAT an: [DATE_RANGE] [DURATION] [CRON] (Beispiel: [*] [2h] [0 0 9 * * ?])"
 
     presets:
       applied: "%prefix%&aVorlage angewandt: &e%preset%"
@@ -63,7 +63,7 @@ feedback:
   cron:
     applied: "%prefix%&aZeitplan erfolgreich aktualisiert!"
     cleared: "%prefix%&aZeitplan gelöscht."
-    preset_applied: "%prefix%&aVorlage angewandt: &e%preset%"
+    preset_applied: "%prefix%&aVorlage angewendet: &e%preset%"
     preset:
       daily:
         name: "&eTäglich"
@@ -132,7 +132,7 @@ error:
     invalid: "%prefix%&cUngültige Cron-Ausdruck! Bitte überprüfe das Format."
   act:
     format:
-      invalid_format: "%prefix%&cUngültiges ACT-Format! Erwartet: [DATE_RANGE] [DURATION] [CRON]"
+      invalid_format: "%prefix%&cUngültiges ACT-Format! Erwartet: [DATUMSBEREICH] [DAUER] [CRON]"
   preset:
     invalid_name: "%prefix%&cUngültiger Vorlagenname! Bitte gebe einen gültigen Namen an."
     duplicate_name: "%prefix%&cEine Vorlage mit dem Name existiert bereits."
@@ -143,7 +143,7 @@ command:
     descriptions:
       help: "Zeigt dieses Hilfe Menu"
       reload: "Läd die Plugin-Config neu"
-      show: "Zeit nahegelegene Treasures mit einem Hologramm"
+      show: "Zeigt nahegelegene Treasures mit einem Hologramm"
       list: "Zeigt eine Liste aller verfügbaren Sammlungen"
       list_collection: "Zeigt eine Liste alle Treasures in einer Sammlung"
       leaderboard: "Öffnet das Leaderboard für eine Sammlung"
@@ -278,7 +278,7 @@ collection:
   completed: "%prefix%&6Du hast die Sammlung &e%collection% &6abgeschlossen!"
 
 chat_input:
-  request: "%prefix%&aBitte gebe dein Eingabe in Chat ein."
+  request: "%prefix%&aBitte gebe deine Eingabe in Chat ein."
   canceled: "%prefix%&cEingabe abgebrochen."
   timeout: "%prefix%&cEingabe abgelaufen."
 
@@ -296,12 +296,12 @@ gui:
     none: "&cKeinen"
   place_items:
     groups:
-      title: "&8Place-Items Gruppen"
+      title: "&8Place-Item Gruppen"
       none:
         name: "&cKeine Gruppen"
         lore:
           - "&7Es existiert keine Gruppe."
-          - "&7Erstelle einen mit dem Knopf drunter."
+          - "&7Erstelle eine mit dem Knopf unten."
       group:
         name: "&e%group%"
         lore:
@@ -310,10 +310,10 @@ gui:
           - "&a%action%"
           - "&7%action2%"
         action:
-          open: "Klicke zum Öffnen"
-          manage: "Rechtsklick um zu verwalten"
+          open: "Linksklick zum Öffnen"
+          manage: "Rechtsklick zum verwalten"
 
-    group_actions:
+    group_actions: # check here
       title: "&8Gruppe: &e%group%"
       rename:
         name: "&eBenne die Gruppe um"
