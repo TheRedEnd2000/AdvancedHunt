@@ -7,13 +7,11 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
-import com.github.retrooper.packetevents.protocol.world.blockentity.BlockEntityTypes;
 import com.github.retrooper.packetevents.protocol.world.chunk.BaseChunk;
 import com.github.retrooper.packetevents.protocol.world.chunk.Column;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockEntityData;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerMultiBlockChange;
 import de.theredend2000.advancedhunt.Main;
@@ -534,31 +532,7 @@ public class TreasureVisibilityManager implements Listener {
 
     private void sendHeadBlockEntityData(Player player, Location loc, String texture) {
         if (player == null || loc == null || texture == null || texture.isEmpty()) return;
-        if (!isPacketEventsReady()) return;
-
-        try {
-            Vector3i pos = new Vector3i(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-            com.github.retrooper.packetevents.protocol.nbt.NBTCompound root = new com.github.retrooper.packetevents.protocol.nbt.NBTCompound();
-            root.setTag("id", new com.github.retrooper.packetevents.protocol.nbt.NBTString("minecraft:skull"));
-            root.setTag("SkullType", new com.github.retrooper.packetevents.protocol.nbt.NBTByte((byte) 3));
-
-            com.github.retrooper.packetevents.protocol.nbt.NBTCompound skullOwner = new com.github.retrooper.packetevents.protocol.nbt.NBTCompound();
-            skullOwner.setTag("Id", new com.github.retrooper.packetevents.protocol.nbt.NBTString(UUID.randomUUID().toString()));
-
-            com.github.retrooper.packetevents.protocol.nbt.NBTCompound properties = new com.github.retrooper.packetevents.protocol.nbt.NBTCompound();
-            com.github.retrooper.packetevents.protocol.nbt.NBTList<com.github.retrooper.packetevents.protocol.nbt.NBTCompound> textures = com.github.retrooper.packetevents.protocol.nbt.NBTList.createCompoundList();
-            com.github.retrooper.packetevents.protocol.nbt.NBTCompound textureTag = new com.github.retrooper.packetevents.protocol.nbt.NBTCompound();
-            textureTag.setTag("Value", new com.github.retrooper.packetevents.protocol.nbt.NBTString(texture));
-            textures.addTag(textureTag);
-
-            properties.setTag("textures", textures);
-            skullOwner.setTag("Properties", properties);
-            root.setTag("SkullOwner", skullOwner);
-
-            WrapperPlayServerBlockEntityData packet = new WrapperPlayServerBlockEntityData(pos, BlockEntityTypes.SKULL, root);
-            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
-        } catch (Throwable ignored) {
-        }
+        PlatformAccess.get().sendSkullUpdatePacket(player, loc, texture);
     }
 
     private void ensureFurnitureMarker(Player player, Location loc) {
