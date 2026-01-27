@@ -958,8 +958,8 @@ public class AdvancedHuntCommand {
     }
 
     private void hint(Player player) {
-        // Check if hint minigame is enabled
-        if (!plugin.getConfig().getBoolean("minigames.hint.enabled", true)) {
+        // Check if hint feature is enabled
+        if (!plugin.getConfig().getBoolean("hint.enabled", true)) {
             player.sendMessage(plugin.getMessageManager().getMessage("error.feature_disabled"));
             return;
         }
@@ -986,7 +986,7 @@ public class AdvancedHuntCommand {
         TreasureCore treasure = treasureOpt.get();
 
         // Get minigame type from config
-        String minigameTypeStr = plugin.getConfig().getString("minigames.hint.minigame-type", "REACTION");
+        String minigameTypeStr = plugin.getConfig().getString("hint.minigames.type", "REACTION");
         MinigameType minigameType;
         
         if (minigameTypeStr.equalsIgnoreCase("RANDOM")) {

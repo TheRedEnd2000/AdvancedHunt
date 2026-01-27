@@ -107,24 +107,24 @@ public class HintManager {
      * Reload configuration from config.yml
      */
     public void reloadConfig() {
-        this.visualHintEnabled = plugin.getConfig().getBoolean("minigames.hint.visual-hint.enabled", false);
-        String typeStr = plugin.getConfig().getString("minigames.hint.visual-hint.type", "NONE");
+        this.visualHintEnabled = plugin.getConfig().getBoolean("hint.visual-hint.enabled", false);
+        String typeStr = plugin.getConfig().getString("hint.visual-hint.type", "NONE");
         try {
             this.visualHintType = VisualHintType.valueOf(typeStr.toUpperCase());
         } catch (IllegalArgumentException e) {
             this.visualHintType = VisualHintType.NONE;
             plugin.getLogger().warning("Invalid visual hint type: " + typeStr + ", defaulting to NONE");
         }
-        this.visualHintDuration = Math.max(1, plugin.getConfig().getInt("minigames.hint.visual-hint.duration-seconds", 15));
-        this.visualHintParticle = plugin.getConfig().getString("minigames.hint.visual-hint.particle", "END_ROD");
-        this.visualHintMaxDistance = Math.max(5, plugin.getConfig().getInt("minigames.hint.visual-hint.max-distance", 15));
-        this.visualHintOffsetRange = Math.max(3, plugin.getConfig().getInt("minigames.hint.visual-hint.offset-range", 10));
-        this.applyFailCooldown = plugin.getConfig().getBoolean("minigames.hint.apply-cooldown-on-fail", true);
-        this.applyFailCooldownOnOP = plugin.getConfig().getBoolean("minigames.hint.apply-cooldown-to-operators", false);
-        this.cooldownSeconds = Math.max(0, plugin.getConfig().getInt("minigames.hint.cooldown-seconds", 300));
-        this.proximityRange = Math.max(1, plugin.getConfig().getInt("minigames.hint.proximity-range", 50));
+        this.visualHintDuration = Math.max(1, plugin.getConfig().getInt("hint.visual-hint.duration-seconds", 15));
+        this.visualHintParticle = plugin.getConfig().getString("hint.visual-hint.particle", "END_ROD");
+        this.visualHintMaxDistance = Math.max(5, plugin.getConfig().getInt("hint.visual-hint.max-distance", 15));
+        this.visualHintOffsetRange = Math.max(3, plugin.getConfig().getInt("hint.visual-hint.offset-range", 10));
+        this.applyFailCooldown = plugin.getConfig().getBoolean("hint.apply-cooldown-on-fail", true);
+        this.applyFailCooldownOnOP = plugin.getConfig().getBoolean("hint.apply-cooldown-to-operators", false);
+        this.cooldownSeconds = Math.max(0, plugin.getConfig().getInt("hint.cooldown-seconds", 300));
+        this.proximityRange = Math.max(1, plugin.getConfig().getInt("hint.proximity-range", 50));
         
-        String revealStr = plugin.getConfig().getString("minigames.hint.reveal-coordinate", "RANDOM");
+        String revealStr = plugin.getConfig().getString("hint.reveal-coordinate", "RANDOM");
         try {
             this.revealType = CoordinateRevealType.valueOf(revealStr.toUpperCase());
         } catch (IllegalArgumentException e) {
