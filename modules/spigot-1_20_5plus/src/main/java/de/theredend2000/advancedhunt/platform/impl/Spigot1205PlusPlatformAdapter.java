@@ -4,10 +4,17 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.protocol.nbt.NBTCompound;
+import com.github.retrooper.packetevents.protocol.nbt.NBTIntArray;
+import com.github.retrooper.packetevents.protocol.nbt.NBTList;
+import com.github.retrooper.packetevents.protocol.nbt.NBTString;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.protocol.world.blockentity.BlockEntityTypes;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3f;
+import com.github.retrooper.packetevents.util.Vector3i;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockEntityData;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
@@ -210,6 +217,48 @@ public class Spigot1205PlusPlatformAdapter extends Spigot115PlatformAdapter {
             return true;
         } catch (Throwable ignored) {
             return super.spawnGlowingBlockMarkerForPlayer(player, entityId, entityUuid, blockLocation);
+        }
+    }
+
+    @Override
+    public void sendSkullUpdatePacket(Player player, Location loc, String texture) {
+        if (player == null || loc == null || texture == null || texture.isEmpty()) return;
+        if (loc.getWorld() == null) return;
+        if (!isPacketEventsReady()) {
+            super.sendSkullUpdatePacket(player, loc, texture);
+            return;
+        }
+
+        try {
+            // 1.20.5+ uses "profile" instead of "SkullOwner" and IntArray for UUIDs.
+            Vector3i pos = new Vector3i(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+            NBTCompound root = new NBTCompound();
+            root.setTag("id", new NBTString("minecraft:skull"));
+
+            NBTCompound profile = new NBTCompound();
+            
+            UUID randomUUID = UUID.randomUUID();
+            int[] uuidInts = new int[] {
+                (int) (randomUUID.getMostSignificantBits() >> 32),
+                (int) randomUUID.getMostSignificantBits(),
+                (int) (randomUUID.getLeastSignificantBits() >> 32),
+                (int) randomUUID.getLeastSignificantBits()
+            };
+            profile.setTag("id", new NBTIntArray(uuidInts));
+            
+            NBTList<NBTCompound> properties = NBTList.createCompoundList();
+            NBTCompound textureTag = new NBTCompound();
+            textureTag.setTag("name", new NBTString("textures"));
+            textureTag.setTag("value", new NBTString(texture));
+            properties.addTag(textureTag);
+
+            profile.setTag("properties", properties);
+            root.setTag("profile", profile);
+
+            WrapperPlayServerBlockEntityData packet = new WrapperPlayServerBlockEntityData(pos, BlockEntityTypes.SKULL, root);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+        } catch (Throwable ignored) {
+            super.sendSkullUpdatePacket(player, loc, texture);
         }
     }
 }

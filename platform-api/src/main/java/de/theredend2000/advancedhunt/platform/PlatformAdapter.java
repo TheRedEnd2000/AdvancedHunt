@@ -95,4 +95,14 @@ public interface PlatformAdapter {
      * @param hoverText the tooltip text when hovering (can be null)
      */
     void sendClickableCopyText(Player player, String displayText, String copyText, String hoverText);
+
+    /**
+     * Sends a packet to update a skull block entity with a specific texture.
+     * Use this for client-side only skulls (virtual blocks).
+     *
+     * @param player the player to send the packet to
+     * @param location the location of the skull
+     * @param texture the base64 texture string
+     */
+    void sendSkullUpdatePacket(Player player, Location location, String texture);
 }
