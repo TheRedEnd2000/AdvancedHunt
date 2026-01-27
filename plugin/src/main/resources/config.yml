@@ -102,60 +102,60 @@ leaderboard:
   # How often to refresh the leaderboard cache in seconds (default: 300 = 5 minutes)
   cache-refresh-interval: 300
 
-minigames:
-  # Global setting to enable/disable minigames entirely
+hint:
+  # Enable/disable the hint feature
   enabled: true
-
-  # Settings for the Reaction (Hint) minigame
-  reaction:
-    enabled: true
-    # Number of correct clicks required to win
-    required-clicks: 5
-    # Time in ticks (20 ticks = 1 second) before the target moves and counts as a miss
-    update-time: 20
-    # Apply cooldown if the player fails?
-    apply-cooldown-on-fail: true
-
-  # Settings for the Memory (Simon) minigame
-  memory:
-    enabled: true
-    # Number of rounds to complete to win
-    rounds: 5
-    # Time in ticks to show each color during the sequence display
-    display-time: 20
-
-  # Settings for the Hint minigame
-  hint:
+  # Cooldown in seconds before player can request another hint
+  cooldown-seconds: 300
+  # Maximum distance in blocks to search for treasures
+  proximity-range: 50
+  # Apply cooldown if the player fails the minigame?
+  apply-cooldown-on-fail: true
+  # Apply cooldown to operators
+  apply-cooldown-to-operators: false
+  # Which coordinate to reveal: X, Z, or RANDOM (only X or Z)
+  reveal-coordinate: RANDOM
+  
+  # Minigame settings for hints
+  minigames:
+    # Global setting to enable/disable minigames entirely
     enabled: true
     # Which minigame to use for hints (REACTION, MEMORY, or RANDOM)
-    minigame-type: RANDOM
-    # Cooldown in seconds before player can request another hint
-    cooldown-seconds: 300
-    # Maximum distance in blocks to search for treasures
-    proximity-range: 50
-    # Apply cooldown if the player fails the minigame?
-    apply-cooldown-on-fail: true
-    # Apply cooldown to operators
-    apply-cooldown-to-operators: false
-    # Which coordinate to reveal: X, Z, or RANDOM (only X or Z)
-    reveal-coordinate: RANDOM
-    # Visual hint settings (experimental)
-    visual-hint:
-      enabled: false
-      # Type of visual hint: NONE, TRAIL, SNAKE, COMPASS, or BEACON
-      # TRAIL: Particle line showing direction for limited distance (not full path)
-      # SNAKE: Wavy particle trail showing general direction (not an exact line)
-      # COMPASS: Point player's compass to approximate area (not exact location)
-      # BEACON: Vertical particle beam in general vicinity (not exact location)
-      type: NONE
-      # Duration of visual hint in seconds
-      duration-seconds: 8
-      # Particle type for TRAIL and BEACON (see: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html)
-      particle: END_ROD
-      # Maximum distance in blocks to show TRAIL particles (shows direction, not full path)
-      max-distance: 15
-      # Random offset range in blocks for TRAIL, COMPASS and BEACON (±blocks from actual treasure)
-      offset-range: 10
+    type: RANDOM
+    
+    # Settings for the Reaction minigame
+    reaction:
+      enabled: true
+      # Number of correct clicks required to win
+      required-clicks: 5
+      # Time in ticks (20 ticks = 1 second) before the target moves and counts as a miss
+      update-time: 20
+    
+    # Settings for the Memory (Simon) minigame
+    memory:
+      enabled: true
+      # Number of rounds to complete to win
+      rounds: 5
+      # Time in ticks to show each color during the sequence display
+      display-time: 20
+  
+  # Visual hint settings (experimental)
+  visual-hint:
+    enabled: false
+    # Type of visual hint: NONE, TRAIL, SNAKE, COMPASS, or BEACON
+    # TRAIL: Particle line showing direction for limited distance (not full path)
+    # SNAKE: Wavy particle trail showing general direction (not an exact line)
+    # COMPASS: Point player's compass to approximate area (not exact location)
+    # BEACON: Vertical particle beam in general vicinity (not exact location)
+    type: NONE
+    # Duration of visual hint in seconds
+    duration-seconds: 8
+    # Particle type for TRAIL and BEACON (see: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html)
+    particle: END_ROD
+    # Maximum distance in blocks to show TRAIL particles (shows direction, not full path)
+    max-distance: 15
+    # Random offset range in blocks for TRAIL, COMPASS and BEACON (±blocks from actual treasure)
+    offset-range: 10
 
 updater:
   enabled: true
