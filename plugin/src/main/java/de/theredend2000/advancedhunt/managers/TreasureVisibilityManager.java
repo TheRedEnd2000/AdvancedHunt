@@ -1,12 +1,15 @@
 package de.theredend2000.advancedhunt.managers;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.world.chunk.BaseChunk;
 import com.github.retrooper.packetevents.protocol.world.chunk.Column;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
@@ -41,6 +44,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TreasureVisibilityManager implements Listener {
 
@@ -53,9 +58,26 @@ public class TreasureVisibilityManager implements Listener {
 
     private final Set<UUID> bypassPlayers = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Boolean> availabilityCache = new ConcurrentHashMap<>();
-    private final Map<UUID, Map<String, Integer>> furnitureMarkers = new ConcurrentHashMap<>();
-    private final Map<UUID, String> headTextureCache = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<Long, Integer>> furnitureMarkers = new ConcurrentHashMap<>();
+    private final Cache<UUID, String> headTextureCache = Caffeine.newBuilder()
+        .maximumSize(10_000)
+        .expireAfterAccess(10, TimeUnit.MINUTES)
+        .build();
     private final Set<UUID> headTextureLoading = ConcurrentHashMap.newKeySet();
+    private final Cache<String, BlockData> blockDataCache = Caffeine.newBuilder()
+        .maximumSize(4_000)
+        .expireAfterAccess(30, TimeUnit.MINUTES)
+        .build();
+    private final Cache<Material, BlockData> materialDataCache = Caffeine.newBuilder()
+        .maximumSize(256)
+        .expireAfterAccess(30, TimeUnit.MINUTES)
+        .build();
+    private final Cache<WrappedStateKey, WrappedBlockState> wrappedStateCache = Caffeine.newBuilder()
+        .maximumSize(10_000)
+        .expireAfterAccess(30, TimeUnit.MINUTES)
+        .build();
+    private final Map<String, Material> materialNameCache = new ConcurrentHashMap<>();
+    private final Map<UUID, AtomicInteger> worldEntityIdCounters = new ConcurrentHashMap<>();
 
     private BukkitTask availabilityTask;
     private PacketListenerAbstract packetListener;
@@ -89,8 +111,13 @@ public class TreasureVisibilityManager implements Listener {
         unregisterPacketListener();
         availabilityCache.clear();
         bypassPlayers.clear();
-        headTextureCache.clear();
+        headTextureCache.invalidateAll();
         headTextureLoading.clear();
+        blockDataCache.invalidateAll();
+        materialDataCache.invalidateAll();
+        wrappedStateCache.invalidateAll();
+        materialNameCache.clear();
+        worldEntityIdCounters.clear();
         clearAllFurnitureMarkers();
     }
 
@@ -499,7 +526,7 @@ public class TreasureVisibilityManager implements Listener {
 
     private void scheduleVirtualExtras(Player player, TreasureCore core, Location loc) {
         if (HeadHelper.isHeadMaterialName(core.getMaterial())) {
-            String texture = headTextureCache.get(core.getId());
+            String texture = headTextureCache.getIfPresent(core.getId());
             if (texture != null && !texture.isEmpty()) {
                 sendHeadBlockEntityData(player, loc, texture);
             } else {
@@ -538,8 +565,8 @@ public class TreasureVisibilityManager implements Listener {
     private void ensureFurnitureMarker(Player player, Location loc) {
         if (player == null || loc == null) return;
 
-        Map<String, Integer> playerMarkers = furnitureMarkers.computeIfAbsent(player.getUniqueId(), k -> new ConcurrentHashMap<>());
-        String key = locationKey(loc);
+        Map<Long, Integer> playerMarkers = furnitureMarkers.computeIfAbsent(player.getUniqueId(), k -> new ConcurrentHashMap<>());
+        long key = locationKey(loc);
         if (playerMarkers.containsKey(key)) return;
 
         int entityId = allocateEntityId(loc.getWorld());
@@ -552,7 +579,7 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     private void clearFurnitureMarkers(UUID playerId) {
-        Map<String, Integer> markers = furnitureMarkers.remove(playerId);
+        Map<Long, Integer> markers = furnitureMarkers.remove(playerId);
         if (markers == null || markers.isEmpty()) return;
 
         Player player = Bukkit.getPlayer(playerId);
@@ -582,22 +609,53 @@ public class TreasureVisibilityManager implements Listener {
     private WrappedBlockState resolveWrappedBlockState(TreasureCore core, Player player) {
         if (core == null) return null;
 
+        ClientVersion clientVersion = null;
+        try {
+            if (player != null) {
+                clientVersion = PacketEvents.getAPI().getPlayerManager().getClientVersion(player);
+            }
+        } catch (Throwable ignored) {
+        }
+
+        String blockState = core.getBlockState();
+        String cacheKey = null;
+        if (blockState != null && !blockState.isEmpty() && !isLegacyBlockData(blockState)) {
+            cacheKey = blockState;
+        } else if (core.getMaterial() != null && !core.getMaterial().isEmpty()) {
+            cacheKey = "material:" + core.getMaterial();
+        }
+
+        if (cacheKey != null) {
+            WrappedBlockState cached = wrappedStateCache.getIfPresent(new WrappedStateKey(cacheKey, clientVersion));
+            if (cached != null) return cached;
+        }
+
         BlockData data = resolveBlockData(core, resolveMaterial(core.getMaterial()));
         if (data != null) {
             try {
                 WrappedBlockState state = SpigotConversionUtil.fromBukkitBlockData(data);
-                if (state != null) return state;
+                if (state != null) {
+                    if (cacheKey != null) {
+                        wrappedStateCache.put(new WrappedStateKey(cacheKey, clientVersion), state);
+                    }
+                    return state;
+                }
             } catch (Throwable ignored) {
             }
         }
 
-        String blockState = core.getBlockState();
         if (blockState != null && !blockState.isEmpty() && !isLegacyBlockData(blockState)) {
             try {
-                if (player != null) {
-                    return WrappedBlockState.getByString(PacketEvents.getAPI().getPlayerManager().getClientVersion(player), blockState);
+                WrappedBlockState state;
+                if (clientVersion != null) {
+                    state = WrappedBlockState.getByString(clientVersion, blockState);
+                } else {
+                    state = WrappedBlockState.getByString(blockState);
                 }
-                return WrappedBlockState.getByString(blockState);
+                if (state != null && cacheKey != null) {
+                    wrappedStateCache.put(new WrappedStateKey(cacheKey, clientVersion), state);
+                }
+                return state;
             } catch (Throwable ignored) {
             }
         }
@@ -610,24 +668,40 @@ public class TreasureVisibilityManager implements Listener {
 
         if (isItemsAdder(core)) {
             if (isItemsAdderFurniture(core)) {
-                return DEFAULT_FURNITURE_BLOCK.createBlockData();
+                return materialDataCache.get(DEFAULT_FURNITURE_BLOCK, Material::createBlockData);
             }
-            BlockData data = ItemsAdderAdapter.getCustomBlockData(core.getBlockState());
-            if (data != null) return data;
-            return DEFAULT_FURNITURE_BLOCK.createBlockData();
+            String blockState = core.getBlockState();
+            if (blockState != null && !blockState.isEmpty()) {
+                BlockData cached = blockDataCache.getIfPresent(blockState);
+                if (cached != null) return cached;
+            }
+            BlockData data = ItemsAdderAdapter.getCustomBlockData(blockState);
+            if (data != null) {
+                if (blockState != null && !blockState.isEmpty()) {
+                    blockDataCache.put(blockState, data);
+                }
+                return data;
+            }
+            return materialDataCache.get(DEFAULT_FURNITURE_BLOCK, Material::createBlockData);
         }
 
         String blockState = core.getBlockState();
         if (blockState != null && !blockState.isEmpty() && !isLegacyBlockData(blockState)) {
+            BlockData cached = blockDataCache.getIfPresent(blockState);
+            if (cached != null) return cached;
             try {
-                return Bukkit.createBlockData(blockState);
+                BlockData data = Bukkit.createBlockData(blockState);
+                if (data != null) {
+                    blockDataCache.put(blockState, data);
+                }
+                return data;
             } catch (Throwable ignored) {
             }
         }
 
         if (fallbackMaterial != null) {
             try {
-                return fallbackMaterial.createBlockData();
+                return materialDataCache.get(fallbackMaterial, Material::createBlockData);
             } catch (Throwable ignored) {
             }
         }
@@ -637,9 +711,15 @@ public class TreasureVisibilityManager implements Listener {
 
     private Material resolveMaterial(String materialName) {
         if (materialName == null || materialName.isEmpty()) return null;
+        String key = materialName.toUpperCase(Locale.ROOT);
+        Material cached = materialNameCache.get(key);
+        if (cached != null) return cached;
         try {
-            Material material = Material.getMaterial(materialName.toUpperCase(Locale.ROOT));
-            if (material != null) return material;
+            Material material = Material.getMaterial(key);
+            if (material != null) {
+                materialNameCache.put(key, material);
+                return material;
+            }
         } catch (Throwable ignored) {
         }
         return DEFAULT_FURNITURE_BLOCK;
@@ -679,23 +759,47 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     private int allocateEntityId(World world) {
-        int min = 1_000_000_000;
-        int max = Integer.MAX_VALUE;
-        Set<Integer> used = new HashSet<>();
+        if (world == null) return -1;
+        final int min = 1_000_000_000;
+        final int max = Integer.MAX_VALUE;
+        AtomicInteger counter = worldEntityIdCounters.computeIfAbsent(world.getUID(),
+            k -> new AtomicInteger(min + plugin.getRandom().nextInt(1_000_000)));
 
-        try {
-            if (world != null) {
-                world.getEntities().forEach(e -> used.add(e.getEntityId()));
+        for (int i = 0; i < 32; i++) {
+            int candidate = counter.getAndIncrement();
+            if (candidate >= max) {
+                counter.set(min);
+                candidate = counter.getAndIncrement();
             }
-        } catch (Throwable ignored) {
-        }
-
-        for (int i = 0; i < 1000; i++) {
-            int candidate = plugin.getRandom().nextInt(max - min) + min;
-            if (!used.contains(candidate)) return candidate;
+            if (candidate > 0) {
+                return candidate;
+            }
         }
 
         return -1;
+    }
+
+    private static final class WrappedStateKey {
+        private final String key;
+        private final ClientVersion clientVersion;
+
+        private WrappedStateKey(String key, ClientVersion clientVersion) {
+            this.key = key;
+            this.clientVersion = clientVersion;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof WrappedStateKey)) return false;
+            WrappedStateKey that = (WrappedStateKey) o;
+            return Objects.equals(key, that.key) && clientVersion == that.clientVersion;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key, clientVersion);
+        }
     }
 
     private boolean isPacketEventsReady() {
@@ -715,9 +819,19 @@ public class TreasureVisibilityManager implements Listener {
         }
     }
 
-    private String locationKey(Location loc) {
-        if (loc == null || loc.getWorld() == null) return "";
-        return loc.getWorld().getName() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
+    private long locationKey(Location loc) {
+        if (loc == null || loc.getWorld() == null) return 0L;
+        long posKey = packBlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        UUID worldId = loc.getWorld().getUID();
+        long worldHash = worldId.getMostSignificantBits() ^ worldId.getLeastSignificantBits();
+        return posKey ^ worldHash;
+    }
+
+    private long packBlockPos(int x, int y, int z) {
+        long lx = (long) (x & 0x3FFFFFF);
+        long ly = (long) (y & 0xFFF);
+        long lz = (long) (z & 0x3FFFFFF);
+        return (lx << 38) | (lz << 12) | ly;
     }
 
     @EventHandler
