@@ -484,7 +484,7 @@ public final class Main extends JavaPlugin {
                 .build();
 
 
-        new AdvancedHuntCommand(this).register(commandManager);
+        new AdvancedHuntCommand(this).register(commandManager, isDebugMode());
     }
 
     @Override
