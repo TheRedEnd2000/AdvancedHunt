@@ -241,8 +241,8 @@ public class CollectionSettingsMenu extends Menu {
         addStaticItem(38, super.EXTRA_GLASS);
 
         // Hide After Found
-        String enabled = plugin.getMessageManager().getMessage("gui.settings.common.enabled", false);
-        String disabled = plugin.getMessageManager().getMessage("gui.settings.common.disabled", false);
+        String enabled = plugin.getMessageManager().getMessage("gui.common.enabled", false);
+        String disabled = plugin.getMessageManager().getMessage("gui.common.disabled", false);
         addButton(39, new ItemBuilder(Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_after_found.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
