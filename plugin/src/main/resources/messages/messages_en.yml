@@ -358,14 +358,6 @@ gui:
         name: "&aGet item"
         lore:
           - "&7Adds the item to your inventory."
-      rename:
-        name: "&eRename"
-        lore:
-          - "&7Current: &f%current%"
-      move_group:
-        name: "&eMove group"
-        lore:
-          - "&7Current: &f%current%"
       delete:
         name: "&cDelete"
         lore:
