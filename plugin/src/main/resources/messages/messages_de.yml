@@ -301,7 +301,7 @@ gui:
         name: "&cKeine Gruppen"
         lore:
           - "&7Es existiert keine Gruppe."
-          - "&7Erstelle eine mit dem Knopf unten."
+          - "&7Erstelle welche mit dem Knopf unten."
       group:
         name: "&e%group%"
         lore:
@@ -313,7 +313,7 @@ gui:
           open: "Linksklick zum Öffnen"
           manage: "Rechtsklick zum verwalten"
 
-    group_actions: # check here
+    group_actions:
       title: "&8Gruppe: &e%group%"
       rename:
         name: "&eBenne die Gruppe um"
@@ -337,7 +337,7 @@ gui:
         name: "&cKeine Items"
         lore:
           - "&7Es existieren keine Items in dieser Gruppe."
-          - "&7Erstelle einen mit dem Knopf drunter."
+          - "&7Erstelle welche mit dem Knopf unten."
       preset:
         name: "&e%name%"
         lore:
@@ -345,7 +345,7 @@ gui:
           - "&7%action2%"
         action:
           give: "Linksklick um das Item zu bekommen"
-          manage: "Rechtsklick um zu verwalten"
+          manage: "Rechtsklick zum verwalten"
 
     actions:
       title: "&8Item: &e%name%"
@@ -353,14 +353,6 @@ gui:
         name: "&aItem erhalten"
         lore:
           - "&7Fügt das Item zu deinem Inventar hinzu."
-      rename:
-        name: "&eUmbenennen"
-        lore:
-          - "&7Aktuell: &f%current%"
-      move_group:
-        name: "&eGruppe verschieben"
-        lore:
-          - "&7Aktuell: &f%current%"
       delete:
         name: "&cLöschen"
         lore:
@@ -390,11 +382,11 @@ gui:
         lore:
           - "&7Setzte jedes &eBlock-Item&7 in den Slot."
           - "&7Das Item wird gespeichert als &f1 Block&7."
-          - "&7Das Item wird &anicht konsumiert&7."
+          - "&7Das Item wird&a nicht konsumiert&7."
       confirm:
         name: "&aItem speichern"
         lore:
-          - "&7Speicher den Block as ein Item"
+          - "&7Speicher den Block als ein Item"
           - "&7in der ausgewählten Gruppe."
       cancel:
         name: "&cAbbrechen"
@@ -402,8 +394,8 @@ gui:
           - "&7Kehre ohne Speichern zurück."
   rewards:
     title: "&8Treasure Belohnungen"
-    collection_title: "&8Abschließungsbelohnungen"
-    preset_title: "&8Belohnungs-Vorlage"
+    collection_title: "&8Abschließung-Belohnungen"
+    preset_title: "&8Belohnung-Vorlagen"
     open_reward_option_menu:
       title: "&8Belohnungsoptionen"
       name: "&6+ Belohnung hinzufügen"
@@ -459,7 +451,7 @@ gui:
     invalid_item:
       name: "&cUngültiges Item"
       lore:
-        - "&7Dieses item konnte nicht geladen werden"
+        - "&7Dieses Item konnte nicht geladen werden"
         - ""
         - "&8─────────────"
         - "&7Wahrscheinlichkeit: &e%chance%%"
@@ -510,7 +502,7 @@ gui:
         - ""
         - "&7Nutze &f%player% &7für den Spielername."
     add_chat_message:
-      name: "&a+ Nachricht-Belohung hinzufügen"
+      name: "&a+ Nachricht-Belohnung hinzufügen"
       lore:
         - "&7Klicke um eine Nachricht"
         - "&7als Belohnung für diese Treasure festzulegen."
@@ -600,23 +592,23 @@ gui:
 
     add:
       item:
-        title: "&8Itm-Belohnung hinzufügen"
+        title: "&8Item-Belohnung hinzufügen"
         placeholder:
           name: "&7Setzte das Item hier"
           lore:
             - "&7Setze das Item, was du"
-            - "&7als Belohnung hizufügen willst."
+            - "&7als Belohnung hinzufügen willst."
         info:
           name: "&eSo fügst du Item-Belohnungen hinzu"
           lore:
             - "&7Platziere das Item in den"
-            - "&7Mittleren Slot drunter."
+            - "&7Mittleren Slot unten."
             - ""
             - "&7Das genau gleiche Item (mit"
             - "&7Verzauberungen, Name, Lore) wird"
-            - "&7dann als Belohung gegeben."
+            - "&7dann als Belohnung gegeben."
             - ""
-            - "&7Klick um zu &aBestätigen &7wenn du Bereit bist."
+            - "&7Klicke zum &aBestätigen &7wenn du Bereit bist."
         confirm:
           name: "&aBestätigen"
           lore:
@@ -851,7 +843,7 @@ gui:
         - "&7Setzt sich nur durch CRON zurück."
         - ""
         - "&eKlicke zum wechseln"
-    delete:
+    delete: #HERE MORE TODO
       name: "&cSammlung löschen"
       lore:
         - "&7Lösche diese Sammlung und alle"
