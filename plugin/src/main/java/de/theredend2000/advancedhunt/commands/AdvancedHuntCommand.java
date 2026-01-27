@@ -1098,7 +1098,7 @@ public class AdvancedHuntCommand {
                 }
 
                 if (placingDone && pendingSaveBatch.isEmpty() && inFlightBatches.get() == 0 && saved.get() + saveFailed.get() >= placed) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
+                    MessageUtils.sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
                             + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures.&7 Attempts: &f" + attempts + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
                     if (placed < amount) {
@@ -1211,10 +1211,10 @@ public class AdvancedHuntCommand {
 
                 if (amount > 0) {
                     if (!placingDone) {
-                        sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
                                 + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ", Attempts: " + attempts + ")");
                     } else {
-                        sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
                                 + "&7 (Failed: " + saveFailed.get() + ")");
                     }
                 }
@@ -1295,7 +1295,7 @@ public class AdvancedHuntCommand {
                 }
 
                 if (placingDone && pendingSaveBatch.isEmpty() && inFlightBatches.get() == 0 && saved.get() + saveFailed.get() >= placed) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
+                    MessageUtils.sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
                             + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures on a plane.&7 Checked: &f" + checked + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
                     if (placed < amount) {
@@ -1395,24 +1395,15 @@ public class AdvancedHuntCommand {
 
                 if (amount > 0) {
                     if (!placingDone) {
-                        sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
                                 + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ", Checked: " + checked + ")");
                     } else {
-                        sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
                                 + "&7 (Failed: " + saveFailed.get() + ")");
                     }
                 }
             }
         }.runTaskTimer(plugin, 1L, 1L);
-    }
-
-    private void sendActionBar(Player player, String message) {
-        try {
-            String colored = ChatColor.translateAlternateColorCodes('&', message);
-            MessageUtils.sendActionBar(player, colored);
-        } catch (Throwable ignored) {
-            // Best-effort only; don't fail debug commands if action bar isn't supported.
-        }
     }
 
     private void sendDebugChat(Player player, String message) {
@@ -1545,11 +1536,11 @@ public class AdvancedHuntCommand {
                     ? "&7 Deleted: &f" + deletedClamped + "&7/&f" + total
                     : "&7 Deleted: &f0&7/&f" + total + " &e(deleting...)";
 
-                sendActionBar(player, "&e[DEBUG] Removing: &f" + blocksProcessed.get() + "&e/" + total
+                MessageUtils.sendActionBar(player, "&e[DEBUG] Removing: &f" + blocksProcessed.get() + "&e/" + total
                     + "&7 (Blocks: " + blocksRemoved.get() + ", Skipped: " + blocksSkippedUnloaded.get() + ") " + deletePart);
 
                 if (index >= total && dbDeleted.get() >= 0) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + total + "&a treasures" + "&7 (Deleted: " + dbDeleted.get() + ")");
+                    MessageUtils.sendActionBar(player, "&a[DEBUG] Done: &f" + total + "&a treasures" + "&7 (Deleted: " + dbDeleted.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Removed collection treasures.&7 Total: &f" + total
                             + "&7, Blocks removed: &f" + blocksRemoved.get()
                             + "&7, Skipped (unloaded): &f" + blocksSkippedUnloaded.get()
@@ -1677,7 +1668,7 @@ public class AdvancedHuntCommand {
                                 return;
                             }
                             MigrationService.MigrationProgress p = lastProgress.get();
-                            sendActionBar(player, plugin.getMessageManager().getMessage(
+                            MessageUtils.sendActionBar(player, plugin.getMessageManager().getMessage(
                                     "command.migration.progress_actionbar",
                                     false,
                                     "%percent%", String.valueOf(p.percent()),
@@ -1720,7 +1711,7 @@ public class AdvancedHuntCommand {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         if (sender instanceof Player) {
                             Player player = (Player) sender;
-                            sendActionBar(player, plugin.getMessageManager().getMessage(
+                            MessageUtils.sendActionBar(player, plugin.getMessageManager().getMessage(
                                     "command.migration.progress_actionbar",
                                     false,
                                     "%percent%", String.valueOf(progress.percent()),
@@ -1757,7 +1748,7 @@ public class AdvancedHuntCommand {
 
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                sendActionBar(player, "");
+                MessageUtils.sendActionBar(player, "");
             }
 
             // Reuse the plugin's existing reload routine to swap repository + refresh caches.
@@ -1776,7 +1767,7 @@ public class AdvancedHuntCommand {
             }
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                Bukkit.getScheduler().runTask(plugin, () -> sendActionBar(player, ""));
+                Bukkit.getScheduler().runTask(plugin, () -> MessageUtils.sendActionBar(player, ""));
             }
             targetRepo.shutdown();
             return null;
