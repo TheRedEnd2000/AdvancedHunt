@@ -82,11 +82,10 @@ public class CollectionSettingsMenu extends Menu {
                         if (success) {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.success", "%old_name%", collection.getName(), "%new_name%", input));
                             collection.setName(input);
-                            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
                         } else {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.failed"));
-                            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
                         }
+                        this.open();
                     });
                 });
             });
