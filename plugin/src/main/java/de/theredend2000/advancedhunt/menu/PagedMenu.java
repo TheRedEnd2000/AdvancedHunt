@@ -50,7 +50,7 @@ public abstract class PagedMenu extends Menu {
                 e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("feedback.gui.first_page"));
             } else {
                 page = page - 1;
-                open();
+                refresh();
             }
         });
 
@@ -60,7 +60,7 @@ public abstract class PagedMenu extends Menu {
                 .build(), (e) -> {
             if (hasNextPage) {
                 page = page + 1;
-                open();
+                refresh();
             } else {
                 e.getWhoClicked().sendMessage(plugin.getMessageManager().getMessage("feedback.gui.last_page"));
             }

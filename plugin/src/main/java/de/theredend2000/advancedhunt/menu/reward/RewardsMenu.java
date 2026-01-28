@@ -385,7 +385,7 @@ public class RewardsMenu extends PagedMenu {
                 if (page > totalPages - 1) {
                     page = Math.max(0, totalPages - 1);
                 }
-                open();
+                refresh();
                 return;
             }
 
