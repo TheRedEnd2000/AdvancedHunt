@@ -197,14 +197,23 @@ public class TreasureVisibilityManager implements Listener {
         }
     }
 
-    private void refreshAvailabilityStates() {
+    /**
+     * Refreshes the availability states of all collections and updates treasure visibility accordingly.
+     * This method is called periodically by the scheduler to check ACT rule changes.
+     * For manual collection setting changes, use {@link #refreshCollectionVisibility(UUID)} instead.
+     */
+    public void refreshAvailabilityStates() {
         List<Collection> collections = collectionManager.getAllCollections();
         for (Collection collection : collections) {
-            boolean available = collectionManager.isCollectionAvailable(collection);
-            Boolean previous = availabilityCache.put(collection.getId(), available);
+            boolean actAvailable = collectionManager.isCollectionAvailable(collection);
+            Boolean previous = availabilityCache.put(collection.getId(), actAvailable);
+
+            // Determine if collection should be hidden (considering both ACT and hideWhenNotAvailable)
+            boolean shouldBeHidden = shouldHideCollection(collection, actAvailable);
+            boolean wasHidden = previous != null && !previous;
 
             if (previous == null) {
-                if (!available) {
+                if (shouldBeHidden) {
                     hideCollectionTreasures(collection.getId());
                 } else {
                     restoreCollectionTreasures(collection.getId());
@@ -212,21 +221,89 @@ public class TreasureVisibilityManager implements Listener {
                 continue;
             }
 
-            if (previous && !available) {
+            // Only act on ACT availability changes, not hideWhenNotAvailable changes
+            // (hideWhenNotAvailable changes are handled by refreshCollectionVisibility)
+            if (previous && !actAvailable) {
                 hideCollectionTreasures(collection.getId());
-            } else if (!previous && available) {
-                restoreCollectionTreasures(collection.getId());
+            } else if (!previous && actAvailable) {
+                // Only restore if hideWhenNotAvailable doesn't require hiding
+                if (!shouldBeHidden) {
+                    restoreCollectionTreasures(collection.getId());
+                }
             }
         }
     }
 
-    private boolean isCollectionHidden(UUID collectionId) {
-        Boolean available = availabilityCache.get(collectionId);
-        if (available == null) {
-            Optional<Collection> collection = collectionManager.getCollectionById(collectionId);
-            return collection.map(c -> !collectionManager.isCollectionAvailable(c)).orElse(false);
+    /**
+     * Refreshes visibility for a specific collection when its settings change.
+     * This should be called when collection.enabled or collection.hideWhenNotAvailable changes.
+     * 
+     * @param collectionId the collection whose visibility should be refreshed
+     */
+    public void refreshCollectionVisibility(UUID collectionId) {
+        Optional<Collection> collectionOpt = collectionManager.getCollectionById(collectionId);
+        if (!collectionOpt.isPresent()) {
+            return;
         }
-        return !available;
+
+        refreshCollectionVisibility(collectionOpt.get());
+    }
+
+    /**
+     * Refreshes visibility for a specific collection using the provided collection object.
+     * This ensures we use the most up-to-date collection state.
+     * 
+     * @param collection the collection whose visibility should be refreshed
+     */
+    public void refreshCollectionVisibility(Collection collection) {
+        if (collection == null) {
+            return;
+        }
+
+        boolean actAvailable = collectionManager.isCollectionAvailable(collection);
+        availabilityCache.put(collection.getId(), actAvailable);
+
+        boolean shouldBeHidden = shouldHideCollection(collection, actAvailable);
+
+        if (shouldBeHidden) {
+            hideCollectionTreasures(collection.getId());
+        } else {
+            restoreCollectionTreasures(collection.getId());
+        }
+    }
+
+    /**
+     * Determines if a collection should be hidden based on both hideWhenNotAvailable flag and ACT availability.
+     * 
+     * @param collection the collection to check
+     * @param actAvailable whether ACT rules say the collection is available
+     * @return true if collection should be hidden
+     */
+    private boolean shouldHideCollection(Collection collection, boolean actAvailable) {
+        // Only hide if the hideWhenNotAvailable feature is enabled
+        if (!collection.isHideWhenNotAvailable()) {
+            return false; // Feature disabled - don't hide treasures
+        }
+        
+        // Hide if collection is disabled OR ACT says not available
+        return !collection.isEnabled() || !actAvailable;
+    }
+
+    private boolean isCollectionHidden(UUID collectionId) {
+        Optional<Collection> collectionOpt = collectionManager.getCollectionById(collectionId);
+        if (!collectionOpt.isPresent()) {
+            return false;
+        }
+        
+        Collection collection = collectionOpt.get();
+        
+        // Get ACT availability (from cache or calculate)
+        Boolean actAvailable = availabilityCache.get(collectionId);
+        if (actAvailable == null) {
+            actAvailable = collectionManager.isCollectionAvailable(collection);
+        }
+        
+        return shouldHideCollection(collection, actAvailable);
     }
 
     private void hideCollectionTreasures(UUID collectionId) {

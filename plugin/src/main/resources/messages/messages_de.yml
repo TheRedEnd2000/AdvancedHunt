@@ -872,15 +872,16 @@ gui:
         - "&7Treasures zu finden, die man noch nicht gefunden hat."
         - ""
         - "&eKlicke zum wechseln"
-    hide_collection_disabled:
-      name: "&eVerstecke wenn Sammlung deaktiviert"
+    hide_when_not_available:
+      name: "&eVerstecke wenn nicht verfügbar"
       lore:
         - "&7Aktuell: %status%"
         - ""
         - "&7Wenn aktiviert, alle Treasures"
         - "&7in der Sammlung werden versteckt"
-        - "&7sein, wenn die Sammlung deaktiviert"
-        - "&7oder nicht verfügbar ist."
+        - "&7sein, wenn die Sammlung nicht"
+        - "&7verfügbar ist (deaktiviert oder"
+        - "&7nicht verfügbar durch ACT-Regeln)."
         - ""
         - "&8&m                    "
         - "&7Dies hindert Spieler daran,"

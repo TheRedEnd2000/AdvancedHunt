@@ -908,6 +908,9 @@ public class YamlRepository implements DataRepository {
                             Collection c = new Collection(id, name, enabled);
                             c.setProgressResetCron(config.getString("progress-reset-cron"));
                             c.setSinglePlayerFind(config.getBoolean("single-player-find"));
+                            // Support both old and new key names for backward compatibility
+                            c.setHideWhenNotAvailable(config.getBoolean("hide-when-not-available", 
+                                config.getBoolean("hide-when-disabled", false)));
 
                             String defaultPresetId = config.getString("default-treasure-reward-preset-id");
                             if (defaultPresetId != null && !defaultPresetId.trim().isEmpty()) {
@@ -968,6 +971,7 @@ public class YamlRepository implements DataRepository {
             config.set("enabled", collection.isEnabled());
             config.set("progress-reset-cron", collection.getProgressResetCron());
             config.set("single-player-find", collection.isSinglePlayerFind());
+            config.set("hide-when-not-available", collection.isHideWhenNotAvailable());
             config.set("default-treasure-reward-preset-id",
                 collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
             

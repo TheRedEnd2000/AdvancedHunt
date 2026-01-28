@@ -148,6 +148,31 @@ public class SqlRepository implements DataRepository {
                         "grp VARCHAR(64) PRIMARY KEY)");
             } catch (SQLException ignored) {}
         });
+
+        schemaMigrations.put(9, conn -> {
+            try {
+                conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN hide_when_not_available BOOLEAN DEFAULT FALSE");
+            } catch (SQLException ignored) {}
+        });
+
+        schemaMigrations.put(10, conn -> {
+            // Rename hide_when_disabled to hide_when_not_available
+            try {
+                if (useSqlite) {
+                    // SQLite: try modern RENAME COLUMN syntax (3.25.0+)
+                    conn.createStatement().execute("ALTER TABLE ah_collections RENAME COLUMN hide_when_disabled TO hide_when_not_available");
+                } else {
+                    // MySQL: use CHANGE syntax
+                    conn.createStatement().execute("ALTER TABLE ah_collections CHANGE hide_when_disabled hide_when_not_available BOOLEAN DEFAULT FALSE");
+                }
+            } catch (SQLException e) {
+                // If rename fails (old SQLite), copy data manually
+                try {
+                    conn.createStatement().execute("UPDATE ah_collections SET hide_when_not_available = hide_when_disabled");
+                    conn.createStatement().execute("ALTER TABLE ah_collections DROP COLUMN hide_when_disabled");
+                } catch (SQLException ignored) {}
+            }
+        });
     }
 
     @Override
@@ -755,6 +780,7 @@ public class SqlRepository implements DataRepository {
                     Collection c = new Collection(id, name, enabled);
                     c.setProgressResetCron(rs.getString("progress_reset_cron"));
                     c.setSinglePlayerFind(rs.getBoolean("single_player_find"));
+                    c.setHideWhenNotAvailable(rs.getBoolean("hide_when_not_available"));
 
                     String defaultPreset = rs.getString("default_treasure_reward_preset_id");
                     if (defaultPreset != null && !defaultPreset.trim().isEmpty()) {
@@ -787,7 +813,7 @@ public class SqlRepository implements DataRepository {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
                 // Save collection
-                try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+                try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
                     ps.setString(1, collection.getId().toString());
                     ps.setString(2, collection.getName());
                     ps.setBoolean(3, collection.isEnabled());
@@ -795,6 +821,7 @@ public class SqlRepository implements DataRepository {
                     ps.setBoolean(5, collection.isSinglePlayerFind());
                     ps.setString(6, gson.toJson(collection.getCompletionRewards()));
                     ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
+                    ps.setBoolean(8, collection.isHideWhenNotAvailable());
                     ps.executeUpdate();
                 }
 

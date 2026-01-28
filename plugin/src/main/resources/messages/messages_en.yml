@@ -872,15 +872,16 @@ gui:
         - "&7treasures you haven't found yet."
         - ""
         - "&eClick to toggle"
-    hide_collection_disabled:
-      name: "&eHide When Collection Disabled"
+    hide_when_not_available:
+      name: "&eHide When Not Available"
       lore:
         - "&7Current: %status%"
         - ""
         - "&7When enabled, all treasures"
         - "&7in this collection will be"
         - "&7hidden when the collection"
-        - "&7is disabled or unavailable."
+        - "&7is not available (disabled or"
+        - "&7unavailable due to ACT rules)."
         - ""
         - "&8&m                    "
         - "&7This prevents players from"
