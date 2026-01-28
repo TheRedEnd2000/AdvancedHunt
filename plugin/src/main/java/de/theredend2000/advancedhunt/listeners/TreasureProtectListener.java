@@ -49,9 +49,6 @@ public class TreasureProtectListener implements Listener {
 
         Player player = event.getPlayer();
 
-        // Allow placing while in place mode
-        if (placeModeManager.isInPlaceMode(player)) return;
-
         event.setCancelled(true);
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.protected"));
         plugin.getSoundManager().playBlockProtected(player);
