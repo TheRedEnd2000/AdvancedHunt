@@ -862,15 +862,16 @@ gui:
         - "&7những kho báu chưa tìm thấy."
         - ""
         - "&eNhấn để bật/tắt"
-    hide_collection_disabled:
-      name: "&eẨn khi bộ sưu tập bị tắt"
+    hide_when_not_available:
+      name: "&eẨn khi không khả dụng"
       lore:
         - "&7Hiện tại: %status%"
         - ""
         - "&7Khi bật, tất cả kho báu"
         - "&7trong bộ sưu tập này sẽ"
         - "&7bị ẩn khi bộ sưu tập"
-        - "&7bị tắt hoặc không khả dụng."
+        - "&7không khả dụng (bị tắt hoặc"
+        - "&7không khả dụng do quy tắc ACT)."
         - ""
         - "&8&m                    "
         - "&7Điều này ngăn người chơi"

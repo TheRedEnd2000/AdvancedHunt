@@ -14,6 +14,7 @@ public class Collection {
     private boolean singlePlayerFind; // If true, only one player can find it (global treasure)
     private List<Reward> completionRewards; // Rewards for finding all treasures
     private UUID defaultTreasureRewardPresetId; // Applied to newly created treasures in this collection
+    private boolean hideWhenNotAvailable; // If true, treasures are hidden when collection is not available
 
     public Collection(UUID id, String name, boolean enabled) {
         this.id = id;
@@ -21,6 +22,7 @@ public class Collection {
         this.enabled = enabled;
         this.actRules = new ArrayList<>();
         this.progressResetCron = null;
+        this.hideWhenNotAvailable = false;
     }
 
     public UUID getId() {
@@ -134,5 +136,13 @@ public class Collection {
 
     public void setDefaultTreasureRewardPresetId(UUID defaultTreasureRewardPresetId) {
         this.defaultTreasureRewardPresetId = defaultTreasureRewardPresetId;
+    }
+
+    public boolean isHideWhenNotAvailable() {
+        return hideWhenNotAvailable;
+    }
+
+    public void setHideWhenNotAvailable(boolean hideWhenNotAvailable) {
+        this.hideWhenNotAvailable = hideWhenNotAvailable;
     }
 }
