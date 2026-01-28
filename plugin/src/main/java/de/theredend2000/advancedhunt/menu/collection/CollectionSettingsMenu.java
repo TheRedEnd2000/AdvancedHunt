@@ -24,6 +24,7 @@ import java.util.UUID;
 public class CollectionSettingsMenu extends Menu {
 
     private Collection collection;
+    private boolean processing = false;
 
     public CollectionSettingsMenu(Player playerMenuUtility, Main plugin, Collection collection) {
         super(playerMenuUtility, plugin);
@@ -43,6 +44,18 @@ public class CollectionSettingsMenu extends Menu {
     @Override
     public int getSlots() {
         return 54;
+    }
+
+    @Override
+    public void open() {
+        processing = false;
+        super.open();
+    }
+
+    @Override
+    public void refresh() {
+        processing = false;
+        super.refresh();
     }
 
     @Override
@@ -88,6 +101,9 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.status.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.status.lore", "%status%", status).toArray(new String[0]))
                 .build(), (e) -> {
+            if (processing) return;
+            processing = true;
+            
             collection.setEnabled(!collection.isEnabled());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
@@ -95,6 +111,7 @@ public class CollectionSettingsMenu extends Menu {
                     if (collection.isHideWhenNotAvailable()) {
                         plugin.getTreasureVisibilityManager().refreshCollectionVisibility(collection);
                     }
+                    processing = false;
                     this.refresh();
                 });
             });
@@ -109,9 +126,15 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.single_player_find.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.single_player_find.lore", "%status%", spfStatus).toArray(new String[0]))
                 .build(), (e) -> {
+            if (processing) return;
+            processing = true;
+            
             collection.setSinglePlayerFind(!collection.isSinglePlayerFind());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                Bukkit.getScheduler().runTask(plugin, this::refresh);
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    processing = false;
+                    this.refresh();
+                });
             });
         });
 
@@ -207,16 +230,28 @@ public class CollectionSettingsMenu extends Menu {
             }
 
             if (e.isRightClick()) {
+                if (processing) return;
+                processing = true;
+                
                 collection.setDefaultTreasureRewardPresetId(null);
                 plugin.getCollectionManager().saveCollection(collection).thenRun(() -> 
-                    Bukkit.getScheduler().runTask(plugin, this::refresh));
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        processing = false;
+                        this.refresh();
+                    }));
                 return;
             }
 
             new RewardPresetListMenu(playerMenuUtility, plugin, RewardPresetType.TREASURE, selected -> {
+                if (processing) return;
+                processing = true;
+                
                 collection.setDefaultTreasureRewardPresetId(selected.getId());
                 plugin.getCollectionManager().saveCollection(collection).thenRun(() -> 
-                    Bukkit.getScheduler().runTask(plugin, this::open));
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        processing = false;
+                        this.open();
+                    }));
             }, collection,true).setPreviousMenu(this).open();
         });
 
@@ -267,11 +302,15 @@ public class CollectionSettingsMenu extends Menu {
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_when_not_available.lore", false,
                         "%status%", hideStatus).toArray(new String[0]))
                 .build(), (e) -> {
+            if (processing) return;
+            processing = true;
+            
             collection.setHideWhenNotAvailable(!collection.isHideWhenNotAvailable());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     // Refresh visibility with the already-updated collection
                     plugin.getTreasureVisibilityManager().refreshCollectionVisibility(collection);
+                    processing = false;
                     this.refresh();
                 });
             });
