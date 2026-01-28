@@ -68,12 +68,8 @@ public class CollectionSettingsMenu extends Menu {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         if (success) {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.success", "%old_name%", collection.getName(), "%new_name%", input));
-                            // Update local collection reference with fresh state after rename
-                            plugin.getCollectionManager().getCollectionById(collection.getId())
-                                .ifPresent(updatedCollection -> {
-                                    this.collection = updatedCollection;
-                                    new CollectionSettingsMenu(playerMenuUtility, plugin, updatedCollection).open();
-                                });
+                            collection.setName(input);
+                            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
                         } else {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.failed"));
                             new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
@@ -95,15 +91,10 @@ public class CollectionSettingsMenu extends Menu {
             collection.setEnabled(!collection.isEnabled());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Update local collection reference with fresh state
-                    plugin.getCollectionManager().getCollectionById(collection.getId())
-                        .ifPresent(updatedCollection -> {
-                            this.collection = updatedCollection;
-                            // Refresh visibility only for this collection with updated state
-                            if (updatedCollection.isHideWhenNotAvailable()) {
-                                plugin.getTreasureVisibilityManager().refreshCollectionVisibility(updatedCollection);
-                            }
-                        });
+                    // Refresh visibility with the already-updated collection
+                    if (collection.isHideWhenNotAvailable()) {
+                        plugin.getTreasureVisibilityManager().refreshCollectionVisibility(collection);
+                    }
                     this.refresh();
                 });
             });
@@ -120,12 +111,7 @@ public class CollectionSettingsMenu extends Menu {
                 .build(), (e) -> {
             collection.setSinglePlayerFind(!collection.isSinglePlayerFind());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Update local collection reference with fresh state
-                    plugin.getCollectionManager().getCollectionById(collection.getId())
-                        .ifPresent(updatedCollection -> this.collection = updatedCollection);
-                    this.refresh();
-                });
+                Bukkit.getScheduler().runTask(plugin, this::refresh);
             });
         });
 
@@ -222,23 +208,15 @@ public class CollectionSettingsMenu extends Menu {
 
             if (e.isRightClick()) {
                 collection.setDefaultTreasureRewardPresetId(null);
-                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Update local collection reference with fresh state
-                    plugin.getCollectionManager().getCollectionById(collection.getId())
-                        .ifPresent(updatedCollection -> this.collection = updatedCollection);
-                    this.refresh();
-                }));
+                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> 
+                    Bukkit.getScheduler().runTask(plugin, this::refresh));
                 return;
             }
 
             new RewardPresetListMenu(playerMenuUtility, plugin, RewardPresetType.TREASURE, selected -> {
                 collection.setDefaultTreasureRewardPresetId(selected.getId());
-                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Update local collection reference with fresh state
-                    plugin.getCollectionManager().getCollectionById(collection.getId())
-                        .ifPresent(updatedCollection -> this.collection = updatedCollection);
-                    this.open();
-                }));
+                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> 
+                    Bukkit.getScheduler().runTask(plugin, this::open));
             }, collection,true).setPreviousMenu(this).open();
         });
 
@@ -292,12 +270,8 @@ public class CollectionSettingsMenu extends Menu {
             collection.setHideWhenNotAvailable(!collection.isHideWhenNotAvailable());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Update local collection reference and refresh visibility with fresh state
-                    plugin.getCollectionManager().getCollectionById(collection.getId())
-                        .ifPresent(updatedCollection -> {
-                            this.collection = updatedCollection;
-                            plugin.getTreasureVisibilityManager().refreshCollectionVisibility(updatedCollection);
-                        });
+                    // Refresh visibility with the already-updated collection
+                    plugin.getTreasureVisibilityManager().refreshCollectionVisibility(collection);
                     this.refresh();
                 });
             });
