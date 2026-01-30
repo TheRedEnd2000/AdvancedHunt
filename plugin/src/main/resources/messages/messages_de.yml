@@ -859,43 +859,19 @@ gui:
         - ""
         - "&cKlicke zum löschen"
       confirm_title: "Bestätige das Löschen der Sammlung"
-    delete_handling:
-      title: "Löschen: Schatz-Behandlung"
-      keep:
-        name: "&aSchätze platziert lassen"
-        lore:
-          - "&7Löscht die Sammlungsdaten,"
-          - "&7aber lässt alle Schatz-Blöcke"
-          - "&7an ihrem Platz."
-          - ""
-          - "&7Stellt auch Schätze wieder her,"
-          - "&7die aktuell versteckt sind."
-          - ""
-          - "&eKlicke zum Auswählen"
-        confirm_title: "Löschen & alle Schätze behalten?"
-      remove_heads:
-        name: "&eKöpfe/Schädel entfernen"
-        lore:
-          - "&7Löscht die Sammlungsdaten,"
-          - "&7entfernt nur Spieler-Köpfe/Schädel,"
-          - "&7andere Schätze bleiben."
-          - ""
-          - "&7Stellt Nicht-Kopf-Schätze wieder her,"
-          - "&7wenn sie aktuell versteckt sind."
-          - ""
-          - "&eKlicke zum Auswählen"
-        confirm_title: "Löschen & Köpfe/Schädel entfernen?"
-      remove_blocks:
-        name: "&cBlöcke & Möbel entfernen"
-        lore:
-          - "&7Löscht die Sammlungsdaten"
-          - "&7und entfernt alle Schatz-Blöcke"
-          - "&7und ItemsAdder-Möbel."
-          - ""
-          - "&c&lWARNUNG: Welt-Blöcke werden entfernt!"
-          - ""
-          - "&cKlicke zum Auswählen"
-        confirm_title: "Löschen & alle Schatz-Blöcke entfernen?"
+    deleting_type:
+      name: "&bLöschungs-Typ"
+      lore:
+        - "&7Aktuell: &a%type%"
+        - ""
+        - "&7Wähle aus, was mit den Treasures"
+        - "&7in einer Sammlung passieren soll,"
+        - "&7wenn sie gelöscht wird."
+        - ""
+        - "&7Verfügbare Optionen:"
+        - "&3NOTING, PLAYER_HEAD, ALL"
+        - ""
+        - "&cKlicke zum wechseln"
     hide_after_found:
       name: "&eVerstecke gefundene Treasures"
       lore:

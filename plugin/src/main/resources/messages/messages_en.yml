@@ -859,43 +859,19 @@ gui:
         - ""
         - "&cClick to delete"
       confirm_title: "Confirm Delete Collection"
-    delete_handling:
-      title: "Delete: Treasure Handling"
-      keep:
-        name: "&aKeep placed treasures"
-        lore:
-          - "&7Delete the collection data,"
-          - "&7but keep all treasure blocks"
-          - "&7where they were placed."
-          - ""
-          - "&7Also restores treasures that"
-          - "&7are currently hidden."
-          - ""
-          - "&eClick to select"
-        confirm_title: "Delete & keep all treasures?"
-      remove_heads:
-        name: "&eRemove heads/skulls"
-        lore:
-          - "&7Delete the collection data,"
-          - "&7remove only player heads/skulls,"
-          - "&7keep other treasures placed."
-          - ""
-          - "&7Also restores non-head"
-          - "&7treasures if currently hidden."
-          - ""
-          - "&eClick to select"
-        confirm_title: "Delete & remove heads/skulls?"
-      remove_blocks:
-        name: "&cRemove blocks & furniture"
-        lore:
-          - "&7Delete the collection data,"
-          - "&7and remove all treasure blocks"
-          - "&7and ItemsAdder furniture."
-          - ""
-          - "&c&lWARNING: World blocks will be removed!"
-          - ""
-          - "&cClick to select"
-        confirm_title: "Delete & remove all treasure blocks?"
+    deleting_type:
+      name: "&bDeleting Type"
+      lore:
+        - "&7Current: &a%type%"
+        - ""
+        - "&7Select what happens with the"
+        - "&7Treasures when the Collection"
+        - "&7gets deleted."
+        - ""
+        - "&7Available Options:"
+        - "&3NOTING, PLAYER_HEAD, ALL"
+        - ""
+        - "&cClick to switch"
     hide_after_found:
       name: "&eHide Found Treasures"
       lore:
