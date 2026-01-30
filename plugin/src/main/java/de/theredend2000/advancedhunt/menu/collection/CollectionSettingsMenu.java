@@ -157,8 +157,8 @@ public class CollectionSettingsMenu extends Menu {
         }, "advancedhunt.admin.collection.delete");
 
         addButton(17, new ItemBuilder(XMaterial.CAULDRON)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.deleting_type.delete.name"))
-                .setLore(plugin.getMessageManager().getMessageList("gui.deleting_type.delete.lore").toArray(new String[0]))
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.deleting_type.delete.name"))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.deleting_type.delete.lore").toArray(new String[0]))
                 .build(), (e) -> {
             playerMenuUtility.sendMessage("Yes");
             //TODO ADD FUNCTION
