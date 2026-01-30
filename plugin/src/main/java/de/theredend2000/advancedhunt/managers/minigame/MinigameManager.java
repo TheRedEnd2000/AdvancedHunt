@@ -20,7 +20,7 @@ public class MinigameManager {
     }
 
     public void startMinigame(Player player, MinigameType type, Consumer<Boolean> onFinish) {
-        if (!plugin.getConfig().getBoolean("minigames.enabled", true)) {
+        if (!plugin.getConfig().getBoolean("hint.minigames.enabled", true)) {
             onFinish.accept(true);
             return;
         }
@@ -53,7 +53,7 @@ public class MinigameManager {
     }
 
     public boolean isMinigameEnabled(MinigameType type) {
-        return plugin.getConfig().getBoolean("minigames." + type.name().toLowerCase() + ".enabled", true);
+        return plugin.getConfig().getBoolean("hint.minigames." + type.name().toLowerCase() + ".enabled", true);
     }
 
     public void endSession(Player player) {

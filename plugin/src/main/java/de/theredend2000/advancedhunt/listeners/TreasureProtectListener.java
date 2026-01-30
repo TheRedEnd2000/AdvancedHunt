@@ -43,6 +43,18 @@ public class TreasureProtectListener implements Listener {
     }
 
     @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        TreasureCore core = treasureManager.getTreasureCoreAt(event.getBlock().getLocation());
+        if (core == null) return;
+
+        Player player = event.getPlayer();
+
+        event.setCancelled(true);
+        player.sendMessage(plugin.getMessageManager().getMessage("treasure.protected"));
+        plugin.getSoundManager().playBlockProtected(player);
+    }
+
+    @EventHandler
     public void onBlockExplode(BlockExplodeEvent event) {
         handleExplosion(event.blockList());
     }

@@ -4,7 +4,14 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.protocol.nbt.NBTByte;
+import com.github.retrooper.packetevents.protocol.nbt.NBTCompound;
+import com.github.retrooper.packetevents.protocol.nbt.NBTList;
+import com.github.retrooper.packetevents.protocol.nbt.NBTString;
+import com.github.retrooper.packetevents.protocol.world.blockentity.BlockEntityTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
+import com.github.retrooper.packetevents.util.Vector3i;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockEntityData;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import de.theredend2000.advancedhunt.platform.PlatformAdapter;
@@ -285,4 +292,38 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         player.spigot().sendMessage(component);
     }
 
+    @Override
+    public void sendSkullUpdatePacket(Player player, Location loc, String texture) {
+        if (player == null || loc == null || texture == null || texture.isEmpty()) return;
+
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
+                return;
+            }
+            if (!PacketEvents.getAPI().isInitialized()) return;
+
+            Vector3i pos = new Vector3i(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+            NBTCompound root = new NBTCompound();
+            root.setTag("id", new NBTString("minecraft:skull"));
+            root.setTag("SkullType", new NBTByte((byte) 3));
+
+            NBTCompound skullOwner = new NBTCompound();
+            skullOwner.setTag("Id", new NBTString(UUID.randomUUID().toString()));
+
+            NBTCompound properties = new NBTCompound();
+            NBTList<NBTCompound> textures = NBTList.createCompoundList();
+            NBTCompound textureTag = new NBTCompound();
+            textureTag.setTag("Value", new NBTString(texture));
+            textures.addTag(textureTag);
+
+            properties.setTag("textures", textures);
+            skullOwner.setTag("Properties", properties);
+            root.setTag("SkullOwner", skullOwner);
+
+            WrapperPlayServerBlockEntityData packet = new WrapperPlayServerBlockEntityData(pos, BlockEntityTypes.SKULL, root);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+        } catch (Throwable ignored) {
+        }
+    }
 }

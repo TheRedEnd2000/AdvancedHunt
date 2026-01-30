@@ -1,0 +1,1760 @@
+config-version: 2
+
+common:
+  treasure: "Kho báu"
+  collection: "Bộ sưu tập"
+  chance: "Tỉ lệ"
+  message: "Tin nhắn"
+  broadcast: "Thông báo"
+  value: "Giá trị"
+
+feedback:
+  gui:
+    first_page: "%prefix%&cBạn đã ở trang đầu tiên rồi."
+    last_page: "%prefix%&cBạn đang ở trang cuối cùng."
+  rewards:
+    prompt:
+      command: "%prefix%&aNhập lệnh cần thực thi (không có /):"
+      chat_message: "%prefix%&aNhập tin nhắn chat cần gửi (dùng & cho màu sắc):"
+      broadcast_message: "%prefix%&aNhập tin nhắn thông báo gửi cho tất cả người chơi (dùng & cho màu sắc):"
+      new_chance: "%prefix%&aNhập tỉ lệ mới (hiện tại: %current%%):"
+      new_message: "%prefix%&aNhập tin nhắn mới (hiện tại: %current%):"
+      new_broadcast: "%prefix%&aNhập thông báo mới (hiện tại: %current%):"
+      new_value: "%prefix%&aNhập giá trị mới (hiện tại: %current%):"
+    added: "%prefix%&aPhần thưởng đã được thêm thành công!"
+    deleted: "%prefix%&cĐã xoá phần thưởng."
+    instance_given: "%prefix%&aĐã thêm vật phẩm phần thưởng vào túi đồ của bạn."
+    instance_dropped: "%prefix%&eTúi đồ đầy — vật phẩm đã được thả dưới chân bạn."
+    instance_invalid: "%prefix%&cVật phẩm phần thưởng này không hợp lệ và không thể tải."
+    command_preview: "%prefix%&eLệnh: &f/%command%"
+    chat_message_preview: "%prefix%&eTin nhắn: &f%message%"
+    broadcast_message_preview: "%prefix%&eTin nhắn thông báo: &f%message%"
+    updated: "%prefix%&a%type% đã được cập nhật thành công!"
+    reset: "%prefix%&a%type% đã được đặt lại thành công!"
+  teleport:
+    success: "%prefix%&aĐã dịch chuyển tới kho báu!"
+    unsafe: "%prefix%&cKhông thể tìm được vị trí dịch chuyển an toàn!"
+    invalid_location: "%prefix%&cVị trí kho báu không hợp lệ!"
+    adjusted: "%prefix%&aĐã dịch chuyển tới vị trí an toàn gần đó."
+  settings:
+    delete:
+      success: "%prefix%&aĐã xoá thành công bộ sưu tập &e%collection%&a và toàn bộ kho báu của nó."
+  act:
+    applied: "%prefix%&aQuy tắc ACT đã được cập nhật thành công!"
+
+    components:
+      date_range:
+        prompt: "%prefix%&aNhập khoảng ngày (YYYY-MM-DD:YYYY-MM-DD hoặc * để luôn áp dụng):"
+      duration:
+        prompt: "%prefix%&aNhập thời lượng (ví dụ: 2h, 30m, 1d hoặc * để vĩnh viễn):"
+      act_format:
+        prompt: "%prefix%&aNhập định dạng ACT: [DATE_RANGE] [DURATION] [CRON] (ví dụ: [*] [2h] [0 0 9 * * ?])"
+
+    presets:
+      applied: "%prefix%&aĐã áp dụng preset: &e%preset%"
+
+    rules:
+      rule_deleted: "%prefix%&cĐã xoá quy tắc: &e%name%"
+
+    date_range:
+      success: "%prefix%&aKhoảng ngày đã được cập nhật thành công!"
+    duration:
+      success: "%prefix%&aThời lượng đã được cập nhật thành công!"
+  cron:
+    applied: "%prefix%&aLịch trình đã được áp dụng thành công!"
+    cleared: "%prefix%&aĐã xoá lịch trình."
+    preset_applied: "%prefix%&aĐã áp dụng preset: &e%preset%"
+    preset:
+      daily:
+        name: "&eHàng ngày"
+      weekly:
+        name: "&eHàng tuần"
+      monthly:
+        name: "&eHàng tháng"
+      yearly:
+        name: "&eHàng năm"
+  preset:
+    prompt_name: "%prefix%&eNhập tên cho preset %type% này:"
+    prompt_rename: "%prefix%&eNhập tên mới cho preset '&f%name%&e':"
+    saved: "%prefix%&aĐã lưu thành công preset %type% '&f%name%&a'!"
+    renamed: "%prefix%&aĐã đổi tên preset thành '&f%name%&a'."
+    loaded: "%prefix%&aĐã tải thành công preset %type% '&f%name%&a'!"
+    deleted: "%prefix%&cĐã xoá preset '&f%name%&c'."
+    set_default: "%prefix%&aĐã đặt preset mặc định cho &e%collection%&a là '&f%name%&a'."
+    override:
+      none: "%prefix%&cKhông tìm thấy kho báu nào trong bộ sưu tập này."
+      started: "%prefix%&eĐang ghi đè &f%count%&e kho báu bằng preset '&f%name%&e'..."
+      progress: "&eTiến trình ghi đè: &f%percent%% &7(%current%/%total%)"
+      done: "%prefix%&aĐã ghi đè &f%count%&a kho báu bằng preset '&f%name%&a'."
+      failed: "%prefix%&cKhông thể ghi đè phần thưởng kho báu. Kiểm tra console để biết chi tiết."
+
+  place_items:
+    prompt_group: "%prefix%&7Nhập &etên nhóm&7 trong chat (hoặc 'cancel')."
+    prompt_rename: "%prefix%&7Nhập tên mới cho &e%name%&7 (hoặc 'cancel')."
+    prompt_rename_group: "%prefix%&7Nhập tên mới cho nhóm &e%group%&7 (hoặc 'cancel')."
+    prompt_move_group: "%prefix%&7Nhập nhóm mới cho preset này (hiện tại: &e%group%&7)."
+    group_created: "%prefix%&aĐã tạo nhóm &e%group%&a."
+    group_renamed: "%prefix%&aĐã đổi tên nhóm từ &e%old%&a thành &e%group%&a."
+    group_deleted: "%prefix%&aĐã xoá nhóm &e%group%&a."
+    created: "%prefix%&aĐã tạo vật phẩm đặt &e%name%&a trong nhóm &e%group%&a."
+    given: "%prefix%&aĐã đưa vật phẩm &e%name%&a (&7%group%&a)."
+    deleted: "%prefix%&aĐã xoá vật phẩm &e%name%&a (&7%group%&a)."
+
+prefix: "&6AdvancedHunt &8>> &7"
+
+error:
+  no_permission: "%prefix%&cBạn không có quyền thực hiện hành động này!"
+  place_items:
+    no_item: "%prefix%&cVui lòng đặt một vật phẩm khối vào ô trước."
+    not_a_block: "%prefix%&cVật phẩm này không phải là khối và không thể dùng để đặt."
+    invalid_group: "%prefix%&cTên nhóm không hợp lệ."
+    duplicate_group: "%prefix%&cNhóm này đã tồn tại."
+    invalid_name: "%prefix%&cTên vật phẩm không hợp lệ."
+    duplicate_name: "%prefix%&cĐã tồn tại một vật phẩm trùng tên trong nhóm này."
+    serialize_failed: "%prefix%&cKhông thể lưu vật phẩm đó."
+    deserialize_failed: "%prefix%&cKhông thể tải vật phẩm đó."
+    create_failed: "%prefix%&cKhông thể tạo vật phẩm đặt."
+    create_group_failed: "%prefix%&cKhông thể tạo nhóm."
+    rename_group_failed: "%prefix%&cKhông thể đổi tên nhóm."
+    save_failed: "%prefix%&cKhông thể lưu vật phẩm đặt."
+
+  feature_disabled: "%prefix%&cTính năng này hiện đang bị tắt."
+
+  validation:
+    date_range: "%prefix%&cKhoảng ngày không hợp lệ! Sử dụng định dạng ISO (2024-01-01:2024-12-31) hoặc * để luôn áp dụng."
+    duration: "%prefix%&cThời lượng không hợp lệ! Dùng định dạng như 90s, 2h, 30m hoặc * để luôn hoạt động."
+  rewards:
+    invalid_chance: "%prefix%&cTỉ lệ không hợp lệ! Phải là số từ 0 đến 100."
+    command_blacklisted: "%prefix%&cLệnh này nằm trong danh sách cấm và không thể sử dụng!"
+    add:
+      item:
+        no_item: "%prefix%&cVui lòng đặt vật phẩm vào ô trước!"
+  cron:
+    invalid: "%prefix%&cBiểu thức cron không hợp lệ! Vui lòng kiểm tra lại định dạng."
+  act:
+    format:
+      invalid_format: "%prefix%&cĐịnh dạng ACT không hợp lệ! Yêu cầu: [DATE_RANGE] [DURATION] [CRON]"
+  preset:
+    invalid_name: "%prefix%&cTên preset không hợp lệ! Vui lòng nhập tên hợp lệ."
+    duplicate_name: "%prefix%&cĐã tồn tại preset với tên này."
+    save_failed: "%prefix%&cKhông thể lưu preset %type%!"
+  
+command:
+  help:
+    descriptions:
+      help: "Hiển thị menu trợ giúp này"
+      reload: "Tải lại cấu hình plugin"
+      show: "Hiển thị vị trí kho báu gần đó dưới dạng hologram"
+      list: "Liệt kê tất cả các bộ sưu tập hiện có"
+      list_collection: "Xem tất cả kho báu đã đặt trong một bộ sưu tập"
+      leaderboard: "Mở bảng xếp hạng của một bộ sưu tập"
+      progress: "Xem tiến trình của bạn trong một bộ sưu tập"
+      collection: "Mở trình chỉnh sửa bộ sưu tập"
+      collection_create: "Tạo một bộ sưu tập mới"
+      collection_edit: "Chỉnh sửa một bộ sưu tập hiện có"
+      collection_delete: "Xoá một bộ sưu tập"
+      collection_rename: "Đổi tên một bộ sưu tập"
+      collection_info: "Hiển thị thông tin chi tiết của bộ sưu tập"
+      rewards: "Xem phần thưởng của kho báu bạn đang nhìn"
+      placeitems: "Mở menu vật phẩm đặt"
+      place: "Bật/tắt chế độ đặt (thoát nếu đang bật)"
+      place_collection: "Vào chế độ đặt cho một bộ sưu tập"
+      reset_all: "Đặt lại toàn bộ tiến trình người chơi"
+      reset_collection: "Đặt lại tiến trình của một bộ sưu tập"
+      reset_player: "Đặt lại toàn bộ tiến trình của một người chơi"
+      reset_player_collection: "Đặt lại tiến trình của người chơi trong một bộ sưu tập"
+      minigame: "Chơi minigame để hỗ trợ tìm kho báu"
+      hint: "Yêu cầu gợi ý để tìm kho báu gần đó"
+      migrate: "Di chuyển dữ liệu giữa các hệ lưu trữ (yaml/sqlite/mysql)"
+      debug_hint: "Debug: Kiểm tra hệ thống gợi ý"
+      debug_placecollection: "Debug: Đặt kho báu ngẫu nhiên"
+      debug_placecollection_random: "Debug: Đặt kho báu ngẫu nhiên"
+      debug_placecollection_plane: "Debug: Đặt kho báu theo lưới phẳng"
+      debug_removecollectionplaced: "Debug: Xoá toàn bộ kho báu đã đặt trong bộ sưu tập"
+    minecraft:
+      help: "&6AdvancedHunt &8- &7Trợ giúp"
+      command: "Lệnh"
+      description: "Mô tả"
+      no_description: "Không có mô tả"
+      arguments: "Tham số"
+      optional: "Tùy chọn"
+      showing_results_for_query: "&7Đang hiển thị kết quả cho truy vấn"
+      no_results_for_query: "Không có kết quả cho truy vấn"
+      available_commands: "Các lệnh khả dụng"
+      click_to_show_help: "Nhấn để xem trợ giúp cho lệnh này"
+      page_out_of_range: "Lỗi: Trang không hợp lệ."
+      click_for_next_page: "Nhấn để sang trang tiếp theo"
+      click_for_previous_page: "Nhấn để quay lại trang trước"
+
+  reload:
+    success: "%prefix%&aCấu hình và tin nhắn đã được tải lại!"
+    failed: "%prefix%&cTải lại thất bại. Kiểm tra console để biết chi tiết."
+
+  show:
+    success: "%prefix%&aĐang hiển thị &e%count%&a vị trí kho báu trong phạm vi &e%radius%&a khối trong &e%seconds%s&a."
+    success_truncated: "%prefix%&aĐang hiển thị &e%count%&a vị trí kho báu trong phạm vi &e%radius%&a khối trong &e%seconds%s&a. &7(Chỉ hiển thị %max% đầu tiên)"
+    none_found: "%prefix%&eKhông tìm thấy kho báu nào trong phạm vi &6%radius%&e khối."
+    invalid_radius: "%prefix%&cBán kính phải nằm trong khoảng từ &e1&c đến &e500&c khối."
+    invalid_duration: "%prefix%&cThời lượng phải nằm trong khoảng từ &e1&c đến &e300&c giây."
+    packetevents_missing: "%prefix%&cKhông thể hiển thị đánh dấu. Hãy cài đặt/kích hoạt &ePacketEvents&c."
+  list:
+    header: "&6Các bộ sưu tập hiện có:"
+    format: "&7- &e%collection%"
+    hint: "&eDùng /ah list <collection> để xem kho báu."
+  collection_not_found: "%prefix%&cKhông tìm thấy bộ sưu tập."
+
+direction:
+  east: "Đông"
+  southeast: "Đông Nam"
+  south: "Nam"
+  southwest: "Tây Nam"
+  west: "Tây"
+  northwest: "Tây Bắc"
+  north: "Bắc"
+  northeast: "Đông Bắc"
+
+rewards:
+  no_block: "%prefix%&cBạn phải đang nhìn vào một khối!"
+  not_treasure: "%prefix%&cKhối này không phải là kho báu!"
+
+rename:
+  success: "%prefix%&aĐã đổi tên bộ sưu tập từ &e%old_name% &asang &e%new_name%"
+  failed: "%prefix%&cKhông thể đổi tên bộ sưu tập. Kiểm tra xem tên cũ có tồn tại và tên mới có là duy nhất hay không."
+
+create:
+  success: "%prefix%&aĐã tạo thành công bộ sưu tập &e%name%"
+  failed: "%prefix%&cKhông thể tạo bộ sưu tập. Có thể đã tồn tại bộ sưu tập với tên này."
+
+info:
+  lines:
+    - "&6━━━━━━ Thông tin bộ sưu tập: &e%collection% &6━━━━━━"
+    - "%uuid%"
+    - "&7Kho báu: &f%count%"
+    - "%status%"
+    - "%timing%"
+    - "%reset%"
+    - "&7Dùng UUID trong PlaceholderAPI: &e%advancedhunt_found_treasures_<uuid>%"
+  uuid: "&7UUID: &f%uuid%"
+  click_to_copy: "&eNhấn để sao chép/gợi ý UUID"
+  status_available: "&7Trạng thái: &aHiện đang khả dụng"
+  status_unavailable: "&7Trạng thái: &cHiện không khả dụng"
+  active_until_note: "&7  &8(Thời gian hoạt động được đặt bởi quy tắc ACT)"
+  next_activation: "&7Lần kích hoạt tiếp theo: &f%time%"
+  next_reset: "&7Lần đặt lại tiếp theo: &f%time%"
+  no_reset: "&7Lần đặt lại tiếp theo: &fKhông bao giờ &8(không có lịch đặt lại)"
+  invalid_reset_schedule: "&7Lần đặt lại tiếp theo: &cLịch không hợp lệ"
+
+place_mode:
+  disabled: "%prefix%&aChế độ đặt đã tắt."
+  enabled: "%prefix%&aChế độ đặt đã bật cho bộ sưu tập &e%collection%&a. Đặt khối để thêm kho báu."
+  not_in_place_mode: "%prefix%&cBạn không đang ở chế độ đặt."
+  no_break: "%prefix%&cBạn không thể phá khối trong chế độ đặt!"
+  use_command: "%prefix%&eDùng /ah placeitems &eđể nhận lại các kho báu đã lưu của bạn."
+
+reset:
+  all_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho tất cả người chơi trên mọi bộ sưu tập!"
+  collection_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho bộ sưu tập &e%collection%&a!"
+  player_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho người chơi &e%player%&a!"
+  player_collection_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho người chơi &e%player% &atrong bộ sưu tập &e%collection%&a!"
+  player_not_found: "%prefix%&cKhông tìm thấy người chơi hoặc người chơi chưa từng tham gia máy chủ này."
+
+migration:
+  started: "%prefix%&aBắt đầu di chuyển dữ liệu lưu trữ (đang sao chép toàn bộ dữ liệu sang lưu trữ đích)..."
+  progress: "%prefix%&eTiến trình di chuyển: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+  progress_actionbar: "&eDi chuyển: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+  success: "%prefix%&aDi chuyển dữ liệu lưu trữ thành công! Toàn bộ dữ liệu đã được sao chép sang lưu trữ đích."
+  failed: "%prefix%&cDi chuyển dữ liệu lưu trữ thất bại. Kiểm tra console để biết lỗi."
+  mysql_not_configured: "%prefix%&cCấu hình di chuyển MySQL chưa được thiết lập! Vui lòng chỉnh sửa config.yml trong mục 'migration.target' với thông tin cơ sở dữ liệu đích."
+  mysql_config_reset: "%prefix%&eCấu hình di chuyển MySQL đã được đặt lại trong config.yml. Hãy cấu hình lại nếu bạn cần thực hiện di chuyển lần nữa."
+  existing_data_abort: "%prefix%&c&lĐã huỷ di chuyển! Lưu trữ đích đang chứa dữ liệu: %collections% bộ sưu tập, %treasures% kho báu, %players% người chơi. Dùng '--purge' để xoá dữ liệu đích trước, hoặc '--force' (không khuyến nghị) để ghi đè: /ah migrate <type> --purge"
+  warning_existing_data: "%prefix%&e&lCẢNH BÁO: Lưu trữ đích đang chứa dữ liệu! (%collections% bộ sưu tập, %treasures% kho báu, %players% người chơi). Đang tiếp tục di chuyển... (--force không được khuyến nghị)"
+
+treasure:
+  found: "%prefix%&aBạn đã tìm thấy một kho báu!"
+  already_found: "%prefix%&cBạn đã tìm thấy kho báu này rồi!"
+  already_claimed_global: "%prefix%&cKho báu này đã được người chơi khác nhận trước đó!"
+  added: "%prefix%&aKho báu đã được thêm vào bộ sưu tập!"
+  removed: "%prefix%&cKho báu đã bị xoá khỏi bộ sưu tập."
+  protected: "%prefix%&cBạn không thể phá các khối kho báu!"
+  placemode: "%prefix%&cBạn không thể thu thập kho báu khi đang ở chế độ đặt!"
+
+collection:
+  unavailable: "%prefix%&cBộ sưu tập &e%collection% &chiện không khả dụng!"
+  available_at: "%prefix%&eSẽ khả dụng vào lúc: &f%time%"
+  available: "&a✓ Khả dụng"
+  not_available: "&c✗ Không khả dụng"
+  completed: "%prefix%&6Bạn đã hoàn thành bộ sưu tập &e%collection% &6!"
+
+chat_input:
+  request: "%prefix%&aVui lòng nhập nội dung của bạn trong chat."
+  canceled: "%prefix%&cĐã huỷ nhập."
+  timeout: "%prefix%&cHết thời gian chờ nhập."
+
+gui:
+  common:
+    back: "&7« Quay lại %menu%"
+    close: "&cĐóng"
+    previous_page: "&aTrang trước"
+    next_page: "&aTrang sau"
+    page_indicator: "&7(%page%/%total%)"
+    confirm: "&aXác nhận"
+    cancel: "&cHuỷ"
+    enabled: "&aBật"
+    disabled: "&cTắt"
+    none: "&cKhông có"
+  place_items:
+    groups:
+      title: "&8Nhóm vật phẩm đặt"
+      none:
+        name: "&cKhông có nhóm"
+        lore:
+          - "&7Chưa có nhóm nào tồn tại."
+          - "&7Tạo một nhóm bằng nút bên dưới."
+      group:
+        name: "&e%group%"
+        lore:
+          - "&7Số lượng vật phẩm: &f%count%"
+          - ""
+          - "&a%action%"
+          - "&7%action2%"
+        action:
+          open: "Nhấn để mở"
+          manage: "Chuột phải để quản lý"
+
+    group_actions:
+      title: "&8Nhóm: &e%group%"
+      rename:
+        name: "&eĐổi tên nhóm"
+        lore:
+          - "&7Hiện tại: &f%current%"
+          - ""
+          - "&eNhấn để đổi tên"
+      delete:
+        name: "&cXoá nhóm"
+        lore:
+          - "&7Preset trong nhóm: &f%count%"
+          - ""
+          - "&c&lCẢNH BÁO: sẽ xoá toàn bộ preset trong nhóm này!"
+          - ""
+          - "&cNhấn để xoá"
+        confirm_title: "&8Xoá nhóm &c%group%&8?"
+
+    list:
+      title: "&8Vật phẩm đặt: &e%group%"
+      none:
+        name: "&cKhông có vật phẩm"
+        lore:
+          - "&7Chưa có vật phẩm nào trong nhóm này."
+          - "&7Tạo một cái bằng nút bên dưới."
+      preset:
+        name: "&e%name%"
+        lore:
+          - "&a%action%"
+          - "&7%action2%"
+        action:
+          give: "Chuột trái để nhận vật phẩm"
+          manage: "Chuột phải để quản lý"
+
+    actions:
+      title: "&8Vật phẩm: &e%name%"
+      give:
+        name: "&aNhận vật phẩm"
+        lore:
+          - "&7Thêm vật phẩm vào túi đồ của bạn."
+      delete:
+        name: "&cXoá"
+        lore:
+          - "&7Xoá vĩnh viễn preset này."
+        confirm_title: "&8Xoá preset &c%name%&8?"
+
+    create:
+      name: "&aTạo nhóm"
+      lore:
+        - "&7Tạo một nhóm trống mới."
+    create_in_group:
+      name: "&aThêm vật phẩm khối"
+      lore:
+        - "&7Thêm một vật phẩm khối vào &e%group%&7."
+        - "&7Đặt một vật phẩm khối vào ô"
+        - "&7và xác nhận để lưu lại."
+
+    add:
+      title: "&8Thêm vật phẩm đặt: &e%group%"
+      placeholder:
+        name: "&7Đặt một khối vào đây"
+        lore:
+          - "&7Kéo một vật phẩm khối vào"
+          - "&7ô trung tâm."
+      info:
+        name: "&eCách hoạt động"
+        lore:
+          - "&7Đặt bất kỳ &evật phẩm khối&7 nào vào ô."
+          - "&7Vật phẩm sẽ được lưu dưới dạng &f1 khối&7."
+          - "&7Vật phẩm của bạn &akhông bị tiêu hao&7."
+      confirm:
+        name: "&aLưu vật phẩm"
+        lore:
+          - "&7Lưu khối này thành một vật phẩm"
+          - "&7trong nhóm đã chọn."
+      cancel:
+        name: "&cHuỷ"
+        lore:
+          - "&7Quay lại mà không lưu."
+  rewards:
+    title: "&8Phần thưởng kho báu"
+    collection_title: "&8Phần thưởng hoàn thành"
+    preset_title: "&8Preset phần thưởng"
+    open_reward_option_menu:
+      title: "&8Tuỳ chọn phần thưởng"
+      name: "&6+ Thêm phần thưởng"
+      lore:
+        - ""
+        - "&7Chọn loại phần thưởng"
+        - "&7bạn muốn thêm:"
+        - ""
+        - "&e► Phần thưởng vật phẩm"
+        - "&f  Trao một vật phẩm thực"
+        - ""
+        - "&e► Phần thưởng lệnh"
+        - "&f  Thực thi một lệnh máy chủ"
+        - ""
+        - "&e► Tin nhắn chat"
+        - "&f  Gửi tin nhắn cho người chơi"
+        - ""
+        - "&e► Tin nhắn thông báo"
+        - "&f  Gửi tin nhắn tới tất cả người chơi"
+        - ""
+        - "&aNhấn để mở tuỳ chọn"
+    switch_to_collection:
+      name: "&eXem phần thưởng bộ sưu tập"
+      lore:
+        - "&7Nhấn để xem phần thưởng"
+        - "&7nhận được khi hoàn thành"
+        - "&7toàn bộ bộ sưu tập."
+    switch_to_treasure:
+      name: "&eXem phần thưởng kho báu"
+      lore:
+        - "&7Nhấn để xem phần thưởng"
+        - "&7nhận được khi tìm thấy"
+        - "&7kho báu cụ thể này."
+    no_rewards:
+      name: "&7Không có phần thưởng"
+      lore:
+        - "&7Kho báu này chưa có"
+        - "&7phần thưởng nào được cấu hình."
+    reward_number: "&7Phần thưởng #%number%"
+    chance_lore: "&7Tỉ lệ: &e%chance%%"
+    message_lore: "&7Tin nhắn: &e%message%"
+    broadcast_lore: "&7Thông báo: &e%broadcast%"
+    amount_lore: "&7Số lượng: &fx%amount%"
+    command_name: "&6Phần thưởng lệnh"
+    command_label: "&7Thực thi lệnh:"
+    chat_message_name: "&bPhần thưởng tin nhắn chat"
+    chat_message_label: "&7Gửi tin nhắn:"
+    broadcast_message_name: "&dPhần thưởng thông báo"
+    broadcast_message_label: "&7Thông báo tới tất cả:"
+    truncated:
+      command: "&8(Lệnh đã bị rút gọn)"
+      message: "&8(Tin nhắn đã bị rút gọn)"
+    invalid_item:
+      name: "&cVật phẩm không hợp lệ"
+      lore:
+        - "&7Không thể tải vật phẩm này"
+        - ""
+        - "&8─────────────"
+        - "&7Tỉ lệ: &e%chance%%"
+    # Edit mode
+    click_to_edit: "&e&lChuột trái &7để chỉnh sửa  &8|  &e&lChuột phải &7để %action%"
+    save_preset:
+      name: "&aTạo preset %Type%"
+      lore:
+        - "&7Lưu cấu hình phần thưởng hiện tại"
+        - "&7thành một preset có thể tái sử dụng cho %type%s"
+        - ""
+        - "&7Điều này cho phép bạn nhanh chóng áp dụng"
+        - "&7cùng phần thưởng cho các %type%s khác"
+        - ""
+        - "&eNhấn để tạo preset"
+    load_preset:
+      name: "&bTải preset %Type%"
+      lore:
+        - "&7Tải cấu hình phần thưởng đã lưu"
+        - "&7từ các preset %type% của bạn"
+        - ""
+        - "&7Thay thế phần thưởng hiện tại bằng"
+        - "&7một preset đã lưu trước đó"
+        - ""
+        - "&eNhấn để xem preset"
+    quick_action:
+      delete: "&cxoá"
+      get_instance: "&anhận bản sao"
+    quick_mode:
+      name: "&bHành động nhanh"
+      mode_delete: "&cXoá"
+      mode_get_instance: "&aLấy bản sao"
+      lore:
+        - "&7Chế độ: %mode%"
+        - "&7Chuột phải vào phần thưởng để %action%"
+        - ""
+        - "&eNhấn để chuyển chế độ"
+    add_item:
+      name: "&a+ Thêm phần thưởng vật phẩm"
+      lore:
+        - "&7Nhấn để thêm một vật phẩm"
+        - "&7làm phần thưởng cho kho báu này."
+    add_command:
+      name: "&a+ Thêm phần thưởng lệnh"
+      lore:
+        - "&7Nhấn để thêm một lệnh"
+        - "&7làm phần thưởng cho kho báu này."
+        - ""
+        - "&7Dùng &f%player% &7cho tên người chơi."
+    add_chat_message:
+      name: "&a+ Thêm phần thưởng tin nhắn chat"
+      lore:
+        - "&7Nhấn để thêm một tin nhắn chat"
+        - "&7làm phần thưởng cho kho báu này."
+        - ""
+        - "&7Dùng &f%player% &7cho tên người chơi."
+        - "&7Dùng &f& &7cho mã màu và màu hex."
+    add_broadcast_message:
+      name: "&a+ Thêm phần thưởng thông báo"
+      lore:
+        - "&7Nhấn để thêm một tin nhắn thông báo"
+        - "&7mà tất cả người chơi sẽ thấy."
+        - ""
+        - "&7Dùng &f%player% &7cho tên người chơi."
+        - "&7Dùng &f& &7cho mã màu và màu hex."
+    # Chat prompts
+    editor:
+      title: "&8Phần thưởng #%number%"
+      edit_chance:
+        name: "&eChỉnh sửa tỉ lệ"
+        lore:
+          - "&7Hiện tại: &f%chance%%"
+          - ""
+          - "&7Nhấn để thay đổi"
+          - "&7tỉ lệ rơi của phần thưởng này."
+      edit_message:
+        name: "&eChỉnh sửa tin nhắn"
+        lore:
+          - "&8Chỉ áp dụng cho phần thưởng này!"
+          - "&7Hiện tại: &f%message%"
+          - ""
+          - "&eChuột trái &7để thay đổi"
+          - "&eChuột phải &7để đặt lại"
+          - ""
+          - "&8&m                    "
+          - "&7Placeholder khả dụng:"
+          - "&f  %player% &8- &7Tên người chơi"
+          - "&f  %found_treasures% &8- &7Kho báu đã tìm thấy"
+          - "&f  %max_treasures% &8- &7Tổng số kho báu"
+          - "&f  %remaining_treasures% &8- &7Kho báu còn lại"
+          - "&f  %chance% &8- &7Tỉ lệ phần thưởng"
+          - "&f  %item% &8- &7Tên vật phẩm &c(Chỉ phần thưởng vật phẩm)"
+          - "&f  \\n &8- &7Xuống dòng mới"
+          - "&f  & &8- &7Mã màu và màu hex"
+      edit_broadcast:
+        name: "&eChỉnh sửa thông báo"
+        lore:
+          - "&8Chỉ áp dụng cho phần thưởng này!"
+          - "&7Hiện tại: &f%broadcast%"
+          - ""
+          - "&eChuột trái &7để thay đổi"
+          - "&eChuột phải &7để đặt lại"
+          - ""
+          - "&8&m                    "
+          - "&7Placeholder khả dụng:"
+          - "&f  %player% &8- &7Tên người chơi"
+          - "&f  %found_treasures% &8- &7Kho báu đã tìm thấy"
+          - "&f  %max_treasures% &8- &7Tổng số kho báu"
+          - "&f  %remaining_treasures% &8- &7Kho báu còn lại"
+          - "&f  %chance% &8- &7Tỉ lệ phần thưởng"
+          - "&f  %item% &8- &7Tên vật phẩm &c(Chỉ phần thưởng vật phẩm)"
+          - "&f  \\n &8- &7Xuống dòng mới"
+          - "&f  & &8- &7Mã màu và màu hex"
+      edit_value:
+        name: "&eChỉnh sửa giá trị"
+        lore:
+          - "&7Hiện tại: &f%value%"
+          - ""
+          - "&7Nhấn để thay đổi"
+          - "&7giá trị của phần thưởng này."
+          - ""
+          - "&8&m                    "
+          - "&7Placeholder khả dụng:"
+          - "&f  %player% &8- &7Tên người chơi"
+          - "&f  %found_treasures% &8- &7Kho báu đã tìm thấy"
+          - "&f  %max_treasures% &8- &7Tổng số kho báu"
+          - "&f  %remaining_treasures% &8- &7Kho báu còn lại"
+          - "&f  %chance% &8- &7Tỉ lệ phần thưởng"
+          - "&f  \\n &8- &7Xuống dòng mới"
+          - "&f  & &8- &7Mã màu và màu hex"
+      delete:
+        name: "&cXoá phần thưởng"
+        lore:
+          - "&7Nhấn để xoá"
+          - "&7phần thưởng này khỏi kho báu."
+      confirm_delete:
+        title: "&8Xác nhận xoá"
+
+    add:
+      item:
+        title: "&8Thêm phần thưởng vật phẩm"
+        placeholder:
+          name: "&7Đặt vật phẩm vào đây"
+          lore:
+            - "&7Đặt vật phẩm bạn muốn"
+            - "&7thêm làm phần thưởng."
+        info:
+          name: "&eCách thêm phần thưởng vật phẩm"
+          lore:
+            - "&7Đặt vật phẩm vào"
+            - "&7ô trung tâm bên dưới."
+            - ""
+            - "&7Vật phẩm chính xác (bao gồm"
+            - "&7phù phép, tên, lore) sẽ"
+            - "&7được trao làm phần thưởng."
+            - ""
+            - "&7Nhấn &aXác nhận &7khi sẵn sàng."
+        confirm:
+          name: "&aXác nhận"
+          lore:
+            - "&7Nhấn để thêm vật phẩm này"
+            - "&7làm phần thưởng."
+        cancel:
+          name: "&cHuỷ"
+          lore:
+            - "&7Nhấn để huỷ và"
+            - "&7quay lại menu phần thưởng."
+  collection_content:
+    title: "&8Nội dung bộ sưu tập"
+    treasure_item:
+      name: "&6Kho báu #%number%"
+      lore:
+        - "&7Người chơi đã tìm thấy: &f%count%"
+        - ""
+        - "&7Vị trí:"
+        - "&7X: &f%x%"
+        - "&7Y: &f%y%"
+        - "&7Z: &f%z%"
+        - "&7Thế giới: &f%world%"
+        - ""
+      lore_teleport: "&eChuột trái &7để dịch chuyển"
+      lore_reward: "&eShift+Chuột trái &7để mở menu phần thưởng"
+      lore_who_found: "&eChuột phải &7để xem ai đã tìm thấy"
+      lore_action_menu_bedrock: "&8Bedrock/Geyser: &7Nhấn &eDrop (Q) &7để mở menu hành động"
+  minigame:
+    reaction:
+      title: "&8Trò chơi phản xạ"
+      click:
+        name: "&aNhấn vào đây!"
+        lore:
+          - "&6%current%&7/&6%required%"
+    memory:
+      title: "&8Trò chơi ghi nhớ"
+      button:
+        name: "&fNút %number%"
+  treasure_action:
+    title: "&8Hành động kho báu"
+    teleport:
+      name: "&aDịch chuyển tới kho báu"
+      lore:
+        - "&7Nhấn để dịch chuyển tới"
+        - "&7vị trí của kho báu này."
+    view_finders:
+      name: "&eXem người đã tìm thấy"
+      lore:
+        - "&7Nhấn để xem những người chơi"
+        - "&7đã tìm thấy kho báu này."
+    rewards:
+      name: "&6Phần thưởng"
+      lore:
+        - "&7Nhấn để mở phần thưởng"
+  leaderboard:
+    title: "&8Bảng xếp hạng: %collection%"
+    loading:
+      name: "&7Đang tải bảng xếp hạng..."
+      lore:
+        - "&7Vui lòng chờ trong khi chúng tôi"
+        - "&7lấy dữ liệu bảng xếp hạng..."
+    empty:
+      name: "&7Chưa có dữ liệu"
+      lore:
+        - "&7Chưa có người chơi nào"
+        - "&7tìm thấy kho báu trong bộ sưu tập này."
+    player_entry:
+      name: "&e#%rank% %player%"
+      lore:
+        - "&7Kho báu đã tìm thấy: &f%score%"
+    player_entry_highlighted:
+      name: "&6&l#%rank% %player% &7(Bạn)"
+      lore:
+        - "&7Kho báu đã tìm thấy: &f%score%"
+        - ""
+        - "&6⭐ Đây là vị trí của bạn!"
+    your_rank:
+      name: "&aVị trí của bạn"
+      lore:
+        - "&7Hạng: &f#%rank%"
+        - "&7Đã tìm thấy: &f%score%/%total%"
+        - "&7Tiến độ: &e%percentage%%"
+    not_ranked:
+      name: "&cChưa được xếp hạng"
+      lore:
+        - "&7Bạn chưa tìm thấy"
+        - "&7kho báu nào trong bộ sưu tập này."
+        - ""
+        - "&7Hãy bắt đầu khám phá để được xếp hạng!"
+    view_button:
+      name: "&eBảng xếp hạng kho báu"
+      lore:
+        - "&7Nhấn để xem những người chơi"
+        - "&7đã tìm thấy nhiều"
+        - "&7kho báu nhất trong bộ sưu tập này."
+    info:
+      name: "&bThông tin bảng xếp hạng"
+      lore:
+        - "&7Số mục hiển thị tối đa: &f%display_limit%"
+        - "&7Làm mới cache: &f%refresh_interval%s &8(%minutes%m)"
+        - ""
+        - "&8Bảng xếp hạng tự động cập nhật"
+  progress:
+    title: "&8Tiến trình: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    loading: "&7Đang tải tiến trình của bạn..."
+    no_treasures:
+      name: "&7Không có kho báu"
+      lore:
+        - "&7Bộ sưu tập này chưa có"
+        - "&7kho báu nào được cấu hình."
+    stats:
+      name: "&aThống kê tiến trình của bạn"
+      lore:
+        - "&7Bộ sưu tập: &e%collection%"
+        - "&7Đã tìm thấy: &a%found%&7/&e%total%"
+        - "&7Hoàn thành: &e%percentage%&7%"
+        - ""
+        - "&7Tiếp tục khám phá để"
+        - "&7tìm thấy tất cả kho báu!"
+    treasure:
+      name: "&7Kho báu #%number% &7- %status%"
+      status_found: "&aĐã tìm thấy"
+      status_not_found: "&cChưa tìm thấy"
+      lore_found:
+        - "&a✓ Bạn đã tìm thấy kho báu này!"
+        - ""
+        - "&7Vị trí:"
+        - "&7  X: &f%x%"
+        - "&7  Y: &f%y%"
+        - "&7  Z: &f%z%"
+        - "&7  Thế giới: &f%world%"
+      lore_not_found:
+        - "&c✗ Bạn chưa tìm thấy kho báu này"
+        - ""
+        - "&7Tiếp tục khám phá để"
+        - "&7phát hiện vị trí của kho báu này!"
+  editor:
+    title: "Trình chỉnh sửa bộ sưu tập"
+    collection_item:
+      name: "&6%collection%"
+      lore:
+        - "&7Trạng thái: %status%"
+        - "&7Khả dụng: %availability%"
+        - "&7Kho báu: &f%treasures%"
+        - "&7Cron đặt lại: %cron%"
+        - ""
+        - "&eNhấn để chỉnh sửa cài đặt"
+    create:
+      name: "&aTạo bộ sưu tập"
+      lore:
+        - "&7Nhấn để tạo một bộ sưu tập mới"
+  settings:
+    title: "Cài đặt: %collection%"
+    rename:
+      name: "&eĐổi tên bộ sưu tập"
+      lore:
+        - "&7Hiện tại: &f%name%"
+        - ""
+        - "&eNhấn để đổi tên"
+    status:
+      name: "&eBật/Tắt trạng thái"
+      lore:
+        - "&7Hiện tại: %status%"
+        - ""
+        - "&eNhấn để chuyển đổi"
+    rewards:
+      name: "&ePhần thưởng hoàn thành"
+      lore:
+        - "&7Nhấn để cấu hình phần thưởng"
+        - "&7được trao khi người chơi tìm thấy"
+        - "&7TẤT CẢ kho báu trong bộ sưu tập này."
+        - ""
+        - "&eNhấn để mở"
+    default_treasure_preset:
+      name: "&ePreset phần thưởng kho báu mặc định"
+      lore:
+        - "&7Hiện tại: %preset%"
+        - ""
+        - "&7Áp dụng cho các kho báu"
+        - "&7được tạo mới trong bộ sưu tập này (chế độ đặt)."
+        - ""
+        - "&eChuột trái để đặt"
+        - "&eChuột phải để xoá"
+    override_treasure_rewards:
+      name: "&cGhi đè toàn bộ phần thưởng kho báu"
+      lore:
+        - "&7Thay thế phần thưởng cho TẤT CẢ kho báu"
+        - "&7trong bộ sưu tập này bằng một preset."
+        - ""
+        - "&c&lCẢNH BÁO: Thao tác này sẽ thay thế phần thưởng hiện có!"
+        - ""
+        - "&eNhấn để chọn preset"
+      confirm_title: "Ghi đè phần thưởng bằng '%name%'?"
+    act_rules:
+      name: "&eQuy tắc lịch trình"
+      lore:
+        - "&7Quản lý lịch khả dụng"
+        - "&7bằng các quy tắc định dạng ACT."
+        - ""
+        - "&7Số quy tắc hiện tại: &f%count%"
+        - ""
+        - "&eNhấn để quản lý"
+    progress_reset_cron:
+      name: "&eLịch đặt lại tiến trình"
+      lore:
+        - "&7Hiện tại: %cron%"
+        - ""
+        - "&7Tự động đặt lại tiến trình"
+        - "&7người chơi theo lịch trình."
+        - ""
+        - "&eNhấn để cấu hình"
+    single_player_find:
+      name: "&eMột người chơi duy nhất"
+      lore:
+        - "&7Hiện tại: %status%"
+        - ""
+        - "&7Khi bật, chỉ MỘT người chơi"
+        - "&7trên toàn máy chủ có thể tìm thấy mỗi kho báu."
+        - "&7Chỉ đặt lại khi cron được kích hoạt."
+        - ""
+        - "&eNhấn để bật/tắt"
+    delete:
+      name: "&cXoá bộ sưu tập"
+      lore:
+        - "&7Xoá vĩnh viễn bộ sưu tập này"
+        - "&7và TOÀN BỘ kho báu của nó."
+        - ""
+        - "&c&lCẢNH BÁO: Không thể hoàn tác!"
+        - ""
+        - "&cNhấn để xoá"
+      confirm_title: "Xác nhận xoá bộ sưu tập"
+    hide_after_found:
+      name: "&eẨn kho báu đã tìm thấy"
+      lore:
+        - "&7Hiện tại: %status%"
+        - ""
+        - "&7Khi bật, các kho báu"
+        - "&7bạn đã tìm thấy sẽ"
+        - "&7bị ẩn trong danh sách kho báu."
+        - ""
+        - "&8&m                    "
+        - "&7Giúp bạn tập trung vào"
+        - "&7những kho báu chưa tìm thấy."
+        - ""
+        - "&eNhấn để bật/tắt"
+    hide_when_not_available:
+      name: "&eẨn khi không khả dụng"
+      lore:
+        - "&7Hiện tại: %status%"
+        - ""
+        - "&7Khi bật, tất cả kho báu"
+        - "&7trong bộ sưu tập này sẽ"
+        - "&7bị ẩn khi bộ sưu tập"
+        - "&7không khả dụng (bị tắt hoặc"
+        - "&7không khả dụng do quy tắc ACT)."
+        - ""
+        - "&8&m                    "
+        - "&7Điều này ngăn người chơi"
+        - "&7nhìn thấy nội dung không khả dụng."
+        - ""
+        - "&eNhấn để bật/tắt"
+    hide_status:
+      enabled: "&aBật"
+      disabled: "&cTắt"
+    reset_schedule:
+      title: "Lịch đặt lại tiến trình"
+    categories:
+      basic:
+        name: "&6&lCài đặt cơ bản &8------>"
+        lore:
+          - ""
+          - "&7Cấu hình các thuộc tính"
+          - "&7cơ bản của bộ sưu tập."
+          - ""
+          - "&8&m                    "
+          - "&7• Đổi tên bộ sưu tập"
+          - "&7• Bật / Tắt"
+          - "&7• Chế độ một người chơi"
+          - "&7• Xoá bộ sưu tập"
+      rewards:
+        name: "&6&lCấu hình lịch trình &8------>"
+        lore:
+          - ""
+          - "&7Quản lý phần thưởng hoàn thành"
+          - "&7và lịch trình của bộ sưu tập."
+          - ""
+          - "&8&m                    "
+          - "&7• Phần thưởng bộ sưu tập"
+          - "&7• Quy tắc lịch trình"
+          - "&7• Thời gian đặt lại tiến trình"
+      presets:
+        name: "&6&lPreset &8------>"
+        lore:
+          - ""
+          - "&7Cấu hình preset mặc định"
+          - "&7cho bộ sưu tập và việc"
+          - "&7áp dụng preset cho tất cả"
+          - "&7kho báu."
+          - ""
+          - "&8&m                    "
+          - "&7• Preset mặc định"
+          - "&7• Ghi đè phần thưởng hàng loạt"
+      visibility:
+        name: "&6&lTuỳ chọn hiển thị &8------>"
+        lore:
+          - ""
+          - "&7Kiểm soát cách kho báu"
+          - "&7được ẩn với người chơi"
+          - "&7hoặc khi không khả dụng."
+          - ""
+          - "&8&m                    "
+          - "&7• Ẩn kho báu đã tìm thấy"
+          - "&7• Ẩn khi bị tắt"
+
+  presets:
+    treasure:
+      title: "Preset kho báu"
+    collection:
+      title: "Preset bộ sưu tập"
+    unknown: "&cKhông xác định"
+    none:
+      name: "&7Không có preset"
+      lore:
+        - "&7Chưa có preset phần thưởng nào"
+        - "&7được tạo."
+    preset:
+      name: "&6%name%"
+      lore:
+        - ""
+        - "&7Tổng số phần thưởng: &f%count%"
+        - ""
+        - "&eChuột trái để %action%"
+        - "&eChuột phải để chỉnh sửa"
+      action:
+        select: "chọn"
+        load: "tải"
+        edit: "chỉnh sửa"
+
+    actions:
+      title: "Preset: %name%"
+      rename:
+        name: "&eĐổi tên preset"
+        lore:
+          - "&7Tên hiện tại: &f%current%"
+          - ""
+          - "&7Thay đổi tên hiển thị"
+          - "&7của preset phần thưởng này."
+          - ""
+          - "&eNhấn để đổi tên"
+      load_all:
+        name: "&eTải cho tất cả kho báu"
+        lore:
+          - ""
+          - "&7Ghi đè TẤT CẢ kho báu"
+          - "&7trong bộ sưu tập này bằng"
+          - "&7phần thưởng của preset này."
+          - ""
+          - "&cThao tác này sẽ thay thế phần thưởng hiện có!"
+          - ""
+          - "&eNhấn để tiếp tục"
+        lore_disabled:
+          - ""
+          - "&7Hành động này chỉ khả dụng"
+          - "&7khi đang chỉnh sửa preset kho báu."
+          - "&8Không áp dụng cho preset bộ sưu tập!"
+        confirm_title: "Ghi đè tất cả kho báu?"
+      set_default:
+        option:
+          available: "&eNhấn để đặt làm mặc định"
+          already_selected: "&a✓ Đã đặt làm mặc định"
+        name: "&eĐặt làm mặc định"
+        lore:
+          - ""
+          - "&7Hiện tại: &f%current%"
+          - ""
+          - "&7Đặt preset này làm"
+          - "&7preset phần thưởng kho báu"
+          - "&7mặc định cho bộ sưu tập này."
+          - ""
+          - "%option%"
+        lore_disabled:
+          - ""
+          - "&7Hành động này chỉ khả dụng"
+          - "&7khi đang chỉnh sửa preset kho báu."
+          - "&8Không áp dụng cho preset bộ sưu tập!"
+      edit_rewards:
+        name: "&aChỉnh sửa phần thưởng"
+        lore:
+          - ""
+          - "&7Chỉnh sửa các phần thưởng"
+          - "&7được lưu trong preset này."
+          - ""
+          - "&eNhấn để chỉnh sửa"
+      delete:
+        name: "&cXoá"
+        lore:
+          - ""
+          - "&7Xoá vĩnh viễn"
+          - "&7preset này."
+          - ""
+          - "&cKhông thể hoàn tác!"
+          - ""
+          - "&eNhấn để xoá"
+        confirm_title: "Xoá preset '%name%'?"
+  cron:
+    common:
+      invalid_expression: "&c&l⚠ Biểu thức không hợp lệ"
+    type:
+      act: "ACT"
+      reset: "Đặt lại tiến trình"
+    editor:
+      title: "Trình chỉnh sửa lịch Cron %cron_type%"
+      current:
+        name: "&e&lLịch hiện tại"
+        expression: "&7Biểu thức:"
+        next_runs: "&7Lần chạy tiếp theo:"
+        none: "&7Chưa đặt lịch"
+    preset:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⏰ Preset nhanh"
+          - ""
+          - "&7Các mẫu lịch trình được cấu hình sẵn"
+          - "&7cho các lịch %cron_type% phổ biến."
+          - ""
+          - "&e► Hàng ngày &7- Mỗi ngày lúc 00:00"
+          - "&e► Hàng tuần &7- Mỗi thứ Hai lúc 00:00"
+          - "&e► Hàng tháng &7- Ngày 1 mỗi tháng"
+          - "&e► Hàng năm &7- Ngày 1 tháng 1"
+          - "&e► Thêm... &7- Tuỳ chọn bổ sung"
+          - ""
+          - "&a✓ &7An toàn và dễ sử dụng"
+          - "&8Hoàn hảo cho người mới!"
+      daily:
+        name: "&eHàng ngày"
+        lore:
+          - "&7Chạy mỗi ngày vào lúc nửa đêm"
+          - "&7Biểu thức: &f0 0 0 * * ? *"
+          - ""
+          - "&aNhấn để áp dụng"
+      weekly:
+        name: "&eHàng tuần"
+        lore:
+          - "&7Chạy mỗi thứ Hai vào lúc nửa đêm"
+          - "&7Biểu thức: &f0 0 0 ? * MON *"
+          - ""
+          - "&aNhấn để áp dụng"
+      monthly:
+        name: "&eHàng tháng"
+        lore:
+          - "&7Chạy vào ngày 1 mỗi tháng"
+          - "&7Biểu thức: &f0 0 0 1 * ? *"
+          - ""
+          - "&aNhấn để áp dụng"
+      yearly:
+        name: "&eHàng năm"
+        lore:
+          - "&7Chạy vào ngày 1 tháng 1"
+          - "&7Biểu thức: &f0 0 0 1 1 ? *"
+          - ""
+          - "&aNhấn để áp dụng"
+      more:
+        name: "&6Thêm preset"
+        lore:
+          - "&7Xem thêm các preset lịch trình"
+          - "&7Bao gồm theo giờ, theo ngày trong tuần,"
+          - "&7theo mùa và ngày đặc biệt"
+          - ""
+          - "&eNhấn để xem"
+    presets:
+      title: "Preset Cron %cron_type%"
+      item:
+        name: "&e%name%"
+      list:
+        hourly:
+          name: "Mỗi giờ"
+          lore:
+            - "&7Chạy vào đầu mỗi giờ"
+            - "&7Ví dụ: 1:00, 2:00, 3:00..."
+            - ""
+            - "&aNhấn để áp dụng"
+        every_6_hours:
+          name: "Mỗi 6 giờ"
+          lore:
+            - "&7Chạy mỗi 6 giờ"
+            - "&7Ví dụ: 00:00, 06:00, 12:00, 18:00"
+            - ""
+            - "&aNhấn để áp dụng"
+        every_12_hours:
+          name: "Mỗi 12 giờ"
+          lore:
+            - "&7Chạy hai lần mỗi ngày"
+            - "&7Ví dụ: 00:00, 12:00"
+            - ""
+            - "&aNhấn để áp dụng"
+        daily_midnight:
+          name: "Hàng ngày lúc nửa đêm"
+          lore:
+            - "&7Chạy mỗi ngày vào lúc 00:00"
+            - ""
+            - "&aNhấn để áp dụng"
+        daily_noon:
+          name: "Hàng ngày lúc 12 giờ trưa"
+          lore:
+            - "&7Chạy mỗi ngày vào lúc 12:00"
+            - ""
+            - "&aNhấn để áp dụng"
+        daily_6am:
+          name: "Hàng ngày lúc 6 giờ sáng"
+          lore:
+            - "&7Chạy mỗi ngày vào lúc 06:00"
+            - ""
+            - "&aNhấn để áp dụng"
+        weekdays_9am:
+          name: "Ngày thường lúc 9 giờ sáng"
+          lore:
+            - "&7Chạy từ thứ Hai đến thứ Sáu lúc 09:00"
+            - "&7Rất phù hợp cho sự kiện ngày thường"
+            - ""
+            - "&aNhấn để áp dụng"
+        monday_midnight:
+          name: "Mỗi thứ Hai lúc nửa đêm"
+          lore:
+            - "&7Lịch hàng tuần vào thứ Hai"
+            - "&7Chạy lúc 00:00 thứ Hai"
+            - ""
+            - "&aNhấn để áp dụng"
+        friday_6pm:
+          name: "Mỗi thứ Sáu lúc 6 giờ tối"
+          lore:
+            - "&7Khởi động sự kiện cuối tuần"
+            - "&7Chạy lúc 18:00 vào thứ Sáu"
+            - ""
+            - "&aNhấn để áp dụng"
+        sunday_midnight:
+          name: "Mỗi Chủ nhật lúc nửa đêm"
+          lore:
+            - "&7Lịch hàng tuần vào Chủ nhật"
+            - "&7Chạy lúc 00:00 Chủ nhật"
+            - ""
+            - "&aNhấn để áp dụng"
+        first_day_month:
+          name: "Ngày đầu tiên của tháng"
+          lore:
+            - "&7Lịch hàng tháng"
+            - "&7Chạy lúc 00:00 vào ngày 1"
+            - ""
+            - "&aNhấn để áp dụng"
+        last_day_month:
+          name: "Ngày cuối cùng của tháng"
+          lore:
+            - "&7Lịch cuối tháng"
+            - "&7Chạy lúc 00:00 vào ngày cuối"
+            - ""
+            - "&aNhấn để áp dụng"
+        first_monday_month:
+          name: "Thứ Hai đầu tiên của tháng"
+          lore:
+            - "&7Lịch hàng tháng vào thứ Hai đầu tiên"
+            - "&7Chạy lúc 00:00"
+            - ""
+            - "&aNhấn để áp dụng"
+        new_year:
+          name: "Năm mới (1/1)"
+          lore:
+            - "&7Lịch hằng năm vào dịp năm mới"
+            - "&7Chạy lúc 00:00 ngày 1 tháng 1"
+            - ""
+            - "&aNhấn để áp dụng"
+        christmas:
+          name: "Giáng sinh (25/12)"
+          lore:
+            - "&7Sự kiện đặc biệt Giáng sinh"
+            - "&7Chạy lúc 00:00 ngày 25 tháng 12"
+            - ""
+            - "&aNhấn để áp dụng"
+        quarterly:
+          name: "Hàng quý (1/1, 1/4, 1/7, 1/10)"
+          lore:
+            - "&7Lịch theo mùa"
+            - "&7Chạy lúc 00:00 vào ngày 1"
+            - "&7của các tháng 1, 4, 7 và 10"
+            - ""
+            - "&aNhấn để áp dụng"
+    custom:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⚙ Tuỳ chọn nâng cao"
+          - ""
+          - "&7Dành cho người dùng cần kiểm soát"
+          - "&7chính xác cấu hình lịch trình."
+          - ""
+          - "&e► Trình xây dựng trường"
+          - "&f  Cấu hình từng trường thời gian riêng lẻ"
+          - ""
+          - "&e► Nhập thủ công"
+          - "&f  Tự viết biểu thức cron"
+          - ""
+          - "&c⚠ &7Yêu cầu hiểu cú pháp cron"
+          - "&8Nếu chưa chắc, hãy dùng preset!"
+      builder:
+        name: "&dTrình xây dựng nâng cao"
+        lore:
+          - "&7Xây dựng biểu thức cron"
+          - "&7theo từng trường với"
+          - "&7giao diện trực quan"
+          - ""
+          - "&eNhấn để mở trình xây dựng"
+      manual:
+        name: "&bNhập thủ công"
+        lore:
+          - "&7Nhập biểu thức cron thủ công"
+          - "&7Định dạng: SEC MIN HOUR DAY MONTH DOW YEAR"
+          - "&7Ví dụ: &f0 0 12 * * ? *"
+          - ""
+          - "&eNhấn để nhập biểu thức"
+    builder:
+      title: "Trình xây dựng biểu thức Cron %cron_type%"
+      fields:
+        second:
+          name: "Giây"
+          description: "Số giây trong một phút"
+          values:
+            0: "Tại thời điểm bắt đầu"
+            wildcard: "Mỗi giây"
+            every_interval: "Mỗi %interval% giây"
+        minute:
+          name: "Phút"
+          description: "Số phút trong một giờ"
+          values:
+            0: "Tại thời điểm bắt đầu"
+            wildcard: "Mỗi phút"
+            every_interval: "Mỗi %interval% phút"
+        hour:
+          name: "Giờ"
+          description: "Giờ trong ngày (0-23)"
+          values:
+            0: "Nửa đêm"
+            6: "6 giờ sáng"
+            12: "12 giờ trưa"
+            18: "6 giờ tối"
+            wildcard: "Mỗi giờ"
+            every_interval: "Mỗi %interval% giờ"
+        day:
+          name: "Ngày"
+          description: "Ngày trong tháng (1-31)"
+          values:
+            1: "Ngày đầu tiên của tháng"
+            15: "Giữa tháng"
+            last: "Ngày cuối cùng của tháng"
+            wildcard: "Mỗi ngày"
+            none: "Không chỉ định ngày"
+        month:
+          name: "Tháng"
+          description: "Tháng trong năm (1-12 hoặc JAN-DEC)"
+          values:
+            wildcard: "Mỗi tháng"
+            1: "Tháng Một"
+            6: "Tháng Sáu"
+            12: "Tháng Mười Hai"
+            "1_4_7_10": "Hàng quý (Th1/Th4/Th7/Th10)"
+        day_of_week:
+          name: "Thứ trong tuần"
+          description: "Ngày trong tuần (1-7 hoặc SUN-SAT)"
+          values:
+            none: "Không chỉ định"
+            wildcard: "Mỗi ngày"
+            mon: "Thứ Hai"
+            fri: "Thứ Sáu"
+            sat: "Thứ Bảy"
+            sun: "Chủ nhật"
+            mon_fri: "Ngày thường"
+        year:
+          name: "Năm"
+          description: "Năm (không bắt buộc, để * cho mọi năm)"
+          values:
+            wildcard: "Mỗi năm"
+            specific_year: "Năm %year%"
+        custom_value: "Giá trị tuỳ chỉnh"
+      preview:
+        name: "&e&lXem trước"
+        current_expression: "&7Biểu thức hiện tại:"
+        next_runs: "&7Lần chạy tiếp theo:"
+      field:
+        selected_name: "&a&l► %name%"
+        unselected_name: "&7%name%"
+        lore:
+          - "&7Giá trị: &f%value%"
+          - ""
+          - "&7%description%"
+          - ""
+          - "&e&lNhấn để chỉnh sửa trường này"
+      preset:
+        current_name: "&a✓ %value%"
+        set_name: "&f%value%"
+        current_lore:
+          - "&aGiá trị hiện tại"
+          - ""
+          - "&7%description%"
+        set_lore:
+          - "&7Nhấn để đặt"
+          - ""
+          - "&7%description%"
+      custom_input:
+        name: "&e&lGiá trị tuỳ chỉnh"
+        lore:
+          - "&7Nhập một giá trị tuỳ chỉnh"
+          - "&7cho %field%"
+          - ""
+          - "&7Ví dụ:"
+          - "&7  - Ký tự đại diện: *"
+          - "&7  - Khoảng: 1-5"
+          - "&7  - Danh sách: 1,3,5"
+          - "&7  - Bước nhảy: */15"
+          - ""
+          - "&eNhấn để nhập giá trị tuỳ chỉnh"
+      decrease:
+        name: "&c&l- Giảm"
+        lore:
+          - "&7Giảm giá trị số đi 1"
+      increase:
+        name: "&a&l+ Tăng"
+        lore:
+          - "&7Tăng giá trị số lên 1"
+      save:
+        name: "&a&lLưu & Áp dụng"
+        lore:
+          - "&7Áp dụng biểu thức cron này"
+          - "&7cho bộ sưu tập"
+          - ""
+          - "&fBiểu thức: &7%expression%"
+    clear:
+      name: "&cXoá lịch trình"
+      lore:
+        - "&7Gỡ bỏ lịch đặt lại"
+        - "&7Bộ sưu tập sẽ không tự động đặt lại"
+        - ""
+        - "&cNhấn để xoá"
+  act:
+    setup:
+      title: "&8Thiết lập ACT"
+      date_window:
+        name: "&aKhoảng ngày (Luôn bật)"
+        lore:
+          - "&7Hoạt động cả ngày trong khoảng"
+          - "&7giữa ngày bắt đầu và kết thúc."
+          - ""
+          - "&7Bạn sẽ chọn khoảng ngày."
+          - "&7Không cần lịch trình."
+          - ""
+          - "&eNhấn để cấu hình"
+      repeating_schedule:
+        name: "&eLịch lặp lại"
+        lore:
+          - "&7Hoạt động trong X giờ"
+          - "&7theo lịch cố định."
+          - ""
+          - "&7Bạn sẽ chọn thời lượng"
+          - "&7sau đó chọn lịch trình."
+          - ""
+          - "&eNhấn để cấu hình"
+      advanced:
+        name: "&cNâng cao"
+        lore:
+          - "&7Toàn quyền kiểm soát"
+          - "&7khoảng ngày, thời lượng,"
+          - "&7và lịch trình."
+          - ""
+          - "&eNhấn để mở trình chỉnh sửa"
+
+    editor:
+      title: "Trình chỉnh sửa quy tắc ACT: %name%"
+      guided_setup:
+        name: "&bThiết lập có hướng dẫn"
+        lore:
+          - "&7Mở lại trình thiết lập"
+          - "&7cho quy tắc này."
+          - ""
+          - "&eNhấn để mở"
+      manual_input:
+        name: "&bNhập ACT thủ công"
+        lore:
+          - "&7Nhập định dạng ACT"
+          - "&7trực tiếp trong chat."
+          - ""
+          - "&eNhấn để nhập"
+      current:
+        name: "&e&lCấu hình quy tắc hiện tại"
+        date_range: "&7Khoảng ngày: &f%date_range%"
+        duration: "&7Thời lượng: &f%duration%"
+        cron: "&7Cron: &f%cron%"
+        next_activation: "&7Lần kích hoạt tiếp theo:"
+        validation: "&7Xác thực: %status%"
+        valid: "&a✓ Hợp lệ"
+        invalid: "&c✗ Không hợp lệ"
+    preset:
+      apply:
+        name: "&6Thiết lập nhanh (Preset)"
+        lore:
+          - "&7Chọn một lịch phổ biến"
+          - "&7(không cần định dạng ACT)"
+          - ""
+          - "&eNhấn để xem preset"
+    presets:
+      title: "Preset quy tắc ACT"
+      list:
+        always_available:
+          name: "Luôn khả dụng"
+          lore:
+            - "&7Bộ sưu tập luôn khả dụng"
+            - "&7Không giới hạn ngày, thời lượng hoặc lịch trình"
+            - ""
+            - "&7Định dạng: &f[*] [*] [NONE]"
+            - ""
+            - "&aNhấn để áp dụng"
+        daily_2h:
+          name: "Hàng ngày 2 giờ (Buổi sáng)"
+          lore:
+            - "&7Khả dụng mỗi ngày trong 2 giờ"
+            - "&7Kích hoạt lúc 9:00 sáng"
+            - ""
+            - "&7Định dạng: &f[*] [2h] [0 0 9 * * ?]"
+            - ""
+            - "&aNhấn để áp dụng"
+        daily_4h:
+          name: "Hàng ngày 4 giờ (Buổi chiều)"
+          lore:
+            - "&7Khả dụng mỗi ngày trong 4 giờ"
+            - "&7Kích hoạt lúc 2:00 chiều"
+            - ""
+            - "&7Định dạng: &f[*] [4h] [0 0 14 * * ?]"
+            - ""
+            - "&aNhấn để áp dụng"
+        weekend_8h:
+          name: "Sự kiện cuối tuần (8 giờ)"
+          lore:
+            - "&7Khả dụng vào thứ Bảy và Chủ nhật"
+            - "&7Trong 8 giờ bắt đầu từ 10:00 sáng"
+            - ""
+            - "&7Định dạng: &f[*] [8h] [0 0 10 ? * SAT,SUN]"
+            - ""
+            - "&aNhấn để áp dụng"
+        weekly_24h:
+          name: "Sự kiện hàng tuần (24 giờ)"
+          lore:
+            - "&7Khả dụng mỗi thứ Hai"
+            - "&7Trong suốt cả ngày"
+            - ""
+            - "&7Định dạng: &f[*] [24h] [0 0 0 ? * MON]"
+            - ""
+            - "&aNhấn để áp dụng"
+        holiday_special:
+          name: "Sự kiện lễ hội (Giáng sinh)"
+          lore:
+            - "&7Khả dụng trong tuần lễ Giáng sinh"
+            - "&7Luôn khả dụng trong giai đoạn"
+            - "&7Từ ngày 20/12 đến 26/12"
+            - ""
+            - "&7Định dạng: &f[2025-12-20:2025-12-26] [*] [0 0 0 * * ?]"
+            - ""
+            - "&aNhấn để áp dụng"
+        seasonal_summer:
+          name: "Mùa hè"
+          lore:
+            - "&7Khả dụng trong các tháng mùa hè"
+            - "&7Luôn khả dụng từ tháng 6 đến tháng 8"
+            - ""
+            - "&7Định dạng: &f[2025-06-01:2025-08-31] [*] [NONE]"
+            - ""
+            - "&aNhấn để áp dụng"
+        hourly_30m:
+          name: "Hàng giờ (30 phút)"
+          lore:
+            - "&7Kích hoạt mỗi giờ"
+            - "&7Khả dụng trong 30 phút mỗi lần"
+            - ""
+            - "&7Định dạng: &f[*] [30m] [0 0 * * * ?]"
+            - ""
+            - "&aNhấn để áp dụng"
+        twice_daily_3h:
+          name: "Hai lần mỗi ngày (3 giờ mỗi lần)"
+          lore:
+            - "&7Khả dụng hai lần mỗi ngày"
+            - "&7Vào lúc 9:00 sáng và 6:00 tối"
+            - "&7Trong 3 giờ mỗi lần"
+            - ""
+            - "&7Định dạng: &f[*] [3h] [0 0 9,18 * * ?]"
+            - ""
+            - "&aNhấn để áp dụng"
+        monthly_week:
+          name: "Hàng tháng (Tuần đầu tiên)"
+          lore:
+            - "&7Khả dụng trong tuần đầu tiên mỗi tháng"
+            - "&7Từ ngày 1 đến ngày 7"
+            - "&7Luôn khả dụng trong giai đoạn này"
+            - ""
+            - "&7Định dạng: &f[*-*-01:*-*-07] [*] [NONE]"
+            - ""
+            - "&aNhấn để áp dụng"
+    component:
+      date_range:
+        name: "&eKhoảng ngày"
+        lore:
+          - "&7Hiện tại: &f%value%"
+          - "&7%description%"
+          - ""
+          - "&7Tuỳ chọn: giới hạn theo ngày cụ thể"
+          - ""
+          - "&eNhấn để chỉnh sửa"
+      duration:
+        name: "&eThời lượng"
+        lore:
+          - "&7Hiện tại: &f%value%"
+          - "&7%description%"
+          - ""
+          - "&7Tuỳ chọn: giới hạn thời gian hoạt động"
+          - ""
+          - "&eNhấn để chỉnh sửa"
+      cron:
+        name: "&eLịch trình"
+        description:
+          none: "Không có lịch"
+          invalid: "Lịch không hợp lệ"
+        lore:
+          - "&7Hiện tại: &f%value%"
+          - "&7%description%"
+          - ""
+          - "&7Tuỳ chọn: chạy theo lịch lặp lại"
+          - ""
+          - "&eNhấn để chỉnh sửa"
+    rules:
+      list:
+        title: "Quy tắc lịch trình: %collection%"
+        rule_item:
+          name: "&6%name%"
+          lore:
+            - "&7Trạng thái: %status%"
+            - "&7Khoảng ngày: &f%date_range%"
+            - "&7Thời lượng: &f%duration%"
+            - "&7Cron: &f%cron%"
+            - "&7Lần kích hoạt tiếp theo: %next_trigger%"
+            - ""
+            - "&eChuột trái để chỉnh sửa"
+            - "&eChuột phải để bật/tắt"
+            - "&cShift+Chuột trái để xoá"
+        add_rule:
+          name: "&aThêm quy tắc mới"
+          lore:
+            - "&7Tạo một quy tắc mới"
+            - "&7và mở thiết lập"
+      editor:
+        name:
+          name: "&eTên"
+          lore:
+            - "&7Hiện tại: &f%name%"
+            - ""
+            - "&eNhấn để đổi tên"
+        enabled:
+          name: "&eBật"
+          lore:
+            - "&7Hiện tại: %status%"
+            - ""
+            - "&eNhấn để bật/tắt"
+        delete:
+          name: "&cXoá quy tắc"
+          lore:
+            - "&7Xoá vĩnh viễn quy tắc này"
+            - ""
+            - "&cNhấn để xoá"
+    components:
+      duration:
+        editor:
+          title: "Chỉnh sửa thời lượng"
+          current:
+            name: "&e&lThời lượng hiện tại"
+            value: "&f%duration%"
+            description: "&7%description%"
+        preset:
+          permanent:
+            name: "&aVĩnh viễn"
+            lore:
+              - "&7Bộ sưu tập sẽ luôn khả dụng"
+              - "&7sau khi được kích hoạt (cho đến khi đặt lại)"
+              - ""
+              - "&7Giá trị: &f*"
+              - ""
+              - "&eNhấn để áp dụng"
+          30_minutes:
+            name: "&e30 phút"
+            lore:
+              - "&7Khả dụng trong nửa giờ"
+              - ""
+              - "&7Giá trị: &f30m"
+              - ""
+              - "&eNhấn để áp dụng"
+          1_hour:
+            name: "&e1 giờ"
+            lore:
+              - "&7Khả dụng trong một giờ"
+              - ""
+              - "&7Giá trị: &f1h"
+              - ""
+              - "&eNhấn để áp dụng"
+          2_hours:
+            name: "&e2 giờ"
+            lore:
+              - "&7Khả dụng trong hai giờ"
+              - ""
+              - "&7Giá trị: &f2h"
+              - ""
+              - "&eNhấn để áp dụng"
+          4_hours:
+            name: "&e4 giờ"
+            lore:
+              - "&7Khả dụng trong bốn giờ"
+              - ""
+              - "&7Giá trị: &f4h"
+              - ""
+              - "&eNhấn để áp dụng"
+          8_hours:
+            name: "&e8 giờ"
+            lore:
+              - "&7Khả dụng trong tám giờ"
+              - ""
+              - "&7Giá trị: &f8h"
+              - ""
+              - "&eNhấn để áp dụng"
+          24_hours:
+            name: "&e24 giờ (1 ngày)"
+            lore:
+              - "&7Khả dụng trong trọn một ngày"
+              - ""
+              - "&7Giá trị: &f24h"
+              - ""
+              - "&eNhấn để áp dụng"
+          7_days:
+            name: "&e7 ngày (1 tuần)"
+            lore:
+              - "&7Khả dụng trong một tuần"
+              - ""
+              - "&7Giá trị: &f7d"
+              - ""
+              - "&eNhấn để áp dụng"
+        custom:
+          name: "&dThời lượng tuỳ chỉnh"
+          lore:
+            - "&7Nhập thời lượng tuỳ chỉnh"
+            - "&7Định dạng: <số><đơn vị>"
+            - "&7Đơn vị: s, m, h, d"
+            - "&7Ví dụ: 90s, 90m, 12h, 3d"
+            - ""
+            - "&eNhấn để nhập thủ công"
+        increase:
+          name: "&a&l+ Tăng"
+          lore:
+            - "&7Tăng giá trị thời lượng lên 1"
+            - "&7(chỉ áp dụng cho thời lượng dạng số)"
+        decrease:
+          name: "&c&l- Giảm"
+          lore:
+            - "&7Giảm giá trị thời lượng đi 1"
+            - "&7(chỉ áp dụng cho thời lượng dạng số, tối thiểu: 1)"
+      date_range:
+        manual:
+          name: "&dNhập khoảng ngày thủ công"
+          lore:
+            - "&7Nhập một khoảng ngày tuỳ chỉnh"
+            - "&7Định dạng: YYYY-MM-DD:YYYY-MM-DD"
+            - "&7Ví dụ: 2025-12-24:2025-12-31"
+            - "&7Dùng &f* &7để luôn hoạt động"
+            - ""
+            - "&eNhấn để nhập thủ công"
+        editor:
+          title: "Chỉnh sửa khoảng ngày"
+          current:
+            name: "&e&lKhoảng ngày hiện tại"
+            value: "&f%date_range%"
+            description: "&7%description%"
+        preset:
+          always:
+            name: "&aLuôn hoạt động"
+            lore:
+              - "&7Không giới hạn ngày"
+              - "&7Quy tắc có thể kích hoạt bất kỳ ngày nào"
+              - ""
+              - "&7Giá trị: &f*"
+              - ""
+              - "&eNhấn để áp dụng"
+          this_year:
+            name: "&eNăm nay (%year%)"
+            lore:
+              - "&7Hoạt động trong năm hiện tại"
+              - "&7Từ ngày 1/1 đến 31/12"
+              - ""
+              - "&7Giá trị: &f%year%-01-01:%year%-12-31"
+              - ""
+              - "&eNhấn để áp dụng"
+          this_month:
+            name: "&eTháng này"
+            lore:
+              - "&7Hoạt động trong tháng hiện tại"
+              - ""
+              - "&7Giá trị: &f%start%:%end%"
+              - ""
+              - "&eNhấn để áp dụng"
+          next_month:
+            name: "&eTháng sau"
+            lore:
+              - "&7Hoạt động trong tháng kế tiếp"
+              - ""
+              - "&7Giá trị: &f%start%:%end%"
+              - ""
+              - "&eNhấn để áp dụng"
+
+minigame:
+  success: "%prefix%&aHoàn thành minigame thành công!"
+  failed: "%prefix%&cMinigame thất bại."
+  reaction:
+    timeout: "%prefix%&cBạn phản ứng quá chậm! Kết thúc trò chơi."
+    wrong_click: "%prefix%&cSai khối! Kết thúc trò chơi."
+  memory:
+    watch: "%prefix%&eHãy quan sát chuỗi thật kỹ!"
+    repeat: "%prefix%&aBây giờ hãy lặp lại chuỗi!"
+    wrong: "%prefix%&cSai chuỗi! Kết thúc trò chơi."
+  error:
+    invalid_type: "%prefix%&cLoại minigame không hợp lệ. Có sẵn: REACTION, MEMORY"
+
+proximity:
+  near_treasure: "&eBạn đang ở gần một kho báu!"
+  in_place_mode: "&eBạn hiện đang ở chế độ đặt!"
+
+hint:
+  no_unfound_nearby: "%prefix%&cKhông có kho báu chưa tìm thấy nào ở gần trong các bộ sưu tập đang hoạt động!"
+  cooldown: "%prefix%&cBạn phải đợi &e%time% giây &ctrước khi yêu cầu gợi ý khác."
+  coordinate_x: "%prefix%&aGợi ý: Toạ độ X là &e%value% &a(&e%distance%m &a%direction%)"
+  coordinate_z: "%prefix%&aGợi ý: Toạ độ Z là &e%value% &a(&e%distance%m &a%direction%)"
+  success: "%prefix%&aBạn đã nhận được một gợi ý!"
+  visual_active: "%prefix%&eGợi ý trực quan đã được kích hoạt!"
+  minigame_failed: "%prefix%&cMinigame thất bại. Bạn không nhận được gợi ý!"

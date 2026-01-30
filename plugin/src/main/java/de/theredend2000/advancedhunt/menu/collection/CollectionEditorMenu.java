@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -84,13 +85,14 @@ public class CollectionEditorMenu extends PagedMenu {
                 .build(), (e) -> {
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
                 plugin.getCollectionManager().createCollection(input).thenAccept(success -> {
-                    if (success) {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.create.success", "%name%", input));
-                    } else {
-                        playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.create.failed"));
-                    }
-                    this.open();
-                    //TODO FIX THE OPEN HERE!
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (success) {
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.create.success", "%name%", input));
+                        } else {
+                            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.create.failed"));
+                        }
+                        this.open();
+                    });
                 });
             });
         }, "advancedhunt.admin.collection.create");

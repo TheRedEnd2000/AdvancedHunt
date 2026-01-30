@@ -36,8 +36,8 @@ public class MemoryMinigameMenu extends MinigameMenu {
         this.playerSequence = new ArrayList<>();
         this.random = new Random();
         this.round = 0;
-        this.maxRounds = plugin.getConfig().getInt("minigames.memory.rounds", 5);
-        this.displayTime = plugin.getConfig().getInt("minigames.memory.display-time", 20);
+        this.maxRounds = plugin.getConfig().getInt("hint.minigames.memory.rounds", 5);
+        this.displayTime = plugin.getConfig().getInt("hint.minigames.memory.display-time", 20);
     }
 
     @Override

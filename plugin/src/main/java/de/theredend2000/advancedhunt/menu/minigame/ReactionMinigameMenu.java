@@ -28,8 +28,8 @@ public class ReactionMinigameMenu extends MinigameMenu {
     public ReactionMinigameMenu(Player player, Main plugin, Consumer<Boolean> onFinish) {
         super(player, plugin, onFinish);
         this.random = new Random();
-        this.hintCount = plugin.getConfig().getInt("minigames.reaction.required-clicks", 5);
-        this.updateTime = plugin.getConfig().getInt("minigames.reaction.update-time", 20);
+        this.hintCount = plugin.getConfig().getInt("hint.minigames.reaction.required-clicks", 5);
+        this.updateTime = plugin.getConfig().getInt("hint.minigames.reaction.update-time", 20);
     }
 
     @Override

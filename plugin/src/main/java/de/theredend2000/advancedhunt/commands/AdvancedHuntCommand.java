@@ -101,7 +101,7 @@ public class AdvancedHuntCommand {
         this.plugin = plugin;
     }
 
-    public void register(final LegacyPaperCommandManager<CommandSender> commandManager) {
+    public void register(final LegacyPaperCommandManager<CommandSender> commandManager, boolean debugEnabled) {
         this.commandManager = commandManager;
 
         // Setup suggestion providers inline
@@ -121,6 +121,10 @@ public class AdvancedHuntCommand {
         SuggestionProvider<CommandSender> minigameSuggestions = (context, input) ->
                 CompletableFuture.completedFuture(Arrays.stream(MinigameType.values())
                         .map(Enum::name).map(Suggestion::suggestion).collect(Collectors.toList()));
+
+        SuggestionProvider<CommandSender> bypassSuggestions = (context, input) ->
+            CompletableFuture.completedFuture(Arrays.asList("on", "off").stream()
+                .map(Suggestion::suggestion).collect(Collectors.toList()));
 
         CommandComponent.Builder<CommandSender, String> collectionArg = CommandComponent.<CommandSender, String>builder()
                 .name("collection").parser(StringParser.stringParser()).suggestionProvider(collectionsSuggestions);
@@ -154,6 +158,15 @@ public class AdvancedHuntCommand {
                 .permission("advancedhunt.admin.show")
                 .commandDescription(desc("show"))
                 .handler(context -> showNearbyTreasures((Player) context.sender(), context.get("radius"), context.get("seconds")))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("bypass")
+                .required("state", StringParser.stringParser(), bypassSuggestions)
+                .permission("advancedhunt.treasure.bypass")
+                .commandDescription(desc("bypass"))
+                .handler(context -> toggleBypass((Player) context.sender(), context.get("state")))
         );
 
         commandManager.command(
@@ -326,15 +339,7 @@ public class AdvancedHuntCommand {
                         .handler(context -> resetPlayerCollection(context.sender(), context.get("player"), context.get("collection")))
         );
 
-        // ==================== Minigame & Hint Commands ====================
-        commandManager.command(
-                playerBuilder()
-                        .literal("minigame")
-                        .required("type", StringParser.stringParser(), minigameSuggestions)
-                        .permission("advancedhunt.minigame")
-                        .commandDescription(desc("minigame"))
-                        .handler(context -> minigame((Player) context.sender(), context.get("type")))
-        );
+        // ==================== Hint Commands ====================
 
         commandManager.command(
                 playerBuilder()
@@ -344,7 +349,47 @@ public class AdvancedHuntCommand {
                         .handler(context -> hint((Player) context.sender()))
         );
 
-        // ==================== Debug Commands ====================
+        // ==================== Debug Commands (Conditional) ====================
+        if (debugEnabled) {
+            registerDebugCommands(minigameSuggestions, collectionsSuggestions);
+        }
+
+        // ==================== Migration Commands ====================
+        SuggestionProvider<CommandSender> migrationTypes = (context, input) ->
+            CompletableFuture.completedFuture(Arrays.asList("yaml", "sqlite", "mysql").stream()
+                        .map(Suggestion::suggestion).collect(Collectors.toList()));
+
+        commandManager.command(
+                baseBuilder()
+                        .literal("migrate")
+                        .required("type", StringParser.stringParser(), migrationTypes)
+                        .flag(commandManager.flagBuilder("force"))
+                        .flag(commandManager.flagBuilder("purge"))
+                        .permission("advancedhunt.admin.migrate")
+                        .commandDescription(desc("migrate"))
+                        .handler(context -> {
+                            boolean force = context.flags().isPresent("force");
+                            boolean purge = context.flags().isPresent("purge");
+                            migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
+                        })
+        );
+    }
+
+    private void registerDebugCommands(SuggestionProvider<CommandSender> minigameSuggestions,
+                                       SuggestionProvider<CommandSender> collectionsSuggestions) {
+        CommandComponent.Builder<CommandSender, String> collectionArg = CommandComponent.<CommandSender, String>builder()
+                .name("collection").parser(StringParser.stringParser()).suggestionProvider(collectionsSuggestions);
+
+        commandManager.command(
+                playerBuilder()
+                        .literal("debug")
+                        .literal("minigame")
+                        .required("type", StringParser.stringParser(), minigameSuggestions)
+                        .permission("advancedhunt.admin")
+                        .commandDescription(desc("debug_minigame"))
+                        .handler(context -> minigame((Player) context.sender(), context.get("type")))
+        );
+
         commandManager.command(
                 playerBuilder()
                         .literal("debug")
@@ -405,26 +450,6 @@ public class AdvancedHuntCommand {
                         .literal("glow")
                         .permission("advancedhunt.admin")
                         .handler(context -> glowBlock((Player) context.sender()))
-        );
-
-        // ==================== Migration Commands ====================
-        SuggestionProvider<CommandSender> migrationTypes = (context, input) ->
-            CompletableFuture.completedFuture(Arrays.asList("yaml", "sqlite", "mysql").stream()
-                        .map(Suggestion::suggestion).collect(Collectors.toList()));
-
-        commandManager.command(
-                baseBuilder()
-                        .literal("migrate")
-                        .required("type", StringParser.stringParser(), migrationTypes)
-                        .flag(commandManager.flagBuilder("force"))
-                        .flag(commandManager.flagBuilder("purge"))
-                        .permission("advancedhunt.admin.migrate")
-                        .commandDescription(desc("migrate"))
-                        .handler(context -> {
-                            boolean force = context.flags().isPresent("force");
-                            boolean purge = context.flags().isPresent("purge");
-                            migrate(context.sender(), context.<String>get("type").toUpperCase(), force, purge);
-                        })
         );
     }
 
@@ -527,6 +552,29 @@ public class AdvancedHuntCommand {
                 "%radius%", String.valueOf(radius),
                 "%count%", String.valueOf(spawnedCount),
                 "%max%", String.valueOf(maxMarkers)));
+    }
+
+    private void toggleBypass(Player player, String stateRaw) {
+        if (player == null) return;
+        if (stateRaw == null || stateRaw.isEmpty()) {
+            player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.usage"));
+            return;
+        }
+
+        String state = stateRaw.toLowerCase(Locale.ROOT);
+        if ("on".equals(state)) {
+            plugin.getTreasureVisibilityManager().setBypass(player, true);
+            player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.enabled"));
+            return;
+        }
+
+        if ("off".equals(state)) {
+            plugin.getTreasureVisibilityManager().setBypass(player, false);
+            player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.disabled"));
+            return;
+        }
+
+        player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.usage"));
     }
 
     private static int allocateClientSideEntityId(World world) {
@@ -910,8 +958,8 @@ public class AdvancedHuntCommand {
     }
 
     private void hint(Player player) {
-        // Check if hint minigame is enabled
-        if (!plugin.getConfig().getBoolean("minigames.hint.enabled", true)) {
+        // Check if hint feature is enabled
+        if (!plugin.getConfig().getBoolean("hint.enabled", true)) {
             player.sendMessage(plugin.getMessageManager().getMessage("error.feature_disabled"));
             return;
         }
@@ -938,7 +986,7 @@ public class AdvancedHuntCommand {
         TreasureCore treasure = treasureOpt.get();
 
         // Get minigame type from config
-        String minigameTypeStr = plugin.getConfig().getString("minigames.hint.minigame-type", "REACTION");
+        String minigameTypeStr = plugin.getConfig().getString("hint.minigames.type", "REACTION");
         MinigameType minigameType;
         
         if (minigameTypeStr.equalsIgnoreCase("RANDOM")) {
@@ -1062,7 +1110,7 @@ public class AdvancedHuntCommand {
                 }
 
                 if (placingDone && pendingSaveBatch.isEmpty() && inFlightBatches.get() == 0 && saved.get() + saveFailed.get() >= placed) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
+                    MessageUtils.sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
                             + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures.&7 Attempts: &f" + attempts + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
                     if (placed < amount) {
@@ -1175,10 +1223,10 @@ public class AdvancedHuntCommand {
 
                 if (amount > 0) {
                     if (!placingDone) {
-                        sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
                                 + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ", Attempts: " + attempts + ")");
                     } else {
-                        sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
                                 + "&7 (Failed: " + saveFailed.get() + ")");
                     }
                 }
@@ -1259,7 +1307,7 @@ public class AdvancedHuntCommand {
                 }
 
                 if (placingDone && pendingSaveBatch.isEmpty() && inFlightBatches.get() == 0 && saved.get() + saveFailed.get() >= placed) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
+                    MessageUtils.sendActionBar(player, "&a[DEBUG] Done: &f" + placed + "&a/" + amount
                             + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Placed &f" + placed + "&a/" + amount + "&a treasures on a plane.&7 Checked: &f" + checked + "&7. Saved: &f" + saved.get() + "&7, Failed: &f" + saveFailed.get() + "&7.");
                     if (placed < amount) {
@@ -1359,24 +1407,15 @@ public class AdvancedHuntCommand {
 
                 if (amount > 0) {
                     if (!placingDone) {
-                        sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Placing: &f" + placed + "&e/" + amount
                                 + "&7 (Saved: " + saved.get() + ", Failed: " + saveFailed.get() + ", Checked: " + checked + ")");
                     } else {
-                        sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
+                        MessageUtils.sendActionBar(player, "&e[DEBUG] Saving: &f" + saved.get() + "&e/" + placed
                                 + "&7 (Failed: " + saveFailed.get() + ")");
                     }
                 }
             }
         }.runTaskTimer(plugin, 1L, 1L);
-    }
-
-    private void sendActionBar(Player player, String message) {
-        try {
-            String colored = ChatColor.translateAlternateColorCodes('&', message);
-            MessageUtils.sendActionBar(player, colored);
-        } catch (Throwable ignored) {
-            // Best-effort only; don't fail debug commands if action bar isn't supported.
-        }
     }
 
     private void sendDebugChat(Player player, String message) {
@@ -1509,11 +1548,11 @@ public class AdvancedHuntCommand {
                     ? "&7 Deleted: &f" + deletedClamped + "&7/&f" + total
                     : "&7 Deleted: &f0&7/&f" + total + " &e(deleting...)";
 
-                sendActionBar(player, "&e[DEBUG] Removing: &f" + blocksProcessed.get() + "&e/" + total
+                MessageUtils.sendActionBar(player, "&e[DEBUG] Removing: &f" + blocksProcessed.get() + "&e/" + total
                     + "&7 (Blocks: " + blocksRemoved.get() + ", Skipped: " + blocksSkippedUnloaded.get() + ") " + deletePart);
 
                 if (index >= total && dbDeleted.get() >= 0) {
-                    sendActionBar(player, "&a[DEBUG] Done: &f" + total + "&a treasures" + "&7 (Deleted: " + dbDeleted.get() + ")");
+                    MessageUtils.sendActionBar(player, "&a[DEBUG] Done: &f" + total + "&a treasures" + "&7 (Deleted: " + dbDeleted.get() + ")");
                     sendDebugChat(player, "&a[DEBUG] Removed collection treasures.&7 Total: &f" + total
                             + "&7, Blocks removed: &f" + blocksRemoved.get()
                             + "&7, Skipped (unloaded): &f" + blocksSkippedUnloaded.get()
@@ -1641,7 +1680,7 @@ public class AdvancedHuntCommand {
                                 return;
                             }
                             MigrationService.MigrationProgress p = lastProgress.get();
-                            sendActionBar(player, plugin.getMessageManager().getMessage(
+                            MessageUtils.sendActionBar(player, plugin.getMessageManager().getMessage(
                                     "command.migration.progress_actionbar",
                                     false,
                                     "%percent%", String.valueOf(p.percent()),
@@ -1684,7 +1723,7 @@ public class AdvancedHuntCommand {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         if (sender instanceof Player) {
                             Player player = (Player) sender;
-                            sendActionBar(player, plugin.getMessageManager().getMessage(
+                            MessageUtils.sendActionBar(player, plugin.getMessageManager().getMessage(
                                     "command.migration.progress_actionbar",
                                     false,
                                     "%percent%", String.valueOf(progress.percent()),
@@ -1721,7 +1760,7 @@ public class AdvancedHuntCommand {
 
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                sendActionBar(player, "");
+                MessageUtils.sendActionBar(player, "");
             }
 
             // Reuse the plugin's existing reload routine to swap repository + refresh caches.
@@ -1740,7 +1779,7 @@ public class AdvancedHuntCommand {
             }
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                Bukkit.getScheduler().runTask(plugin, () -> sendActionBar(player, ""));
+                Bukkit.getScheduler().runTask(plugin, () -> MessageUtils.sendActionBar(player, ""));
             }
             targetRepo.shutdown();
             return null;

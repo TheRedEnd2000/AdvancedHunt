@@ -23,7 +23,8 @@ import java.util.UUID;
 
 public class CollectionSettingsMenu extends Menu {
 
-    private final Collection collection;
+    private Collection collection;
+    private boolean processing = false;
 
     public CollectionSettingsMenu(Player playerMenuUtility, Main plugin, Collection collection) {
         super(playerMenuUtility, plugin);
@@ -43,6 +44,18 @@ public class CollectionSettingsMenu extends Menu {
     @Override
     public int getSlots() {
         return 54;
+    }
+
+    @Override
+    public void open() {
+        processing = false;
+        super.open();
+    }
+
+    @Override
+    public void refresh() {
+        processing = false;
+        super.refresh();
     }
 
     @Override
@@ -69,11 +82,10 @@ public class CollectionSettingsMenu extends Menu {
                         if (success) {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.success", "%old_name%", collection.getName(), "%new_name%", input));
                             collection.setName(input);
-                            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
                         } else {
                             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("command.rename.failed"));
-                            new CollectionSettingsMenu(playerMenuUtility, plugin, collection).open();
                         }
+                        this.open();
                     });
                 });
             });
@@ -88,9 +100,19 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.status.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.status.lore", "%status%", status).toArray(new String[0]))
                 .build(), (e) -> {
+            if (processing) return;
+            processing = true;
+            
             collection.setEnabled(!collection.isEnabled());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                Bukkit.getScheduler().runTask(plugin, this::refresh);
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    // Refresh visibility with the already-updated collection
+                    if (collection.isHideWhenNotAvailable()) {
+                        plugin.getTreasureVisibilityManager().refreshCollectionVisibility(collection);
+                    }
+                    processing = false;
+                    this.refresh();
+                });
             });
         });
 
@@ -103,9 +125,15 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.single_player_find.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.single_player_find.lore", "%status%", spfStatus).toArray(new String[0]))
                 .build(), (e) -> {
+            if (processing) return;
+            processing = true;
+            
             collection.setSinglePlayerFind(!collection.isSinglePlayerFind());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
-                Bukkit.getScheduler().runTask(plugin, this::refresh);
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    processing = false;
+                    this.refresh();
+                });
             });
         });
 
@@ -128,6 +156,14 @@ public class CollectionSettingsMenu extends Menu {
             ).setPreviousMenu(this).open();
         }, "advancedhunt.admin.collection.delete");
 
+        addButton(17, new ItemBuilder(XMaterial.CAULDRON)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.deleting_type.name"))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.deleting_type.lore","%type%","ALL").toArray(new String[0]))
+                .build(), (e) -> {
+            playerMenuUtility.sendMessage("Yes");
+            //TODO ADD FUNCTION
+        });
+
         // ==================== ACT CONFIGURATION ====================
         addStaticItem(19, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.categories.rewards.name", false))
@@ -149,7 +185,8 @@ public class CollectionSettingsMenu extends Menu {
 
         // ACT Schedule Rules
         int ruleCount = collection.getActRules().size();
-        addButton(22, new ItemBuilder(XMaterial.REPEATING_COMMAND_BLOCK)
+        addButton(22, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY4N2EyYmNhZjgzZWE4YTMxNzRkMDNkMzkwMDk5MWI2N2U2NWM4Y2ExY2M0ZDk1YTBiMmNiNzE3OTY3YTYyNyJ9fX0=")
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.act_rules.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.act_rules.lore", false,
                         "%count%", String.valueOf(ruleCount)
@@ -200,14 +237,28 @@ public class CollectionSettingsMenu extends Menu {
             }
 
             if (e.isRightClick()) {
+                if (processing) return;
+                processing = true;
+                
                 collection.setDefaultTreasureRewardPresetId(null);
-                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> Bukkit.getScheduler().runTask(plugin, this::refresh));
+                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> 
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        processing = false;
+                        this.refresh();
+                    }));
                 return;
             }
 
             new RewardPresetListMenu(playerMenuUtility, plugin, RewardPresetType.TREASURE, selected -> {
+                if (processing) return;
+                processing = true;
+                
                 collection.setDefaultTreasureRewardPresetId(selected.getId());
-                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> Bukkit.getScheduler().runTask(plugin, this::open));
+                plugin.getCollectionManager().saveCollection(collection).thenRun(() -> 
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        processing = false;
+                        this.open();
+                    }));
             }, collection,true).setPreviousMenu(this).open();
         });
 
@@ -241,23 +292,35 @@ public class CollectionSettingsMenu extends Menu {
         addStaticItem(38, super.EXTRA_GLASS);
 
         // Hide After Found
-        String enabled = plugin.getMessageManager().getMessage("gui.settings.common.enabled", false);
-        String disabled = plugin.getMessageManager().getMessage("gui.settings.common.disabled", false);
+        String enabled = plugin.getMessageManager().getMessage("gui.common.enabled", false);
+        String disabled = plugin.getMessageManager().getMessage("gui.common.disabled", false);
         addButton(39, new ItemBuilder(Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_after_found.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
                         "%status%", disabled).toArray(new String[0]))
                 .build(), (e) -> {
-            playerMenuUtility.sendMessage("§4§lCOMING SOON");
+            playerMenuUtility.sendMessage("§c§lThis feature is currently in development.");
         });
 
-        // Hide Collection Disabled
-        addButton(40, new ItemBuilder(Material.GLASS)
-                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_collection_disabled.name", false))
-                .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_collection_disabled.lore", false,
-                        "%status%", disabled).toArray(new String[0]))
+        // Hide When Not Available
+        String hideStatus = collection.isHideWhenNotAvailable() ? enabled : disabled;
+        addButton(40, new ItemBuilder(collection.isHideWhenNotAvailable() ? Material.GLASS : Material.GLASS_BOTTLE)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_when_not_available.name", false))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_when_not_available.lore", false,
+                        "%status%", hideStatus).toArray(new String[0]))
                 .build(), (e) -> {
-            playerMenuUtility.sendMessage("§4§lCOMING SOON");
+            if (processing) return;
+            processing = true;
+            
+            collection.setHideWhenNotAvailable(!collection.isHideWhenNotAvailable());
+            plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    // Refresh visibility with the already-updated collection
+                    plugin.getTreasureVisibilityManager().refreshCollectionVisibility(collection);
+                    processing = false;
+                    this.refresh();
+                });
+            });
         });
     }
 

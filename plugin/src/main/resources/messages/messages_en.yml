@@ -144,6 +144,7 @@ command:
       help: "Shows this help menu"
       reload: "Reloads the plugin configuration"
       show: "Shows nearby treasure locations as holograms"
+      bypass: "Toggle treasure bypass visibility"
       list: "Lists all available collections"
       list_collection: "View all placed treasures in a collection"
       leaderboard: "Opens the leaderboard for a collection"
@@ -196,6 +197,10 @@ command:
     invalid_radius: "%prefix%&cRadius must be between &e1&c and &e500&c blocks."
     invalid_duration: "%prefix%&cDuration must be between &e1&c and &e300&c seconds."
     packetevents_missing: "%prefix%&cUnable to show markers. Install/enable &ePacketEvents&c."
+  bypass:
+    enabled: "%prefix%&aTreasure bypass enabled."
+    disabled: "%prefix%&cTreasure bypass disabled."
+    usage: "%prefix%&eUsage: /ah bypass <on|off>"
   list:
     header: "&6Available Collections:"
     format: "&7- &e%collection%"
@@ -353,14 +358,6 @@ gui:
         name: "&aGet item"
         lore:
           - "&7Adds the item to your inventory."
-      rename:
-        name: "&eRename"
-        lore:
-          - "&7Current: &f%current%"
-      move_group:
-        name: "&eMove group"
-        lore:
-          - "&7Current: &f%current%"
       delete:
         name: "&cDelete"
         lore:
@@ -861,6 +858,19 @@ gui:
         - ""
         - "&cClick to delete"
       confirm_title: "Confirm Delete Collection"
+    deleting_type:
+      name: "&bDeleting Type"
+      lore:
+        - "&7Current: &a%type%"
+        - ""
+        - "&7Select what happens with the"
+        - "&7Treasures when the Collection"
+        - "&7gets deleted."
+        - ""
+        - "&7Available Options:"
+        - "&3NOTING, PLAYER_HEAD, ALL"
+        - ""
+        - "&eClick to switch"
     hide_after_found:
       name: "&eHide Found Treasures"
       lore:
@@ -875,15 +885,16 @@ gui:
         - "&7treasures you haven't found yet."
         - ""
         - "&eClick to toggle"
-    hide_collection_disabled:
-      name: "&eHide When Collection Disabled"
+    hide_when_not_available:
+      name: "&eHide When Not Available"
       lore:
         - "&7Current: %status%"
         - ""
         - "&7When enabled, all treasures"
         - "&7in this collection will be"
         - "&7hidden when the collection"
-        - "&7is disabled or unavailable."
+        - "&7is not available (disabled or"
+        - "&7unavailable due to ACT rules)."
         - ""
         - "&8&m                    "
         - "&7This prevents players from"
