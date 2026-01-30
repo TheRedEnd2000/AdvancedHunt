@@ -871,7 +871,7 @@ gui:
         - "&7Verfügbare Optionen:"
         - "&3NOTING, PLAYER_HEAD, ALL"
         - ""
-        - "&cKlicke zum wechseln"
+        - "&eKlicke zum wechseln"
     hide_after_found:
       name: "&eVerstecke gefundene Treasures"
       lore:

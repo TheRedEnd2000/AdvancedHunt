@@ -149,7 +149,7 @@ public class CollectionSettingsMenu extends Menu {
 
         addButton(17, new ItemBuilder(XMaterial.CAULDRON)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.deleting_type.name"))
-                .setLore(plugin.getMessageManager().getMessageList("gui.settings.deleting_type.lore").toArray(new String[0]))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.deleting_type.lore","%type%","ALL").toArray(new String[0]))
                 .build(), (e) -> {
             playerMenuUtility.sendMessage("Yes");
             //TODO ADD FUNCTION
