@@ -858,6 +858,19 @@ gui:
         - ""
         - "&cKlicke zum löschen"
       confirm_title: "Bestätige das Löschen der Sammlung"
+    deleting_type:
+      name: "&bLöschungs-Typ"
+      lore:
+        - "&7Aktuell: &a%type%"
+        - ""
+        - "&7Wähle aus, was mit den Treasures"
+        - "&7in einer Sammlung passieren soll,"
+        - "&7wenn sie gelöscht wird."
+        - ""
+        - "&7Verfügbare Optionen:"
+        - "&3NOTING, PLAYER_HEAD, ALL"
+        - ""
+        - "&cKlicke zum wechseln"
     hide_after_found:
       name: "&eVerstecke gefundene Treasures"
       lore:

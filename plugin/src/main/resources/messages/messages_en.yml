@@ -858,6 +858,19 @@ gui:
         - ""
         - "&cClick to delete"
       confirm_title: "Confirm Delete Collection"
+    deleting_type:
+      name: "&bDeleting Type"
+      lore:
+        - "&7Current: &a%type%"
+        - ""
+        - "&7Select what happens with the"
+        - "&7Treasures when the Collection"
+        - "&7gets deleted."
+        - ""
+        - "&7Available Options:"
+        - "&3NOTING, PLAYER_HEAD, ALL"
+        - ""
+        - "&cClick to switch"
     hide_after_found:
       name: "&eHide Found Treasures"
       lore:
