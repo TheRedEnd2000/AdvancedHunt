@@ -870,7 +870,7 @@ gui:
         - "&7Available Options:"
         - "&3NOTING, PLAYER_HEAD, ALL"
         - ""
-        - "&cClick to switch"
+        - "&eClick to switch"
     hide_after_found:
       name: "&eHide Found Treasures"
       lore:
