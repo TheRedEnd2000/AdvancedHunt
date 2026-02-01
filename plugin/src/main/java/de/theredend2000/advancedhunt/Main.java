@@ -79,6 +79,7 @@ public final class Main extends JavaPlugin {
     private HintManager hintManager;
     private FireworkManager fireworkManager;
     private TreasureVisibilityManager treasureVisibilityManager;
+    private CollectionDeletionCleanupManager collectionDeletionCleanupManager;
 
     private Random random;
 
@@ -144,6 +145,7 @@ public final class Main extends JavaPlugin {
         placeModeManager = new PlaceModeManager(this);
         scanManager = new ScanManager(this, collectionManager, proximityManager, particleManager, placeModeManager);
         treasureVisibilityManager = new TreasureVisibilityManager(this, treasureManager, collectionManager);
+        collectionDeletionCleanupManager = new CollectionDeletionCleanupManager(this);
 
         particleManager.start();
         scanManager.start();
@@ -291,6 +293,9 @@ public final class Main extends JavaPlugin {
         placeItemManager.reloadItems();
         treasureManager.loadTreasures();
         treasureVisibilityManager.start();
+        if (collectionDeletionCleanupManager != null) {
+            collectionDeletionCleanupManager.start();
+        }
         minigameManager = new MinigameManager(this);
         fireworkManager = new FireworkManager(this);
 
@@ -393,6 +398,9 @@ public final class Main extends JavaPlugin {
         if (treasureVisibilityManager != null) {
             treasureVisibilityManager.stop();
         }
+        if (collectionDeletionCleanupManager != null) {
+            collectionDeletionCleanupManager.stop();
+        }
         if (particleManager != null) {
             particleManager.stop();
         }
@@ -421,6 +429,9 @@ public final class Main extends JavaPlugin {
 
         if (treasureVisibilityManager != null) {
             treasureVisibilityManager.start();
+        }
+        if (collectionDeletionCleanupManager != null) {
+            collectionDeletionCleanupManager.start();
         }
 
         return true;
@@ -494,6 +505,9 @@ public final class Main extends JavaPlugin {
         }
         if (treasureVisibilityManager != null) {
             treasureVisibilityManager.stop();
+        }
+        if (collectionDeletionCleanupManager != null) {
+            collectionDeletionCleanupManager.stop();
         }
         if (scanManager != null) {
             scanManager.stop();
@@ -587,6 +601,10 @@ public final class Main extends JavaPlugin {
 
     public TreasureVisibilityManager getTreasureVisibilityManager() {
         return treasureVisibilityManager;
+    }
+
+    public CollectionDeletionCleanupManager getCollectionDeletionCleanupManager() {
+        return collectionDeletionCleanupManager;
     }
 
     public MinecraftHelp<CommandSender> getMinecraftHelp() {

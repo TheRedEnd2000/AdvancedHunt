@@ -104,6 +104,7 @@ prefix: "&6AdvancedHunt &8>> &7"
 
 error:
   no_permission: "%prefix%&cBạn không có quyền thực hiện hành động này!"
+  generic: "%prefix%&cĐã xảy ra lỗi. Vui lòng kiểm tra console."
   place_items:
     no_item: "%prefix%&cVui lòng đặt một vật phẩm khối vào ô trước."
     not_a_block: "%prefix%&cVật phẩm này không phải là khối và không thể dùng để đặt."
@@ -848,6 +849,43 @@ gui:
         - ""
         - "&cNhấn để xoá"
       confirm_title: "Xác nhận xoá bộ sưu tập"
+    delete_handling:
+      title: "Xóa: Xử lý kho báu"
+      keep:
+        name: "&aGiữ kho báu đã đặt"
+        lore:
+          - "&7Xóa dữ liệu bộ sưu tập,"
+          - "&7nhưng giữ tất cả khối kho báu"
+          - "&7ở đúng vị trí đã đặt."
+          - ""
+          - "&7Cũng sẽ khôi phục kho báu"
+          - "&7đang bị ẩn hiện tại."
+          - ""
+          - "&eNhấp để chọn"
+        confirm_title: "Xóa & giữ tất cả kho báu?"
+      remove_heads:
+        name: "&eXóa đầu/sọ"
+        lore:
+          - "&7Xóa dữ liệu bộ sưu tập,"
+          - "&7chỉ xóa đầu/sọ của người chơi,"
+          - "&7giữ các kho báu khác."
+          - ""
+          - "&7Cũng sẽ khôi phục kho báu"
+          - "&7không phải đầu nếu đang bị ẩn."
+          - ""
+          - "&eNhấp để chọn"
+        confirm_title: "Xóa & xóa đầu/sọ?"
+      remove_blocks:
+        name: "&cXóa khối & nội thất"
+        lore:
+          - "&7Xóa dữ liệu bộ sưu tập"
+          - "&7và xóa tất cả khối kho báu"
+          - "&7và nội thất ItemsAdder."
+          - ""
+          - "&c&lCẢNH BÁO: Khối trong world sẽ bị xóa!"
+          - ""
+          - "&cNhấp để chọn"
+        confirm_title: "Xóa & xóa tất cả khối kho báu?"
     hide_after_found:
       name: "&eẨn kho báu đã tìm thấy"
       lore:

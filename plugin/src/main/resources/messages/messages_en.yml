@@ -103,6 +103,7 @@ prefix: "&6AdvancedHunt &8>> &7"
 
 error:
   no_permission: "%prefix%&cYou do not have permission to do this!"
+  generic: "%prefix%&cAn error occurred. Please check the console."
   place_items:
     no_item: "%prefix%&cPlace a block item into the slot first."
     not_a_block: "%prefix%&cThat item isn't a block and can't be used for placing."
@@ -858,6 +859,43 @@ gui:
         - ""
         - "&cClick to delete"
       confirm_title: "Confirm Delete Collection"
+    delete_handling:
+      title: "Delete: Treasure Handling"
+      keep:
+        name: "&aKeep placed treasures"
+        lore:
+          - "&7Delete the collection data,"
+          - "&7but keep all treasure blocks"
+          - "&7where they were placed."
+          - ""
+          - "&7Also restores treasures that"
+          - "&7are currently hidden."
+          - ""
+          - "&eClick to select"
+        confirm_title: "Delete & keep all treasures?"
+      remove_heads:
+        name: "&eRemove heads/skulls"
+        lore:
+          - "&7Delete the collection data,"
+          - "&7remove only player heads/skulls,"
+          - "&7keep other treasures placed."
+          - ""
+          - "&7Also restores non-head"
+          - "&7treasures if currently hidden."
+          - ""
+          - "&eClick to select"
+        confirm_title: "Delete & remove heads/skulls?"
+      remove_blocks:
+        name: "&cRemove blocks & furniture"
+        lore:
+          - "&7Delete the collection data,"
+          - "&7and remove all treasure blocks"
+          - "&7and ItemsAdder furniture."
+          - ""
+          - "&c&lWARNING: World blocks will be removed!"
+          - ""
+          - "&cClick to select"
+        confirm_title: "Delete & remove all treasure blocks?"
     hide_after_found:
       name: "&eHide Found Treasures"
       lore:
