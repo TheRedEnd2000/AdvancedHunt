@@ -142,18 +142,9 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.delete.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.delete.lore").toArray(new String[0]))
                 .build(), (e) -> {
-            new ConfirmationMenu(playerMenuUtility, plugin,
-                    plugin.getMessageManager().getMessage("gui.settings.delete.confirm_title"),
-                    (confirmEvent) -> {
-                        plugin.getCollectionManager().deleteCollection(collection.getId()).thenRun(() -> {
-                            Bukkit.getScheduler().runTask(plugin, () -> {
-                                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.settings.delete.success", "%collection%", collection.getName()));
-                                new CollectionEditorMenu(playerMenuUtility, plugin).open();
-                            });
-                        });
-                    },
-                    (cancelEvent) -> playerMenuUtility.closeInventory()
-            ).setPreviousMenu(this).open();
+            new DeleteCollectionHandlingMenu(playerMenuUtility, plugin, collection)
+                    .setPreviousMenu(this)
+                    .open();
         }, "advancedhunt.admin.collection.delete");
 
         // ==================== ACT CONFIGURATION ====================

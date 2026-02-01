@@ -103,6 +103,7 @@ prefix: "&6AdvancedHunt &8>> &7"
 
 error:
   no_permission: "%prefix%&cDu hast keine Berechtigung um dies zu tun!"
+  generic: "%prefix%&cEin Fehler ist aufgetreten. Bitte prüfe die Konsole."
   place_items:
     no_item: "%prefix%&cSetzte zuerst ein Block in den Vorgesehenen Slot dafür."
     not_a_block: "%prefix%&cDieses Item ist kein Block und kann deswegen nicht hierfür genutzt werden."
@@ -858,6 +859,43 @@ gui:
         - ""
         - "&cKlicke zum löschen"
       confirm_title: "Bestätige das Löschen der Sammlung"
+    delete_handling:
+      title: "Löschen: Schatz-Behandlung"
+      keep:
+        name: "&aSchätze platziert lassen"
+        lore:
+          - "&7Löscht die Sammlungsdaten,"
+          - "&7aber lässt alle Schatz-Blöcke"
+          - "&7an ihrem Platz."
+          - ""
+          - "&7Stellt auch Schätze wieder her,"
+          - "&7die aktuell versteckt sind."
+          - ""
+          - "&eKlicke zum Auswählen"
+        confirm_title: "Löschen & alle Schätze behalten?"
+      remove_heads:
+        name: "&eKöpfe/Schädel entfernen"
+        lore:
+          - "&7Löscht die Sammlungsdaten,"
+          - "&7entfernt nur Spieler-Köpfe/Schädel,"
+          - "&7andere Schätze bleiben."
+          - ""
+          - "&7Stellt Nicht-Kopf-Schätze wieder her,"
+          - "&7wenn sie aktuell versteckt sind."
+          - ""
+          - "&eKlicke zum Auswählen"
+        confirm_title: "Löschen & Köpfe/Schädel entfernen?"
+      remove_blocks:
+        name: "&cBlöcke & Möbel entfernen"
+        lore:
+          - "&7Löscht die Sammlungsdaten"
+          - "&7und entfernt alle Schatz-Blöcke"
+          - "&7und ItemsAdder-Möbel."
+          - ""
+          - "&c&lWARNUNG: Welt-Blöcke werden entfernt!"
+          - ""
+          - "&cKlicke zum Auswählen"
+        confirm_title: "Löschen & alle Schatz-Blöcke entfernen?"
     hide_after_found:
       name: "&eVerstecke gefundene Treasures"
       lore:

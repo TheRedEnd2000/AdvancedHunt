@@ -9,7 +9,9 @@ import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.util.CronUtils;
+import de.theredend2000.advancedhunt.util.HeadHelper;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -208,6 +210,93 @@ public class CollectionManager {
             treasureManager.removeCollection(collectionId);
             // Reload collections to update cache
             return reloadCollections();
+        });
+    }
+
+    /**
+     * Deletes the collection and dictates how already-placed treasure blocks are handled.
+     *
+     * Important: for KEEP_ALL / REMOVE_HEADS this will RESTORE treasures that are currently hidden
+     * (e.g. due to ACT availability / hideWhenNotAvailable), so the world state ends up consistent
+     * with the selected handling.
+     */
+    public CompletableFuture<Void> deleteCollection(UUID collectionId, TreasureDeletionType handling) {
+        TreasureDeletionType effectiveHandling = handling == null ? TreasureDeletionType.KEEP_ALL : handling;
+
+        List<TreasureCore> cores = new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
+        if (cores.isEmpty()) {
+            return deleteCollection(collectionId);
+        }
+
+        List<CompletableFuture<TreasureWorldEdit>> editFutures = new ArrayList<>(cores.size());
+
+        for (TreasureCore core : cores) {
+            if (core == null) continue;
+            Location loc = core.getLocation();
+            if (loc == null || loc.getWorld() == null) continue;
+
+            String worldName = loc.getWorld().getName();
+            int x = loc.getBlockX();
+            int y = loc.getBlockY();
+            int z = loc.getBlockZ();
+
+            TreasureWorldEdit.Action action;
+            switch (effectiveHandling) {
+                case REMOVE_BLOCKS_AND_FURNITURE:
+                    action = TreasureWorldEdit.Action.REMOVE;
+                    break;
+                case REMOVE_HEADS:
+                    action = HeadHelper.isHeadMaterialName(core.getMaterial()) ? TreasureWorldEdit.Action.REMOVE : TreasureWorldEdit.Action.RESTORE;
+                    break;
+                case KEEP_ALL:
+                default:
+                    action = TreasureWorldEdit.Action.RESTORE;
+                    break;
+            }
+
+            if (action == TreasureWorldEdit.Action.REMOVE) {
+                editFutures.add(CompletableFuture.completedFuture(
+                    new TreasureWorldEdit(worldName, x, y, z, core.getMaterial(), core.getBlockState(), null, TreasureWorldEdit.Action.REMOVE)
+                ));
+                continue;
+            }
+
+            // RESTORE needs NBT data (e.g. skull texture / tile NBT), so load full treasure before deleting.
+            CompletableFuture<TreasureWorldEdit> future = treasureManager.getFullTreasureAsync(core.getId())
+                .handle((treasure, ex) -> {
+                    String nbtData = treasure != null ? treasure.getNbtData() : null;
+                    return new TreasureWorldEdit(worldName, x, y, z, core.getMaterial(), core.getBlockState(), nbtData, TreasureWorldEdit.Action.RESTORE);
+                });
+            editFutures.add(future);
+        }
+
+        CompletableFuture<Void> buildEdits = CompletableFuture.allOf(editFutures.toArray(new CompletableFuture[0]));
+
+        return buildEdits.thenCompose(v -> {
+            List<TreasureWorldEdit> edits = new ArrayList<>(editFutures.size());
+            for (CompletableFuture<TreasureWorldEdit> f : editFutures) {
+                try {
+                    TreasureWorldEdit edit = f.join();
+                    if (edit != null) {
+                        edits.add(edit);
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+
+            return repository.deleteCollection(collectionId).thenCompose(v2 -> {
+                treasureManager.removeCollection(collectionId);
+                return reloadCollections();
+            }).thenRun(() -> {
+                try {
+                    Main main = (Main) plugin;
+                    if (main.getCollectionDeletionCleanupManager() != null && !edits.isEmpty()) {
+                        main.getLogger().info("Scheduling deletion cleanup for collection " + collectionId + " (" + effectiveHandling + ", edits=" + edits.size() + ")");
+                        main.getCollectionDeletionCleanupManager().scheduleEdits(edits);
+                    }
+                } catch (Throwable ignored) {
+                }
+            });
         });
     }
 
