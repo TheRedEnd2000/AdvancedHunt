@@ -147,6 +147,14 @@ public class CollectionSettingsMenu extends Menu {
                     .open();
         }, "advancedhunt.admin.collection.delete");
 
+        addButton(17, new ItemBuilder(XMaterial.CAULDRON)
+                .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.deleting_type.name"))
+                .setLore(plugin.getMessageManager().getMessageList("gui.settings.deleting_type.lore","%type%","ALL").toArray(new String[0]))
+                .build(), (e) -> {
+            playerMenuUtility.sendMessage("Yes");
+            //TODO ADD FUNCTION
+        });
+
         // ==================== ACT CONFIGURATION ====================
         addStaticItem(19, new ItemBuilder(XMaterial.PLAYER_HEAD)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.categories.rewards.name", false))
