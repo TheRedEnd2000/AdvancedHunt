@@ -90,7 +90,6 @@ feedback:
 
   place_items:
     prompt_group: "%prefix%&7Type the &egroup name&7 in chat (or 'cancel')."
-    prompt_rename: "%prefix%&7Type a new name for &e%name%&7 (or 'cancel')."
     prompt_rename_group: "%prefix%&7Type a new name for group &e%group%&7 (or 'cancel')."
     group_created: "%prefix%&aCreated group &e%group%&a."
     group_renamed: "%prefix%&aRenamed group &e%old%&a to &e%group%&a."
@@ -109,14 +108,11 @@ error:
     not_a_block: "%prefix%&cThat item isn't a block and can't be used for placing."
     invalid_group: "%prefix%&cInvalid group name."
     duplicate_group: "%prefix%&cThat group already exists."
-    invalid_name: "%prefix%&cInvalid item name."
-    duplicate_name: "%prefix%&cA item with that name already exists in that group."
     serialize_failed: "%prefix%&cFailed to save that item."
     deserialize_failed: "%prefix%&cFailed to load that item."
     create_failed: "%prefix%&cFailed to create the place item."
     create_group_failed: "%prefix%&cFailed to create the group."
     rename_group_failed: "%prefix%&cFailed to rename the group."
-    save_failed: "%prefix%&cFailed to save the place item."
 
   feature_disabled: "%prefix%&cThat feature is currently disabled."
 
@@ -164,7 +160,6 @@ command:
       reset_collection: "Resets progress for a collection"
       reset_player: "Resets all progress for a player"
       reset_player_collection: "Resets a player's progress in a collection"
-      minigame: "Play a minigame for help finding treasures"
       hint: "Request a hint to find nearby treasures"
       migrate: "Migrate data between storage systems (yaml/sqlite/mysql)"
       debug_hint: "Debug: Test hint system"
@@ -172,6 +167,7 @@ command:
       debug_placecollection_random: "Debug: Place treasures randomly"
       debug_placecollection_plane: "Debug: Place treasures in a plane grid"
       debug_removecollectionplaced: "Debug: Remove all placed treasures in a collection"
+      debug_minigame: "Debug: Test minigame system"
     minecraft:
       help: "&6AdvancedHunt &8- &7Help"
       command: "Command"
@@ -858,7 +854,6 @@ gui:
         - "&c&lWARNING: This cannot be undone!"
         - ""
         - "&cClick to delete"
-      confirm_title: "Confirm Delete Collection"
     delete_handling:
       title: "Delete: Treasure Handling"
       keep:
