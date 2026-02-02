@@ -90,9 +90,7 @@ feedback:
 
   place_items:
     prompt_group: "%prefix%&7Nhập &etên nhóm&7 trong chat (hoặc 'cancel')."
-    prompt_rename: "%prefix%&7Nhập tên mới cho &e%name%&7 (hoặc 'cancel')."
     prompt_rename_group: "%prefix%&7Nhập tên mới cho nhóm &e%group%&7 (hoặc 'cancel')."
-    prompt_move_group: "%prefix%&7Nhập nhóm mới cho preset này (hiện tại: &e%group%&7)."
     group_created: "%prefix%&aĐã tạo nhóm &e%group%&a."
     group_renamed: "%prefix%&aĐã đổi tên nhóm từ &e%old%&a thành &e%group%&a."
     group_deleted: "%prefix%&aĐã xoá nhóm &e%group%&a."
@@ -110,14 +108,11 @@ error:
     not_a_block: "%prefix%&cVật phẩm này không phải là khối và không thể dùng để đặt."
     invalid_group: "%prefix%&cTên nhóm không hợp lệ."
     duplicate_group: "%prefix%&cNhóm này đã tồn tại."
-    invalid_name: "%prefix%&cTên vật phẩm không hợp lệ."
-    duplicate_name: "%prefix%&cĐã tồn tại một vật phẩm trùng tên trong nhóm này."
     serialize_failed: "%prefix%&cKhông thể lưu vật phẩm đó."
     deserialize_failed: "%prefix%&cKhông thể tải vật phẩm đó."
     create_failed: "%prefix%&cKhông thể tạo vật phẩm đặt."
     create_group_failed: "%prefix%&cKhông thể tạo nhóm."
     rename_group_failed: "%prefix%&cKhông thể đổi tên nhóm."
-    save_failed: "%prefix%&cKhông thể lưu vật phẩm đặt."
 
   feature_disabled: "%prefix%&cTính năng này hiện đang bị tắt."
 
@@ -164,14 +159,15 @@ command:
       reset_collection: "Đặt lại tiến trình của một bộ sưu tập"
       reset_player: "Đặt lại toàn bộ tiến trình của một người chơi"
       reset_player_collection: "Đặt lại tiến trình của người chơi trong một bộ sưu tập"
-      minigame: "Chơi minigame để hỗ trợ tìm kho báu"
       hint: "Yêu cầu gợi ý để tìm kho báu gần đó"
       migrate: "Di chuyển dữ liệu giữa các hệ lưu trữ (yaml/sqlite/mysql)"
+      bypass: "Bật/tắt chế độ nhìn xuyên kho báu"
       debug_hint: "Debug: Kiểm tra hệ thống gợi ý"
       debug_placecollection: "Debug: Đặt kho báu ngẫu nhiên"
       debug_placecollection_random: "Debug: Đặt kho báu ngẫu nhiên"
       debug_placecollection_plane: "Debug: Đặt kho báu theo lưới phẳng"
       debug_removecollectionplaced: "Debug: Xoá toàn bộ kho báu đã đặt trong bộ sưu tập"
+      debug_minigame: "Debug: Kiểm tra hệ thống minigame"
     minecraft:
       help: "&6AdvancedHunt &8- &7Trợ giúp"
       command: "Lệnh"
@@ -204,71 +200,68 @@ command:
     hint: "&eDùng /ah list <collection> để xem kho báu."
   collection_not_found: "%prefix%&cKhông tìm thấy bộ sưu tập."
 
-direction:
-  east: "Đông"
-  southeast: "Đông Nam"
-  south: "Nam"
-  southwest: "Tây Nam"
-  west: "Tây"
-  northwest: "Tây Bắc"
-  north: "Bắc"
-  northeast: "Đông Bắc"
-
-rewards:
-  no_block: "%prefix%&cBạn phải đang nhìn vào một khối!"
-  not_treasure: "%prefix%&cKhối này không phải là kho báu!"
-
-rename:
-  success: "%prefix%&aĐã đổi tên bộ sưu tập từ &e%old_name% &asang &e%new_name%"
-  failed: "%prefix%&cKhông thể đổi tên bộ sưu tập. Kiểm tra xem tên cũ có tồn tại và tên mới có là duy nhất hay không."
-
-create:
-  success: "%prefix%&aĐã tạo thành công bộ sưu tập &e%name%"
-  failed: "%prefix%&cKhông thể tạo bộ sưu tập. Có thể đã tồn tại bộ sưu tập với tên này."
-
-info:
-  lines:
-    - "&6━━━━━━ Thông tin bộ sưu tập: &e%collection% &6━━━━━━"
-    - "%uuid%"
-    - "&7Kho báu: &f%count%"
-    - "%status%"
-    - "%timing%"
-    - "%reset%"
-    - "&7Dùng UUID trong PlaceholderAPI: &e%advancedhunt_found_treasures_<uuid>%"
-  uuid: "&7UUID: &f%uuid%"
-  click_to_copy: "&eNhấn để sao chép/gợi ý UUID"
-  status_available: "&7Trạng thái: &aHiện đang khả dụng"
-  status_unavailable: "&7Trạng thái: &cHiện không khả dụng"
-  active_until_note: "&7  &8(Thời gian hoạt động được đặt bởi quy tắc ACT)"
-  next_activation: "&7Lần kích hoạt tiếp theo: &f%time%"
-  next_reset: "&7Lần đặt lại tiếp theo: &f%time%"
-  no_reset: "&7Lần đặt lại tiếp theo: &fKhông bao giờ &8(không có lịch đặt lại)"
-  invalid_reset_schedule: "&7Lần đặt lại tiếp theo: &cLịch không hợp lệ"
-
-place_mode:
-  disabled: "%prefix%&aChế độ đặt đã tắt."
-  enabled: "%prefix%&aChế độ đặt đã bật cho bộ sưu tập &e%collection%&a. Đặt khối để thêm kho báu."
-  not_in_place_mode: "%prefix%&cBạn không đang ở chế độ đặt."
-  no_break: "%prefix%&cBạn không thể phá khối trong chế độ đặt!"
-  use_command: "%prefix%&eDùng /ah placeitems &eđể nhận lại các kho báu đã lưu của bạn."
-
-reset:
-  all_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho tất cả người chơi trên mọi bộ sưu tập!"
-  collection_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho bộ sưu tập &e%collection%&a!"
-  player_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho người chơi &e%player%&a!"
-  player_collection_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho người chơi &e%player% &atrong bộ sưu tập &e%collection%&a!"
-  player_not_found: "%prefix%&cKhông tìm thấy người chơi hoặc người chơi chưa từng tham gia máy chủ này."
-
-migration:
-  started: "%prefix%&aBắt đầu di chuyển dữ liệu lưu trữ (đang sao chép toàn bộ dữ liệu sang lưu trữ đích)..."
-  progress: "%prefix%&eTiến trình di chuyển: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
-  progress_actionbar: "&eDi chuyển: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
-  success: "%prefix%&aDi chuyển dữ liệu lưu trữ thành công! Toàn bộ dữ liệu đã được sao chép sang lưu trữ đích."
-  failed: "%prefix%&cDi chuyển dữ liệu lưu trữ thất bại. Kiểm tra console để biết lỗi."
-  mysql_not_configured: "%prefix%&cCấu hình di chuyển MySQL chưa được thiết lập! Vui lòng chỉnh sửa config.yml trong mục 'migration.target' với thông tin cơ sở dữ liệu đích."
-  mysql_config_reset: "%prefix%&eCấu hình di chuyển MySQL đã được đặt lại trong config.yml. Hãy cấu hình lại nếu bạn cần thực hiện di chuyển lần nữa."
-  existing_data_abort: "%prefix%&c&lĐã huỷ di chuyển! Lưu trữ đích đang chứa dữ liệu: %collections% bộ sưu tập, %treasures% kho báu, %players% người chơi. Dùng '--purge' để xoá dữ liệu đích trước, hoặc '--force' (không khuyến nghị) để ghi đè: /ah migrate <type> --purge"
-  warning_existing_data: "%prefix%&e&lCẢNH BÁO: Lưu trữ đích đang chứa dữ liệu! (%collections% bộ sưu tập, %treasures% kho báu, %players% người chơi). Đang tiếp tục di chuyển... (--force không được khuyến nghị)"
+  direction:
+    east: "Đông"
+    southeast: "Đông Nam"
+    south: "Nam"
+    southwest: "Tây Nam"
+    west: "Tây"
+    northwest: "Tây Bắc"
+    north: "Bắc"
+    northeast: "Đông Bắc"
+  rewards:
+    no_block: "%prefix%&cBạn phải đang nhìn vào một khối!"
+    not_treasure: "%prefix%&cKhối này không phải là kho báu!"
+  rename:
+    success: "%prefix%&aĐã đổi tên bộ sưu tập từ &e%old_name% &asang &e%new_name%"
+    failed: "%prefix%&cKhông thể đổi tên bộ sưu tập. Kiểm tra xem tên cũ có tồn tại và tên mới có là duy nhất hay không."
+  create:
+    success: "%prefix%&aĐã tạo thành công bộ sưu tập &e%name%"
+    failed: "%prefix%&cKhông thể tạo bộ sưu tập. Có thể đã tồn tại bộ sưu tập với tên này."
+  info:
+    lines:
+      - "&6━━━━━━ Thông tin bộ sưu tập: &e%collection% &6━━━━━━"
+      - "%uuid%"
+      - "&7Kho báu: &f%count%"
+      - "%status%"
+      - "%timing%"
+      - "%reset%"
+      - "&7Dùng UUID trong PlaceholderAPI: &e%advancedhunt_found_treasures_<uuid>%"
+    uuid: "&7UUID: &f%uuid%"
+    click_to_copy: "&eNhấn để sao chép/gợi ý UUID"
+    status_available: "&7Trạng thái: &aHiện đang khả dụng"
+    status_unavailable: "&7Trạng thái: &cHiện không khả dụng"
+    active_until_note: "&7  &8(Thời gian hoạt động được đặt bởi quy tắc ACT)"
+    next_activation: "&7Lần kích hoạt tiếp theo: &f%time%"
+    next_reset: "&7Lần đặt lại tiếp theo: &f%time%"
+    no_reset: "&7Lần đặt lại tiếp theo: &fKhông bao giờ &8(không có lịch đặt lại)"
+    invalid_reset_schedule: "&7Lần đặt lại tiếp theo: &cLịch không hợp lệ"
+  place_mode:
+    disabled: "%prefix%&aChế độ đặt đã tắt."
+    enabled: "%prefix%&aChế độ đặt đã bật cho bộ sưu tập &e%collection%&a. Đặt khối để thêm kho báu."
+    not_in_place_mode: "%prefix%&cBạn không đang ở chế độ đặt."
+    no_break: "%prefix%&cBạn không thể phá khối trong chế độ đặt!"
+    use_command: "%prefix%&eDùng /ah placeitems &eđể nhận lại các kho báu đã lưu của bạn."
+  reset:
+    all_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho tất cả người chơi trên mọi bộ sưu tập!"
+    collection_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho bộ sưu tập &e%collection%&a!"
+    player_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho người chơi &e%player%&a!"
+    player_collection_success: "%prefix%&aĐã đặt lại &e%count% &abản ghi kho báu cho người chơi &e%player% &atrong bộ sưu tập &e%collection%&a!"
+    player_not_found: "%prefix%&cKhông tìm thấy người chơi hoặc người chơi chưa từng tham gia máy chủ này."
+  migration:
+    started: "%prefix%&aBắt đầu di chuyển dữ liệu lưu trữ (đang sao chép toàn bộ dữ liệu sang lưu trữ đích)..."
+    progress: "%prefix%&eTiến trình di chuyển: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    progress_actionbar: "&eDi chuyển: &f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    success: "%prefix%&aDi chuyển dữ liệu lưu trữ thành công! Toàn bộ dữ liệu đã được sao chép sang lưu trữ đích."
+    failed: "%prefix%&cDi chuyển dữ liệu lưu trữ thất bại. Kiểm tra console để biết lỗi."
+    mysql_not_configured: "%prefix%&cCấu hình di chuyển MySQL chưa được thiết lập! Vui lòng chỉnh sửa config.yml trong mục 'migration.target' với thông tin cơ sở dữ liệu đích."
+    mysql_config_reset: "%prefix%&eCấu hình di chuyển MySQL đã được đặt lại trong config.yml. Hãy cấu hình lại nếu bạn cần thực hiện di chuyển lần nữa."
+    existing_data_abort: "%prefix%&c&lĐã huỷ di chuyển! Lưu trữ đích đang chứa dữ liệu: %collections% bộ sưu tập, %treasures% kho báu, %players% người chơi. Dùng '--purge' để xoá dữ liệu đích trước, hoặc '--force' (không khuyến nghị) để ghi đè: /ah migrate <type> --purge"
+    warning_existing_data: "%prefix%&e&lCẢNH BÁO: Lưu trữ đích đang chứa dữ liệu! (%collections% bộ sưu tập, %treasures% kho báu, %players% người chơi). Đang tiếp tục di chuyển... (--force không được khuyến nghị)"
+  bypass:
+    enabled: "%prefix%&aĐã bật chế độ nhìn xuyên kho báu."
+    disabled: "%prefix%&cĐã tắt chế độ nhìn xuyên kho báu."
+    usage: "%prefix%&eCách dùng: /ah bypass <on|off>"
 
 treasure:
   found: "%prefix%&aBạn đã tìm thấy một kho báu!"
@@ -671,6 +664,18 @@ gui:
       name: "&6Phần thưởng"
       lore:
         - "&7Nhấn để mở phần thưởng"
+  finders:
+    title: "&8Ai đã tìm thấy kho báu này"
+    loading: "&7Đang tải dữ liệu người chơi..."
+    empty:
+      name: "&7Chưa có ai"
+      lore:
+        - "&7Kho báu này chưa"
+        - "&7được ai tìm thấy."
+    entry:
+      name: "&e%player%"
+      lore:
+        - "&7Đã tìm thấy kho báu này"
   leaderboard:
     title: "&8Bảng xếp hạng: %collection%"
     loading:
@@ -847,7 +852,6 @@ gui:
         - "&c&lCẢNH BÁO: Không thể hoàn tác!"
         - ""
         - "&cNhấn để xoá"
-      confirm_title: "Xác nhận xoá bộ sưu tập"
     delete_handling:
       title: "Xóa: Xử lý kho báu"
       keep:
@@ -915,9 +919,6 @@ gui:
         - "&7nhìn thấy nội dung không khả dụng."
         - ""
         - "&eNhấn để bật/tắt"
-    hide_status:
-      enabled: "&aBật"
-      disabled: "&cTắt"
     reset_schedule:
       title: "Lịch đặt lại tiến trình"
     categories:

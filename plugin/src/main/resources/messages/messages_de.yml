@@ -90,7 +90,6 @@ feedback:
 
   place_items:
     prompt_group: "%prefix%&7Schreibe den &eGruppennamen&7 in Chat (oder 'cancel')."
-    prompt_rename: "%prefix%&7Schreibe einen neuen Namen für &e%name%&7 (oder 'cancel')."
     prompt_rename_group: "%prefix%&7Gebe einen neuen Namen für die Gruppe &e%group%&7 an (oder 'cancel')."
     group_created: "%prefix%&aGruppe &e%group%&a erstellt."
     group_renamed: "%prefix%&aGruppe &e%old%&a wurde zu &e%group%&a umbenannt."
@@ -109,14 +108,11 @@ error:
     not_a_block: "%prefix%&cDieses Item ist kein Block und kann deswegen nicht hierfür genutzt werden."
     invalid_group: "%prefix%&cUngültiger Gruppenname."
     duplicate_group: "%prefix%&cDiese Gruppe existiert bereits."
-    invalid_name: "%prefix%&cUngültiger Itemname."
-    duplicate_name: "%prefix%&cEin Item mit diesem Namen existiert bereits in dieser Gruppe."
     serialize_failed: "%prefix%&cDas speichern des Items ist fehlgeschlagen."
     deserialize_failed: "%prefix%&cDas laden des Items ist fehlgeschlagen."
     create_failed: "%prefix%&cDas erstellen des Items ist fehlgeschlagen."
     create_group_failed: "%prefix%&cDas erstellen der Gruppe ist fehlgeschlagen."
     rename_group_failed: "%prefix%&cDas umbenennen der Gruppe ist fehlgeschlagen."
-    save_failed: "%prefix%&cDas speichern des Items ist fehlgeschlagen."
 
   feature_disabled: "%prefix%&cDieses Feature ist aktuell deaktiviert."
 
@@ -157,14 +153,13 @@ command:
       collection_rename: "Benennt eine Sammlung um"
       collection_info: "Zeigt detaillierte Informationen über eine Sammlung"
       rewards: "Zeigt dir die Belohnungen einer Treasure, die du Anschaust"
-      placepresets: "Öffnet das Place-Item Menu"
+      placeitems: "Öffnet das Place-Item Menu"
       place: "Toggelt den Place-Mode (wird beendet wenn aktiv)"
       place_collection: "Toggelt den Place-Mode für eine bestimmte Sammlung"
       reset_all: "Setzt den Fortschritt für alle Spieler und Sammlungen zurück"
       reset_collection: "Setzt den Fortschritt für eine Sammlung zurück"
       reset_player: "Setzt den Fortschritt für einen Spieler zurück"
       reset_player_collection: "Setzt den Fortschritt für einen Spieler in einer bestimmten Sammlung zurück"
-      minigame: "Spielbare Minigame um einen Treasure-Hint zu bekommen"
       hint: "Fragt einen Hinweis an um eine nahegelegene Treasure zu finden"
       migrate: "Migriert Daten zwischen Speichersystemen (yaml/sqlite/mysql)"
       debug_hint: "Debug: Testet das Hint-System"
@@ -172,6 +167,7 @@ command:
       debug_placecollection_random: "Debug: Platziert random Treasures"
       debug_placecollection_plane: "Debug: Platziert Treasures in einem Quadrat"
       debug_removecollectionplaced: "Debug: Entfernt alle platzierten Treasures in einer Sammlung"
+      debug_minigame: "Debug: Testet das Minigame-System"
     minecraft:
       help: "&6AdvancedHunt &8- &7Hilfe"
       command: "Befehl"
@@ -858,20 +854,43 @@ gui:
         - "&c&lWARNUNG: Dies kann nicht rückgängig gemacht werden!"
         - ""
         - "&cKlicke zum löschen"
-      confirm_title: "Bestätige das Löschen der Sammlung"
-    deleting_type:
-      name: "&bLöschungs-Typ"
-      lore:
-        - "&7Aktuell: &a%type%"
-        - ""
-        - "&7Wähle aus, was mit den Treasures"
-        - "&7in einer Sammlung passieren soll,"
-        - "&7wenn sie gelöscht wird."
-        - ""
-        - "&7Verfügbare Optionen:"
-        - "&3NOTING, PLAYER_HEAD, ALL"
-        - ""
-        - "&eKlicke zum wechseln"
+    delete_handling:
+      title: "Löschen: Schatz-Behandlung"
+      keep:
+        name: "&aSchätze platziert lassen"
+        lore:
+          - "&7Löscht die Sammlungsdaten,"
+          - "&7aber lässt alle Schatz-Blöcke"
+          - "&7an ihrem Platz."
+          - ""
+          - "&7Stellt auch Schätze wieder her,"
+          - "&7die aktuell versteckt sind."
+          - ""
+          - "&eKlicke zum Auswählen"
+        confirm_title: "Löschen & alle Schätze behalten?"
+      remove_heads:
+        name: "&eKöpfe/Schädel entfernen"
+        lore:
+          - "&7Löscht die Sammlungsdaten,"
+          - "&7entfernt nur Spieler-Köpfe/Schädel,"
+          - "&7andere Schätze bleiben."
+          - ""
+          - "&7Stellt Nicht-Kopf-Schätze wieder her,"
+          - "&7wenn sie aktuell versteckt sind."
+          - ""
+          - "&eKlicke zum Auswählen"
+        confirm_title: "Löschen & Köpfe/Schädel entfernen?"
+      remove_blocks:
+        name: "&cBlöcke & Möbel entfernen"
+        lore:
+          - "&7Löscht die Sammlungsdaten"
+          - "&7und entfernt alle Schatz-Blöcke"
+          - "&7und ItemsAdder-Möbel."
+          - ""
+          - "&c&lWARNUNG: Welt-Blöcke werden entfernt!"
+          - ""
+          - "&cKlicke zum Auswählen"
+        confirm_title: "Löschen & alle Schatz-Blöcke entfernen?"
     hide_after_found:
       name: "&eVerstecke gefundene Treasures"
       lore:
@@ -1236,22 +1255,22 @@ gui:
           - ""
           - "&c⚠ &7Erfordert Kenntnisse der Cron-Syntax"
           - "&8Verwende Vorlagen, wenn du unsicher bist!"
-        builder:
-          name: "&dErweiterter Editor"
-          lore:
-            - "&7Erstelle deinen Cron-Ausdruck"
-            - "&7Feld für Feld mit einer"
-            - "&7visuellen Oberfläche"
-            - ""
-            - "&eKlicken zum Öffne des Editors"
-        manual:
-          name: "&bManuelle Eingabe"
-          lore:
-            - "&7Gib einen Cron-Ausdruck manuell ein"
-            - "&7Format: SEK MIN STUNDE TAG MONAT WOCHENTAG JAHR"
-            - "&7Beispiel: &f0 0 12 * * ? *"
-            - ""
-            - "&eKlicken zum Eingeben"
+      builder:
+        name: "&dErweiterter Editor"
+        lore:
+          - "&7Erstelle deinen Cron-Ausdruck"
+          - "&7Feld für Feld mit einer"
+          - "&7visuellen Oberfläche"
+          - ""
+          - "&eKlicken zum Öffne des Editors"
+      manual:
+        name: "&bManuelle Eingabe"
+        lore:
+          - "&7Gib einen Cron-Ausdruck manuell ein"
+          - "&7Format: SEK MIN STUNDE TAG MONAT WOCHENTAG JAHR"
+          - "&7Beispiel: &f0 0 12 * * ? *"
+          - ""
+          - "&eKlicken zum Eingeben"
     builder:
       title: "%cron_type% Cron-Ausdruck-Editor"
       fields:
@@ -1367,13 +1386,13 @@ gui:
           - "&7auf die Sammlung an"
           - ""
           - "&fAusdruck: &7%expression%"
-      clear:
-        name: "&cZeitplan löschen"
-        lore:
-          - "&7Entferne den Zurücksetzungszeitplan."
-          - "&7Sammlung wird nicht automatisch zurückgesetzt"
-          - ""
-          - "&cKlicke zum Löschen"
+    clear:
+      name: "&cZeitplan löschen"
+      lore:
+        - "&7Entferne den Zurücksetzungszeitplan."
+        - "&7Sammlung wird nicht automatisch zurückgesetzt"
+        - ""
+        - "&cKlicke zum Löschen"
   act:
     setup:
       title: "&8ACT Einrichtung"
