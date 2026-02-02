@@ -261,13 +261,19 @@ public class CollectionManager {
                 continue;
             }
 
-            // RESTORE needs NBT data (e.g. skull texture / tile NBT), so load full treasure before deleting.
-            CompletableFuture<TreasureWorldEdit> future = treasureManager.getFullTreasureAsync(core.getId())
-                .handle((treasure, ex) -> {
-                    String nbtData = treasure != null ? treasure.getNbtData() : null;
-                    return new TreasureWorldEdit(worldName, x, y, z, core.getMaterial(), core.getBlockState(), nbtData, TreasureWorldEdit.Action.RESTORE);
-                });
-            editFutures.add(future);
+            // RESTORE only needs NBT for heads/skulls (texture / tile NBT). Avoid loading full treasure otherwise.
+            if (HeadHelper.isHeadMaterialName(core.getMaterial())) {
+                CompletableFuture<TreasureWorldEdit> future = treasureManager.getFullTreasureAsync(core.getId())
+                    .handle((treasure, ex) -> {
+                        String nbtData = treasure != null ? treasure.getNbtData() : null;
+                        return new TreasureWorldEdit(worldName, x, y, z, core.getMaterial(), core.getBlockState(), nbtData, TreasureWorldEdit.Action.RESTORE);
+                    });
+                editFutures.add(future);
+            } else {
+                editFutures.add(CompletableFuture.completedFuture(
+                    new TreasureWorldEdit(worldName, x, y, z, core.getMaterial(), core.getBlockState(), null, TreasureWorldEdit.Action.RESTORE)
+                ));
+            }
         }
 
         CompletableFuture<Void> buildEdits = CompletableFuture.allOf(editFutures.toArray(new CompletableFuture[0]));

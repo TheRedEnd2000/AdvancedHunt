@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Best-effort in-memory world-edit queue used when deleting collections.
@@ -31,10 +32,13 @@ import java.util.concurrent.TimeUnit;
 public class CollectionDeletionCleanupManager implements Listener {
 
     private static final Material DEFAULT_FALLBACK_MATERIAL = Material.STONE;
+    private static final int MAX_QUEUED_EDITS = 200_000;
 
     private final Main plugin;
 
     private final Map<ChunkKey, List<TreasureWorldEdit>> pendingByChunk = new ConcurrentHashMap<>();
+
+    private final AtomicInteger queuedEdits = new AtomicInteger(0);
 
     // Avoid unbounded growth for chunks that never load.
     private final Cache<ChunkKey, Boolean> chunkTouched = Caffeine.newBuilder()
@@ -55,10 +59,17 @@ public class CollectionDeletionCleanupManager implements Listener {
         cleanupTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             // Remove pending entries for keys that have expired from chunkTouched.
             // (Caffeine doesn't support direct iteration of expired entries; we do a cheap sweep.)
-            for (ChunkKey key : new ArrayList<>(pendingByChunk.keySet())) {
+            int removedEdits = 0;
+            for (ChunkKey key : pendingByChunk.keySet()) {
                 if (chunkTouched.getIfPresent(key) == null) {
-                    pendingByChunk.remove(key);
+                    List<TreasureWorldEdit> removed = pendingByChunk.remove(key);
+                    if (removed != null) {
+                        removedEdits += removed.size();
+                    }
                 }
+            }
+            if (removedEdits > 0) {
+                queuedEdits.addAndGet(-removedEdits);
             }
         }, 20L * 60L, 20L * 60L);
     }
@@ -70,6 +81,7 @@ public class CollectionDeletionCleanupManager implements Listener {
         }
         pendingByChunk.clear();
         chunkTouched.invalidateAll();
+        queuedEdits.set(0);
     }
 
     /**
@@ -81,12 +93,44 @@ public class CollectionDeletionCleanupManager implements Listener {
             return;
         }
 
-        // Group by chunk
-        Map<ChunkKey, List<TreasureWorldEdit>> grouped = new ConcurrentHashMap<>();
+        // This method touches Bukkit world/chunk state; ensure it always runs on the primary thread.
+        if (!Bukkit.isPrimaryThread()) {
+            List<TreasureWorldEdit> snapshot = new ArrayList<>(edits);
+            Bukkit.getScheduler().runTask(plugin, () -> scheduleEdits(snapshot));
+            return;
+        }
+
+        // Filter invalid edits early to keep accounting accurate.
+        List<TreasureWorldEdit> validEdits = new ArrayList<>(edits.size());
         for (TreasureWorldEdit edit : edits) {
-            if (edit == null || edit.getWorldName() == null || edit.getWorldName().trim().isEmpty()) continue;
+            if (edit == null) continue;
+            String worldName = edit.getWorldName();
+            if (worldName == null || worldName.trim().isEmpty()) continue;
+            validEdits.add(edit);
+        }
+        if (validEdits.isEmpty()) {
+            return;
+        }
+
+        int currentQueued = queuedEdits.get();
+        int budget = MAX_QUEUED_EDITS - currentQueued;
+        if (budget <= 0) {
+            plugin.getLogger().warning("Collection deletion cleanup queue is full (" + currentQueued + " edits). Dropping " + validEdits.size() + " scheduled edits.");
+            return;
+        }
+
+        if (validEdits.size() > budget) {
+            plugin.getLogger().warning("Collection deletion cleanup queue nearing limit (" + currentQueued + "/" + MAX_QUEUED_EDITS + " edits). Truncating scheduled edits from " + validEdits.size() + " to " + budget + ".");
+            validEdits = new ArrayList<>(validEdits.subList(0, budget));
+        }
+
+        queuedEdits.addAndGet(validEdits.size());
+
+        // Group by chunk
+        Map<ChunkKey, List<TreasureWorldEdit>> grouped = new HashMap<>();
+        for (TreasureWorldEdit edit : validEdits) {
             ChunkKey key = new ChunkKey(edit.getWorldName(), edit.getChunkX(), edit.getChunkZ());
-            grouped.computeIfAbsent(key, k -> Collections.synchronizedList(new ArrayList<>())).add(edit);
+            grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(edit);
         }
 
         for (Map.Entry<ChunkKey, List<TreasureWorldEdit>> entry : grouped.entrySet()) {
@@ -142,6 +186,7 @@ public class CollectionDeletionCleanupManager implements Listener {
                 }
 
                 if (index >= edits.size()) {
+                    queuedEdits.addAndGet(-edits.size());
                     cancel();
                 }
             }
