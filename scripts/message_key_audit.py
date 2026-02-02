@@ -1148,6 +1148,16 @@ def _resolve_dynamic_key_expr(masked_lines: list[str], key_expr: str, *, line_1_
                 return (), candidate
         return (), None
 
+    # no-arg method call + "suffix" (where the method returns known string literals)
+    call_suffix = _parse_noarg_call_plus_literal(expr)
+    if call_suffix is not None:
+        method_name, suffix = call_suffix
+        method_values = _extract_noarg_string_method_return_literals(masked_lines).get(method_name)
+        if method_values:
+            return tuple(v + suffix for v in method_values), None
+        # If method values are unknown, we can't form a safe pattern (would be * + suffix = *.suffix which is disallowed).
+        return (), None
+
     # "prefix" + symbol
     prefix_sym = _parse_literal_plus_identifier(expr)
     if prefix_sym is not None:
@@ -1180,6 +1190,20 @@ def _parse_literal_plus_noarg_call(expr: str) -> Optional[tuple[str, str]]:
     if lit is None:
         return None
     return lit, m.group("name")
+
+
+def _parse_noarg_call_plus_literal(expr: str) -> Optional[tuple[str, str]]:
+    """Parse: methodName() + "suffix"
+
+    Returns (method_name, suffix_literal) if matched, else None.
+    """
+    m = re.match(r"^\s*(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)\s*\+\s*(?P<lit>\"(?:\\.|[^\"\\])*\")\s*$", expr)
+    if not m:
+        return None
+    lit = _parse_java_string_literal(m.group("lit"))
+    if lit is None:
+        return None
+    return m.group("name"), lit
 
 
 def _strip_java_string_literals(text: str) -> str:
@@ -1675,9 +1699,9 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                     literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
                 continue
 
-            # Generic expansion: someObj.someNoArgKeyMethod()
+            # Generic expansion: someObj.someNoArgKeyMethod() or just someNoArgKeyMethod()
             m_noarg = re.match(
-                r"^\s*(?P<recv>.+?)\s*\.\s*(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)\s*$",
+                r"^\s*(?:(?P<recv>.+?)\s*\.\s*)?(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)\s*$",
                 key_expr,
             )
             if m_noarg is not None:
@@ -1687,6 +1711,18 @@ def scan_java_for_message_usages(java_root: Path, *, root: Path) -> tuple[list[L
                     for lit in values:
                         group = _infer_group_for_literal(lit, apply_prefix)
                         literals.append(LiteralKeyUsage(key=lit, site=site, group=group))
+                    continue
+
+            # Expand method() + "suffix" patterns using project-wide key methods.
+            call_suffix = _parse_noarg_call_plus_literal(key_expr)
+            if call_suffix is not None:
+                method_name, suffix = call_suffix
+                method_values = noarg_key_methods.get(method_name)
+                if method_values:
+                    for base in method_values:
+                        full_key = base + suffix
+                        group = _infer_group_for_literal(full_key, apply_prefix)
+                        literals.append(LiteralKeyUsage(key=full_key, site=site, group=group))
                     continue
 
             # Suppress helper getMessage(presetNameKey) when we've already expanded applyPreset(..., "...") sites.
@@ -1767,7 +1803,7 @@ def _extract_project_noarg_string_key_method_literals(java_root: Path) -> dict[s
     literal keys.
 
     Guardrails:
-    - only methods whose name ends with Key/MessageKey/TitleKey are considered
+    - only methods whose name ends with Key/MessageKey/TitleKey/KeyBase/Base are considered
     - only return expressions that are a literal or a ternary of literals are considered
     - only values that look like message keys (e.g., contain '.') are kept
     - capped per method to avoid exploding into huge unions
@@ -1784,7 +1820,7 @@ def _extract_project_noarg_string_key_method_literals(java_root: Path) -> dict[s
         return True
 
     out: dict[str, set[str]] = {}
-    name_filter = re.compile(r"(?:Key|MessageKey|TitleKey)$")
+    name_filter = re.compile(r"(?:Key|MessageKey|TitleKey|KeyBase|Base)$")
     sig_re = re.compile(
         r"\bString\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)\s*\{(?P<body>.*?)\}",
         flags=re.DOTALL,
@@ -1863,9 +1899,9 @@ def _extract_cron_field_value_keys(java_root: Path) -> set[str]:
     text = _read_text(field_menu_path)
 
     # Matches enum constant entries like:
-    #   DAY("day", "*", 1, 31, List.of("1", "15", "L", "*", "?")),
+    #   DAY("day", "*", 1, 31, Arrays.asList("1", "15", "L", "*", "?")),
     enum_const_re = re.compile(
-        r"^\s*[A-Z0-9_]+\(\s*(\"(?:\\.|[^\"\\])*\")\s*,.*?List\.of\((.*?)\)\s*\)\s*(?:,|;)\s*$",
+        r"^\s*[A-Z0-9_]+\(\s*(\"(?:\\.|[^\"\\])*\")\s*,.*?(?:List\.of|Arrays\.asList)\((.*?)\)\s*\)\s*(?:,|;)\s*$",
         re.MULTILINE | re.DOTALL,
     )
 
