@@ -339,19 +339,6 @@ gui:
           - ""
           - "&cNhấn để xoá"
         confirm_title: "&8Xoá nhóm &c%group%&8?"
-    deleting_type:
-      name: "&bKiểu xoá"
-      lore:
-        - "&7Hiện tại: &a%type%"
-        - ""
-        - "&7Chọn điều gì sẽ xảy ra"
-        - "&7với các kho báu khi"
-        - "&7bộ sưu tập bị xoá."
-        - ""
-        - "&7Tuỳ chọn khả dụng:"
-        - "&3NOTING, PLAYER_HEAD, ALL"
-        - ""
-        - "&cNhấn để chuyển đổi"
     list:
       title: "&8Vật phẩm đặt: &e%group%"
       none:

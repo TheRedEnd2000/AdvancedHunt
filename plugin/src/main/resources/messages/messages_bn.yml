@@ -864,19 +864,6 @@ gui:
         - ""
         - "&cMuche felte ekhane click korun"
       confirm_title: "Collection muche felar jonno confirm korun"
-    deleting_type:
-      name: "&bMuche felar dhoron"
-      lore:
-        - "&7Ekhon ache: &a%type%"
-        - ""
-        - "&7Collection-ti muche felar somoy"
-        - "&7er bhitore thaka Treasure gulor"
-        - "&7ki hobe seta bachai korun."
-        - ""
-        - "&7Available Options:"
-        - "&3NOTHING, PLAYER_HEAD, ALL"
-        - ""
-        - "&cMode-ti bodlate ekhane click korun"
     hide_after_found:
       name: "&eKhuje pawa treasure gulo lukiye rakhun"
       lore:
