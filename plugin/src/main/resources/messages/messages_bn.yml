@@ -601,108 +601,108 @@ gui:
       confirm_delete:
         title: "&8Muche felte confirm korun"
 
-  add:
-    item:
-      title: "&8Item Reward jog korte ekhane click korun"
-      placeholder:
-        name: "&7Ekhane item-ti rakhun"
-        lore:
-          - "&7Reward hishebe jei item-ti"
-          - "&7jog korte chan seta ekhane rakhun."
-      info:
-        name: "&eKi bhabe Item Reward jog korben"
-        lore:
-          - "&7Nicher majher slot-et"
-          - "&7item-ti ene rakhun."
-          - ""
-          - "&7Thik ei item-ti (enchants, naam,"
-          - "&7lore-shoho) reward hishebe"
-          - "&7player-der deya hobe."
-          - ""
-          - "&7Sob thik thakle &aConfirm &7korte ekhane click korun."
-      confirm:
-        name: "&aNishchit korte ekhane click korun"
-        lore:
-          - "&7Ei item-tike reward hishebe"
-          - "&7jog korte ekhane click korun."
-      cancel:
-        name: "&cBatil korte ekhane click korun"
-        lore:
-          - "&7Batil kore reward menu-te"
-          - "&7firiye newar jonno ekhane click korun."
-    collection_content:
-      title: "&8Collection Content"
-      treasure_item:
-        name: "&6Treasure #%number%"
-        lore:
-          - "&7Player-ra khuje peyeche: &f%count%"
-          - ""
-          - "&7Location:"
-          - "&7X: &f%x%"
-          - "&7Y: &f%y%"
-          - "&7Z: &f%z%"
-          - "&7World: &f%world%"
-          - ""
-        lore_teleport: "&eLeft-Click &7kore teleport korte ekhane click korun"
-        lore_reward: "&eShift+Left-Click &7kore reward menu open korte ekhane click korun"
-        lore_who_found: "&eRight-Click &7kore kara khuje peyeche ta dekhte ekhane click korun"
-        lore_action_menu_bedrock: "&8Bedrock/Geyser: &eDrop (Q) &7chepe action menu open korun"
-    minigame:
-      reaction:
-        title: "&8Reaction Game"
-        click:
-          name: "&aEkhane click korun!"
+    add:
+      item:
+        title: "&8Item Reward jog korte ekhane click korun"
+        placeholder:
+          name: "&7Ekhane item-ti rakhun"
           lore:
-            - "&6%current%&7/&6%required%"
-      memory:
-        title: "&8Memory Game"
-        button:
-          name: "&fButton %number%"
-    treasure_action:
-      title: "&8Treasure Actions"
-      teleport:
-        name: "&aTreasure-e teleport korte ekhane click korun"
+            - "&7Reward hishebe jei item-ti"
+            - "&7jog korte chan seta ekhane rakhun."
+        info:
+          name: "&eKi bhabe Item Reward jog korben"
+          lore:
+            - "&7Nicher majher slot-et"
+            - "&7item-ti ene rakhun."
+            - ""
+            - "&7Thik ei item-ti (enchants, naam,"
+            - "&7lore-shoho) reward hishebe"
+            - "&7player-der deya hobe."
+            - ""
+            - "&7Sob thik thakle &aConfirm &7korte ekhane click korun."
+        confirm:
+          name: "&aNishchit korte ekhane click korun"
+          lore:
+            - "&7Ei item-tike reward hishebe"
+            - "&7jog korte ekhane click korun."
+        cancel:
+          name: "&cBatil korte ekhane click korun"
+          lore:
+            - "&7Batil kore reward menu-te"
+            - "&7firiye newar jonno ekhane click korun."
+  collection_content:
+    title: "&8Collection Content"
+    treasure_item:
+      name: "&6Treasure #%number%"
+      lore:
+        - "&7Player-ra khuje peyeche: &f%count%"
+        - ""
+        - "&7Location:"
+        - "&7X: &f%x%"
+        - "&7Y: &f%y%"
+        - "&7Z: &f%z%"
+        - "&7World: &f%world%"
+        - ""
+      lore_teleport: "&eLeft-Click &7kore teleport korte ekhane click korun"
+      lore_reward: "&eShift+Left-Click &7kore reward menu open korte ekhane click korun"
+      lore_who_found: "&eRight-Click &7kore kara khuje peyeche ta dekhte ekhane click korun"
+      lore_action_menu_bedrock: "&8Bedrock/Geyser: &eDrop (Q) &7chepe action menu open korun"
+  minigame:
+    reaction:
+      title: "&8Reaction Game"
+      click:
+        name: "&aEkhane click korun!"
         lore:
-          - "&7Ei treasure-er location-e"
-          - "&7teleport korte ekhane click korun."
-      view_finders:
-        name: "&eKara khuje peyeche ta dekhte ekhane click korun"
-        lore:
-          - "&7Ei treasure-ti ekhon porjonto kon kon"
-          - "&7player khuje peyeche ta dekhte ekhane click korun."
-      rewards:
-        name: "&6Reward-somuho dekhte ekhane click korun"
-        lore:
-          - "&7Ei treasure-er reward-somuho"
-          - "&7edit korte ekhane click korun."
-    finders:
-      title: "&8Kara ei treasure-ti khuje peyeche"
-      loading: "&7Player data load hocche..."
-      empty:
-        name: "&7Ekhono keu khuje payni"
-        lore:
-          - "&7Ei treasure-ti ekhon porjonto"
-          - "&7keu khuje payni."
-      entry:
-        name: "&e%player%"
-        lore:
-          - "&7Ei treasure-ti khuje peyeche"
-    leaderboard:
-      title: "&8Leaderboard: %collection%"
-      loading:
-        name: "&7Leaderboard load hocche..."
-        lore:
-          - "&7Anugroho kore opekkha korun, data"
-          - "&7fetch kora hocche..."
-      empty:
-        name: "&7Ekhono kono data nei"
-        lore:
-          - "&7Ei collection-er treasure ekhono"
-          - "&7kono player khuje payni."
-  player_entry:
-    name: "&e#%rank% %player%"
-    lore:
-      - "&7Khuje pawa treasures: &f%score%"
+          - "&6%current%&7/&6%required%"
+    memory:
+      title: "&8Memory Game"
+      button:
+        name: "&fButton %number%"
+  treasure_action:
+    title: "&8Treasure Actions"
+    teleport:
+      name: "&aTreasure-e teleport korte ekhane click korun"
+      lore:
+        - "&7Ei treasure-er location-e"
+        - "&7teleport korte ekhane click korun."
+    view_finders:
+      name: "&eKara khuje peyeche ta dekhte ekhane click korun"
+      lore:
+        - "&7Ei treasure-ti ekhon porjonto kon kon"
+        - "&7player khuje peyeche ta dekhte ekhane click korun."
+    rewards:
+      name: "&6Reward-somuho dekhte ekhane click korun"
+      lore:
+        - "&7Ei treasure-er reward-somuho"
+        - "&7edit korte ekhane click korun."
+  finders:
+    title: "&8Kara ei treasure-ti khuje peyeche"
+    loading: "&7Player data load hocche..."
+    empty:
+      name: "&7Ekhono keu khuje payni"
+      lore:
+        - "&7Ei treasure-ti ekhon porjonto"
+        - "&7keu khuje payni."
+    entry:
+      name: "&e%player%"
+      lore:
+        - "&7Ei treasure-ti khuje peyeche"
+  leaderboard:
+    title: "&8Leaderboard: %collection%"
+    loading:
+      name: "&7Leaderboard load hocche..."
+      lore:
+        - "&7Anugroho kore opekkha korun, data"
+        - "&7fetch kora hocche..."
+    empty:
+      name: "&7Ekhono kono data nei"
+      lore:
+        - "&7Ei collection-er treasure ekhono"
+        - "&7kono player khuje payni."
+    player_entry:
+      name: "&e#%rank% %player%"
+      lore:
+        - "&7Khuje pawa treasures: &f%score%"
     player_entry_highlighted:
       name: "&6&l#%rank% %player% &7(Apni)"
       lore:
@@ -735,69 +735,69 @@ gui:
         - "&7Cache refresh: &f%refresh_interval%s &8(%minutes%m)"
         - ""
         - "&8Leaderboard-ti swongkriyobhabe update hoy"
-    progress:
-      title: "&8Progress: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
-      loading: "&7Apnar progress load hocche..."
-      no_treasures:
-        name: "&7Kono Treasure nei"
-        lore:
-          - "&7Ei collection-er jonno ekhono kono"
-          - "&7treasure thik kora hoyni."
-      stats:
-        name: "&aApnar Progress Statistics"
-        lore:
-          - "&7Collection: &e%collection%"
-          - "&7Khuje peyechen: &a%found%&7/&e%total%"
-          - "&7Completion: &e%percentage%&7%"
-          - ""
-          - "&7Sob treasure khuje pete"
-          - "&7khoj caliye jaan!"
-      treasure:
-        name: "&7Treasure #%number% &7- %status%"
-        status_found: "&aKhuje pawa hoyeche"
-        status_not_found: "&cKhuje pawa jayni"
-        lore_found:
-          - "&a✓ Apni ei treasure-ti khuje peyechen!"
-          - ""
-          - "&7Location:"
-          - "&7  X: &f%x%"
-          - "&7  Y: &f%y%"
-          - "&7  Z: &f%z%"
-          - "&7  World: &f%world%"
-        lore_not_found:
-          - "&c✗ Apni eta ekhono khuje pan ni"
-          - ""
-          - "&7Ei treasure-ti kothay ache seta"
-          - "&7khujte thakun!"
-    editor:
-      title: "Collection Editor"
-      collection_item:
-        name: "&6%collection%"
-        lore:
-          - "&7Status: %status%"
-          - "&7Availability: %availability%"
-          - "&7Treasures: &f%treasures%"
-          - "&7Reset Cron: %cron%"
-          - ""
-          - "&eSettings edit korte ekhane click korun"
-      create:
-        name: "&aCollection toiri korte ekhane click korun"
-        lore:
-          - "&7Ekti notun collection toiri korte click korun"
-    settings:
-      title: "Settings: %collection%"
-      rename:
-        name: "&eCollection-er naam bodlate ekhane click korun"
-        lore:
-          - "&7Ekhon ache: &f%name%"
-          - ""
-          - "&eNaam bodlate ekhane click korun"
-      status:
-        name: "&eStatus bodlate ekhane click korun"
-        lore:
-          - "&7Ekhon ache: %status%"
-          - ""
-          - "&eToggle korte ekhane click korun"
+  progress:
+    title: "&8Progress: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    loading: "&7Apnar progress load hocche..."
+    no_treasures:
+      name: "&7Kono Treasure nei"
+      lore:
+        - "&7Ei collection-er jonno ekhono kono"
+        - "&7treasure thik kora hoyni."
+    stats:
+      name: "&aApnar Progress Statistics"
+      lore:
+        - "&7Collection: &e%collection%"
+        - "&7Khuje peyechen: &a%found%&7/&e%total%"
+        - "&7Completion: &e%percentage%&7%"
+        - ""
+        - "&7Sob treasure khuje pete"
+        - "&7khoj caliye jaan!"
+    treasure:
+      name: "&7Treasure #%number% &7- %status%"
+      status_found: "&aKhuje pawa hoyeche"
+      status_not_found: "&cKhuje pawa jayni"
+      lore_found:
+        - "&a✓ Apni ei treasure-ti khuje peyechen!"
+        - ""
+        - "&7Location:"
+        - "&7  X: &f%x%"
+        - "&7  Y: &f%y%"
+        - "&7  Z: &f%z%"
+        - "&7  World: &f%world%"
+      lore_not_found:
+        - "&c✗ Apni eta ekhono khuje pan ni"
+        - ""
+        - "&7Ei treasure-ti kothay ache seta"
+        - "&7khujte thakun!"
+  editor:
+    title: "Collection Editor"
+    collection_item:
+      name: "&6%collection%"
+      lore:
+        - "&7Status: %status%"
+        - "&7Availability: %availability%"
+        - "&7Treasures: &f%treasures%"
+        - "&7Reset Cron: %cron%"
+        - ""
+        - "&eSettings edit korte ekhane click korun"
+    create:
+      name: "&aCollection toiri korte ekhane click korun"
+      lore:
+        - "&7Ekti notun collection toiri korte click korun"
+  settings:
+    title: "Settings: %collection%"
+    rename:
+      name: "&eCollection-er naam bodlate ekhane click korun"
+      lore:
+        - "&7Ekhon ache: &f%name%"
+        - ""
+        - "&eNaam bodlate ekhane click korun"
+    status:
+      name: "&eStatus bodlate ekhane click korun"
+      lore:
+        - "&7Ekhon ache: %status%"
+        - ""
+        - "&eToggle korte ekhane click korun"
     rewards:
       name: "&eCompletion Rewards (Sompurno-korar-porer Puroshkar)"
       lore:
@@ -878,62 +878,62 @@ gui:
         - "&7khujte shahajjo korbe."
         - ""
         - "&eMode-ti bodlate ekhane click korun"
-      hide_collection_disabled:
-        name: "&eCollection disabled thakle lukiye rakhte click korun"
+    hide_collection_disabled:
+      name: "&eCollection disabled thakle lukiye rakhte click korun"
+      lore:
+        - "&7Ekhon ache: %status%"
+        - ""
+        - "&7Eta chalu thakle,"
+        - "&7collection bondho ba unavailable"
+        - "&7thakle er treasure-gulo"
+        - "&7player-ra dekhte pabe na."
+        - ""
+        - "&8&m                    "
+        - "&7Ete player-ra unavailable content"
+        - "&7dekha theke biroto rakhbe."
+        - ""
+        - "&eMode-ti bodlate ekhane click korun"
+    hide_status:
+      enabled: "&aChalu ache"
+      disabled: "&cBondho ache"
+    reset_schedule:
+      title: "Progress Reset Schedule"
+    categories:
+      basic:
+        name: "&6&lSadharon Settings-somuho &8------>"
         lore:
-          - "&7Ekhon ache: %status%"
           - ""
-          - "&7Eta chalu thakle,"
-          - "&7collection bondho ba unavailable"
-          - "&7thakle er treasure-gulo"
-          - "&7player-ra dekhte pabe na."
+          - "&7Collection-er mul bivinno"
+          - "&7bishoy gulo configure korun."
           - ""
           - "&8&m                    "
-          - "&7Ete player-ra unavailable content"
-          - "&7dekha theke biroto rakhbe."
+          - "&7• Collection-er naam bodlanor jonno"
+          - "&7• Chalu / Bondho korar jonno"
+          - "&7• Single player mode"
+          - "&7• Collection muche fela"
+      rewards:
+        name: "&6&lSchedule Configuration &8------>"
+        lore:
           - ""
-          - "&eMode-ti bodlate ekhane click korun"
-      hide_status:
-        enabled: "&aChalu ache"
-        disabled: "&cBondho ache"
-      reset_schedule:
-        title: "Progress Reset Schedule"
-  categories:
-    basic:
-      name: "&6&lSadharon Settings-somuho &8------>"
-      lore:
-        - ""
-        - "&7Collection-er mul bivinno"
-        - "&7bishoy gulo configure korun."
-        - ""
-        - "&8&m                    "
-        - "&7• Collection-er naam bodlanor jonno"
-        - "&7• Chalu / Bondho korar jonno"
-        - "&7• Single player mode"
-        - "&7• Collection muche fela"
-    rewards:
-      name: "&6&lSchedule Configuration &8------>"
-      lore:
-        - ""
-        - "&7Collection shesh korar reward"
-        - "&7ebong schedule manage korun."
-        - ""
-        - "&8&m                    "
-        - "&7• Collection rewards"
-        - "&7• Schedule-er rules"
-        - "&7• Progress reset-er somoy"
-    presets:
-      name: "&6&lPresets &8------>"
-      lore:
-        - ""
-        - "&7Default preset thik korun"
-        - "&7ebong ekbare sob"
-        - "&7treasure-e preset load"
-        - "&7korar bebostha."
-        - ""
-        - "&8&m                    "
-        - "&7• Default preset"
-        - "&7• Ekbare sob reward bodlanor jonno"
+          - "&7Collection shesh korar reward"
+          - "&7ebong schedule manage korun."
+          - ""
+          - "&8&m                    "
+          - "&7• Collection rewards"
+          - "&7• Schedule-er rules"
+          - "&7• Progress reset-er somoy"
+      presets:
+        name: "&6&lPresets &8------>"
+        lore:
+          - ""
+          - "&7Default preset thik korun"
+          - "&7ebong ekbare sob"
+          - "&7treasure-e preset load"
+          - "&7korar bebostha."
+          - ""
+          - "&8&m                    "
+          - "&7• Default preset"
+          - "&7• Ekbare sob reward bodlanor jonno"
       visibility:
         name: "&6&lVisibility Options &8------>"
         lore:
@@ -967,34 +967,34 @@ gui:
         load: "load"
         edit: "edit"
 
-      actions:
-        title: "Preset: %name%"
-        rename:
-          name: "&ePreset-er naam bodlate ekhane click korun"
-          lore:
-            - "&7Ekhonkar naam: &f%current%"
-            - ""
-            - "&7Ei reward preset-er display"
-            - "&7name-ti bodlan."
-            - ""
-            - "&eNaam bodlate ekhane click korun"
-        load_all:
-          name: "&eSob Treasure-er jonno load korte ekhane click korun"
-          lore:
-            - ""
-            - "&7Ei collection-er SOB treasure-er"
-            - "&7reward-ke ei preset-er reward"
-            - "&7diye bodle felun."
-            - ""
-            - "&cEta puraton reward gulo soriye felbe!"
-            - ""
-            - "&eAgie jete ekhane click korun"
-          lore_disabled:
-            - ""
-            - "&7Ei action-ti sudhu treasure preset"
-            - "&7edit korar somoy pawa jabe."
-            - "&8Collection preset-er jonno eta sombhob noy!"
-          confirm_title: "Sob treasure-er reward bodlaben?"
+    actions:
+      title: "Preset: %name%"
+      rename:
+        name: "&ePreset-er naam bodlate ekhane click korun"
+        lore:
+          - "&7Ekhonkar naam: &f%current%"
+          - ""
+          - "&7Ei reward preset-er display"
+          - "&7name-ti bodlan."
+          - ""
+          - "&eNaam bodlate ekhane click korun"
+      load_all:
+        name: "&eSob Treasure-er jonno load korte ekhane click korun"
+        lore:
+          - ""
+          - "&7Ei collection-er SOB treasure-er"
+          - "&7reward-ke ei preset-er reward"
+          - "&7diye bodle felun."
+          - ""
+          - "&cEta puraton reward gulo soriye felbe!"
+          - ""
+          - "&eAgie jete ekhane click korun"
+        lore_disabled:
+          - ""
+          - "&7Ei action-ti sudhu treasure preset"
+          - "&7edit korar somoy pawa jabe."
+          - "&8Collection preset-er jonno eta sombhob noy!"
+        confirm_title: "Sob treasure-er reward bodlaben?"
       set_default:
         option:
           available: "&eDefault hishebe set korte ekhane click korun"
@@ -1014,302 +1014,302 @@ gui:
           - "&7Ei action-ti sudhu treasure preset"
           - "&7edit korar somoy pawa jabe."
           - "&8Collection preset-er jonno eta sombhob noy!"
-        edit_rewards:
-          name: "&aReward edit korte ekhane click korun"
+      edit_rewards:
+        name: "&aReward edit korte ekhane click korun"
+        lore:
+          - ""
+          - "&7Ei preset-er bhetore thaka"
+          - "&7reward gulo edit korun."
+          - ""
+          - "&eEdit korte ekhane click korun"
+      delete:
+        name: "&cMuche felte ekhane click korun"
+        lore:
+          - ""
+          - "&7Ei preset-ti chirosthayi"
+          - "&7bhabe muche jabe."
+          - ""
+          - "&cEta kokhono fire pawa jabe na!"
+          - ""
+          - "&eMuche felte ekhane click korun"
+        confirm_title: "'%name%' preset-ti muche felben?"
+  cron:
+    common:
+      invalid_expression: "&c&l⚠ Bhul expression"
+    type:
+      act: "ACT"
+      reset: "Progress Reset"
+    editor:
+      title: "%cron_type% Cron Schedule Editor"
+      current:
+        name: "&e&lEkhonkar Schedule"
+        expression: "&7Expression:"
+        next_runs: "&7Porer execution-somuho:"
+        none: "&7Kono schedule set kora nei"
+    preset:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⏰ Quick Presets"
+          - ""
+          - "&7Sadharon %cron_type% schedule-er"
+          - "&7jonno age thekei toiri kora template."
+          - ""
+          - "&e► Protidin &7- Protidin rat 00:00 te"
+          - "&e► Saptahik &7- Proti Sombar rat 00:00 te"
+          - "&e► Protimash &7- Proti masher 1 tarikh-e"
+          - "&e► Protibochor &7- January-r 1 tarikh-e"
+          - "&e► More... &7- Aro options"
+          - ""
+          - "&a✓ &7Surokkhito ebong sohoj e bebohar-joggo"
+          - "&8Notun-der jonno ekdom perfect!"
+      daily:
+        name: "&eProtidin"
+        lore:
+          - "&7Protidin majhrat-e reset hobe"
+          - "&7Expression: &f0 0 0 * * ? *"
+          - ""
+          - "&aApply korte ekhane click korun"
+      weekly:
+        name: "&eSaptahik"
+        lore:
+          - "&7Proti Sombar majhrat-e reset hobe"
+          - "&7Expression: &f0 0 0 ? * MON *"
+          - ""
+          - "&aApply korte ekhane click korun"
+      monthly:
+        name: "&eProtimash"
+        lore:
+          - "&7Proti masher 1 tarikh-e reset hobe"
+          - "&7Expression: &f0 0 0 1 * ? *"
+          - ""
+          - "&aApply korte ekhane click korun"
+      yearly:
+        name: "&eProtibochor"
+        lore:
+          - "&7Proti bochorer January 1 tarikh-e reset hobe"
+          - "&7Expression: &f0 0 0 1 1 ? *"
+          - ""
+          - "&aApply korte ekhane click korun"
+      more:
+        name: "&6Aro Presets"
+        lore:
+          - "&7Aro kichu preset schedule dekhun"
+          - "&7Jemon: hourly, seasonal, ebong"
+          - "&7nirdishto saptahik din ba bishesh tarikh"
+          - ""
+          - "&eDekhte ekhane click korun"
+    presets:
+      title: "%cron_type% Cron Presets"
+      item:
+        name: "&e%name%"
+      list:
+        hourly:
+          name: "Prottek Ghontay"
           lore:
-            - ""
-            - "&7Ei preset-er bhetore thaka"
-            - "&7reward gulo edit korun."
-            - ""
-            - "&eEdit korte ekhane click korun"
-        delete:
-          name: "&cMuche felte ekhane click korun"
-          lore:
-            - ""
-            - "&7Ei preset-ti chirosthayi"
-            - "&7bhabe muche jabe."
-            - ""
-            - "&cEta kokhono fire pawa jabe na!"
-            - ""
-            - "&eMuche felte ekhane click korun"
-          confirm_title: "'%name%' preset-ti muche felben?"
-    cron:
-      common:
-        invalid_expression: "&c&l⚠ Bhul expression"
-      type:
-        act: "ACT"
-        reset: "Progress Reset"
-      editor:
-        title: "%cron_type% Cron Schedule Editor"
-        current:
-          name: "&e&lEkhonkar Schedule"
-          expression: "&7Expression:"
-          next_runs: "&7Porer execution-somuho:"
-          none: "&7Kono schedule set kora nei"
-      preset:
-        information:
-          name: "&e---------->"
-          lore:
-            - "&6⏰ Quick Presets"
-            - ""
-            - "&7Sadharon %cron_type% schedule-er"
-            - "&7jonno age thekei toiri kora template."
-            - ""
-            - "&e► Protidin &7- Protidin rat 00:00 te"
-            - "&e► Saptahik &7- Proti Sombar rat 00:00 te"
-            - "&e► Protimash &7- Proti masher 1 tarikh-e"
-            - "&e► Protibochor &7- January-r 1 tarikh-e"
-            - "&e► More... &7- Aro options"
-            - ""
-            - "&a✓ &7Surokkhito ebong sohoj e bebohar-joggo"
-            - "&8Notun-der jonno ekdom perfect!"
-        daily:
-          name: "&eProtidin"
-          lore:
-            - "&7Protidin majhrat-e reset hobe"
-            - "&7Expression: &f0 0 0 * * ? *"
+            - "&7Prottek ghontar shurute reset hobe"
+            - "&7Udahoron: 1:00, 2:00, 3:00..."
             - ""
             - "&aApply korte ekhane click korun"
-        weekly:
-          name: "&eSaptahik"
+        every_6_hours:
+          name: "Proti 6 Ghonta por por"
           lore:
-            - "&7Proti Sombar majhrat-e reset hobe"
-            - "&7Expression: &f0 0 0 ? * MON *"
+            - "&7Proti 6 ghonta ontor reset hobe"
+            - "&7Udahoron: 00:00, 06:00, 12:00, 18:00"
             - ""
             - "&aApply korte ekhane click korun"
-        monthly:
-          name: "&eProtimash"
+        every_12_hours:
+          name: "Proti 12 Ghonta por por"
           lore:
-            - "&7Proti masher 1 tarikh-e reset hobe"
-            - "&7Expression: &f0 0 0 1 * ? *"
+            - "&7Din-e dui bar reset hobe"
+            - "&7Udahoron: 00:00, 12:00"
             - ""
             - "&aApply korte ekhane click korun"
-        yearly:
-          name: "&eProtibochor"
+        daily_midnight:
+          name: "Protidin Majhrat-e"
           lore:
-            - "&7Proti bochorer January 1 tarikh-e reset hobe"
-            - "&7Expression: &f0 0 0 1 1 ? *"
+            - "&7Protidin rat 00:00 te reset hobe"
             - ""
             - "&aApply korte ekhane click korun"
-        more:
-          name: "&6Aro Presets"
+        daily_noon:
+          name: "Protidin Dupur-e"
           lore:
-            - "&7Aro kichu preset schedule dekhun"
-            - "&7Jemon: hourly, seasonal, ebong"
-            - "&7nirdishto saptahik din ba bishesh tarikh"
+            - "&7Protidin dupur 12:00 te reset hobe"
             - ""
-            - "&eDekhte ekhane click korun"
-  presets:
-    title: "%cron_type% Cron Presets"
-    item:
-      name: "&e%name%"
-    list:
-      hourly:
-        name: "Prottek Ghontay"
-        lore:
-          - "&7Prottek ghontar shurute reset hobe"
-          - "&7Udahoron: 1:00, 2:00, 3:00..."
-          - ""
-          - "&aApply korte ekhane click korun"
-      every_6_hours:
-        name: "Proti 6 Ghonta por por"
-        lore:
-          - "&7Proti 6 ghonta ontor reset hobe"
-          - "&7Udahoron: 00:00, 06:00, 12:00, 18:00"
-          - ""
-          - "&aApply korte ekhane click korun"
-      every_12_hours:
-        name: "Proti 12 Ghonta por por"
-        lore:
-          - "&7Din-e dui bar reset hobe"
-          - "&7Udahoron: 00:00, 12:00"
-          - ""
-          - "&aApply korte ekhane click korun"
-      daily_midnight:
-        name: "Protidin Majhrat-e"
-        lore:
-          - "&7Protidin rat 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      daily_noon:
-        name: "Protidin Dupur-e"
-        lore:
-          - "&7Protidin dupur 12:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      daily_6am:
-        name: "Protidin bhor 6-tai"
-        lore:
-          - "&7Protidin bhor 06:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      weekdays_9am:
-        name: "Saptahik Kormodin shokal 9-tai"
-        lore:
-          - "&7Som-Shukrobar shokal 09:00 te reset hobe"
-          - "&7Weekday event-er jonno ekdom perfect"
-          - ""
-          - "&aApply korte ekhane click korun"
-      monday_midnight:
-        name: "Proti Sombar Majhrat-e"
-        lore:
-          - "&7Sombar-er saptahik schedule"
-          - "&7Sombar rat 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      friday_6pm:
-        name: "Proti Shukrobar shondha 6-tai"
-        lore:
-          - "&7Weekend event shuru korar jonno"
-          - "&7Shukrobar bikal 18:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      sunday_midnight:
-        name: "Proti Robibar Majhrat-e"
-        lore:
-          - "&7Robibar-er saptahik schedule"
-          - "&7Robibar rat 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      first_day_month:
-        name: "Masher prothom din"
-        lore:
-          - "&7Masik (Monthly) schedule"
-          - "&7Proti masher 1 tarikh 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      last_day_month:
-        name: "Masher shesh din"
-        lore:
-          - "&7Masher shesh diner schedule"
-          - "&7Masher shesh din rat 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      first_monday_month:
-        name: "Masher prothom Sombar"
-        lore:
-          - "&7Masher prothom Sombar-er schedule"
-          - "&7Rat 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      new_year:
-        name: "Notun bochor (1st Jan)"
-        lore:
-          - "&7Borshik (Annual) schedule"
-          - "&7January-r 1 tarikh rat 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-    christmas:
-      name: "Borodin / Christmas (Dec 25th)"
-      lore:
-        - "&7Christmas-er bishesh event"
-        - "&7December 25 tarikh rat 00:00 te reset hobe"
-        - ""
-        - "&aApply korte ekhane click korun"
-      quarterly:
-        name: "Trimasik (Jan/Apr/Jul/Oct-er 1 tarikh)"
-        lore:
-          - "&7Ritubhed-er ba seasonal schedule"
-          - "&7Jan, Apr, Jul, ebong Oct masher"
-          - "&71 tarikh rat 00:00 te reset hobe"
-          - ""
-          - "&aApply korte ekhane click korun"
-      custom:
-        information:
-          name: "&e---------->"
+            - "&aApply korte ekhane click korun"
+        daily_6am:
+          name: "Protidin bhor 6-tai"
           lore:
-            - "&6⚙ Advanced Options"
+            - "&7Protidin bhor 06:00 te reset hobe"
             - ""
-            - "&7Jara schedule-er upor puro niontron"
-            - "&7rakhte chan tader jonno ei option."
-            - ""
-            - "&e► Field Builder"
-            - "&f  Protiti time field alada bhabe configure korun"
-            - ""
-            - "&e► Manual Input"
-            - "&f  Sorasori cron expression likhun"
-            - ""
-            - "&c⚠ &7Cron syntax somporke dharona thaka proyojon"
-            - "&8Nishchit na hole presets bebohar korun!"
-        builder:
-          name: "&dAdvanced Builder"
+            - "&aApply korte ekhane click korun"
+        weekdays_9am:
+          name: "Saptahik Kormodin shokal 9-tai"
           lore:
-            - "&7Visual interface-er madhyome"
-            - "&7field by field apnar cron"
-            - "&7expression toiri korun"
+            - "&7Som-Shukrobar shokal 09:00 te reset hobe"
+            - "&7Weekday event-er jonno ekdom perfect"
             - ""
-            - "&eBuilder open korte ekhane click korun"
-        manual:
-          name: "&bManual Input"
+            - "&aApply korte ekhane click korun"
+        monday_midnight:
+          name: "Proti Sombar Majhrat-e"
           lore:
-            - "&7Nije manual bhabe cron expression likhun"
-            - "&7Format: SEC MIN HOUR DAY MONTH DOW YEAR"
-            - "&7Udahoron: &f0 0 12 * * ? *"
+            - "&7Sombar-er saptahik schedule"
+            - "&7Sombar rat 00:00 te reset hobe"
             - ""
-            - "&eExpression likhte ekhane click korun"
+            - "&aApply korte ekhane click korun"
+        friday_6pm:
+          name: "Proti Shukrobar shondha 6-tai"
+          lore:
+            - "&7Weekend event shuru korar jonno"
+            - "&7Shukrobar bikal 18:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+        sunday_midnight:
+          name: "Proti Robibar Majhrat-e"
+          lore:
+            - "&7Robibar-er saptahik schedule"
+            - "&7Robibar rat 00:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+        first_day_month:
+          name: "Masher prothom din"
+          lore:
+            - "&7Masik (Monthly) schedule"
+            - "&7Proti masher 1 tarikh 00:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+        last_day_month:
+          name: "Masher shesh din"
+          lore:
+            - "&7Masher shesh diner schedule"
+            - "&7Masher shesh din rat 00:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+        first_monday_month:
+          name: "Masher prothom Sombar"
+          lore:
+            - "&7Masher prothom Sombar-er schedule"
+            - "&7Rat 00:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+        new_year:
+          name: "Notun bochor (1st Jan)"
+          lore:
+            - "&7Borshik (Annual) schedule"
+            - "&7January-r 1 tarikh rat 00:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+        christmas:
+          name: "Borodin / Christmas (Dec 25th)"
+          lore:
+            - "&7Christmas-er bishesh event"
+            - "&7December 25 tarikh rat 00:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+        quarterly:
+          name: "Trimasik (Jan/Apr/Jul/Oct-er 1 tarikh)"
+          lore:
+            - "&7Ritubhed-er ba seasonal schedule"
+            - "&7Jan, Apr, Jul, ebong Oct masher"
+            - "&71 tarikh rat 00:00 te reset hobe"
+            - ""
+            - "&aApply korte ekhane click korun"
+    custom:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⚙ Advanced Options"
+          - ""
+          - "&7Jara schedule-er upor puro niontron"
+          - "&7rakhte chan tader jonno ei option."
+          - ""
+          - "&e► Field Builder"
+          - "&f  Protiti time field alada bhabe configure korun"
+          - ""
+          - "&e► Manual Input"
+          - "&f  Sorasori cron expression likhun"
+          - ""
+          - "&c⚠ &7Cron syntax somporke dharona thaka proyojon"
+          - "&8Nishchit na hole presets bebohar korun!"
       builder:
-        title: "%cron_type% Cron Expression Builder"
-        fields:
-          second:
-            name: "Second"
-            description: "Prottek minuter second"
-            values:
-              0: "Shurute"
-              wildcard: "Prottek second-e"
-              every_interval: "Proti %interval% second por por"
-          minute:
-            name: "Minute"
-            description: "Prottek ghontar minute"
-            values:
-              0: "Shurute"
-              wildcard: "Prottek minute-e"
-              every_interval: "Proti %interval% minute por por"
-          hour:
-            name: "Ghonta"
-            description: "Diner ghonta (0-23)"
-            values:
-              0: "Majhrat"
-              6: "6 AM"
-              12: "Dupur"
-              18: "6 PM"
-              wildcard: "Prottek ghontay"
-              every_interval: "Proti %interval% ghonta por por"
-          day:
-            name: "Din"
-            description: "Masher din (1-31)"
-            values:
-              1: "Masher prothom din"
-              15: "Masher majhamajhi"
-              last: "Masher shesh din"
-              wildcard: "Prottek din"
-              none: "Nirdishto kono din nei"
-          month:
-            name: "Mash"
-            description: "Bochorer mash (1-12 ba JAN-DEC)"
-            values:
-              wildcard: "Prottek mash"
-              1: "January"
-              6: "June"
-              12: "December"
-              "1_4_7_10": "Trimasik (Jan/Apr/Jul/Oct)"
-          day_of_week:
-            name: "Saptaher Din"
-            description: "Saptaher din (1-7 ba SUN-SAT)"
-            values:
-              none: "Nirdishto kono din nei"
-              wildcard: "Prottek din"
-              mon: "Sombar"
-              fri: "Shukrobar"
-              sat: "Shonibar"
-              sun: "Robibar"
-              mon_fri: "Saptahik Kormodin"
-    year:
-      name: "Bochor"
-      description: "Bochor (optional, sob bochorer jonno * rakhun)"
-      values:
-        wildcard: "Prottek bochor"
-        specific_year: "%year% bochor-e"
-      custom_value: "Custom value"
+        name: "&dAdvanced Builder"
+        lore:
+          - "&7Visual interface-er madhyome"
+          - "&7field by field apnar cron"
+          - "&7expression toiri korun"
+          - ""
+          - "&eBuilder open korte ekhane click korun"
+      manual:
+        name: "&bManual Input"
+        lore:
+          - "&7Nije manual bhabe cron expression likhun"
+          - "&7Format: SEC MIN HOUR DAY MONTH DOW YEAR"
+          - "&7Udahoron: &f0 0 12 * * ? *"
+          - ""
+          - "&eExpression likhte ekhane click korun"
+    builder:
+      title: "%cron_type% Cron Expression Builder"
+      fields:
+        second:
+          name: "Second"
+          description: "Prottek minuter second"
+          values:
+            0: "Shurute"
+            wildcard: "Prottek second-e"
+            every_interval: "Proti %interval% second por por"
+        minute:
+          name: "Minute"
+          description: "Prottek ghontar minute"
+          values:
+            0: "Shurute"
+            wildcard: "Prottek minute-e"
+            every_interval: "Proti %interval% minute por por"
+        hour:
+          name: "Ghonta"
+          description: "Diner ghonta (0-23)"
+          values:
+            0: "Majhrat"
+            6: "6 AM"
+            12: "Dupur"
+            18: "6 PM"
+            wildcard: "Prottek ghontay"
+            every_interval: "Proti %interval% ghonta por por"
+        day:
+          name: "Din"
+          description: "Masher din (1-31)"
+          values:
+            1: "Masher prothom din"
+            15: "Masher majhamajhi"
+            last: "Masher shesh din"
+            wildcard: "Prottek din"
+            none: "Nirdishto kono din nei"
+        month:
+          name: "Mash"
+          description: "Bochorer mash (1-12 ba JAN-DEC)"
+          values:
+            wildcard: "Prottek mash"
+            1: "January"
+            6: "June"
+            12: "December"
+            "1_4_7_10": "Trimasik (Jan/Apr/Jul/Oct)"
+        day_of_week:
+          name: "Saptaher Din"
+          description: "Saptaher din (1-7 ba SUN-SAT)"
+          values:
+            none: "Nirdishto kono din nei"
+            wildcard: "Prottek din"
+            mon: "Sombar"
+            fri: "Shukrobar"
+            sat: "Shonibar"
+            sun: "Robibar"
+            mon_fri: "Saptahik Kormodin"
+        year:
+          name: "Bochor"
+          description: "Bochor (optional, sob bochorer jonno * rakhun)"
+          values:
+            wildcard: "Prottek bochor"
+            specific_year: "%year% bochor-e"
+        custom_value: "Custom value"
       preview:
         name: "&e&lPreview"
         current_expression: "&7Bortoman Expression:"
@@ -1362,70 +1362,70 @@ gui:
           - "&7apply korte ekhane click korun."
           - ""
           - "&fExpression: &7%expression%"
-      clear:
-        name: "&cSchedule muche felte ekhane click korun"
+    clear:
+      name: "&cSchedule muche felte ekhane click korun"
+      lore:
+        - "&7Reset schedule-ti soriye felun"
+        - "&7Collection-ti r auto-reset hobe na."
+        - ""
+        - "&cMuche felte ekhane click korun"
+  act:
+    setup:
+      title: "&8ACT Setup"
+      date_window:
+        name: "&aDate Window (Sorboda Chalu)"
         lore:
-          - "&7Reset schedule-ti soriye felun"
-          - "&7Collection-ti r auto-reset hobe na."
+          - "&7Shurur ebong shesh diner bhetore"
+          - "&7shara din active thakbe."
           - ""
-          - "&cMuche felte ekhane click korun"
-    act:
-      setup:
-        title: "&8ACT Setup"
-        date_window:
-          name: "&aDate Window (Sorboda Chalu)"
-          lore:
-            - "&7Shurur ebong shesh diner bhetore"
-            - "&7shara din active thakbe."
-            - ""
-            - "&7Apni ekti date range bachai korben."
-            - "&7Alada kono schedule lagbe na."
-            - ""
-            - "&eThik korte ekhane click korun"
-        repeating_schedule:
-          name: "&eRepeating Schedule"
-          lore:
-            - "&7Ekti nirdishto schedule onujayi"
-            - "&7X ghontar jonno active thakbe."
-            - ""
-            - "&7Apni prothome duration ebong"
-            - "&7tarpor schedule bachai korben."
-            - ""
-            - "&eConfigure korte ekhane click korun"
-        advanced:
-          name: "&cAdvanced"
-          lore:
-            - "&7Date range, duration"
-            - "&7ebong schedule-er"
-            - "&7upor puro niontron."
-            - ""
-            - "&eEditor open korte ekhane click korun"
+          - "&7Apni ekti date range bachai korben."
+          - "&7Alada kono schedule lagbe na."
+          - ""
+          - "&eThik korte ekhane click korun"
+      repeating_schedule:
+        name: "&eRepeating Schedule"
+        lore:
+          - "&7Ekti nirdishto schedule onujayi"
+          - "&7X ghontar jonno active thakbe."
+          - ""
+          - "&7Apni prothome duration ebong"
+          - "&7tarpor schedule bachai korben."
+          - ""
+          - "&eConfigure korte ekhane click korun"
+      advanced:
+        name: "&cAdvanced"
+        lore:
+          - "&7Date range, duration"
+          - "&7ebong schedule-er"
+          - "&7upor puro niontron."
+          - ""
+          - "&eEditor open korte ekhane click korun"
 
-  editor:
-    title: "ACT Rule Editor: %name%"
-    guided_setup:
-      name: "&bGuided Setup"
-      lore:
-        - "&7Ei rule-tir jonno setup"
-        - "&7wizard-ti abar open korun."
-        - ""
-        - "&eOpen korte ekhane click korun"
-    manual_input:
-      name: "&bManual ACT Input"
-      lore:
-        - "&7Sorasori chat-e ACT format-ti"
-        - "&7likhe din."
-        - ""
-        - "&eLikhte ekhane click korun"
-    current:
-      name: "&e&lEkhonkar Rule Configuration"
-      date_range: "&7Tarik er somoyshima: &f%date_range%"
-      duration: "&7Duration: &f%duration%"
-      cron: "&7Cron: &f%cron%"
-      next_activation: "&7Porer activation-somuho:"
-      validation: "&7Validation: %status%"
-      valid: "&a✓ Valid"
-      invalid: "&c✗ Invalid"
+    editor:
+      title: "ACT Rule Editor: %name%"
+      guided_setup:
+        name: "&bGuided Setup"
+        lore:
+          - "&7Ei rule-tir jonno setup"
+          - "&7wizard-ti abar open korun."
+          - ""
+          - "&eOpen korte ekhane click korun"
+      manual_input:
+        name: "&bManual ACT Input"
+        lore:
+          - "&7Sorasori chat-e ACT format-ti"
+          - "&7likhe din."
+          - ""
+          - "&eLikhte ekhane click korun"
+      current:
+        name: "&e&lEkhonkar Rule Configuration"
+        date_range: "&7Tarik er somoyshima: &f%date_range%"
+        duration: "&7Duration: &f%duration%"
+        cron: "&7Cron: &f%cron%"
+        next_activation: "&7Porer activation-somuho:"
+        validation: "&7Validation: %status%"
+        valid: "&a✓ Valid"
+        invalid: "&c✗ Invalid"
     preset:
       apply:
         name: "&6Dhruto Setup (Presets)"
@@ -1446,304 +1446,304 @@ gui:
             - "&7Format: &f[*] [*] [NONE]"
             - ""
             - "&aApply korte ekhane click korun"
-    daily_2h:
-      name: "Protidin 2 Ghonta (Shokal)"
-      lore:
-        - "&7Protidin 2 ghontar jonno available thakbe"
-        - "&7Shokal 9:00 AM-e shuru hobe"
-        - ""
-        - "&7Format: &f[*] [2h] [0 0 9 * * ?]"
-        - ""
-        - "&aApply korte ekhane click korun"
-      daily_4h:
-        name: "Protidin 4 Ghonta (Bikal)"
-        lore:
-          - "&7Protidin 4 ghontar jonno available thakbe"
-          - "&7Dupur 2:00 PM-e shuru hobe"
-          - ""
-          - "&7Format: &f[*] [4h] [0 0 14 * * ?]"
-          - ""
-          - "&aApply korte ekhane click korun"
-      weekend_8h:
-        name: "Saptahanto Event (8 Ghonta)"
-        lore:
-          - "&7Sudhu Shoni ebong Robibar pawa jabe"
-          - "&7Shokal 10:00 AM theke 8 ghontar jonno"
-          - ""
-          - "&7Format: &f[*] [8h] [0 0 10 ? * SAT,SUN]"
-          - ""
-          - "&aApply korte ekhane click korun"
-      weekly_24h:
-        name: "Saptahik Event (24 Ghonta)"
-        lore:
-          - "&7Proti Sombar available thakbe"
-          - "&7Shara diner jonno"
-          - ""
-          - "&7Format: &f[*] [24h] [0 0 0 ? * MON]"
-          - ""
-          - "&aApply korte ekhane click korun"
-      holiday_special:
-        name: "Chuti Special (Christmas)"
-        lore:
-          - "&7Christmas-er soptaho chola-kalin pawa jabe"
-          - "&7Oi somoy-tuku purotai available thakbe"
-          - "&7Dec 20 theke Dec 26 porjonto"
-          - ""
-          - "&7Format: &f[2025-12-20:2025-12-26] [*] [0 0 0 * * ?]"
-          - ""
-          - "&aApply korte ekhane click korun"
-      seasonal_summer:
-        name: "Grishmokal Season"
-        lore:
-          - "&7Sudhu grishmokal-er mash gulote pawa jabe"
-          - "&7June-August porjonto sorboda available"
-          - ""
-          - "&7Format: &f[2025-06-01:2025-08-31] [*] [NONE]"
-          - ""
-          - "&aApply korte ekhane click korun"
-    hourly_30m:
-      name: "Prottek Ghontay (30 Minute)"
-      lore:
-        - "&7Prottek ghontay shuru hobe"
-        - "&7Protibar 30 minute-er jonno thakbe"
-        - ""
-        - "&7Format: &f[*] [30m] [0 0 * * * ?]"
-        - ""
-        - "&aApply korte ekhane click korun"
-      twice_daily_3h:
-        name: "Din-e dui bar (3 ghonta kore)"
-        lore:
-          - "&7Din-e dui bar available thakbe"
-          - "&7Shokal 9:00 AM ebong shondha 6:00 PM-e"
-          - "&7Protibar 3 ghontar jonno thakbe"
-          - ""
-          - "&7Format: &f[*] [3h] [0 0 9,18 * * ?]"
-          - ""
-          - "&aApply korte ekhane click korun"
-      monthly_week:
-        name: "Masik (Prothom Soptaho)"
-        lore:
-          - "&7Proti masher prothom soptaho available thakbe"
-          - "&71 tarikh theke 7 tarikh porjonto"
-          - "&7Ei somoy-tuku purotai available thakbe"
-          - ""
-          - "&7Format: &f[*-*-01:*-*-07] [*] [NONE]"
-          - ""
-          - "&aApply korte ekhane click korun"
-      component:
-        date_range:
-          name: "&eTarikh-er Sima"
+        daily_2h:
+          name: "Protidin 2 Ghonta (Shokal)"
           lore:
-            - "&7Ekhon ache: &f%value%"
-            - "&7%description%"
+            - "&7Protidin 2 ghontar jonno available thakbe"
+            - "&7Shokal 9:00 AM-e shuru hobe"
             - ""
-            - "&7Optional: nirdishto tarikh porjonto simaboddho korun"
+            - "&7Format: &f[*] [2h] [0 0 9 * * ?]"
             - ""
-            - "&eEdit korte ekhane click korun"
-        duration:
-          name: "&eSthayittokal"
+            - "&aApply korte ekhane click korun"
+        daily_4h:
+          name: "Protidin 4 Ghonta (Bikal)"
           lore:
-            - "&7Ekhon ache: &f%value%"
-            - "&7%description%"
+            - "&7Protidin 4 ghontar jonno available thakbe"
+            - "&7Dupur 2:00 PM-e shuru hobe"
             - ""
-            - "&7Optional: koto khon active thakbe ta thik korun"
+            - "&7Format: &f[*] [4h] [0 0 14 * * ?]"
             - ""
-            - "&eEdit korte ekhane click korun"
-        cron:
-          name: "&eSchedule"
-          description:
-            none: "Kono schedule nei"
-            invalid: "Bhul schedule"
+            - "&aApply korte ekhane click korun"
+        weekend_8h:
+          name: "Saptahanto Event (8 Ghonta)"
           lore:
-            - "&7Ekhon ache: &f%value%"
-            - "&7%description%"
+            - "&7Sudhu Shoni ebong Robibar pawa jabe"
+            - "&7Shokal 10:00 AM theke 8 ghontar jonno"
             - ""
-            - "&7Optional: ekti punarabritti schedule chalu korun"
+            - "&7Format: &f[*] [8h] [0 0 10 ? * SAT,SUN]"
             - ""
-            - "&eEdit korte ekhane click korun"
-      rules:
-        list:
-          title: "Schedule Rules: %collection%"
-          rule_item:
-            name: "&6%name%"
-            lore:
-              - "&7Status: %status%"
-              - "&7Tarikh-er Sima: &f%date_range%"
-              - "&7Sthayittokal: &f%duration%"
-              - "&7Cron: &f%cron%"
-              - "&7Porer Trigger: %next_trigger%"
-              - ""
-              - "&eLeft-Click kore edit korun"
-              - "&eRight-Click kore toggle korun"
-              - "&cShift+Left-Click kore muche felun"
-          add_rule:
-            name: "&aNotun Rule jog korun"
-            lore:
-              - "&7Ekti notun rule toiri korbe"
-              - "&7ebong setup open korbe"
-        editor:
-          name:
-            name: "&eNaam"
-            lore:
-              - "&7Ekhon ache: &f%name%"
-              - ""
-              - "&eNaam bodlate ekhane click korun"
-          enabled:
-            name: "&eChalu Ache (Enabled)"
-            lore:
-              - "&7Ekhonkar obostha: %status%"
-              - ""
-              - "&eToggle korte ekhane click korun"
-          delete:
-            name: "&cRule muche felun"
-            lore:
-              - "&7Ei rule-ti chirosthayi bhabe soriye felbe"
-              - ""
-              - "&cMuche felte ekhane click korun"
-  components:
-    duration:
+            - "&aApply korte ekhane click korun"
+        weekly_24h:
+          name: "Saptahik Event (24 Ghonta)"
+          lore:
+            - "&7Proti Sombar available thakbe"
+            - "&7Shara diner jonno"
+            - ""
+            - "&7Format: &f[*] [24h] [0 0 0 ? * MON]"
+            - ""
+            - "&aApply korte ekhane click korun"
+        holiday_special:
+          name: "Chuti Special (Christmas)"
+          lore:
+            - "&7Christmas-er soptaho chola-kalin pawa jabe"
+            - "&7Oi somoy-tuku purotai available thakbe"
+            - "&7Dec 20 theke Dec 26 porjonto"
+            - ""
+            - "&7Format: &f[2025-12-20:2025-12-26] [*] [0 0 0 * * ?]"
+            - ""
+            - "&aApply korte ekhane click korun"
+        seasonal_summer:
+          name: "Grishmokal Season"
+          lore:
+            - "&7Sudhu grishmokal-er mash gulote pawa jabe"
+            - "&7June-August porjonto sorboda available"
+            - ""
+            - "&7Format: &f[2025-06-01:2025-08-31] [*] [NONE]"
+            - ""
+            - "&aApply korte ekhane click korun"
+        hourly_30m:
+          name: "Prottek Ghontay (30 Minute)"
+          lore:
+            - "&7Prottek ghontay shuru hobe"
+            - "&7Protibar 30 minute-er jonno thakbe"
+            - ""
+            - "&7Format: &f[*] [30m] [0 0 * * * ?]"
+            - ""
+            - "&aApply korte ekhane click korun"
+        twice_daily_3h:
+          name: "Din-e dui bar (3 ghonta kore)"
+          lore:
+            - "&7Din-e dui bar available thakbe"
+            - "&7Shokal 9:00 AM ebong shondha 6:00 PM-e"
+            - "&7Protibar 3 ghontar jonno thakbe"
+            - ""
+            - "&7Format: &f[*] [3h] [0 0 9,18 * * ?]"
+            - ""
+            - "&aApply korte ekhane click korun"
+        monthly_week:
+          name: "Masik (Prothom Soptaho)"
+          lore:
+            - "&7Proti masher prothom soptaho available thakbe"
+            - "&71 tarikh theke 7 tarikh porjonto"
+            - "&7Ei somoy-tuku purotai available thakbe"
+            - ""
+            - "&7Format: &f[*-*-01:*-*-07] [*] [NONE]"
+            - ""
+            - "&aApply korte ekhane click korun"
+    component:
+      date_range:
+        name: "&eTarikh-er Sima"
+        lore:
+          - "&7Ekhon ache: &f%value%"
+          - "&7%description%"
+          - ""
+          - "&7Optional: nirdishto tarikh porjonto simaboddho korun"
+          - ""
+          - "&eEdit korte ekhane click korun"
+      duration:
+        name: "&eSthayittokal"
+        lore:
+          - "&7Ekhon ache: &f%value%"
+          - "&7%description%"
+          - ""
+          - "&7Optional: koto khon active thakbe ta thik korun"
+          - ""
+          - "&eEdit korte ekhane click korun"
+      cron:
+        name: "&eSchedule"
+        description:
+          none: "Kono schedule nei"
+          invalid: "Bhul schedule"
+        lore:
+          - "&7Ekhon ache: &f%value%"
+          - "&7%description%"
+          - ""
+          - "&7Optional: ekti punarabritti schedule chalu korun"
+          - ""
+          - "&eEdit korte ekhane click korun"
+    rules:
+      list:
+        title: "Schedule Rules: %collection%"
+        rule_item:
+          name: "&6%name%"
+          lore:
+            - "&7Status: %status%"
+            - "&7Tarikh-er Sima: &f%date_range%"
+            - "&7Sthayittokal: &f%duration%"
+            - "&7Cron: &f%cron%"
+            - "&7Porer Trigger: %next_trigger%"
+            - ""
+            - "&eLeft-Click kore edit korun"
+            - "&eRight-Click kore toggle korun"
+            - "&cShift+Left-Click kore muche felun"
+        add_rule:
+          name: "&aNotun Rule jog korun"
+          lore:
+            - "&7Ekti notun rule toiri korbe"
+            - "&7ebong setup open korbe"
       editor:
-        title: "Duration Edit korun"
-        current:
-          name: "&e&lEkhonkar Duration"
-          value: "&f%duration%"
-          description: "&7%description%"
-      preset:
-        permanent:
-          name: "&aPermanent"
+        name:
+          name: "&eNaam"
           lore:
-            - "&7Collection-ti shorboda available thakbe"
-            - "&7Ekbar shuru hole (reset na kora porjonto)"
+            - "&7Ekhon ache: &f%name%"
             - ""
-            - "&7Value: &f*"
-            - ""
-            - "&eApply korte ekhane click korun"
-        30_minutes:
-          name: "&e30 Minute"
+            - "&eNaam bodlate ekhane click korun"
+        enabled:
+          name: "&eChalu Ache (Enabled)"
           lore:
-            - "&7Adha ghontar jonno available thakbe"
+            - "&7Ekhonkar obostha: %status%"
             - ""
-            - "&7Value: &f30m"
-            - ""
-            - "&eApply korte ekhane click korun"
-        1_hour:
-          name: "&e1 Ghonta"
+            - "&eToggle korte ekhane click korun"
+        delete:
+          name: "&cRule muche felun"
           lore:
-            - "&7Ek ghontar jonno available thakbe"
+            - "&7Ei rule-ti chirosthayi bhabe soriye felbe"
             - ""
-            - "&7Value: &f1h"
-            - ""
-            - "&eApply korte ekhane click korun"
-        2_hours:
-          name: "&e2 Ghonta"
+            - "&cMuche felte ekhane click korun"
+    components:
+      duration:
+        editor:
+          title: "Duration Edit korun"
+          current:
+            name: "&e&lEkhonkar Duration"
+            value: "&f%duration%"
+            description: "&7%description%"
+        preset:
+          permanent:
+            name: "&aPermanent"
+            lore:
+              - "&7Collection-ti shorboda available thakbe"
+              - "&7Ekbar shuru hole (reset na kora porjonto)"
+              - ""
+              - "&7Value: &f*"
+              - ""
+              - "&eApply korte ekhane click korun"
+          30_minutes:
+            name: "&e30 Minute"
+            lore:
+              - "&7Adha ghontar jonno available thakbe"
+              - ""
+              - "&7Value: &f30m"
+              - ""
+              - "&eApply korte ekhane click korun"
+          1_hour:
+            name: "&e1 Ghonta"
+            lore:
+              - "&7Ek ghontar jonno available thakbe"
+              - ""
+              - "&7Value: &f1h"
+              - ""
+              - "&eApply korte ekhane click korun"
+          2_hours:
+            name: "&e2 Ghonta"
+            lore:
+              - "&7Dui ghontar jonno available thakbe"
+              - ""
+              - "&7Value: &f2h"
+              - ""
+              - "&eApply korte ekhane click korun"
+          4_hours:
+            name: "&e4 Ghonta"
+            lore:
+              - "&7Char ghontar jonno available thakbe"
+              - ""
+              - "&7Value: &f4h"
+              - ""
+              - "&eApply korte ekhane click korun"
+          8_hours:
+            name: "&e8 Ghonta"
+            lore:
+              - "&7At ghontar jonno available thakbe"
+              - ""
+              - "&7Value: &f8h"
+              - ""
+              - "&eApply korte ekhane click korun"
+          24_hours:
+            name: "&e24 Ghonta (1 Din)"
+            lore:
+              - "&7Ek puro diner jonno available thakbe"
+              - ""
+              - "&7Value: &f24h"
+              - ""
+              - "&eApply korte ekhane click korun"
+          7_days:
+            name: "&e7 Din (1 Soptaho)"
+            lore:
+              - "&7Ek soptaho porjonto available thakbe"
+              - ""
+              - "&7Value: &f7d"
+              - ""
+              - "&eApply korte ekhane click korun"
+        custom:
+          name: "&dNijeder moto Duration set korun"
           lore:
-            - "&7Dui ghontar jonno available thakbe"
+            - "&7Apnar pochondo moto duration likhun"
+            - "&7Format: <number><unit>"
+            - "&7Unit-somuho: s (sec), m (min), h (hr), d (day)"
+            - "&7Udahoron: 90s, 90m, 12h, 3d"
             - ""
-            - "&7Value: &f2h"
-            - ""
-            - "&eApply korte ekhane click korun"
-        4_hours:
-          name: "&e4 Ghonta"
+            - "&eManual bhabe likhte ekhane click korun"
+        increase:
+          name: "&a&l+ Baran"
           lore:
-            - "&7Char ghontar jonno available thakbe"
-            - ""
-            - "&7Value: &f4h"
-            - ""
-            - "&eApply korte ekhane click korun"
-        8_hours:
-          name: "&e8 Ghonta"
+            - "&7Duration-er maan 1 baran"
+            - "&7(sudhu matro shonkhyachok duration-er jonno)"
+        decrease:
+          name: "&c&l- Koman"
           lore:
-            - "&7At ghontar jonno available thakbe"
-            - ""
-            - "&7Value: &f8h"
-            - ""
-            - "&eApply korte ekhane click korun"
-        24_hours:
-          name: "&e24 Ghonta (1 Din)"
+            - "&7Duration-er maan 1 koman"
+            - "&7(shonkhyachok duration, minimum: 1)"
+      date_range:
+        manual:
+          name: "&dManual Date Range Input"
           lore:
-            - "&7Ek puro diner jonno available thakbe"
+            - "&7Nijeder moto tarikh-er sima likhun"
+            - "&7Format: YYYY-MM-DD:YYYY-MM-DD"
+            - "&7Udahoron: 2025-12-24:2025-12-31"
+            - "&7Sorboda chalu rakhte &f * &7bebohar korun"
             - ""
-            - "&7Value: &f24h"
-            - ""
-            - "&eApply korte ekhane click korun"
-        7_days:
-          name: "&e7 Din (1 Soptaho)"
-          lore:
-            - "&7Ek soptaho porjonto available thakbe"
-            - ""
-            - "&7Value: &f7d"
-            - ""
-            - "&eApply korte ekhane click korun"
-      custom:
-        name: "&dNijeder moto Duration set korun"
-        lore:
-          - "&7Apnar pochondo moto duration likhun"
-          - "&7Format: <number><unit>"
-          - "&7Unit-somuho: s (sec), m (min), h (hr), d (day)"
-          - "&7Udahoron: 90s, 90m, 12h, 3d"
-          - ""
-          - "&eManual bhabe likhte ekhane click korun"
-      increase:
-        name: "&a&l+ Baran"
-        lore:
-          - "&7Duration-er maan 1 baran"
-          - "&7(sudhu matro shonkhyachok duration-er jonno)"
-      decrease:
-        name: "&c&l- Koman"
-        lore:
-          - "&7Duration-er maan 1 koman"
-          - "&7(shonkhyachok duration, minimum: 1)"
-    date_range:
-      manual:
-        name: "&dManual Date Range Input"
-        lore:
-          - "&7Nijeder moto tarikh-er sima likhun"
-          - "&7Format: YYYY-MM-DD:YYYY-MM-DD"
-          - "&7Udahoron: 2025-12-24:2025-12-31"
-          - "&7Sorboda chalu rakhte &f * &7bebohar korun"
-          - ""
-          - "&eManual bhabe likhte ekhane click korun"
-    editor:
-      title: "Tarikh-er Somoy Shima Edit korun"
-      current:
-        name: "&e&lEkhonkar Date Range"
-        value: "&f%date_range%"
-        description: "&7%description%"
-      preset:
-        always:
-          name: "&aSorboda Chalu"
-          lore:
-            - "&7Tarikh-er kono nishedhagya nei"
-            - "&7Ei rule-ti jekono din kaj korbe"
-            - ""
-            - "&7Value: &f*"
-            - ""
-            - "&eApply korte ekhane click korun"
-        this_year:
-          name: "&eEi Bochor (%year%)"
-          lore:
-            - "&7Sudhu ei bochore active thakbe"
-            - "&7Jan 1st theke Dec 31st porjonto"
-            - ""
-            - "&7Value: &f%year%-01-01:%year%-12-31"
-            - ""
-            - "&eApply korte ekhane click korun"
-        this_month:
-          name: "&eEi Mash"
-          lore:
-            - "&7Ei mash-ei active thakbe"
-            - ""
-            - "&7Value: &f%start%:%end%"
-            - ""
-            - "&eApply korte ekhane click korun"
-        next_month:
-          name: "&eAgami Mash"
-          lore:
-            - "&7Agami mashe active thakbe"
-            - ""
-            - "&7Value: &f%start%:%end%"
-            - ""
-            - "&eApply korte ekhane click korun"
+            - "&eManual bhabe likhte ekhane click korun"
+        editor:
+          title: "Tarikh-er Somoy Shima Edit korun"
+          current:
+            name: "&e&lEkhonkar Date Range"
+            value: "&f%date_range%"
+            description: "&7%description%"
+        preset:
+          always:
+            name: "&aSorboda Chalu"
+            lore:
+              - "&7Tarikh-er kono nishedhagya nei"
+              - "&7Ei rule-ti jekono din kaj korbe"
+              - ""
+              - "&7Value: &f*"
+              - ""
+              - "&eApply korte ekhane click korun"
+          this_year:
+            name: "&eEi Bochor (%year%)"
+            lore:
+              - "&7Sudhu ei bochore active thakbe"
+              - "&7Jan 1st theke Dec 31st porjonto"
+              - ""
+              - "&7Value: &f%year%-01-01:%year%-12-31"
+              - ""
+              - "&eApply korte ekhane click korun"
+          this_month:
+            name: "&eEi Mash"
+            lore:
+              - "&7Ei mash-ei active thakbe"
+              - ""
+              - "&7Value: &f%start%:%end%"
+              - ""
+              - "&eApply korte ekhane click korun"
+          next_month:
+            name: "&eAgami Mash"
+            lore:
+              - "&7Agami mashe active thakbe"
+              - ""
+              - "&7Value: &f%start%:%end%"
+              - ""
+              - "&eApply korte ekhane click korun"
 minigame:
   success: "%prefix%&aMinigame-ti darun bhabe shesh hoyeche!"
   failed: "%prefix%&cMinigame-e apni here giyechen."
