@@ -1,7 +1,5 @@
 config-version: 2
 
-# FORMAT IS WRONG
-
 common:
   treasure: "Treasure"
   collection: "Collection"
@@ -92,9 +90,7 @@ feedback:
 
   place_items:
     prompt_group: "%prefix%&7Chat-e &egroup-er naam&7 ti likhun (othoba 'cancel' korun)."
-    prompt_rename: "%prefix%&7&e%name%&7 er jonno notun naam likhun (othoba 'cancel' korun)."
     prompt_rename_group: "%prefix%&7&e%group%&7 group-er jonno notun naam likhun (othoba 'cancel' korun)."
-    prompt_move_group: "%prefix%&7Ei preset-er jonno notun group-er naam likhun (ekhon ache: &e%group%&7)."
     group_created: "%prefix%&a&e%group%&a group-ti toiri kora hoyeche."
     group_renamed: "%prefix%&a&e%old%&a group-er naam bodle &e%group%&a kora hoyeche."
     group_deleted: "%prefix%&a&e%group%&a group-ti muche fela hoyeche."
@@ -106,19 +102,17 @@ prefix: "&6AdvancedHunt &8>> &7"
 
 error:
   no_permission: "%prefix%&cEita korar jonno apnar kache porjapto permission nei!"
+  generic: "%prefix%&cEkti error hoyeche. Onugroho kore console check korun."
   place_items:
     no_item: "%prefix%&cProthom slot-e ekti block item rakhun."
     not_a_block: "%prefix%&cOi item-ti kono block noy, tai eita place korar jonno bebohar kora jabe na."
     invalid_group: "%prefix%&cGroup-er naam-ti thik nei."
     duplicate_group: "%prefix%&cEi naam-e agei ekti group ache."
-    invalid_name: "%prefix%&cItem-er naam-ti thik nei."
-    duplicate_name: "%prefix%&cEi group-e ei naam-er agei ekti item ache."
     serialize_failed: "%prefix%&cItem-ti save korte bertho hoyeche."
     deserialize_failed: "%prefix%&cItem-ti load hote bertho hoyeche."
     create_failed: "%prefix%&cPlace item toiri korte bertho hoyeche."
     create_group_failed: "%prefix%&cGroup toiri korte bertho hoyeche."
     rename_group_failed: "%prefix%&cGroup-er naam bodlate bertho hoyeche."
-    save_failed: "%prefix%&cPlace item-ti save korte bertho hoyeche."
 
   feature_disabled: "%prefix%&cEi feature-ti ekhon bondho ba disabled ache."
 
@@ -145,6 +139,7 @@ command:
   help:
     descriptions:
       help: "Ei help menu ti dekhar jonno"
+      bypass: "Treasure bypass on/off korar jonno"
       reload: "Plugin-er configuration reload korar jonno"
       show: "Kachakachi thaka treasure-er location hologram hishebe dekhar jonno"
       list: "Sokol available collection-er talika dekhar jonno"
@@ -165,10 +160,10 @@ command:
       reset_collection: "Kono ekti collection-er progress reset korar jonno"
       reset_player: "Kono ekti player-er sob progress reset korar jonno"
       reset_player_collection: "Collection-e kono ekti player-er progress reset korar jonno"
-      minigame: "Treasure khujhte shahajjo korar jonno ekti minigame khelar jonno"
       hint: "Kachakachi kono treasure khujhar hint-er onurodh korar jonno"
       migrate: "Data storage system-er moddhe data transfer korar jonno (yaml/sqlite/mysql)"
       debug_hint: "Debug: Hint system porikkha korar jonno"
+      debug_minigame: "Debug: Minigame system porikkha korar jonno"
       debug_placecollection: "Debug: Random bhabe treasure place korar jonno"
       debug_placecollection_random: "Debug: Random bhabe treasure place korar jonno"
       debug_placecollection_plane: "Debug: Somantoral Grid e treasure place korar jonno"
@@ -199,6 +194,10 @@ command:
     invalid_radius: "%prefix%&cRadius oboshshoi &e1&c theke &e500&c block-er moddhe hote hobe."
     invalid_duration: "%prefix%&cSomoy ba Duration oboshshoi &e1&c theke &e300&c second-er moddhe hote hobe."
     packetevents_missing: "%prefix%&cMarker dekhano jachche na. Onugroho kore &ePacketEvents&c install ba enable korun."
+  bypass:
+    enabled: "%prefix%&aTreasure bypass chalu kora hoyeche."
+    disabled: "%prefix%&cTreasure bypass bondho kora hoyeche."
+    usage: "%prefix%&eBebohar: /ah bypass <on|off>"
   list:
     header: "&6Available Collection-shomuho:"
     format: "&7- &e%collection%"
@@ -356,14 +355,6 @@ gui:
         name: "&aItem-ti nin"
         lore:
           - "&7Item-ti apnar inventory-te add kora hobe."
-      rename:
-        name: "&eNaam bodlan"
-        lore:
-          - "&7Ekhon ache: &f%current%"
-      move_group:
-        name: "&eGroup bodlan"
-        lore:
-          - "&7Ekhon ache: &f%current%"
       delete:
         name: "&cMuche felun"
         lore:
@@ -863,7 +854,43 @@ gui:
         - "&c&lSABDHAN: Eta kokhono punorutthan kora jabe na!"
         - ""
         - "&cMuche felte ekhane click korun"
-      confirm_title: "Collection muche felar jonno confirm korun"
+    delete_handling:
+      title: "Delete: Treasure Handling"
+      keep:
+        name: "&aPlaced treasure gulo rekhe din"
+        lore:
+          - "&7Collection data muche felun,"
+          - "&7kintu treasure block gulo"
+          - "&7jeikhane bosano chilo sheikhanei thakbe."
+          - ""
+          - "&7Jodi treasure gulo ekhon hidden thake,"
+          - "&7tahole segulo abar dekhano hobe."
+          - ""
+          - "&eSelect korte click korun"
+        confirm_title: "Delete kore sob treasure rekhe diben?"
+      remove_heads:
+        name: "&eHead/Skull shoriye din"
+        lore:
+          - "&7Collection data muche felun,"
+          - "&7shudhu player head/skull gulo"
+          - "&7soriye din, onno treasure rekhe din."
+          - ""
+          - "&7Jodi non-head treasure gulo hidden thake,"
+          - "&7segulo-o abar dekhano hobe."
+          - ""
+          - "&eSelect korte click korun"
+        confirm_title: "Delete kore head/skull shoraben?"
+      remove_blocks:
+        name: "&cBlock & furniture shoriye din"
+        lore:
+          - "&7Collection data muche felun,"
+          - "&7ebong sob treasure block"
+          - "&7ebong ItemsAdder furniture muche felun."
+          - ""
+          - "&c&lSABDHAN: World blocks muche jabe!"
+          - ""
+          - "&cSelect korte click korun"
+        confirm_title: "Delete kore sob treasure block muche felben?"
     hide_after_found:
       name: "&eKhuje pawa treasure gulo lukiye rakhun"
       lore:
@@ -878,24 +905,21 @@ gui:
         - "&7khujte shahajjo korbe."
         - ""
         - "&eMode-ti bodlate ekhane click korun"
-    hide_collection_disabled:
-      name: "&eCollection disabled thakle lukiye rakhte click korun"
+    hide_when_not_available:
+      name: "&eAvailable na thakle lukiye rakhun"
       lore:
         - "&7Ekhon ache: %status%"
         - ""
-        - "&7Eta chalu thakle,"
-        - "&7collection bondho ba unavailable"
-        - "&7thakle er treasure-gulo"
-        - "&7player-ra dekhte pabe na."
+        - "&7Eta chalu thakle, ei collection-er"
+        - "&7sob treasure lukiye thakbe"
+        - "&7jokhon collection available thakbe na"
+        - "&7(disabled ba ACT rules er jonno unavailable)."
         - ""
         - "&8&m                    "
         - "&7Ete player-ra unavailable content"
-        - "&7dekha theke biroto rakhbe."
+        - "&7dekhte pabe na."
         - ""
         - "&eMode-ti bodlate ekhane click korun"
-    hide_status:
-      enabled: "&aChalu ache"
-      disabled: "&cBondho ache"
     reset_schedule:
       title: "Progress Reset Schedule"
     categories:
