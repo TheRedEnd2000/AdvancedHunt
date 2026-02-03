@@ -439,6 +439,10 @@ public class YamlRepository implements DataRepository {
         }
     }
 
+    /**
+     * @deprecated Use {@link #saveConfigAtomic(FileConfiguration, File)} instead for thread-safe atomic writes
+     */
+    @Deprecated
     private void saveConfig(FileConfiguration config, File file) {
         try {
             config.save(file);
@@ -475,7 +479,7 @@ public class YamlRepository implements DataRepository {
                 found.add(uuid.toString());
             }
             config.set("found-treasures", found);
-            saveConfig(config, file);
+            saveConfigAtomic(config, file);
             
             // Update finder index (fast in-memory update)
             updateFinderIndex(playerData);
@@ -497,7 +501,7 @@ public class YamlRepository implements DataRepository {
                     found.add(uuid.toString());
                 }
                 config.set("found-treasures", found);
-                saveConfig(config, file);
+                saveConfigAtomic(config, file);
                 
                 updateFinderIndex(pd);
             }
@@ -669,7 +673,7 @@ public class YamlRepository implements DataRepository {
             config.set("material", treasure.getMaterial());
             config.set("block-state", treasure.getBlockState());
             
-            saveConfig(config, file);
+            saveConfigAtomic(config, file);
             
             // Update treasure-to-collection index
             treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
@@ -712,7 +716,7 @@ public class YamlRepository implements DataRepository {
                 config.set("material", treasure.getMaterial());
                 config.set("block-state", treasure.getBlockState());
 
-                saveConfig(config, file);
+                saveConfigAtomic(config, file);
 
                 treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
             }
@@ -729,7 +733,7 @@ public class YamlRepository implements DataRepository {
 
             FileConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
             config.set("rewards", serializeRewards(rewards));
-            saveConfig(config, treasureFile);
+            saveConfigAtomic(config, treasureFile);
         });
     }
 
@@ -751,7 +755,7 @@ public class YamlRepository implements DataRepository {
 
                 FileConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
                 config.set("rewards", serializedRewards);
-                saveConfig(config, treasureFile);
+                saveConfigAtomic(config, treasureFile);
             }
         });
     }
@@ -991,7 +995,7 @@ public class YamlRepository implements DataRepository {
             
             config.set("rewards", serializeRewards(collection.getCompletionRewards()));
             
-            saveConfig(config, file);
+            saveConfigAtomic(config, file);
         });
     }
 
@@ -1383,7 +1387,7 @@ public class YamlRepository implements DataRepository {
 
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             config.set("name", newName);
-            saveConfig(config, file);
+            saveConfigAtomic(config, file);
             return true;
         });
     }
@@ -1460,7 +1464,7 @@ public class YamlRepository implements DataRepository {
                         if (removed > 0) {
                             count += removed;
                             config.set("found-treasures", found);
-                            saveConfig(config, file);
+                            saveConfigAtomic(config, file);
                         }
                     }
                 }
@@ -1534,7 +1538,7 @@ public class YamlRepository implements DataRepository {
             
             if (removed > 0) {
                 config.set("found-treasures", found);
-                saveConfig(config, file);
+                saveConfigAtomic(config, file);
                 
                 // Update finder index
                 for (String treasureIdStr : removedTreasures) {
@@ -1605,7 +1609,7 @@ public class YamlRepository implements DataRepository {
                 config.set(path, null);
             }
         }
-        saveConfig(config, leaderboardFile);
+        saveConfigAtomic(config, leaderboardFile);
     }
     
     /**
@@ -1768,7 +1772,7 @@ public class YamlRepository implements DataRepository {
                 }
             }
             
-            saveConfig(config, leaderboardFile);
+            saveConfigAtomic(config, leaderboardFile);
             if (((Main) plugin).isDebugMode()) {
                 plugin.getLogger().info("YAML leaderboard cache rebuilt successfully");
             }

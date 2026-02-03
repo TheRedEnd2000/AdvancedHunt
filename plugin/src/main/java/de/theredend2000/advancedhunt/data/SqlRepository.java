@@ -98,33 +98,33 @@ public class SqlRepository implements DataRepository {
         });
         
         schemaMigrations.put(2, conn -> {
-            try {
-                conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN block_data TEXT");
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute("ALTER TABLE ah_treasures ADD COLUMN block_data TEXT");
             } catch (SQLException ignored) {}
         });
         
         schemaMigrations.put(3, conn -> {
-            try {
-                conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN material VARCHAR(64)");
-                conn.createStatement().execute("ALTER TABLE ah_treasures ADD COLUMN block_state TEXT");
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute("ALTER TABLE ah_treasures ADD COLUMN material VARCHAR(64)");
+                stmt.execute("ALTER TABLE ah_treasures ADD COLUMN block_state TEXT");
             } catch (SQLException ignored) {}
         });
         
         schemaMigrations.put(4, this::createPerformanceIndexes);
         
         schemaMigrations.put(5, conn -> {
-            try {
-                conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN progress_reset_cron VARCHAR(64)");
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute("ALTER TABLE ah_collections ADD COLUMN progress_reset_cron VARCHAR(64)");
             } catch (SQLException ignored) {}
         });
 
         schemaMigrations.put(6, conn -> {
-            try {
-                conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN default_treasure_reward_preset_id VARCHAR(36)");
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute("ALTER TABLE ah_collections ADD COLUMN default_treasure_reward_preset_id VARCHAR(36)");
             } catch (SQLException ignored) {}
 
-            try {
-                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
                         "id VARCHAR(36) PRIMARY KEY, " +
                         "type VARCHAR(16) NOT NULL, " +
                         "name VARCHAR(64) NOT NULL, " +
@@ -133,8 +133,8 @@ public class SqlRepository implements DataRepository {
         });
 
             schemaMigrations.put(7, conn -> {
-                try {
-                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_items (" +
+                try (java.sql.Statement stmt = conn.createStatement()) {
+                    stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_items (" +
                             "id VARCHAR(36) PRIMARY KEY, " +
                             "grp VARCHAR(64) NOT NULL, " +
                             "name VARCHAR(64) NOT NULL, " +
@@ -143,33 +143,33 @@ public class SqlRepository implements DataRepository {
             });
 
         schemaMigrations.put(8, conn -> {
-            try {
-                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_items_groups (" +
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_items_groups (" +
                         "grp VARCHAR(64) PRIMARY KEY)");
             } catch (SQLException ignored) {}
         });
 
         schemaMigrations.put(9, conn -> {
-            try {
-                conn.createStatement().execute("ALTER TABLE ah_collections ADD COLUMN hide_when_not_available BOOLEAN DEFAULT FALSE");
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute("ALTER TABLE ah_collections ADD COLUMN hide_when_not_available BOOLEAN DEFAULT FALSE");
             } catch (SQLException ignored) {}
         });
 
         schemaMigrations.put(10, conn -> {
             // Rename hide_when_disabled to hide_when_not_available
-            try {
+            try (java.sql.Statement stmt = conn.createStatement()) {
                 if (useSqlite) {
                     // SQLite: try modern RENAME COLUMN syntax (3.25.0+)
-                    conn.createStatement().execute("ALTER TABLE ah_collections RENAME COLUMN hide_when_disabled TO hide_when_not_available");
+                    stmt.execute("ALTER TABLE ah_collections RENAME COLUMN hide_when_disabled TO hide_when_not_available");
                 } else {
                     // MySQL: use CHANGE syntax
-                    conn.createStatement().execute("ALTER TABLE ah_collections CHANGE hide_when_disabled hide_when_not_available BOOLEAN DEFAULT FALSE");
+                    stmt.execute("ALTER TABLE ah_collections CHANGE hide_when_disabled hide_when_not_available BOOLEAN DEFAULT FALSE");
                 }
             } catch (SQLException e) {
                 // If rename fails (old SQLite), copy data manually
-                try {
-                    conn.createStatement().execute("UPDATE ah_collections SET hide_when_not_available = hide_when_disabled");
-                    conn.createStatement().execute("ALTER TABLE ah_collections DROP COLUMN hide_when_disabled");
+                try (java.sql.Statement stmt = conn.createStatement()) {
+                    stmt.execute("UPDATE ah_collections SET hide_when_not_available = hide_when_disabled");
+                    stmt.execute("ALTER TABLE ah_collections DROP COLUMN hide_when_disabled");
                 } catch (SQLException ignored) {}
             }
         });
@@ -216,13 +216,14 @@ public class SqlRepository implements DataRepository {
     }
 
     private void createTables() {
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dataSource.getConnection();
+             java.sql.Statement stmt = conn.createStatement()) {
             // Schema Version Table
-            conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_schema_version (" +
+            stmt.execute("CREATE TABLE IF NOT EXISTS ah_schema_version (" +
                     "version INT PRIMARY KEY)");
 
             // Collections Table
-            conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_collections (" +
+            stmt.execute("CREATE TABLE IF NOT EXISTS ah_collections (" +
                     "id VARCHAR(36) PRIMARY KEY, " +
                     "name VARCHAR(64) UNIQUE, " +
                     "enabled BOOLEAN, " +
@@ -235,14 +236,14 @@ public class SqlRepository implements DataRepository {
                     "default_treasure_reward_preset_id VARCHAR(36))");
 
                 // Reward Presets Table
-                conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
+                stmt.execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
                     "id VARCHAR(36) PRIMARY KEY, " +
                     "type VARCHAR(16) NOT NULL, " +
                     "name VARCHAR(64) NOT NULL, " +
                     "rewards TEXT)");
 
             // ACT Rules Table
-            conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_act_rules (" +
+            stmt.execute("CREATE TABLE IF NOT EXISTS ah_act_rules (" +
                     "id VARCHAR(36) PRIMARY KEY, " +
                     "collection_id VARCHAR(36) NOT NULL, " +
                     "name VARCHAR(64), " +
@@ -253,19 +254,19 @@ public class SqlRepository implements DataRepository {
                     "FOREIGN KEY (collection_id) REFERENCES ah_collections(id) ON DELETE CASCADE)");
 
                     // Place Presets Table
-                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_items (" +
+                    stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_items (" +
                         "id VARCHAR(36) PRIMARY KEY, " +
                         "grp VARCHAR(64) NOT NULL, " +
                         "name VARCHAR(64) NOT NULL, " +
                         "item TEXT)");
 
                     // Place Preset Groups Table
-                    conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_place_preset_groups (" +
+                    stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_preset_groups (" +
                         "grp VARCHAR(64) PRIMARY KEY)");
 
 
             // Treasures Table
-            conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_treasures (" +
+            stmt.execute("CREATE TABLE IF NOT EXISTS ah_treasures (" +
                     "id VARCHAR(36) PRIMARY KEY, " +
                     "collection_id VARCHAR(36), " +
                     "world VARCHAR(64), " +
@@ -276,13 +277,13 @@ public class SqlRepository implements DataRepository {
                     "block_state TEXT)");
 
             // Player Found Data Table
-            conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_player_found (" +
+            stmt.execute("CREATE TABLE IF NOT EXISTS ah_player_found (" +
                     "player_uuid VARCHAR(36), " +
                     "treasure_id VARCHAR(36), " +
                     "PRIMARY KEY (player_uuid, treasure_id))");
 
             // Player Settings Table
-            conn.createStatement().execute("CREATE TABLE IF NOT EXISTS ah_players (" +
+            stmt.execute("CREATE TABLE IF NOT EXISTS ah_players (" +
                     "uuid VARCHAR(36) PRIMARY KEY)");
 
         } catch (SQLException e) {
@@ -295,7 +296,8 @@ public class SqlRepository implements DataRepository {
         if (cachedSchemaVersion != -1) return cachedSchemaVersion;
 
         try (Connection conn = dataSource.getConnection();
-             ResultSet rs = conn.createStatement().executeQuery("SELECT version FROM ah_schema_version")) {
+             java.sql.Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT version FROM ah_schema_version")) {
             if (rs.next()) {
                 cachedSchemaVersion = rs.getInt("version");
                 return cachedSchemaVersion;
@@ -310,11 +312,14 @@ public class SqlRepository implements DataRepository {
     public void upgradeSchema() {
         try (Connection conn = dataSource.getConnection()) {
             int currentVersion = 0;
-            try (ResultSet rs = conn.createStatement().executeQuery("SELECT version FROM ah_schema_version")) {
+            try (java.sql.Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT version FROM ah_schema_version")) {
                 if (rs.next()) {
                     currentVersion = rs.getInt("version");
                 } else {
-                    conn.createStatement().execute("INSERT INTO ah_schema_version (version) VALUES (0)");
+                    try (java.sql.Statement insertStmt = conn.createStatement()) {
+                        insertStmt.execute("INSERT INTO ah_schema_version (version) VALUES (0)");
+                    }
                 }
             }
 
@@ -812,37 +817,48 @@ public class SqlRepository implements DataRepository {
     public CompletableFuture<Void> saveCollection(Collection collection) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
-                // Save collection
-                try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
-                    ps.setString(1, collection.getId().toString());
-                    ps.setString(2, collection.getName());
-                    ps.setBoolean(3, collection.isEnabled());
-                    ps.setString(4, collection.getProgressResetCron());
-                    ps.setBoolean(5, collection.isSinglePlayerFind());
-                    ps.setString(6, gson.toJson(collection.getCompletionRewards()));
-                    ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
-                    ps.setBoolean(8, collection.isHideWhenNotAvailable());
-                    ps.executeUpdate();
-                }
-
-                // Delete existing ACT rules for this collection
-                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_act_rules WHERE collection_id = ?")) {
-                    ps.setString(1, collection.getId().toString());
-                    ps.executeUpdate();
-                }
-
-                // Save ACT rules
-                for (ActRule rule : collection.getActRules()) {
-                    try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
-                        ps.setString(1, rule.getId().toString());
-                        ps.setString(2, rule.getCollectionId().toString());
-                        ps.setString(3, rule.getName());
-                        ps.setString(4, rule.getDateRange());
-                        ps.setString(5, rule.getDuration());
-                        ps.setString(6, rule.getCronExpression());
-                        ps.setBoolean(7, rule.isEnabled());
+                boolean originalAutoCommit = conn.getAutoCommit();
+                conn.setAutoCommit(false);
+                try {
+                    // Save collection
+                    try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                        ps.setString(1, collection.getId().toString());
+                        ps.setString(2, collection.getName());
+                        ps.setBoolean(3, collection.isEnabled());
+                        ps.setString(4, collection.getProgressResetCron());
+                        ps.setBoolean(5, collection.isSinglePlayerFind());
+                        ps.setString(6, gson.toJson(collection.getCompletionRewards()));
+                        ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
+                        ps.setBoolean(8, collection.isHideWhenNotAvailable());
                         ps.executeUpdate();
                     }
+
+                    // Delete existing ACT rules for this collection
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_act_rules WHERE collection_id = ?")) {
+                        ps.setString(1, collection.getId().toString());
+                        ps.executeUpdate();
+                    }
+
+                    // Save ACT rules
+                    for (ActRule rule : collection.getActRules()) {
+                        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+                            ps.setString(1, rule.getId().toString());
+                            ps.setString(2, rule.getCollectionId().toString());
+                            ps.setString(3, rule.getName());
+                            ps.setString(4, rule.getDateRange());
+                            ps.setString(5, rule.getDuration());
+                            ps.setString(6, rule.getCronExpression());
+                            ps.setBoolean(7, rule.isEnabled());
+                            ps.executeUpdate();
+                        }
+                    }
+
+                    conn.commit();
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw e;
+                } finally {
+                    conn.setAutoCommit(originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to save collection: " + e.getMessage());
@@ -1108,15 +1124,26 @@ public class SqlRepository implements DataRepository {
     public CompletableFuture<Void> deleteCollection(UUID id) {
         return runAsync(() -> {
             try (Connection conn = dataSource.getConnection()) {
-                // Delete collection
-                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_collections WHERE id = ?")) {
-                    ps.setString(1, id.toString());
-                    ps.executeUpdate();
-                }
-                // Delete associated treasures
-                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_treasures WHERE collection_id = ?")) {
-                    ps.setString(1, id.toString());
-                    ps.executeUpdate();
+                boolean originalAutoCommit = conn.getAutoCommit();
+                conn.setAutoCommit(false);
+                try {
+                    // Delete collection
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_collections WHERE id = ?")) {
+                        ps.setString(1, id.toString());
+                        ps.executeUpdate();
+                    }
+                    // Delete associated treasures
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_treasures WHERE collection_id = ?")) {
+                        ps.setString(1, id.toString());
+                        ps.executeUpdate();
+                    }
+
+                    conn.commit();
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw e;
+                } finally {
+                    conn.setAutoCommit(originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to delete collection: " + e.getMessage());
