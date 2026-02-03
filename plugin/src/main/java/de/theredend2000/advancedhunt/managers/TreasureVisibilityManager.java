@@ -36,6 +36,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -104,6 +105,7 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void stop() {
+        HandlerList.unregisterAll(this);
         if (availabilityTask != null) {
             availabilityTask.cancel();
             availabilityTask = null;

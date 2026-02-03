@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.data.DataRepository;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -61,5 +62,10 @@ public class PlayerManager implements Listener {
     
     public void invalidate(UUID uuid) {
         playerDataCache.invalidate(uuid);
+    }
+
+    public void stop() {
+        HandlerList.unregisterAll(this);
+        playerDataCache.invalidateAll();
     }
 }

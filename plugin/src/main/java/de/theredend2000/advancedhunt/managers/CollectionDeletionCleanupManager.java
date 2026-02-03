@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -75,6 +76,7 @@ public class CollectionDeletionCleanupManager implements Listener {
     }
 
     public void stop() {
+        HandlerList.unregisterAll(this);
         if (cleanupTask != null) {
             cleanupTask.cancel();
             cleanupTask = null;
