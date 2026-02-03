@@ -21,7 +21,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
@@ -411,7 +410,7 @@ public final class Main extends JavaPlugin {
             collectionManager.stop();
         }
         if (playerManager != null) {
-            HandlerList.unregisterAll(playerManager);
+            playerManager.stop();
         }
 
         if (dataRepository != null) {
@@ -508,6 +507,9 @@ public final class Main extends JavaPlugin {
         }
         if (collectionDeletionCleanupManager != null) {
             collectionDeletionCleanupManager.stop();
+        }
+        if (playerManager != null) {
+            playerManager.stop();
         }
         if (scanManager != null) {
             scanManager.stop();
