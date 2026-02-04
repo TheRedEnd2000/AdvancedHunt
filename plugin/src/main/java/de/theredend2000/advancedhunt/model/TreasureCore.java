@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.model;
 
 import org.bukkit.Location;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -18,10 +19,10 @@ public class TreasureCore {
     private final String blockState;
 
     public TreasureCore(UUID id, UUID collectionId, Location location, String material, String blockState) {
-        this.id = id;
-        this.collectionId = collectionId;
-        this.location = location;
-        this.material = material;
+        this.id = Objects.requireNonNull(id, "id cannot be null");
+        this.collectionId = Objects.requireNonNull(collectionId, "collectionId cannot be null");
+        this.location = location != null ? location.clone() : null;
+        this.material = Objects.requireNonNull(material, "material cannot be null");
         this.blockState = blockState;
     }
 
@@ -38,7 +39,7 @@ public class TreasureCore {
     }
 
     public Location getLocation() {
-        return location;
+        return location != null ? location.clone() : null;
     }
 
     public String getMaterial() {
@@ -53,6 +54,7 @@ public class TreasureCore {
      * Creates a TreasureCore from a full Treasure object.
      */
     public static TreasureCore from(Treasure treasure) {
+        Objects.requireNonNull(treasure, "treasure cannot be null");
         return new TreasureCore(
             treasure.getId(),
             treasure.getCollectionId(),
@@ -60,5 +62,28 @@ public class TreasureCore {
             treasure.getMaterial(),
             treasure.getBlockState()
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TreasureCore)) return false;
+        TreasureCore that = (TreasureCore) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        String locationSummary = location != null 
+            ? String.format("%s@(%d,%d,%d)", 
+                location.getWorld() != null ? location.getWorld().getName() : "null",
+                location.getBlockX(), location.getBlockY(), location.getBlockZ())
+            : "null";
+        return String.format("TreasureCore{id=%s, material=%s, location=%s}", id, material, locationSummary);
     }
 }

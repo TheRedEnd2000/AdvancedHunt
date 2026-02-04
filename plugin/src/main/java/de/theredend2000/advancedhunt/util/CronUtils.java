@@ -17,8 +17,8 @@ import java.util.*;
  */
 public final class CronUtils {
 
-    private static final CronParser PARSER = new CronParser(
-            CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ)
+    private static final ThreadLocal<CronParser> cronParser = ThreadLocal.withInitial(() ->
+            new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
     );
     
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm:ss");
@@ -28,12 +28,12 @@ public final class CronUtils {
     }
 
     /**
-     * Gets the shared CronParser instance for Quartz cron expressions.
+     * Gets the thread-local CronParser instance for Quartz cron expressions.
      * 
-     * @return the shared CronParser
+     * @return the thread-local CronParser
      */
     public static CronParser getParser() {
-        return PARSER;
+        return cronParser.get();
     }
 
     /**
@@ -59,7 +59,7 @@ public final class CronUtils {
         
         List<String> executions = new ArrayList<>(count);
         try {
-            Cron cron = PARSER.parse(cronExpression);
+            Cron cron = cronParser.get().parse(cronExpression);
             ExecutionTime executionTime = ExecutionTime.forCron(cron);
             ZonedDateTime now = ZonedDateTime.now();
             
@@ -87,7 +87,7 @@ public final class CronUtils {
         }
 
         try {
-            Cron cron = PARSER.parse(cronExpression);
+            Cron cron = cronParser.get().parse(cronExpression);
             cron.validate();
 
             Locale effectiveLocale = (locale != null) ? locale : Locale.ENGLISH;
@@ -100,7 +100,7 @@ public final class CronUtils {
         } catch (MissingResourceException e) {
             // Locale bundle missing (possible with shaded dependencies). Fall back to English.
             try {
-                Cron cron = PARSER.parse(cronExpression);
+                Cron cron = cronParser.get().parse(cronExpression);
                 cron.validate();
                 String description = CronDescriptor.instance(Locale.ENGLISH).describe(cron);
                 return (description == null || description.trim().isEmpty()) ? cronExpression : description;

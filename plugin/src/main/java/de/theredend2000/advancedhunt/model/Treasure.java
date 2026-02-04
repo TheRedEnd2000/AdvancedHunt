@@ -2,8 +2,7 @@ package de.theredend2000.advancedhunt.model;
 
 import org.bukkit.Location;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Treasure {
     private final UUID id;
@@ -15,10 +14,10 @@ public class Treasure {
     private final String blockState;
 
     public Treasure(UUID id, UUID collectionId, Location location, List<Reward> rewards, String nbtData, String material, String blockState) {
-        this.id = id;
-        this.collectionId = collectionId;
-        this.location = location;
-        this.rewards = rewards;
+        this.id = Objects.requireNonNull(id, "id must not be null");
+        this.collectionId = Objects.requireNonNull(collectionId, "collectionId must not be null");
+        this.location = location != null ? location.clone() : null;
+        this.rewards = rewards != null ? new ArrayList<>(rewards) : new ArrayList<>();
         this.nbtData = nbtData;
         this.material = material;
         this.blockState = blockState;
@@ -33,11 +32,11 @@ public class Treasure {
     }
 
     public Location getLocation() {
-        return location;
+        return location != null ? location.clone() : null;
     }
 
     public List<Reward> getRewards() {
-        return rewards;
+        return Collections.unmodifiableList(rewards);
     }
 
     public String getNbtData() {
@@ -50,5 +49,29 @@ public class Treasure {
 
     public String getBlockState() {
         return blockState;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Treasure)) return false;
+        Treasure that = (Treasure) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Treasure{" +
+                "id=" + id +
+                ", collectionId=" + collectionId +
+                ", location=" + (location != null ? location.getWorld().getName() + "@" + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() : "null") +
+                ", rewardsCount=" + rewards.size() +
+                ", material='" + material + '\'' +
+                '}';
     }
 }

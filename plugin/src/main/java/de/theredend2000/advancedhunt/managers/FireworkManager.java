@@ -11,16 +11,17 @@ import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FireworkManager {
 
     private final Main plugin;
-    private final List<UUID> fireworkUUIDs;
+    private final Set<UUID> fireworkUUIDs;
     private final Random random;
 
     public FireworkManager(Main plugin) {
         this.plugin = plugin;
-        this.fireworkUUIDs = new ArrayList<>();
+        this.fireworkUUIDs = ConcurrentHashMap.newKeySet();
         this.random = plugin.getRandom();
     }
 
@@ -114,7 +115,7 @@ public class FireworkManager {
         return Collections.singletonList(colors.get(random.nextInt(colors.size())));
     }
 
-    public List<UUID> getFireworkUUIDs() {
+    public Set<UUID> getFireworkUUIDs() {
         return fireworkUUIDs;
     }
 }

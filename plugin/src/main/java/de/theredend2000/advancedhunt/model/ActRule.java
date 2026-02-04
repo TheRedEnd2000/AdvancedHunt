@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -23,8 +24,8 @@ public class ActRule {
      */
     public ActRule(UUID id, UUID collectionId, String name) {
         this.id = id;
-        this.collectionId = collectionId;
-        this.name = name;
+        this.collectionId = Objects.requireNonNull(collectionId, "collectionId cannot be null");
+        this.name = Objects.requireNonNull(name, "name cannot be null");
         this.dateRange = "*";
         this.duration = "*";
         this.cronExpression = "NONE";

@@ -9,11 +9,13 @@ import java.time.format.DateTimeParseException;
 
 public class ValidationUtil {
 
-    private static final CronParser cronParser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ));
+    private static final ThreadLocal<CronParser> cronParser = ThreadLocal.withInitial(() ->
+        new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
+    );
 
     public static boolean validateCron(String cronExpression) {
         try {
-            cronParser.parse(cronExpression);
+            cronParser.get().parse(cronExpression);
             return true;
         } catch (IllegalArgumentException e) {
             return false;

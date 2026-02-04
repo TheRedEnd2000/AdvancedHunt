@@ -4,11 +4,14 @@ import org.bukkit.ChatColor;
 
 public class HexColor {
 
-    public HexColor(){
-
+    private HexColor() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static String color(final String textToTranslate, final char altColorChar) {
+        if (textToTranslate == null) {
+            return "";
+        }
         //final char altColorChar = '&';
         final StringBuilder stringBuilder = new StringBuilder();
         final char[] textToTranslateCharArray = textToTranslate.toCharArray();

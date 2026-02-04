@@ -1,5 +1,6 @@
 package de.theredend2000.advancedhunt.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class PlaceItem {
@@ -13,7 +14,7 @@ public class PlaceItem {
     private String itemData;
 
     public PlaceItem(UUID id, String group, String name, String itemData) {
-        this.id = id;
+        this.id = Objects.requireNonNull(id, "id cannot be null");
         this.group = group;
         this.name = name;
         this.itemData = itemData;
@@ -45,5 +46,18 @@ public class PlaceItem {
 
     public void setItemData(String itemData) {
         this.itemData = itemData;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlaceItem)) return false;
+        PlaceItem that = (PlaceItem) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
