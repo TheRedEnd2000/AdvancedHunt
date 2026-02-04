@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public final class LegacyDataMigrator {
 
@@ -81,6 +84,7 @@ public final class LegacyDataMigrator {
             try {
                 targetBackup = ZipBackupUtil.createZipBackup(plugin.getDataFolder(), backupsDir, "legacy-migration-target");
                 plugin.getLogger().info("Created migration backup: " + targetBackup.getAbsolutePath());
+                verifyBackup(targetBackup);
             } catch (IOException e) {
                 return failedFuture(e);
             }
@@ -171,6 +175,7 @@ public final class LegacyDataMigrator {
                 List<PlayerData> playerDataList = new ArrayList<>();
                 int foundLinks = 0;
                 int missingLinks = 0;
+                List<String> missingLinkDetails = new ArrayList<>();
 
                 for (LegacyPlayerDataParser.LegacyPlayerData lp : legacyPlayers) {
                     PlayerData pd = new PlayerData(lp.playerUuid);
@@ -184,6 +189,9 @@ public final class LegacyDataMigrator {
                         UUID treasureId = legacyToTreasureId.get(key);
                         if (treasureId == null) {
                             missingLinks++;
+                            String detail = String.format("Player %s: treasure at %s/%d/%d/%d",
+                                lp.playerUuid, fe.collectionName, fe.x, fe.y, fe.z);
+                            missingLinkDetails.add(detail);
                             continue;
                         }
                         pd.addFoundTreasure(treasureId);
@@ -191,6 +199,23 @@ public final class LegacyDataMigrator {
                     }
 
                     playerDataList.add(pd);
+                }
+
+                // Log warning if there are missing links
+                if (!missingLinkDetails.isEmpty()) {
+                    plugin.getLogger().warning("Missing treasure links during migration:");
+                    missingLinkDetails.forEach(d -> plugin.getLogger().warning("  - " + d));
+                }
+
+                // Calculate percentage and fail if too much data is missing
+                int totalLinks = foundLinks + missingLinks;
+                if (totalLinks > 0) {
+                    double missingPct = (double) missingLinks / totalLinks * 100;
+                    if (missingPct > 5.0) {
+                        throw new RuntimeException(String.format(
+                            "Migration aborted: %.1f%% of player progress data is missing (threshold: 5%%)",
+                            missingPct));
+                    }
                 }
 
                 // Persist all data
@@ -217,10 +242,11 @@ public final class LegacyDataMigrator {
                     .thenCompose(v2 -> CompletableFuture.allOf(saveRewardPresets))
                     .thenCompose(v2 -> CompletableFuture.allOf(savePlaceItems))
                     .thenApply(v2 -> {
+                        // Cleanup first, then write marker only after cleanup succeeds
+                        cleanupLegacyFiles(legacyRoot);
+
                         writeMarker(marker, legacyRoot, newCollections.size(), treasures.size(), 
                             playerDataList.size(), rewardPresetCount, placePresetCount, finalTargetBackup);
-
-                        cleanupLegacyFiles(legacyRoot);
 
                         return new LegacyMigratorResult(
                             newCollections.size(),
@@ -293,6 +319,33 @@ public final class LegacyDataMigrator {
         }
 
         return null;
+    }
+
+    /**
+     * Verifies that a backup file is valid and readable.
+     */
+    private void verifyBackup(File backupFile) throws IOException {
+        try (ZipFile zip = new ZipFile(backupFile)) {
+            int entryCount = Collections.list(zip.entries()).size();
+            if (entryCount == 0) {
+                throw new IOException("Backup file is empty");
+            }
+
+            // Test extract first entry to verify it's readable
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            if (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (!entry.isDirectory()) {
+                    try (InputStream is = zip.getInputStream(entry)) {
+                        // Read a few bytes to verify the entry is accessible
+                        byte[] buffer = new byte[Math.min(1024, (int) Math.max(1, entry.getSize()))];
+                        is.read(buffer);
+                    }
+                }
+            }
+
+            plugin.getLogger().info("Backup verified: " + entryCount + " entries");
+        }
     }
 
     /**
