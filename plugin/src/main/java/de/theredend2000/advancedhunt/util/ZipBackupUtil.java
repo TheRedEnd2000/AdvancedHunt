@@ -5,12 +5,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public final class ZipBackupUtil {
 
     private static final DateTimeFormatter TS = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+    
+    /** Maximum file size allowed per file (100MB) to prevent OOM */
+    private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
 
     private ZipBackupUtil() {
     }
@@ -37,11 +41,17 @@ public final class ZipBackupUtil {
         Path outPath = outFile.toPath().toAbsolutePath().normalize();
         Path backupsPath = backupsDir.toPath().toAbsolutePath().normalize();
 
-        try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outFile)))) {
-            Files.walk(base)
-                .filter(p -> !Files.isDirectory(p))
+        try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outFile)));
+             Stream<Path> walk = Files.walk(base)) {
+            
+            walk.filter(p -> !Files.isDirectory(p))
                 .forEach(p -> {
                     Path absPath = p.toAbsolutePath().normalize();
+                    
+                    // Security: Verify path is still under base directory (symlink protection)
+                    if (!absPath.startsWith(base)) {
+                        return;
+                    }
                     
                     // Avoid including the output zip itself.
                     if (absPath.equals(outPath)) {
@@ -53,10 +63,16 @@ public final class ZipBackupUtil {
                         return;
                     }
 
-                    String rel = base.relativize(p).toString().replace('\\', '/');
                     try {
+                        // File size validation to prevent OOM
+                        long fileSize = Files.size(absPath);
+                        if (fileSize > MAX_FILE_SIZE) {
+                            return; // Skip files larger than 100MB
+                        }
+                        
+                        String rel = base.relativize(absPath).toString().replace('\\', '/');
                         zos.putNextEntry(new ZipEntry(rel));
-                        try (FileInputStream in = new FileInputStream(p.toFile())) {
+                        try (InputStream in = Files.newInputStream(absPath)) {
                             byte[] buffer = new byte[8192];
                             int read;
                             while ((read = in.read(buffer)) != -1) {
@@ -65,14 +81,11 @@ public final class ZipBackupUtil {
                         }
                         zos.closeEntry();
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UncheckedIOException(e);
                     }
                 });
-        } catch (RuntimeException wrapped) {
-            if (wrapped.getCause() instanceof IOException) {
-                throw (IOException) wrapped.getCause();
-            }
-            throw wrapped;
+        } catch (UncheckedIOException wrapped) {
+            throw wrapped.getCause();
         }
 
         return outFile;

@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class ConfigUpdater {
 
     private static final int INDENTATION_SIZE = 2;
+    private static final int MARK_BUFFER_SIZE = 8192;
 
     @FunctionalInterface
     public interface MigrationCallback {
@@ -56,11 +58,16 @@ public class ConfigUpdater {
         int currentVersion = userConfig.getInt("config-version", 0);
         
         // Load the default config from JAR to check its version
-        InputStream resource = plugin.getResource(resourceName);
-        if (resource == null) return;
-        
-        FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(resource, StandardCharsets.UTF_8));
-        int newVersion = defaultConfig.getInt("config-version", 1);
+        int newVersion;
+        try (InputStream resource = plugin.getResource(resourceName)) {
+            if (resource == null) return;
+            
+            FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(resource, StandardCharsets.UTF_8));
+            newVersion = defaultConfig.getInt("config-version", 1);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Failed to read default config version: " + e.getMessage());
+            return;
+        }
 
         if (currentVersion >= newVersion) {
             return;
@@ -75,22 +82,34 @@ public class ConfigUpdater {
 
         createBackup(plugin, file);
 
-        // Perform update
-        try {
-            // Re-open resource for reading lines
-            resource = plugin.getResource(resourceName);
+        // Perform update using atomic write pattern
+        File tempFile = new File(file.getParentFile(), file.getName() + ".tmp");
+        try (InputStream resource = plugin.getResource(resourceName)) {
+            if (resource == null) {
+                plugin.getLogger().severe("Resource " + resourceName + " not found in JAR");
+                return;
+            }
+            
             List<String> newLines = updateLines(resource, userConfig);
             
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            // Write to temporary file first
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
                 for (String line : newLines) {
                     writer.write(line);
                     writer.newLine();
                 }
             }
             
+            // Atomically move temp file to target file
+            Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            
             plugin.getLogger().info("Successfully updated " + resourceName);
         } catch (IOException e) {
             plugin.getLogger().severe("Failed to update " + resourceName + ": " + e.getMessage());
+            // Clean up temp file if it exists
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
         }
     }
 
@@ -105,50 +124,52 @@ public class ConfigUpdater {
     }
 
     private static List<String> updateLines(InputStream resource, FileConfiguration userConfig) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8));
         List<String> lines = new ArrayList<>();
-        String line;
         
-        // Stack to keep track of current section path
-        List<String> pathStack = new ArrayList<>();
-        
-        while ((line = reader.readLine()) != null) {
-            if (shouldSkipLine(line)) {
-                lines.add(line);
-                continue;
-            }
-
-            int indentation = getIndentation(line);
-            int depth = indentation / INDENTATION_SIZE;
-
-            // Adjust stack based on depth
-            while (pathStack.size() > depth) {
-                pathStack.remove(pathStack.size() - 1);
-            }
-
-            String key = getKeyFromLine(line);
-            if (key == null) {
-                lines.add(line);
-                continue;
-            }
-
-            pathStack.add(key);
-            String fullPath = String.join(".", pathStack);
-
-            if (userConfig.contains(fullPath)) {
-                Object userValue = userConfig.get(fullPath);
-                
-                if (userValue instanceof ConfigurationSection) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8))) {
+            String line;
+            
+            // Stack to keep track of current section path
+            List<String> pathStack = new ArrayList<>();
+            
+            while ((line = reader.readLine()) != null) {
+                if (shouldSkipLine(line)) {
                     lines.add(line);
-                } else if (userValue instanceof List) {
-                    writeList(lines, indentation, key, (List<?>) userValue);
-                    skipListInResource(reader, indentation);
-                } else {
-                    lines.add(getIndentationString(indentation) + key + ": " + formatValue(userValue));
+                    continue;
                 }
-            } else {
-                // User doesn't have this key, keep JAR line (new default)
-                lines.add(line);
+
+                int indentation = getIndentation(line);
+                int depth = indentation / INDENTATION_SIZE;
+
+                // Adjust stack based on depth
+                while (pathStack.size() > depth) {
+                    pathStack.remove(pathStack.size() - 1);
+                }
+
+                String key = getKeyFromLine(line);
+                if (key == null) {
+                    lines.add(line);
+                    continue;
+                }
+
+                pathStack.add(key);
+                String fullPath = String.join(".", pathStack);
+
+                if (userConfig.contains(fullPath)) {
+                    Object userValue = userConfig.get(fullPath);
+                    
+                    if (userValue instanceof ConfigurationSection) {
+                        lines.add(line);
+                    } else if (userValue instanceof List) {
+                        writeList(lines, indentation, key, (List<?>) userValue);
+                        skipListInResource(reader, indentation);
+                    } else {
+                        lines.add(getIndentationString(indentation) + key + ": " + formatValue(userValue));
+                    }
+                } else {
+                    // User doesn't have this key, keep JAR line (new default)
+                    lines.add(line);
+                }
             }
         }
         
@@ -172,7 +193,7 @@ public class ConfigUpdater {
     }
 
     private static void skipListInResource(BufferedReader reader, int indentation) throws IOException {
-        reader.mark(1000);
+        reader.mark(MARK_BUFFER_SIZE);
         String nextLine;
         while ((nextLine = reader.readLine()) != null) {
             int nextIndent = getIndentation(nextLine);
@@ -181,7 +202,7 @@ public class ConfigUpdater {
                 reader.reset();
                 break;
             }
-            reader.mark(1000);
+            reader.mark(MARK_BUFFER_SIZE);
         }
     }
 

@@ -1,8 +1,6 @@
 package de.theredend2000.advancedhunt.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Collection {
@@ -17,10 +15,16 @@ public class Collection {
     private boolean hideWhenNotAvailable; // If true, treasures are hidden when collection is not available
 
     public Collection(UUID id, String name, boolean enabled) {
-        this.id = id;
+        this.id = Objects.requireNonNull(id, "Collection id cannot be null");
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Collection name cannot be null or empty");
+        }
         this.name = name;
         this.enabled = enabled;
         this.actRules = new ArrayList<>();
+        this.completionRewards = new ArrayList<>();
+        this.singlePlayerFind = false;
+        this.defaultTreasureRewardPresetId = null;
         this.progressResetCron = null;
         this.hideWhenNotAvailable = false;
     }
@@ -34,6 +38,9 @@ public class Collection {
     }
 
     public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Collection name cannot be null or empty");
+        }
         this.name = name;
     }
 
@@ -46,11 +53,11 @@ public class Collection {
     }
 
     public List<ActRule> getActRules() {
-        return actRules;
+        return actRules != null ? Collections.unmodifiableList(actRules) : Collections.emptyList();
     }
 
     public void setActRules(List<ActRule> actRules) {
-        this.actRules = actRules != null ? actRules : new ArrayList<>();
+        this.actRules = actRules != null ? new ArrayList<>(actRules) : new ArrayList<>();
     }
 
     public void addActRule(ActRule rule) {
@@ -123,11 +130,11 @@ public class Collection {
     }
 
     public List<Reward> getCompletionRewards() {
-        return completionRewards;
+        return completionRewards != null ? Collections.unmodifiableList(completionRewards) : Collections.emptyList();
     }
 
     public void setCompletionRewards(List<Reward> completionRewards) {
-        this.completionRewards = completionRewards;
+        this.completionRewards = completionRewards != null ? new ArrayList<>(completionRewards) : new ArrayList<>();
     }
 
     public UUID getDefaultTreasureRewardPresetId() {
@@ -144,5 +151,18 @@ public class Collection {
 
     public void setHideWhenNotAvailable(boolean hideWhenNotAvailable) {
         this.hideWhenNotAvailable = hideWhenNotAvailable;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Collection)) return false;
+        Collection that = (Collection) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

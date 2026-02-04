@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class RewardPreset {
@@ -39,5 +40,18 @@ public class RewardPreset {
 
     public void setRewards(List<Reward> rewards) {
         this.rewards = rewards != null ? new ArrayList<>(rewards) : new ArrayList<>();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RewardPreset)) return false;
+        RewardPreset that = (RewardPreset) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

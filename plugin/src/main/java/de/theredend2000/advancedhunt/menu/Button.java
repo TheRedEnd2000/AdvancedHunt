@@ -7,9 +7,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class Button {
+
+    private static final Map<UUID, Long> clickCooldowns = new ConcurrentHashMap<>();
+    private static final long COOLDOWN_MS = 150; // milliseconds
 
     private ItemStack icon;
     private Consumer<InventoryClickEvent> action;
@@ -28,8 +34,16 @@ public class Button {
     public void onClick(InventoryClickEvent event) {
         if (action != null) {
             if (event.getWhoClicked() instanceof Player) {
+                Player player = (Player) event.getWhoClicked();
+                UUID playerId = player.getUniqueId();
+                long now = System.currentTimeMillis();
+                Long lastClick = clickCooldowns.get(playerId);
+                if (lastClick != null && (now - lastClick) < COOLDOWN_MS) {
+                    return; // Still on cooldown, ignore click
+                }
+                clickCooldowns.put(playerId, now);
                 if(SoundManager.isEnabledStatic())
-                    ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), clickSound, 1f, 1f);
+                    player.playSound(player.getLocation(), clickSound, 1f, 1f);
             }
             action.accept(event);
         }

@@ -10,26 +10,28 @@ public class XMaterialHelper {
      * @return ItemStack of the material, including wall variants
      */
     public static ItemStack getItemStack(XMaterial material) {
+        if (material == null) {
+            return null;
+        }
+
         ItemStack item;
 
-        // If the item is null and might be a wall variant, try to get the base block
-        if (material.name().contains("WALL")) {
-            String baseName = material.name().replace("WALL_", "");
+        // Handle wall variants (e.g., COBBLESTONE_WALL -> COBBLESTONE)
+        if (material.name().endsWith("_WALL")) {
+            String baseName = material.name().replaceFirst("_WALL$", "");
             try {
                 XMaterial baseMaterial = XMaterial.valueOf(baseName);
                 item = baseMaterial.parseItem();
+                if (item != null) {
+                    return item;
+                }
             } catch (IllegalArgumentException e) {
-                // Handle case where base material name is invalid
-                return null;
-            }
-        } else {
-            try {
-                item = material.parseItem();
-            } catch (IllegalArgumentException e) {
-                item = null;
+                // Base material doesn't exist, fall through
             }
         }
 
+        // Try to parse material directly
+        item = material.parseItem();
         return item;
     }
 }
