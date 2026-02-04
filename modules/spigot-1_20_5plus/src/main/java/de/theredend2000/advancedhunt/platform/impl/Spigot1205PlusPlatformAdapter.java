@@ -162,6 +162,10 @@ public class Spigot1205PlusPlatformAdapter extends Spigot115PlatformAdapter {
             final int packedFullBright = (15 << 20) | (15 << 4);
             try {
                 ClientVersion clientVersion = PacketEvents.getAPI().getPlayerManager().getClientVersion(player);
+                // clientVersion can be null during login - fall back to server version
+                if (clientVersion == null) {
+                    clientVersion = PacketEvents.getAPI().getServerManager().getVersion().toClientVersion();
+                }
                 // 1.21+ uses an INT (default -1). Earlier component-era tiers used OptionalInt.
                 if (clientVersion != null && clientVersion.isNewerThanOrEquals(ClientVersion.V_1_21)) {
                     meta.add(new EntityData<>(16, EntityDataTypes.INT, packedFullBright));

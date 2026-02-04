@@ -9,7 +9,13 @@ import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public final class TreasureInteractionHandler {
+
+    private static TreasureInteractionHandler instance;
 
     private final Main plugin;
     private final TreasureManager treasureManager;
@@ -18,7 +24,30 @@ public final class TreasureInteractionHandler {
     private final RewardManager rewardManager;
     private final PlaceModeManager placeModeManager;
 
-    public TreasureInteractionHandler(Main plugin) {
+    /** Tracks players currently in the collection flow to prevent double collections */
+    private final Set<UUID> playersCollecting = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Gets the singleton instance, creating it if necessary.
+     *
+     * @param plugin the Main plugin instance
+     * @return the shared TreasureInteractionHandler instance
+     */
+    public static TreasureInteractionHandler getInstance(Main plugin) {
+        if (instance == null) {
+            instance = new TreasureInteractionHandler(plugin);
+        }
+        return instance;
+    }
+
+    /**
+     * Resets the singleton instance. Call this on plugin disable/reload.
+     */
+    public static void reset() {
+        instance = null;
+    }
+
+    TreasureInteractionHandler(Main plugin) {
         this.plugin = plugin;
         this.treasureManager = plugin.getTreasureManager();
         this.playerManager = plugin.getPlayerManager();
@@ -58,6 +87,21 @@ public final class TreasureInteractionHandler {
     public void handleTreasureCollect(Player player, TreasureCore treasureCore) {
         if (player == null || treasureCore == null) return;
 
+        UUID playerId = player.getUniqueId();
+
+        // Prevent double collection - if player is already collecting, ignore
+        if (!playersCollecting.add(playerId)) {
+            return;
+        }
+
+        try {
+            handleTreasureCollectInternal(player, treasureCore);
+        } finally {
+            playersCollecting.remove(playerId);
+        }
+    }
+
+    private void handleTreasureCollectInternal(Player player, TreasureCore treasureCore) {
         if (placeModeManager.isInPlaceMode(player)) {
             player.sendMessage(plugin.getMessageManager().getMessage("treasure.placemode"));
             plugin.getSoundManager().playPlaceModeCollectDeny(player);

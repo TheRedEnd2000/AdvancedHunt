@@ -50,11 +50,13 @@ public class TreasureManager {
     }
 
     public UUID generateUniqueTreasureId() {
-        UUID id;
-        do {
-            id = UUID.randomUUID();
-        } while (treasureCoreById.containsKey(id));
-        return id;
+        synchronized (idGenerationLock) {
+            UUID id;
+            do {
+                id = UUID.randomUUID();
+            } while (treasureCoreById.containsKey(id));
+            return id;
+        }
     }
 
     public void loadTreasures() {
@@ -151,17 +153,23 @@ public class TreasureManager {
     /**
      * Updates an existing treasure by replacing it with a new instance.
      * Used when modifying rewards or other treasure properties.
+     * 
+     * Save-first pattern: persists to repository before updating cache to prevent
+     * data loss if the save fails.
      */
     public CompletableFuture<Void> updateTreasure(Treasure oldTreasure, Treasure newTreasure) {
-        // Remove old from cache first
-        removeCoreFromCache(oldTreasure.getId(), oldTreasure.getCollectionId(), oldTreasure.getLocation());
-        fullTreasureCache.invalidate(oldTreasure.getId());
-        
-        // Save new treasure and add to cache
+        // Save first, then update cache only on success
         return repository.saveTreasure(newTreasure).thenRun(() -> {
+            // Add new treasure to cache
             TreasureCore core = TreasureCore.from(newTreasure);
             addCoreToCache(core);
             fullTreasureCache.put(newTreasure.getId(), newTreasure);
+            
+            // Remove old entry only if IDs are different (location/collection changed)
+            if (!oldTreasure.getId().equals(newTreasure.getId())) {
+                removeCoreFromCache(oldTreasure.getId(), oldTreasure.getCollectionId(), oldTreasure.getLocation());
+                fullTreasureCache.invalidate(oldTreasure.getId());
+            }
         });
     }
 

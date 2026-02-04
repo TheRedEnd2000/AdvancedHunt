@@ -25,12 +25,14 @@ final class MinecraftVersion {
 
         Matcher m = VERSION_PATTERN.matcher(base);
         if (!m.matches()) {
-            // Default to modern if parsing fails.
-            return new MinecraftVersion(1, 21, 0);
+            // Default to oldest supported version for safety - prevents older servers
+            // from crashing due to incompatible modern adapters.
+            Bukkit.getLogger().warning("[AdvancedHunt] Failed to parse Minecraft version '" + raw + "', defaulting to 1.8");
+            return new MinecraftVersion(1, 8, 8);
         }
 
         int major = parseInt(m.group(1), 1);
-        int minor = parseInt(m.group(2), 21);
+        int minor = parseInt(m.group(2), 8);
         int patch = parseInt(m.group(3), 0);
         return new MinecraftVersion(major, minor, patch);
     }

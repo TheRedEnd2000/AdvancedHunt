@@ -11,7 +11,7 @@ public final class PlayerSnapshot {
 
 	public PlayerSnapshot(Player player, Location location) {
 		this.player = player;
-		this.location = location;
+		this.location = location != null ? location.clone() : null;
 	}
 
 	public Player player() {
@@ -19,7 +19,7 @@ public final class PlayerSnapshot {
 	}
 
 	public Location location() {
-		return location;
+		return location != null ? location.clone() : null;
 	}
 
 	@Override

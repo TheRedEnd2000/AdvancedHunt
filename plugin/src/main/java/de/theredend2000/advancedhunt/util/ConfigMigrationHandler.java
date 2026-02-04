@@ -2,8 +2,8 @@ package de.theredend2000.advancedhunt.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -13,8 +13,8 @@ import java.util.function.Consumer;
  */
 public class ConfigMigrationHandler {
 
-    private static final Map<Integer, Consumer<FileConfiguration>> configMigrations = new HashMap<>();
-    private static final Map<Integer, Consumer<FileConfiguration>> messageMigrations = new HashMap<>();
+    private static final Map<Integer, Consumer<FileConfiguration>> configMigrations = new ConcurrentHashMap<>();
+    private static final Map<Integer, Consumer<FileConfiguration>> messageMigrations = new ConcurrentHashMap<>();
 
     static {
         // Register config migrations here

@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class ItemsAdderIntegrationListener implements Listener {
         this.plugin = plugin;
         this.treasureManager = plugin.getTreasureManager();
         this.placeModeManager = plugin.getPlaceModeManager();
-        this.treasureInteractionHandler = new TreasureInteractionHandler(plugin);
+        this.treasureInteractionHandler = TreasureInteractionHandler.getInstance(plugin);
     }
 
     @EventHandler
@@ -100,7 +101,7 @@ public class ItemsAdderIntegrationListener implements Listener {
         plugin.getSoundManager().playTreasurePlaced(player);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onFurnitureBreak(FurnitureBreakEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getBukkitEntity();
@@ -165,7 +166,7 @@ public class ItemsAdderIntegrationListener implements Listener {
         treasureInteractionHandler.handleTreasureCollect(player, treasureCore);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onCustomBlockBreak(CustomBlockBreakEvent event) {
         if (event.getBlock() == null) return;
 
