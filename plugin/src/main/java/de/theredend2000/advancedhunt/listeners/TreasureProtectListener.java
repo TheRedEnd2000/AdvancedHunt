@@ -7,6 +7,7 @@ import de.theredend2000.advancedhunt.model.TreasureCore;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -26,7 +27,7 @@ public class TreasureProtectListener implements Listener {
         this.placeModeManager = plugin.getPlaceModeManager();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
         TreasureCore core = treasureManager.getTreasureCoreAt(event.getBlock().getLocation());
         if (core == null) return;
@@ -42,7 +43,7 @@ public class TreasureProtectListener implements Listener {
         plugin.getSoundManager().playBlockProtected(event.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
         TreasureCore core = treasureManager.getTreasureCoreAt(event.getBlock().getLocation());
         if (core == null) return;
@@ -54,12 +55,12 @@ public class TreasureProtectListener implements Listener {
         plugin.getSoundManager().playBlockProtected(player);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockExplode(BlockExplodeEvent event) {
         handleExplosion(event.blockList());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityExplode(EntityExplodeEvent event) {
         handleExplosion(event.blockList());
     }
@@ -68,7 +69,7 @@ public class TreasureProtectListener implements Listener {
         blocks.removeIf(block -> treasureManager.getTreasureCoreAt(block.getLocation()) != null);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
             if (treasureManager.getTreasureCoreAt(block.getLocation()) != null) {
@@ -78,7 +79,7 @@ public class TreasureProtectListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPistonRetract(BlockPistonRetractEvent event) {
         for (Block block : event.getBlocks()) {
             if (treasureManager.getTreasureCoreAt(block.getLocation()) != null) {
@@ -88,14 +89,14 @@ public class TreasureProtectListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockBurn(BlockBurnEvent event) {
         if (treasureManager.getTreasureCoreAt(event.getBlock().getLocation()) != null) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         if (treasureManager.getTreasureCoreAt(event.getBlock().getLocation()) != null) {
             event.setCancelled(true);

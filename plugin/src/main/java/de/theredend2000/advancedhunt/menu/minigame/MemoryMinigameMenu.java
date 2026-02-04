@@ -6,7 +6,6 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,28 +74,22 @@ public class MemoryMinigameMenu extends MinigameMenu {
         
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.watch"));
         
-        new BukkitRunnable() {
-            int index = 0;
-            
-            @Override
-            public void run() {
-                if (finished) {
-                    this.cancel();
-                    return;
-                }
-
-                if (index >= sequence.size()) {
-                    showingSequence = false;
-                    playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.repeat"));
-                    this.cancel();
-                    return;
-                }
-
-                int slot = sequence.get(index);
-                flashSlot(slot);
-                index++;
+        final int[] index = {0};
+        scheduleTaskTimer(() -> {
+            if (finished) {
+                return;
             }
-        }.runTaskTimer(plugin, displayTime, displayTime);
+
+            if (index[0] >= sequence.size()) {
+                showingSequence = false;
+                playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.repeat"));
+                return;
+            }
+
+            int slot = sequence.get(index[0]);
+            flashSlot(slot);
+            index[0]++;
+        }, displayTime, displayTime);
     }
 
     private void flashSlot(int slot) {
@@ -120,17 +113,14 @@ public class MemoryMinigameMenu extends MinigameMenu {
 
         // Reset after delay
         int finalColorIndex = colorIndex;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(!finished) {
-                    updateSlot(slot, new ItemBuilder(COLORS[finalColorIndex]).setDisplayName(
-                            plugin.getMessageManager().getMessage("gui.minigame.memory.button.name", false,
-                                    "%number%", String.valueOf(finalColorIndex + 1))
-                    ).build());
-                }
+        scheduleTask(() -> {
+            if(!finished) {
+                updateSlot(slot, new ItemBuilder(COLORS[finalColorIndex]).setDisplayName(
+                        plugin.getMessageManager().getMessage("gui.minigame.memory.button.name", false,
+                                "%number%", String.valueOf(finalColorIndex + 1))
+                ).build());
             }
-        }.runTaskLater(plugin, 10);
+        }, 10);
     }
 
     @Override
@@ -162,12 +152,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
                     finish(true);
                 } else {
                     playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.get(), 1, 1);
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            startRound();
-                        }
-                    }.runTaskLater(plugin, 30);
+                    scheduleTask(this::startRound, 30);
                 }
             }
         } else {

@@ -209,40 +209,54 @@ public class ItemBuilder {
         }
         if (customId != null || skullTexture != null) {
             try {
-                String version = Bukkit.getBukkitVersion().split("-")[0];
-                VersionComparator comparator = new VersionComparator();
-                if (comparator.isGreaterThanOrEqual(version, "1.20.5")) {
-                    if (skullTexture != null) {
-                        NBT.modifyComponents(item, nbt -> {
-                            ReadWriteNBT profile = nbt.getOrCreateCompound("minecraft:profile");
-                            profile.setUUID("id", UUID.randomUUID());
-                            ReadWriteNBT properties = profile.getCompoundList("properties").addCompound();
-                            properties.setString("name", "textures");
-                            properties.setString("value", skullTexture);
-                        });
-                    }
-                    if (customId != null) {
-                        NBT.modify(item, nbt -> {
-                            nbt.setString("custom_id", customId);
-                        });
-                    }
-                } else {
-                    NBT.modify(item, nbt -> {
-                        if (customId != null) {
-                            nbt.setString("custom_id", customId);
-                        }
-                        if (skullTexture != null) {
-                            ReadWriteNBT skullOwner = nbt.getOrCreateCompound("SkullOwner");
-                            skullOwner.setUUID("Id", UUID.randomUUID());
-                            ReadWriteNBT properties = skullOwner.getOrCreateCompound("Properties");
-                            ReadWriteNBT textures = properties.getCompoundList("textures").addCompound();
-                            textures.setString("Value", skullTexture);
-                        }
-                    });
-                }
-            } catch (Exception ignored) {
+                applyNbtData();
+            } catch (Exception e) {
+                Bukkit.getLogger().warning("Failed to apply NBT data to item: " + e.getMessage());
             }
         }
         return item;
+    }
+
+    private void applyNbtData() {
+        String version = Bukkit.getBukkitVersion().split("-")[0];
+        VersionComparator comparator = new VersionComparator();
+
+        if (comparator.isGreaterThanOrEqual(version, "1.20.5")) {
+            apply1_20_5PlusNbt();
+        } else {
+            applyLegacyNbt();
+        }
+    }
+
+    private void apply1_20_5PlusNbt() {
+        if (skullTexture != null) {
+            NBT.modifyComponents(item, nbt -> {
+                ReadWriteNBT profile = nbt.getOrCreateCompound("minecraft:profile");
+                profile.setUUID("id", UUID.randomUUID());
+                ReadWriteNBT properties = profile.getCompoundList("properties").addCompound();
+                properties.setString("name", "textures");
+                properties.setString("value", skullTexture);
+            });
+        }
+        if (customId != null) {
+            NBT.modify(item, nbt -> {
+                nbt.setString("custom_id", customId);
+            });
+        }
+    }
+
+    private void applyLegacyNbt() {
+        NBT.modify(item, nbt -> {
+            if (customId != null) {
+                nbt.setString("custom_id", customId);
+            }
+            if (skullTexture != null) {
+                ReadWriteNBT skullOwner = nbt.getOrCreateCompound("SkullOwner");
+                skullOwner.setUUID("Id", UUID.randomUUID());
+                ReadWriteNBT properties = skullOwner.getOrCreateCompound("Properties");
+                ReadWriteNBT textures = properties.getCompoundList("textures").addCompound();
+                textures.setString("Value", skullTexture);
+            }
+        });
     }
 }

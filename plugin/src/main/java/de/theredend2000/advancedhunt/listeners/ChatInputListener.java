@@ -52,23 +52,32 @@ public class ChatInputListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        InputRequest request = awaitingInput.remove(uuid);
+        // Capture only primitive/immutable data in async context
+        UUID playerId = event.getPlayer().getUniqueId();
+        String message = event.getMessage();
+
+        // Check if this player has pending input (can be done async - ConcurrentHashMap is thread-safe)
+        InputRequest request = awaitingInput.remove(playerId);
         if (request == null) {
             return;
         }
 
+        // Cancel event first (safe in async)
         event.setCancelled(true);
 
-        String message = event.getMessage();
-
-        // Run on the main thread as chat is async
+        // Schedule ALL Bukkit API operations on main thread
         Bukkit.getScheduler().runTask(plugin, () -> {
+            // Get fresh player reference on main thread
+            Player syncPlayer = Bukkit.getPlayer(playerId);
+            if (syncPlayer == null || !syncPlayer.isOnline()) {
+                request.task().cancel();
+                return;
+            }
+
             request.task().cancel();
 
             if (message.equalsIgnoreCase("cancel")) {
-                player.sendMessage(plugin.getMessageManager().getMessage("chat_input.canceled"));
+                syncPlayer.sendMessage(plugin.getMessageManager().getMessage("chat_input.canceled"));
                 return;
             }
 

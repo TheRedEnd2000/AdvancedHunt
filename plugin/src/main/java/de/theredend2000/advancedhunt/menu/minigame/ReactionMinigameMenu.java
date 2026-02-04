@@ -6,7 +6,6 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Random;
@@ -19,7 +18,7 @@ public class ReactionMinigameMenu extends MinigameMenu {
     private boolean clickedCorrectSlot;
     private int lastClicked;
     private final Random random;
-    private BukkitTask failTask;
+    private BukkitTask failTask; // Tracked separately for restart logic
     private boolean active;
 
     private final int hintCount;
@@ -51,23 +50,16 @@ public class ReactionMinigameMenu extends MinigameMenu {
 
         fillBackground(new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE).hideTooltip(true).build());
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateFrame(false);
-            }
-        }.runTaskLater(plugin, 10);
+        scheduleTask(() -> updateFrame(false), 10);
     }
 
     private void restartFailedTask() {
-        if (failTask != null) failTask.cancel();
+        if (failTask != null) {
+            failTask.cancel();
+            activeTasks.remove(failTask);
+        }
 
-        failTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateFrame(true);
-            }
-        }.runTaskLater(plugin, updateTime + 5);
+        failTask = scheduleTask(() -> updateFrame(true), updateTime + 5);
     }
 
     private void updateFrame(boolean timeout) {
@@ -125,12 +117,7 @@ public class ReactionMinigameMenu extends MinigameMenu {
             clickedCorrectSlot = true;
             lastClicked = currentSlot;
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    updateFrame(false);
-                }
-            }.runTaskLater(plugin, 5);
+            scheduleTask(() -> updateFrame(false), 5);
 
             restartFailedTask();
         } else {
@@ -142,7 +129,7 @@ public class ReactionMinigameMenu extends MinigameMenu {
     @Override
     protected void finish(boolean success) {
         active = false;
-        if (failTask != null) failTask.cancel();
+        // failTask is now tracked in activeTasks and will be cancelled by super.finish()
         super.finish(success);
     }
 }
