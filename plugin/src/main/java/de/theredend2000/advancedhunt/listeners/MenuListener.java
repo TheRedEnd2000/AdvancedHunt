@@ -37,6 +37,13 @@ public class MenuListener implements Listener {
 
         event.setCancelled(true);
 
+        // ESCAPE + SHIFT-CLICK EXPLOIT PREVENTION
+        // Block all clicks if the menu is in the process of closing
+        if (menu.isClosing()) {
+            player.updateInventory();
+            return;
+        }
+
         if (event.getClickedInventory() != null) {
             menu.performClick(event);
         }
@@ -49,15 +56,25 @@ public class MenuListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryDrag(InventoryDragEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
+        Player player = (Player) event.getWhoClicked();
         // 1.8 compatibility: avoid calling methods on InventoryView (API differs across versions).
         Inventory topInventory = event.getInventory();
 
         if (!(topInventory.getHolder() instanceof Menu)) return;
 
-        ((Menu) topInventory.getHolder()).handleDrag(event);
+        Menu menu = (Menu) topInventory.getHolder();
+
+        // Block all drags if the menu is in the process of closing
+        if (menu.isClosing()) {
+            event.setCancelled(true);
+            player.updateInventory();
+            return;
+        }
+
+        menu.handleDrag(event);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player)) return;
         Player player = (Player) event.getPlayer();
@@ -65,6 +82,9 @@ public class MenuListener implements Listener {
 
         if (inventory.getHolder() instanceof Menu) {
             Menu menu = (Menu) inventory.getHolder();
+            // ESCAPE + SHIFT-CLICK EXPLOIT PREVENTION
+            // Mark menu as closing immediately to block any pending click/drag events
+            menu.markClosing();
             menu.onClose(event);
             
             // 1. CURSOR SMUGGLING PREVENTION
