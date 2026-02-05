@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 
 public class SqlRepository implements DataRepository {
 
@@ -38,6 +39,71 @@ public class SqlRepository implements DataRepository {
     private final Map<Integer, Consumer<Connection>> schemaMigrations = new HashMap<>();
     // Cache the version to avoid repeated DB queries
     private int cachedSchemaVersion = -1;
+
+    // Constants for SQLite retry logic
+    private static final int MAX_RETRIES = 3;
+    private static final long INITIAL_BACKOFF_MS = 50;
+
+    /**
+     * Functional interface for SQL operations that can be retried.
+     */
+    @FunctionalInterface
+    private interface SqlOperation<T> {
+        T execute() throws SQLException;
+    }
+
+    /**
+     * Safely rolls back a transaction, catching and suppressing any rollback exceptions.
+     */
+    private void safeRollback(Connection conn, Exception originalException) {
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                originalException.addSuppressed(rollbackEx);
+                plugin.getLogger().log(Level.SEVERE, "Failed to rollback transaction", rollbackEx);
+            }
+        }
+    }
+
+    /**
+     * Safely restores the autocommit mode on a connection.
+     */
+    private void safeRestoreAutoCommit(Connection conn, boolean originalAutoCommit) {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(originalAutoCommit);
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to restore autocommit mode", e);
+            }
+        }
+    }
+
+    /**
+     * Executes an SQL operation with retry logic for SQLite SQLITE_BUSY errors.
+     * Uses exponential backoff between retries.
+     */
+    private <T> T executeWithRetry(SqlOperation<T> operation) throws SQLException {
+        SQLException lastException = null;
+        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            try {
+                return operation.execute();
+            } catch (SQLException e) {
+                if (useSqlite && e.getMessage() != null && e.getMessage().contains("SQLITE_BUSY")) {
+                    lastException = e;
+                    try {
+                        Thread.sleep(INITIAL_BACKOFF_MS * (1L << attempt));
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw e;
+                    }
+                } else {
+                    throw e;
+                }
+            }
+        }
+        throw lastException;
+    }
 
     public SqlRepository(JavaPlugin plugin, String host, int port, String database, String username, String password, boolean useSqlite) {
         this.plugin = plugin;
@@ -476,42 +542,45 @@ public class SqlRepository implements DataRepository {
                 conn.setAutoCommit(false);
 
                 try {
-                    // 1. Ensure player rows exist
-                    String ensurePlayerSql = useSqlite
-                            ? "INSERT OR IGNORE INTO ah_players (uuid) VALUES (?)"
-                            : "INSERT IGNORE INTO ah_players (uuid) VALUES (?)";
+                    executeWithRetry(() -> {
+                        // 1. Ensure player rows exist
+                        String ensurePlayerSql = useSqlite
+                                ? "INSERT OR IGNORE INTO ah_players (uuid) VALUES (?)"
+                                : "INSERT IGNORE INTO ah_players (uuid) VALUES (?)";
 
-                    try (PreparedStatement ps = conn.prepareStatement(ensurePlayerSql)) {
-                        for (PlayerData pd : playerDataList) {
-                            ps.setString(1, pd.getPlayerUuid().toString());
-                            ps.addBatch();
-                        }
-                        ps.executeBatch();
-                    }
-
-                    // 2. Batch save found treasures
-                    String insertSql = useSqlite
-                        ? "INSERT OR IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)"
-                        : "INSERT IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)";
-
-                    try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
-                        for (PlayerData pd : playerDataList) {
-                            String uuidStr = pd.getPlayerUuid().toString();
-                            for (UUID treasureId : pd.getFoundTreasures()) {
-                                ps.setString(1, uuidStr);
-                                ps.setString(2, treasureId.toString());
+                        try (PreparedStatement ps = conn.prepareStatement(ensurePlayerSql)) {
+                            for (PlayerData pd : playerDataList) {
+                                ps.setString(1, pd.getPlayerUuid().toString());
                                 ps.addBatch();
                             }
+                            ps.executeBatch();
                         }
-                        ps.executeBatch();
-                    }
 
-                    conn.commit();
+                        // 2. Batch save found treasures
+                        String insertSql = useSqlite
+                            ? "INSERT OR IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)"
+                            : "INSERT IGNORE INTO ah_player_found (player_uuid, treasure_id) VALUES (?, ?)";
+
+                        try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                            for (PlayerData pd : playerDataList) {
+                                String uuidStr = pd.getPlayerUuid().toString();
+                                for (UUID treasureId : pd.getFoundTreasures()) {
+                                    ps.setString(1, uuidStr);
+                                    ps.setString(2, treasureId.toString());
+                                    ps.addBatch();
+                                }
+                            }
+                            ps.executeBatch();
+                        }
+
+                        conn.commit();
+                        return null;
+                    });
                 } catch (SQLException e) {
-                    conn.rollback();
+                    safeRollback(conn, e);
                     throw e;
                 } finally {
-                    conn.setAutoCommit(originalAutoCommit);
+                    safeRestoreAutoCommit(conn, originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to batch save player data: " + e.getMessage());
@@ -632,27 +701,30 @@ public class SqlRepository implements DataRepository {
                 boolean originalAutoCommit = conn.getAutoCommit();
                 conn.setAutoCommit(false);
                 try {
-                    for (Treasure treasure : treasures) {
-                        ps.setString(1, treasure.getId().toString());
-                        ps.setString(2, treasure.getCollectionId().toString());
-                        ps.setString(3, treasure.getLocation().getWorld().getName());
-                        ps.setInt(4, treasure.getLocation().getBlockX());
-                        ps.setInt(5, treasure.getLocation().getBlockY());
-                        ps.setInt(6, treasure.getLocation().getBlockZ());
-                        ps.setString(7, gson.toJson(treasure.getRewards()));
-                        ps.setString(8, treasure.getNbtData());
-                        ps.setString(9, treasure.getMaterial());
-                        ps.setString(10, treasure.getBlockState());
-                        ps.addBatch();
-                    }
+                    executeWithRetry(() -> {
+                        for (Treasure treasure : treasures) {
+                            ps.setString(1, treasure.getId().toString());
+                            ps.setString(2, treasure.getCollectionId().toString());
+                            ps.setString(3, treasure.getLocation().getWorld().getName());
+                            ps.setInt(4, treasure.getLocation().getBlockX());
+                            ps.setInt(5, treasure.getLocation().getBlockY());
+                            ps.setInt(6, treasure.getLocation().getBlockZ());
+                            ps.setString(7, gson.toJson(treasure.getRewards()));
+                            ps.setString(8, treasure.getNbtData());
+                            ps.setString(9, treasure.getMaterial());
+                            ps.setString(10, treasure.getBlockState());
+                            ps.addBatch();
+                        }
 
-                    ps.executeBatch();
-                    conn.commit();
+                        ps.executeBatch();
+                        conn.commit();
+                        return null;
+                    });
                 } catch (SQLException e) {
-                    conn.rollback();
+                    safeRollback(conn, e);
                     throw e;
                 } finally {
-                    conn.setAutoCommit(originalAutoCommit);
+                    safeRestoreAutoCommit(conn, originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to save treasures batch: " + e.getMessage());
@@ -746,24 +818,21 @@ public class SqlRepository implements DataRepository {
                 boolean oldAutoCommit = conn.getAutoCommit();
                 conn.setAutoCommit(false);
                 try {
-                    for (UUID treasureId : treasureIds) {
-                        ps.setString(1, rewardsJson);
-                        ps.setString(2, treasureId.toString());
-                        ps.addBatch();
-                    }
-                    ps.executeBatch();
-                    conn.commit();
+                    executeWithRetry(() -> {
+                        for (UUID treasureId : treasureIds) {
+                            ps.setString(1, rewardsJson);
+                            ps.setString(2, treasureId.toString());
+                            ps.addBatch();
+                        }
+                        ps.executeBatch();
+                        conn.commit();
+                        return null;
+                    });
                 } catch (SQLException e) {
-                    try {
-                        conn.rollback();
-                    } catch (SQLException ignored) {
-                    }
+                    safeRollback(conn, e);
                     throw e;
                 } finally {
-                    try {
-                        conn.setAutoCommit(oldAutoCommit);
-                    } catch (SQLException ignored) {
-                    }
+                    safeRestoreAutoCommit(conn, oldAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to update treasure rewards batch: " + e.getMessage());
@@ -820,45 +889,48 @@ public class SqlRepository implements DataRepository {
                 boolean originalAutoCommit = conn.getAutoCommit();
                 conn.setAutoCommit(false);
                 try {
-                    // Save collection
-                    try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
-                        ps.setString(1, collection.getId().toString());
-                        ps.setString(2, collection.getName());
-                        ps.setBoolean(3, collection.isEnabled());
-                        ps.setString(4, collection.getProgressResetCron());
-                        ps.setBoolean(5, collection.isSinglePlayerFind());
-                        ps.setString(6, gson.toJson(collection.getCompletionRewards()));
-                        ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
-                        ps.setBoolean(8, collection.isHideWhenNotAvailable());
-                        ps.executeUpdate();
-                    }
-
-                    // Delete existing ACT rules for this collection
-                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_act_rules WHERE collection_id = ?")) {
-                        ps.setString(1, collection.getId().toString());
-                        ps.executeUpdate();
-                    }
-
-                    // Save ACT rules
-                    for (ActRule rule : collection.getActRules()) {
-                        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
-                            ps.setString(1, rule.getId().toString());
-                            ps.setString(2, rule.getCollectionId().toString());
-                            ps.setString(3, rule.getName());
-                            ps.setString(4, rule.getDateRange());
-                            ps.setString(5, rule.getDuration());
-                            ps.setString(6, rule.getCronExpression());
-                            ps.setBoolean(7, rule.isEnabled());
+                    executeWithRetry(() -> {
+                        // Save collection
+                        try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                            ps.setString(1, collection.getId().toString());
+                            ps.setString(2, collection.getName());
+                            ps.setBoolean(3, collection.isEnabled());
+                            ps.setString(4, collection.getProgressResetCron());
+                            ps.setBoolean(5, collection.isSinglePlayerFind());
+                            ps.setString(6, gson.toJson(collection.getCompletionRewards()));
+                            ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
+                            ps.setBoolean(8, collection.isHideWhenNotAvailable());
                             ps.executeUpdate();
                         }
-                    }
 
-                    conn.commit();
+                        // Delete existing ACT rules for this collection
+                        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_act_rules WHERE collection_id = ?")) {
+                            ps.setString(1, collection.getId().toString());
+                            ps.executeUpdate();
+                        }
+
+                        // Save ACT rules
+                        for (ActRule rule : collection.getActRules()) {
+                            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO ah_act_rules (id, collection_id, name, date_range, duration, cron_expression, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+                                ps.setString(1, rule.getId().toString());
+                                ps.setString(2, rule.getCollectionId().toString());
+                                ps.setString(3, rule.getName());
+                                ps.setString(4, rule.getDateRange());
+                                ps.setString(5, rule.getDuration());
+                                ps.setString(6, rule.getCronExpression());
+                                ps.setBoolean(7, rule.isEnabled());
+                                ps.executeUpdate();
+                            }
+                        }
+
+                        conn.commit();
+                        return null;
+                    });
                 } catch (SQLException e) {
-                    conn.rollback();
+                    safeRollback(conn, e);
                     throw e;
                 } finally {
-                    conn.setAutoCommit(originalAutoCommit);
+                    safeRestoreAutoCommit(conn, originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to save collection: " + e.getMessage());
@@ -918,21 +990,24 @@ public class SqlRepository implements DataRepository {
                 boolean originalAutoCommit = conn.getAutoCommit();
                 conn.setAutoCommit(false);
                 try {
-                    for (RewardPreset preset : presets) {
-                        ps.setString(1, preset.getId().toString());
-                        ps.setString(2, preset.getType().name());
-                        ps.setString(3, preset.getName());
-                        ps.setString(4, gson.toJson(preset.getRewards()));
-                        ps.addBatch();
-                    }
+                    executeWithRetry(() -> {
+                        for (RewardPreset preset : presets) {
+                            ps.setString(1, preset.getId().toString());
+                            ps.setString(2, preset.getType().name());
+                            ps.setString(3, preset.getName());
+                            ps.setString(4, gson.toJson(preset.getRewards()));
+                            ps.addBatch();
+                        }
 
-                    ps.executeBatch();
-                    conn.commit();
+                        ps.executeBatch();
+                        conn.commit();
+                        return null;
+                    });
                 } catch (SQLException e) {
-                    conn.rollback();
+                    safeRollback(conn, e);
                     throw e;
                 } finally {
-                    conn.setAutoCommit(originalAutoCommit);
+                    safeRestoreAutoCommit(conn, originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to save reward presets batch: " + e.getMessage());
@@ -1063,40 +1138,37 @@ public class SqlRepository implements DataRepository {
                     : "INSERT IGNORE INTO ah_place_preset_groups (grp) VALUES (?)";
 
             try (Connection conn = dataSource.getConnection()) {
+                boolean originalAutoCommit = conn.getAutoCommit();
+                conn.setAutoCommit(false);
                 try {
-                    conn.setAutoCommit(false);
+                    executeWithRetry(() -> {
+                        // Ensure new group exists
+                        try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                            ps.setString(1, newTrimmed);
+                            ps.executeUpdate();
+                        }
 
-                    // Ensure new group exists
-                    try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
-                        ps.setString(1, newTrimmed);
-                        ps.executeUpdate();
-                    }
+                        // Best-effort: update any remaining presets (manager usually handles this too)
+                        try (PreparedStatement ps = conn.prepareStatement("UPDATE ah_place_items SET grp = ? WHERE LOWER(grp) = LOWER(?)")) {
+                            ps.setString(1, newTrimmed);
+                            ps.setString(2, oldTrimmed);
+                            ps.executeUpdate();
+                        }
 
-                    // Best-effort: update any remaining presets (manager usually handles this too)
-                    try (PreparedStatement ps = conn.prepareStatement("UPDATE ah_place_items SET grp = ? WHERE LOWER(grp) = LOWER(?)")) {
-                        ps.setString(1, newTrimmed);
-                        ps.setString(2, oldTrimmed);
-                        ps.executeUpdate();
-                    }
+                        // Remove old group
+                        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_preset_groups WHERE LOWER(grp) = LOWER(?)")) {
+                            ps.setString(1, oldTrimmed);
+                            ps.executeUpdate();
+                        }
 
-                    // Remove old group
-                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_place_preset_groups WHERE LOWER(grp) = LOWER(?)")) {
-                        ps.setString(1, oldTrimmed);
-                        ps.executeUpdate();
-                    }
-
-                    conn.commit();
+                        conn.commit();
+                        return null;
+                    });
                 } catch (SQLException e) {
-                    try {
-                        conn.rollback();
-                    } catch (SQLException ignored) {
-                    }
+                    safeRollback(conn, e);
                     throw e;
                 } finally {
-                    try {
-                        conn.setAutoCommit(true);
-                    } catch (SQLException ignored) {
-                    }
+                    safeRestoreAutoCommit(conn, originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to rename place preset group: " + e.getMessage());
@@ -1127,23 +1199,26 @@ public class SqlRepository implements DataRepository {
                 boolean originalAutoCommit = conn.getAutoCommit();
                 conn.setAutoCommit(false);
                 try {
-                    // Delete collection
-                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_collections WHERE id = ?")) {
-                        ps.setString(1, id.toString());
-                        ps.executeUpdate();
-                    }
-                    // Delete associated treasures
-                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_treasures WHERE collection_id = ?")) {
-                        ps.setString(1, id.toString());
-                        ps.executeUpdate();
-                    }
+                    executeWithRetry(() -> {
+                        // Delete collection
+                        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_collections WHERE id = ?")) {
+                            ps.setString(1, id.toString());
+                            ps.executeUpdate();
+                        }
+                        // Delete associated treasures
+                        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_treasures WHERE collection_id = ?")) {
+                            ps.setString(1, id.toString());
+                            ps.executeUpdate();
+                        }
 
-                    conn.commit();
+                        conn.commit();
+                        return null;
+                    });
                 } catch (SQLException e) {
-                    conn.rollback();
+                    safeRollback(conn, e);
                     throw e;
                 } finally {
-                    conn.setAutoCommit(originalAutoCommit);
+                    safeRestoreAutoCommit(conn, originalAutoCommit);
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to delete collection: " + e.getMessage());
