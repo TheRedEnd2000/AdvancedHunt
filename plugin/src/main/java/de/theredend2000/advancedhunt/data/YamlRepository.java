@@ -13,11 +13,15 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -46,6 +50,12 @@ public class YamlRepository implements DataRepository {
     private final Map<UUID, Set<UUID>> treasureToFindersIndex = new ConcurrentHashMap<>();
     // Flag to track if finder index needs saving
     private volatile boolean finderIndexDirty = false;
+    
+    // Per-file locks for thread-safe YAML operations (Issue 1.7)
+    private final Map<File, Object> fileLocks = new ConcurrentHashMap<>();
+    
+    // Track pending async operations for graceful shutdown (Issue 1.9)
+    private final Set<CompletableFuture<?>> pendingOperations = ConcurrentHashMap.newKeySet();
 
     private final Map<Integer, Runnable> schemaMigrations = new HashMap<>();
     private int cachedSchemaVersion = -1;
@@ -152,29 +162,113 @@ public class YamlRepository implements DataRepository {
         return sanitized;
     }
 
-    private void saveConfigAtomic(FileConfiguration config, File file) {
-        // Bukkit's YamlConfiguration writes directly to the file.
-        // We reduce corruption risk by writing to a temp file and then replacing.
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
-        }
+    /**
+     * Gets or creates a lock object for the given file.
+     * Used for per-file synchronization to ensure thread-safety (Issue 1.7).
+     */
+    private Object getFileLock(File file) {
+        return fileLocks.computeIfAbsent(file.getAbsoluteFile(), k -> new Object());
+    }
 
-        File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
-        try {
-            config.save(tmp);
-            try {
-                Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            } catch (Exception atomicMoveNotSupported) {
-                Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    /**
+     * Tracks a CompletableFuture for graceful shutdown (Issue 1.9).
+     * The future is automatically removed from tracking when it completes.
+     */
+    private <T> CompletableFuture<T> trackFuture(CompletableFuture<T> future) {
+        pendingOperations.add(future);
+        return future.whenComplete((r, e) -> pendingOperations.remove(future));
+    }
+
+    /**
+     * @deprecated Use {@link #saveConfigAtomicWithLock(YamlConfiguration, File)} for thread-safe atomic writes with return value
+     */
+    @Deprecated
+    private void saveConfigAtomic(FileConfiguration config, File file) {
+        // Delegate to the new method but ignore return value for backward compatibility
+        if (config instanceof YamlConfiguration) {
+            saveConfigAtomicWithLock((YamlConfiguration) config, file);
+        } else {
+            // Fallback for non-YamlConfiguration (shouldn't happen in practice)
+            saveConfigAtomicWithLockInternal(config, file);
+        }
+    }
+
+    /**
+     * Saves a YamlConfiguration atomically with file locking and thread synchronization.
+     * Returns true on success, false on failure (Issue 1.5, 1.7, 1.8).
+     * 
+     * @param config The configuration to save
+     * @param file The target file
+     * @return true if save succeeded, false otherwise
+     */
+    private boolean saveConfigAtomicWithLock(YamlConfiguration config, File file) {
+        return saveConfigAtomicWithLockInternal(config, file);
+    }
+
+    /**
+     * Internal implementation for atomic save with locking.
+     * Supports both YamlConfiguration and FileConfiguration.
+     */
+    private boolean saveConfigAtomicWithLockInternal(FileConfiguration config, File file) {
+        synchronized (getFileLock(file)) {
+            File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
             }
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Could not save " + file.getName(), e);
-        } finally {
-            if (tmp.exists()) {
-                // Best-effort cleanup
-                //noinspection ResultOfMethodCallIgnored
-                tmp.delete();
+
+            File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
+            File lockFile = new File(file.getParentFile(), file.getName() + ".lock");
+            
+            // Use file-level locking to prevent cross-process corruption (Issue 1.8)
+            try (RandomAccessFile raf = new RandomAccessFile(lockFile, "rw");
+                 FileChannel channel = raf.getChannel();
+                 FileLock lock = channel.tryLock()) {
+                
+                if (lock == null) {
+                    plugin.getLogger().warning("Could not acquire file lock for " + file.getName() + ", another process may be writing");
+                    // Continue anyway with in-process synchronization
+                }
+                
+                try {
+                    config.save(tmp);
+                    try {
+                        Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                    } catch (Exception atomicMoveNotSupported) {
+                        Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    return true;
+                } catch (IOException e) {
+                    plugin.getLogger().log(Level.SEVERE, "Could not save " + file.getName(), e);
+                    return false;
+                } finally {
+                    if (tmp.exists()) {
+                        tmp.delete();
+                    }
+                }
+            } catch (IOException e) {
+                // File locking failed, fall back to non-locked save
+                plugin.getLogger().log(Level.WARNING, "File locking failed for " + file.getName() + ", attempting save without lock", e);
+                try {
+                    config.save(tmp);
+                    try {
+                        Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                    } catch (Exception atomicMoveNotSupported) {
+                        Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    return true;
+                } catch (IOException ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Could not save " + file.getName(), ex);
+                    return false;
+                } finally {
+                    if (tmp.exists()) {
+                        tmp.delete();
+                    }
+                }
+            } finally {
+                // Clean up lock file (best effort)
+                if (lockFile.exists()) {
+                    lockFile.delete();
+                }
             }
         }
     }
@@ -305,7 +399,7 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<UUID>> getAllPlayerUUIDs() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<UUID> uuids = new ArrayList<>();
             File[] files = playerDataFolder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
             if (files != null) {
@@ -316,7 +410,7 @@ public class YamlRepository implements DataRepository {
                 }
             }
             return uuids;
-        });
+        }));
     }
     
     /**
@@ -433,9 +527,40 @@ public class YamlRepository implements DataRepository {
         if (flushTask != null && !flushTask.isCancelled()) {
             flushTask.cancel();
         }
+        
+        // Wait for pending async operations to complete (Issue 1.9)
+        awaitPendingOperations(5000); // 5 second timeout
+        
         // Save finder index if dirty
         if (finderIndexDirty) {
             saveFinderIndex();
+        }
+    }
+
+    /**
+     * Waits for all pending async operations to complete (Issue 1.9).
+     * This ensures data integrity on shutdown by not losing in-flight writes.
+     * 
+     * @param timeoutMs Maximum time to wait in milliseconds
+     */
+    public void awaitPendingOperations(long timeoutMs) {
+        if (pendingOperations.isEmpty()) {
+            return;
+        }
+        
+        CompletableFuture<?>[] pending = pendingOperations.toArray(new CompletableFuture<?>[0]);
+        if (pending.length == 0) {
+            return;
+        }
+        
+        plugin.getLogger().info("Waiting for " + pending.length + " pending operations to complete...");
+        try {
+            CompletableFuture.allOf(pending).get(timeoutMs, TimeUnit.MILLISECONDS);
+            plugin.getLogger().info("All pending operations completed successfully");
+        } catch (java.util.concurrent.TimeoutException e) {
+            plugin.getLogger().warning("Some operations did not complete within " + timeoutMs + "ms timeout");
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.WARNING, "Error waiting for pending operations", e);
         }
     }
 
@@ -453,59 +578,95 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<PlayerData> loadPlayerData(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             File file = new File(playerDataFolder, playerUuid.toString() + YML_EXTENSION);
             PlayerData data = new PlayerData(playerUuid);
             if (file.exists()) {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-                List<String> found = config.getStringList("found-treasures");
-                for (String s : found) {
-                    try {
-                        data.addFoundTreasure(UUID.fromString(s));
-                    } catch (IllegalArgumentException ignored) {}
+                // Synchronize reads to prevent reading partially written files (Issue 1.7)
+                synchronized (getFileLock(file)) {
+                    FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+                    List<String> found = config.getStringList("found-treasures");
+                    for (String s : found) {
+                        try {
+                            data.addFoundTreasure(UUID.fromString(s));
+                        } catch (IllegalArgumentException ignored) {}
+                    }
                 }
             }
             return data;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> savePlayerData(PlayerData playerData) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             File file = new File(playerDataFolder, playerData.getPlayerUuid().toString() + YML_EXTENSION);
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+            YamlConfiguration config = new YamlConfiguration();
+            
+            // Load existing data within the lock to prevent race conditions
+            synchronized (getFileLock(file)) {
+                if (file.exists()) {
+                    try {
+                        config.load(file);
+                    } catch (Exception e) {
+                        plugin.getLogger().log(Level.WARNING, "Error loading existing player data for " + playerData.getPlayerUuid(), e);
+                    }
+                }
+            }
+            
             List<String> found = new ArrayList<>();
             for (UUID uuid : playerData.getFoundTreasures()) {
                 found.add(uuid.toString());
             }
             config.set("found-treasures", found);
-            saveConfigAtomic(config, file);
             
-            // Update finder index (fast in-memory update)
-            updateFinderIndex(playerData);
+            // Only update indexes if file save succeeded (Issue 1.3-1.4)
+            boolean saved = saveConfigAtomicWithLock(config, file);
+            if (saved) {
+                // Update finder index (fast in-memory update)
+                updateFinderIndex(playerData);
+            } else {
+                plugin.getLogger().warning("Failed to save player data for " + playerData.getPlayerUuid() + ", indexes not updated");
+            }
             
             // Note: Leaderboard is now updated by LeaderboardManager on a schedule,
             // not on every save, to avoid I/O storms on high-traffic servers
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> savePlayerDataBatch(List<PlayerData> playerDataList) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             for (PlayerData pd : playerDataList) {
                 File file = new File(playerDataFolder, pd.getPlayerUuid() + YML_EXTENSION);
-                FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+                YamlConfiguration config = new YamlConfiguration();
+                
+                // Load existing data within the lock
+                synchronized (getFileLock(file)) {
+                    if (file.exists()) {
+                        try {
+                            config.load(file);
+                        } catch (Exception e) {
+                            plugin.getLogger().log(Level.WARNING, "Error loading existing player data for " + pd.getPlayerUuid(), e);
+                        }
+                    }
+                }
                 
                 List<String> found = new ArrayList<>();
                 for (UUID uuid : pd.getFoundTreasures()) {
                     found.add(uuid.toString());
                 }
                 config.set("found-treasures", found);
-                saveConfigAtomic(config, file);
                 
-                updateFinderIndex(pd);
+                // Only update indexes if file save succeeded (Issue 1.3-1.4)
+                boolean saved = saveConfigAtomicWithLock(config, file);
+                if (saved) {
+                    updateFinderIndex(pd);
+                } else {
+                    plugin.getLogger().warning("Failed to save player data for " + pd.getPlayerUuid() + ", indexes not updated");
+                }
             }
-        });
+        }));
     }
     
     /**
@@ -527,7 +688,7 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<Treasure>> loadTreasures() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<Treasure> treasures = new ArrayList<>();
             File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
             if (collectionDirs != null) {
@@ -568,12 +729,12 @@ public class YamlRepository implements DataRepository {
                 }
             }
             return treasures;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<List<TreasureCore>> loadTreasureCores() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<TreasureCore> cores = new ArrayList<>();
             File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
             if (collectionDirs != null) {
@@ -610,12 +771,12 @@ public class YamlRepository implements DataRepository {
                 }
             }
             return cores;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<List<UUID>> getAllTreasureUUIDs() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<UUID> ids = new ArrayList<>();
             File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
             if (collectionDirs == null) {
@@ -644,12 +805,12 @@ public class YamlRepository implements DataRepository {
             }
 
             return ids;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> saveTreasure(Treasure treasure) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             File collectionDir = new File(collectionsFolder, treasure.getCollectionId().toString());
             if (!collectionDir.exists()) {
                 collectionDir.mkdirs();
@@ -661,7 +822,7 @@ public class YamlRepository implements DataRepository {
             
             File file = new File(treasuresDir, treasure.getId().toString() + YML_EXTENSION);
             // For new saves, avoid reading an existing file from disk.
-            FileConfiguration config = new YamlConfiguration();
+            YamlConfiguration config = new YamlConfiguration();
             
             config.set("collection-id", treasure.getCollectionId().toString());
             config.set("world", treasure.getLocation().getWorld().getName());
@@ -673,16 +834,20 @@ public class YamlRepository implements DataRepository {
             config.set("material", treasure.getMaterial());
             config.set("block-state", treasure.getBlockState());
             
-            saveConfigAtomic(config, file);
-            
-            // Update treasure-to-collection index
-            treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
-        });
+            // Only update indexes if file save succeeded (Issue 1.3-1.4)
+            boolean saved = saveConfigAtomicWithLock(config, file);
+            if (saved) {
+                // Update treasure-to-collection index
+                treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
+            } else {
+                plugin.getLogger().warning("Failed to save treasure " + treasure.getId() + ", index not updated");
+            }
+        }));
     }
 
     @Override
     public CompletableFuture<Void> saveTreasuresBatch(List<Treasure> treasures) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (treasures == null || treasures.isEmpty()) {
                 return;
             }
@@ -704,7 +869,7 @@ public class YamlRepository implements DataRepository {
                 });
 
                 File file = new File(treasuresDir, treasure.getId().toString() + YML_EXTENSION);
-                FileConfiguration config = new YamlConfiguration();
+                YamlConfiguration config = new YamlConfiguration();
 
                 config.set("collection-id", treasure.getCollectionId().toString());
                 config.set("world", treasure.getLocation().getWorld().getName());
@@ -716,30 +881,37 @@ public class YamlRepository implements DataRepository {
                 config.set("material", treasure.getMaterial());
                 config.set("block-state", treasure.getBlockState());
 
-                saveConfigAtomic(config, file);
-
-                treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
+                // Only update indexes if file save succeeded (Issue 1.3-1.4)
+                boolean saved = saveConfigAtomicWithLock(config, file);
+                if (saved) {
+                    treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
+                } else {
+                    plugin.getLogger().warning("Failed to save treasure " + treasure.getId() + ", index not updated");
+                }
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> updateTreasureRewards(UUID treasureId, List<Reward> rewards) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             File treasureFile = resolveTreasureFile(treasureId);
             if (treasureFile == null) {
                 return;
             }
 
-            FileConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
-            config.set("rewards", serializeRewards(rewards));
-            saveConfigAtomic(config, treasureFile);
-        });
+            // Synchronize read/modify/write (Issue 1.7)
+            synchronized (getFileLock(treasureFile)) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
+                config.set("rewards", serializeRewards(rewards));
+                saveConfigAtomicWithLock(config, treasureFile);
+            }
+        }));
     }
 
     @Override
     public CompletableFuture<Void> updateTreasureRewardsBatch(List<UUID> treasureIds, List<Reward> rewards) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (treasureIds == null || treasureIds.isEmpty()) {
                 return;
             }
@@ -753,11 +925,14 @@ public class YamlRepository implements DataRepository {
                     continue;
                 }
 
-                FileConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
-                config.set("rewards", serializedRewards);
-                saveConfigAtomic(config, treasureFile);
+                // Synchronize read/modify/write (Issue 1.7)
+                synchronized (getFileLock(treasureFile)) {
+                    YamlConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
+                    config.set("rewards", serializedRewards);
+                    saveConfigAtomicWithLock(config, treasureFile);
+                }
             }
-        });
+        }));
     }
 
     private File resolveTreasureFile(UUID treasureId) {
@@ -794,7 +969,7 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Void> deleteTreasure(UUID treasureId) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             // Search for the treasure file in all collection folders
             File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
             if (collectionDirs != null) {
@@ -814,12 +989,12 @@ public class YamlRepository implements DataRepository {
             treasureToCollectionIndex.remove(treasureId);
             treasureToFindersIndex.remove(treasureId);
             finderIndexDirty = true;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Integer> deleteTreasuresInCollection(UUID collectionId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             int deleted = 0;
             File collectionDir = new File(collectionsFolder, collectionId.toString());
             File treasuresDir = new File(collectionDir, "treasures");
@@ -851,12 +1026,12 @@ public class YamlRepository implements DataRepository {
             treasureToCollectionIndex.entrySet().removeIf(e -> collectionId.equals(e.getValue()));
             finderIndexDirty = true;
             return deleted;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Treasure> loadTreasure(UUID treasureId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             // Use the collection index to find the treasure quickly
             UUID collectionId = treasureToCollectionIndex.get(treasureId);
             if (collectionId == null) {
@@ -891,12 +1066,12 @@ public class YamlRepository implements DataRepository {
                 plugin.getLogger().warning("Failed to load treasure " + treasureId + ": " + e.getMessage());
                 return null;
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<List<Collection>> loadCollections() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<Collection> collections = new ArrayList<>();
             File[] collectionDirs = collectionsFolder.listFiles(File::isDirectory);
             if (collectionDirs != null) {
@@ -958,18 +1133,23 @@ public class YamlRepository implements DataRepository {
                 }
             }
             return collections;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> saveCollection(Collection collection) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             File dir = new File(collectionsFolder, collection.getId().toString());
             if (!dir.exists()) {
                 dir.mkdirs();
             }
             File file = new File(dir, "config.yml");
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+            
+            // Synchronize read/modify/write (Issue 1.7)
+            YamlConfiguration config;
+            synchronized (getFileLock(file)) {
+                config = YamlConfiguration.loadConfiguration(file);
+            }
             
             config.set("name", collection.getName());
             config.set("enabled", collection.isEnabled());
@@ -995,13 +1175,13 @@ public class YamlRepository implements DataRepository {
             
             config.set("rewards", serializeRewards(collection.getCompletionRewards()));
             
-            saveConfigAtomic(config, file);
-        });
+            saveConfigAtomicWithLock(config, file);
+        }));
     }
 
     @Override
     public CompletableFuture<List<RewardPreset>> loadRewardPresets(RewardPresetType type) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<RewardPreset> presets = new ArrayList<>();
 
             File folder = getPresetFolder(type);
@@ -1051,51 +1231,51 @@ public class YamlRepository implements DataRepository {
             // Stable ordering for menus
             presets.sort(Comparator.comparing(RewardPreset::getName, String.CASE_INSENSITIVE_ORDER));
             return presets;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> saveRewardPreset(RewardPreset preset) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             File file = getPresetFile(preset.getType(), preset.getId());
-            FileConfiguration config = new YamlConfiguration();
+            YamlConfiguration config = new YamlConfiguration();
             config.set("name", preset.getName());
             config.set("rewards", serializeRewards(preset.getRewards()));
-            saveConfigAtomic(config, file);
-        });
+            saveConfigAtomicWithLock(config, file);
+        }));
     }
 
     @Override
     public CompletableFuture<Void> saveRewardPresetsBatch(List<RewardPreset> presets) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (presets == null || presets.isEmpty()) {
                 return;
             }
 
             for (RewardPreset preset : presets) {
                 File file = getPresetFile(preset.getType(), preset.getId());
-                FileConfiguration config = new YamlConfiguration();
+                YamlConfiguration config = new YamlConfiguration();
                 config.set("name", preset.getName());
                 config.set("rewards", serializeRewards(preset.getRewards()));
-                saveConfigAtomic(config, file);
+                saveConfigAtomicWithLock(config, file);
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> deleteRewardPreset(RewardPresetType type, UUID presetId) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             File file = getPresetFile(type, presetId);
             if (file.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<List<PlaceItem>> loadPlaceItems() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<PlaceItem> presets = new ArrayList<>();
 
             if (placeItemsFolder == null) {
@@ -1138,12 +1318,12 @@ public class YamlRepository implements DataRepository {
                     .comparing(PlaceItem::getGroup, String.CASE_INSENSITIVE_ORDER)
                     .thenComparing(PlaceItem::getName, String.CASE_INSENSITIVE_ORDER));
             return presets;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> savePlaceItem(PlaceItem preset) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (placeItemsFolder == null) {
                 placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
             }
@@ -1153,17 +1333,17 @@ public class YamlRepository implements DataRepository {
             }
 
             File file = new File(groupDir, preset.getId().toString() + YML_EXTENSION);
-            FileConfiguration config = new YamlConfiguration();
+            YamlConfiguration config = new YamlConfiguration();
             config.set("group", preset.getGroup());
             config.set("name", preset.getName());
             config.set("item", preset.getItemData());
-            saveConfigAtomic(config, file);
-        });
+            saveConfigAtomicWithLock(config, file);
+        }));
     }
 
     @Override
     public CompletableFuture<Void> deletePlaceItem(UUID presetId) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (placeItemsFolder == null) {
                 placeItemsFolder = new File(plugin.getDataFolder(), "place-items");
             }
@@ -1183,12 +1363,12 @@ public class YamlRepository implements DataRepository {
                     break;
                 }
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Set<String>> loadPlaceItemGroups() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             if (placePresetGroupsFile == null) {
                 placePresetGroupsFile = new File(plugin.getDataFolder(), "place-item-groups.yml");
             }
@@ -1209,12 +1389,12 @@ public class YamlRepository implements DataRepository {
                 }
             }
             return result;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> createPlaceItemGroup(String group) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;
             }
@@ -1222,22 +1402,25 @@ public class YamlRepository implements DataRepository {
                 placePresetGroupsFile = new File(plugin.getDataFolder(), "place-item-groups.yml");
             }
 
-            FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
-            List<String> groups = new ArrayList<>(config.getStringList("groups"));
+            // Synchronize read/modify/write (Issue 1.7)
+            synchronized (getFileLock(placePresetGroupsFile)) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
+                List<String> groups = new ArrayList<>(config.getStringList("groups"));
 
-            String trimmed = group.trim();
-            boolean exists = groups.stream().anyMatch(g -> g != null && g.equalsIgnoreCase(trimmed));
-            if (!exists) {
-                groups.add(trimmed);
-                config.set("groups", groups);
-                saveConfigAtomic(config, placePresetGroupsFile);
+                String trimmed = group.trim();
+                boolean exists = groups.stream().anyMatch(g -> g != null && g.equalsIgnoreCase(trimmed));
+                if (!exists) {
+                    groups.add(trimmed);
+                    config.set("groups", groups);
+                    saveConfigAtomicWithLock(config, placePresetGroupsFile);
+                }
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> renamePlaceItemGroup(String oldGroup, String newGroup) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (oldGroup == null || oldGroup.trim().isEmpty() || newGroup == null || newGroup.trim().isEmpty()) {
                 return;
             }
@@ -1248,20 +1431,23 @@ public class YamlRepository implements DataRepository {
             String oldTrimmed = oldGroup.trim();
             String newTrimmed = newGroup.trim();
 
-            FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
-            List<String> groups = new ArrayList<>(config.getStringList("groups"));
-            boolean changed = false;
-            for (int i = 0; i < groups.size(); i++) {
-                String g = groups.get(i);
-                if (g != null && g.equalsIgnoreCase(oldTrimmed)) {
-                    groups.set(i, newTrimmed);
-                    changed = true;
-                    break;
+            // Synchronize read/modify/write (Issue 1.7)
+            synchronized (getFileLock(placePresetGroupsFile)) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
+                List<String> groups = new ArrayList<>(config.getStringList("groups"));
+                boolean changed = false;
+                for (int i = 0; i < groups.size(); i++) {
+                    String g = groups.get(i);
+                    if (g != null && g.equalsIgnoreCase(oldTrimmed)) {
+                        groups.set(i, newTrimmed);
+                        changed = true;
+                        break;
+                    }
                 }
-            }
-            if (changed) {
-                config.set("groups", groups);
-                saveConfigAtomic(config, placePresetGroupsFile);
+                if (changed) {
+                    config.set("groups", groups);
+                    saveConfigAtomicWithLock(config, placePresetGroupsFile);
+                }
             }
 
             // Best-effort folder rename/move to keep filesystem tidy.
@@ -1291,12 +1477,12 @@ public class YamlRepository implements DataRepository {
                     oldDir.delete();
                 }
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> deletePlaceItemGroup(String group) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             if (group == null || group.trim().isEmpty()) {
                 return;
             }
@@ -1306,12 +1492,15 @@ public class YamlRepository implements DataRepository {
 
             String trimmed = group.trim();
 
-            FileConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
-            List<String> groups = new ArrayList<>(config.getStringList("groups"));
-            boolean removed = groups.removeIf(g -> g != null && g.equalsIgnoreCase(trimmed));
-            if (removed) {
-                config.set("groups", groups);
-                saveConfigAtomic(config, placePresetGroupsFile);
+            // Synchronize read/modify/write (Issue 1.7)
+            synchronized (getFileLock(placePresetGroupsFile)) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
+                List<String> groups = new ArrayList<>(config.getStringList("groups"));
+                boolean removed = groups.removeIf(g -> g != null && g.equalsIgnoreCase(trimmed));
+                if (removed) {
+                    config.set("groups", groups);
+                    saveConfigAtomicWithLock(config, placePresetGroupsFile);
+                }
             }
 
             if (placeItemsFolder == null) {
@@ -1321,12 +1510,12 @@ public class YamlRepository implements DataRepository {
             if (dir.exists() && dir.isDirectory()) {
                 deleteDirectoryRecursively(dir);
             }
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Void> deleteCollection(UUID id) {
-        return CompletableFuture.runAsync(() -> {
+        return trackFuture(CompletableFuture.runAsync(() -> {
             // Get treasure IDs before deleting files to clean up indexes
             List<String> treasureIds = getTreasureIdsForCollection(id);
 
@@ -1346,7 +1535,7 @@ public class YamlRepository implements DataRepository {
             if (!treasureIds.isEmpty()) {
                 finderIndexDirty = true;
             }
-        });
+        }));
     }
 
     private void deleteDirectoryRecursively(File file) {
@@ -1363,7 +1552,7 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<Boolean> renameCollection(UUID id, String newName) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             File dir = new File(collectionsFolder, id.toString());
             File file = new File(dir, "config.yml");
             if (!file.exists()) {
@@ -1385,16 +1574,18 @@ public class YamlRepository implements DataRepository {
                 }
             }
 
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            config.set("name", newName);
-            saveConfigAtomic(config, file);
-            return true;
-        });
+            // Synchronize read/modify/write (Issue 1.7)
+            synchronized (getFileLock(file)) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                config.set("name", newName);
+                return saveConfigAtomicWithLock(config, file);
+            }
+        }));
     }
 
     @Override
     public CompletableFuture<List<PlayerData>> loadAllPlayerData() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<PlayerData> allData = new ArrayList<>();
             if (playerDataFolder.exists()) {
                 File[] files = playerDataFolder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
@@ -1419,12 +1610,12 @@ public class YamlRepository implements DataRepository {
                 }
             }
             return allData;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Integer> resetAllProgress() {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             int count = 0;
             if (playerDataFolder.exists()) {
                 File[] files = playerDataFolder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
@@ -1443,12 +1634,12 @@ public class YamlRepository implements DataRepository {
             finderIndexDirty = true;
             
             return count;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Integer> resetCollectionProgress(UUID collectionId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             List<String> collectionTreasureIds = getTreasureIdsForCollection(collectionId);
             int count = 0;
 
@@ -1456,15 +1647,18 @@ public class YamlRepository implements DataRepository {
                 File[] files = playerDataFolder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
                 if (files != null) {
                     for (File file : files) {
-                        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-                        List<String> found = config.getStringList("found-treasures");
-                        int sizeBefore = found.size();
-                        found.removeAll(collectionTreasureIds);
-                        int removed = sizeBefore - found.size();
-                        if (removed > 0) {
-                            count += removed;
-                            config.set("found-treasures", found);
-                            saveConfigAtomic(config, file);
+                        // Synchronize read/modify/write (Issue 1.7)
+                        synchronized (getFileLock(file)) {
+                            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                            List<String> found = new ArrayList<>(config.getStringList("found-treasures"));
+                            int sizeBefore = found.size();
+                            found.removeAll(collectionTreasureIds);
+                            int removed = sizeBefore - found.size();
+                            if (removed > 0) {
+                                count += removed;
+                                config.set("found-treasures", found);
+                                saveConfigAtomicWithLock(config, file);
+                            }
                         }
                     }
                 }
@@ -1480,12 +1674,12 @@ public class YamlRepository implements DataRepository {
             finderIndexDirty = true;
             
             return count;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Integer> resetPlayerProgress(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             File file = new File(playerDataFolder, playerUuid.toString() + YML_EXTENSION);
             if (!file.exists()) {
                 return 0;
@@ -1509,56 +1703,64 @@ public class YamlRepository implements DataRepository {
                 file.delete();
             }
             return count;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Integer> resetPlayerCollectionProgress(UUID playerUuid, UUID collectionId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             File file = new File(playerDataFolder, playerUuid.toString() + YML_EXTENSION);
             if (!file.exists()) {
                 return 0;
             }
             
             List<String> collectionTreasureIds = getTreasureIdsForCollection(collectionId);
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            List<String> found = config.getStringList("found-treasures");
-            int sizeBefore = found.size();
             
-            // Track removed treasures for index update
-            List<String> removedTreasures = new ArrayList<>();
-            for (String tid : found) {
-                if (collectionTreasureIds.contains(tid)) {
-                    removedTreasures.add(tid);
-                }
-            }
-            
-            found.removeAll(collectionTreasureIds);
-            int removed = sizeBefore - found.size();
-            
-            if (removed > 0) {
-                config.set("found-treasures", found);
-                saveConfigAtomic(config, file);
+            // Synchronize read/modify/write (Issue 1.7)
+            synchronized (getFileLock(file)) {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                List<String> found = new ArrayList<>(config.getStringList("found-treasures"));
+                int sizeBefore = found.size();
                 
-                // Update finder index
-                for (String treasureIdStr : removedTreasures) {
-                    try {
-                        UUID treasureId = UUID.fromString(treasureIdStr);
-                        Set<UUID> finders = treasureToFindersIndex.get(treasureId);
-                        if (finders != null) {
-                            finders.remove(playerUuid);
-                        }
-                    } catch (IllegalArgumentException ignored) {}
+                // Track removed treasures for index update
+                List<String> removedTreasures = new ArrayList<>();
+                for (String tid : found) {
+                    if (collectionTreasureIds.contains(tid)) {
+                        removedTreasures.add(tid);
+                    }
                 }
-                finderIndexDirty = true;
+                
+                found.removeAll(collectionTreasureIds);
+                int removed = sizeBefore - found.size();
+                
+                if (removed > 0) {
+                    config.set("found-treasures", found);
+                    boolean saved = saveConfigAtomicWithLock(config, file);
+                
+                    // Only update indexes if file save succeeded (Issue 1.3-1.4)
+                    if (saved) {
+                        // Update finder index
+                        for (String treasureIdStr : removedTreasures) {
+                            try {
+                                UUID treasureId = UUID.fromString(treasureIdStr);
+                                Set<UUID> finders = treasureToFindersIndex.get(treasureId);
+                                if (finders != null) {
+                                    finders.remove(playerUuid);
+                                }
+                            } catch (IllegalArgumentException ignored) {}
+                        }
+                        finderIndexDirty = true;
+                    }
+                    return removed;
+                }
+                return 0;
             }
-            return removed;
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Map<UUID, Integer>> getLeaderboard(UUID collectionId, int limit) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             Map<UUID, Integer> scores = new HashMap<>();
             FileConfiguration config = YamlConfiguration.loadConfiguration(leaderboardFile);
             String path = "collections." + collectionId;
@@ -1579,7 +1781,7 @@ public class YamlRepository implements DataRepository {
                             (e1, e2) -> e1,
                             LinkedHashMap::new
                     ));
-        });
+        }));
     }
 
     /**
@@ -1589,7 +1791,10 @@ public class YamlRepository implements DataRepository {
      */
     public void updatePlayerLeaderboard(PlayerData playerData) {
         if (leaderboardFile == null) return;
-        FileConfiguration config = YamlConfiguration.loadConfiguration(leaderboardFile);
+        
+        // Synchronize read/modify/write (Issue 1.7)
+        synchronized (getFileLock(leaderboardFile)) {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(leaderboardFile);
         
         // Get all unique collection IDs from the index
         Set<UUID> collectionIds = new HashSet<>(treasureToCollectionIndex.values());
@@ -1609,7 +1814,8 @@ public class YamlRepository implements DataRepository {
                 config.set(path, null);
             }
         }
-        saveConfigAtomic(config, leaderboardFile);
+        saveConfigAtomicWithLock(config, leaderboardFile);
+        }
     }
     
     /**
@@ -1639,27 +1845,27 @@ public class YamlRepository implements DataRepository {
 
     @Override
     public CompletableFuture<List<UUID>> getPlayersWhoFound(UUID treasureId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             // Fast O(1) lookup using in-memory index
             Set<UUID> finders = treasureToFindersIndex.get(treasureId);
             if (finders == null) {
                 return new ArrayList<>();
             }
             return new ArrayList<>(finders);
-        });
+        }));
     }
 
     @Override
     public CompletableFuture<Integer> getFoundPlayerCount(UUID treasureId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             Set<UUID> finders = treasureToFindersIndex.get(treasureId);
             return finders == null ? 0 : finders.size();
-        });
+        }));
     }
     
     @Override
     public CompletableFuture<Set<UUID>> getPlayerFoundInCollection(UUID playerUuid, UUID collectionId) {
-        return CompletableFuture.supplyAsync(() -> {
+        return trackFuture(CompletableFuture.supplyAsync(() -> {
             Set<UUID> result = new HashSet<>();
             
             // Load player's found treasures
@@ -1683,7 +1889,7 @@ public class YamlRepository implements DataRepository {
             }
             
             return result;
-        });
+        }));
     }
 
     private List<Reward> deserializeRewards(List<Map<?, ?>> list) {
