@@ -5,8 +5,8 @@ import java.util.Objects;
 public class Reward {
     private final RewardType type;
     /**
-     * The probability of this reward being granted, expressed as a decimal value
-     * between 0.0 (never) and 1.0 (always). For example, 0.5 represents a 50% chance.
+     * The probability of this reward being granted, expressed as a percentage
+     * between 0.0 (never) and 100.0 (always). For example, 50.0 represents a 50% chance.
      */
     private final double chance;
     private final String message;
@@ -15,8 +15,8 @@ public class Reward {
 
     public Reward(RewardType type, double chance, String message, String broadcast, String value) {
         this.type = Objects.requireNonNull(type, "Reward type cannot be null");
-        if (chance < 0.0 || chance > 1.0) {
-            throw new IllegalArgumentException("Chance must be between 0.0 and 1.0, got: " + chance);
+        if (chance < 0.0 || chance > 100.0) {
+            throw new IllegalArgumentException("Chance must be between 0.0 and 100.0, got: " + chance);
         }
         this.chance = chance;
         this.message = message;
