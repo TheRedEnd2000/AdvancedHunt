@@ -41,6 +41,9 @@ public class TreasureManager {
     // Expires after 5 minutes, max 500 entries to prevent memory bloat
     private final Cache<UUID, Treasure> fullTreasureCache;
     
+    // Lock for UUID generation to prevent race conditions
+    private final Object idGenerationLock = new Object();
+    
     public TreasureManager(DataRepository repository) {
         this.repository = repository;
         this.fullTreasureCache = Caffeine.newBuilder()
