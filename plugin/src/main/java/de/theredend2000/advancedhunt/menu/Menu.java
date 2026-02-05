@@ -26,6 +26,11 @@ public abstract class Menu implements InventoryHolder {
     protected Main plugin;
     protected Button[] buttons;
     protected boolean preventClose = false;
+    /**
+     * Marks this menu as closing to prevent the escape + shift-click exploit.
+     * When true, all click and drag events will be rejected.
+     */
+    private volatile boolean closing = false;
     protected ItemStack FILLER_GLASS = new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE).hideTooltip(true).build();
     protected ItemStack EXTRA_GLASS = new ItemBuilder(XMaterial.WHITE_STAINED_GLASS_PANE).hideTooltip(true).build();
     protected final Button FILLER_BUTTON = new Button(FILLER_GLASS, null);
@@ -191,6 +196,23 @@ public abstract class Menu implements InventoryHolder {
     public void onOpen(InventoryOpenEvent event) {}
     
     public void onClose(InventoryCloseEvent event) {}
+
+    /**
+     * Checks if this menu is in the process of closing.
+     * Used to prevent the escape + shift-click exploit on slow servers.
+     * @return true if the menu is closing
+     */
+    public boolean isClosing() {
+        return closing;
+    }
+
+    /**
+     * Marks this menu as closing. Once marked, all click and drag events will be rejected.
+     * This prevents the escape + shift-click exploit on slow servers.
+     */
+    public void markClosing() {
+        this.closing = true;
+    }
 
     public Player getPlayer() {
         return playerMenuUtility;
