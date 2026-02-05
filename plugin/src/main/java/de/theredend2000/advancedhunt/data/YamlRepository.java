@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -51,11 +53,15 @@ public class YamlRepository implements DataRepository {
     // Flag to track if finder index needs saving
     private volatile boolean finderIndexDirty = false;
     
-    // Per-file locks for thread-safe YAML operations (Issue 1.7)
-    private final Map<File, Object> fileLocks = new ConcurrentHashMap<>();
+    // Per-file ReadWriteLocks for thread-safe YAML operations
+    // Using ReadWriteLock allows concurrent reads while blocking only on writes
+    private final Map<File, ReadWriteLock> fileLocks = new ConcurrentHashMap<>();
     
-    // Track pending async operations for graceful shutdown (Issue 1.9)
+    // Track pending async operations for graceful shutdown
     private final Set<CompletableFuture<?>> pendingOperations = ConcurrentHashMap.newKeySet();
+    
+    // Configurable shutdown timeout (default 5 seconds, can be increased for large servers)
+    private volatile long shutdownTimeoutMs = 5000;
 
     private final Map<Integer, Runnable> schemaMigrations = new HashMap<>();
     private int cachedSchemaVersion = -1;
@@ -136,10 +142,54 @@ public class YamlRepository implements DataRepository {
         // Keep legacy file reference for migration/back-compat reads
         legacyRewardPresetsFile = new File(plugin.getDataFolder(), "reward-presets.yml");
         
+        // Clean up orphaned .lock files from previous crashes
+        cleanOrphanedLockFiles();
+        
         // Build in-memory indexes
         buildTreasureToCollectionIndex();
         loadFinderIndex();
         upgradeSchema();
+    }
+    
+    /**
+     * Cleans up orphaned .lock files that may have been left behind from previous crashes.
+     * Called during init() to prevent stale locks from causing issues.
+     */
+    private void cleanOrphanedLockFiles() {
+        int cleaned = cleanLockFilesInDirectory(plugin.getDataFolder());
+        cleaned += cleanLockFilesInDirectory(playerDataFolder);
+        cleaned += cleanLockFilesInDirectory(collectionsFolder);
+        if (cleaned > 0) {
+            plugin.getLogger().info("Cleaned up " + cleaned + " orphaned .lock files from previous session");
+        }
+    }
+    
+    private int cleanLockFilesInDirectory(File directory) {
+        if (directory == null || !directory.exists()) return 0;
+        int count = 0;
+        File[] lockFiles = directory.listFiles((dir, name) -> name.endsWith(".lock"));
+        if (lockFiles != null) {
+            for (File lockFile : lockFiles) {
+                if (lockFile.delete()) count++;
+            }
+        }
+        // Also clean subdirectories
+        File[] subdirs = directory.listFiles(File::isDirectory);
+        if (subdirs != null) {
+            for (File subdir : subdirs) {
+                count += cleanLockFilesInDirectory(subdir);
+            }
+        }
+        return count;
+    }
+    
+    /**
+     * Sets the shutdown timeout for waiting on pending operations.
+     * Increase this for large servers with many concurrent operations.
+     * @param timeoutMs timeout in milliseconds (default 5000)
+     */
+    public void setShutdownTimeout(long timeoutMs) {
+        this.shutdownTimeoutMs = Math.max(1000, timeoutMs); // Minimum 1 second
     }
 
     private File getPresetFolder(RewardPresetType type) {
@@ -163,15 +213,35 @@ public class YamlRepository implements DataRepository {
     }
 
     /**
-     * Gets or creates a lock object for the given file.
-     * Used for per-file synchronization to ensure thread-safety (Issue 1.7).
+     * Gets or creates a ReadWriteLock for the given file.
+     * Using ReadWriteLock allows multiple concurrent reads while ensuring exclusive writes.
+     * This significantly improves performance for read-heavy workloads (500+ players).
      */
-    private Object getFileLock(File file) {
-        return fileLocks.computeIfAbsent(file.getAbsoluteFile(), k -> new Object());
+    private ReadWriteLock getFileLock(File file) {
+        return fileLocks.computeIfAbsent(file.getAbsoluteFile(), k -> new ReentrantReadWriteLock());
+    }
+    
+    /**
+     * Cleans up locks for files that no longer exist.
+     * Called periodically to prevent memory leaks from deleted player/treasure files.
+     */
+    private void cleanupOrphanedLocks() {
+        int removed = 0;
+        Iterator<Map.Entry<File, ReadWriteLock>> it = fileLocks.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<File, ReadWriteLock> entry = it.next();
+            if (!entry.getKey().exists()) {
+                it.remove();
+                removed++;
+            }
+        }
+        if (removed > 0 && ((Main) plugin).isDebugMode()) {
+            plugin.getLogger().fine("Cleaned up " + removed + " orphaned file locks");
+        }
     }
 
     /**
-     * Tracks a CompletableFuture for graceful shutdown (Issue 1.9).
+     * Tracks a CompletableFuture for graceful shutdown.
      * The future is automatically removed from tracking when it completes.
      */
     private <T> CompletableFuture<T> trackFuture(CompletableFuture<T> future) {
@@ -195,7 +265,7 @@ public class YamlRepository implements DataRepository {
 
     /**
      * Saves a YamlConfiguration atomically with file locking and thread synchronization.
-     * Returns true on success, false on failure (Issue 1.5, 1.7, 1.8).
+     * Returns true on success, false on failure.
      * 
      * @param config The configuration to save
      * @param file The target file
@@ -208,9 +278,12 @@ public class YamlRepository implements DataRepository {
     /**
      * Internal implementation for atomic save with locking.
      * Supports both YamlConfiguration and FileConfiguration.
+     * Uses write lock for exclusive access during saves.
      */
     private boolean saveConfigAtomicWithLockInternal(FileConfiguration config, File file) {
-        synchronized (getFileLock(file)) {
+        ReadWriteLock rwLock = getFileLock(file);
+        rwLock.writeLock().lock();
+        try {
             File parent = file.getParentFile();
             if (parent != null && !parent.exists()) {
                 parent.mkdirs();
@@ -219,7 +292,7 @@ public class YamlRepository implements DataRepository {
             File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
             File lockFile = new File(file.getParentFile(), file.getName() + ".lock");
             
-            // Use file-level locking to prevent cross-process corruption (Issue 1.8)
+            // Use file-level locking to prevent cross-process corruption
             try (RandomAccessFile raf = new RandomAccessFile(lockFile, "rw");
                  FileChannel channel = raf.getChannel();
                  FileLock lock = channel.tryLock()) {
@@ -270,6 +343,8 @@ public class YamlRepository implements DataRepository {
                     lockFile.delete();
                 }
             }
+        } finally {
+            rwLock.writeLock().unlock();
         }
     }
 
@@ -529,7 +604,7 @@ public class YamlRepository implements DataRepository {
         }
         
         // Wait for pending async operations to complete (Issue 1.9)
-        awaitPendingOperations(5000); // 5 second timeout
+        awaitPendingOperations(shutdownTimeoutMs);
         
         // Save finder index if dirty
         if (finderIndexDirty) {
@@ -538,7 +613,7 @@ public class YamlRepository implements DataRepository {
     }
 
     /**
-     * Waits for all pending async operations to complete (Issue 1.9).
+     * Waits for all pending async operations to complete.
      * This ensures data integrity on shutdown by not losing in-flight writes.
      * 
      * @param timeoutMs Maximum time to wait in milliseconds
@@ -582,8 +657,9 @@ public class YamlRepository implements DataRepository {
             File file = new File(playerDataFolder, playerUuid.toString() + YML_EXTENSION);
             PlayerData data = new PlayerData(playerUuid);
             if (file.exists()) {
-                // Synchronize reads to prevent reading partially written files (Issue 1.7)
-                synchronized (getFileLock(file)) {
+                ReadWriteLock rwLock = getFileLock(file);
+                rwLock.readLock().lock();
+                try {
                     FileConfiguration config = YamlConfiguration.loadConfiguration(file);
                     List<String> found = config.getStringList("found-treasures");
                     for (String s : found) {
@@ -591,6 +667,8 @@ public class YamlRepository implements DataRepository {
                             data.addFoundTreasure(UUID.fromString(s));
                         } catch (IllegalArgumentException ignored) {}
                     }
+                } finally {
+                    rwLock.readLock().unlock();
                 }
             }
             return data;
@@ -603,8 +681,10 @@ public class YamlRepository implements DataRepository {
             File file = new File(playerDataFolder, playerData.getPlayerUuid().toString() + YML_EXTENSION);
             YamlConfiguration config = new YamlConfiguration();
             
-            // Load existing data within the lock to prevent race conditions
-            synchronized (getFileLock(file)) {
+            // Load existing data within write lock to prevent race conditions
+            ReadWriteLock rwLock = getFileLock(file);
+            rwLock.writeLock().lock();
+            try {
                 if (file.exists()) {
                     try {
                         config.load(file);
@@ -612,6 +692,8 @@ public class YamlRepository implements DataRepository {
                         plugin.getLogger().log(Level.WARNING, "Error loading existing player data for " + playerData.getPlayerUuid(), e);
                     }
                 }
+            } finally {
+                rwLock.writeLock().unlock();
             }
             
             List<String> found = new ArrayList<>();
@@ -620,7 +702,6 @@ public class YamlRepository implements DataRepository {
             }
             config.set("found-treasures", found);
             
-            // Only update indexes if file save succeeded (Issue 1.3-1.4)
             boolean saved = saveConfigAtomicWithLock(config, file);
             if (saved) {
                 // Update finder index (fast in-memory update)
@@ -641,8 +722,10 @@ public class YamlRepository implements DataRepository {
                 File file = new File(playerDataFolder, pd.getPlayerUuid() + YML_EXTENSION);
                 YamlConfiguration config = new YamlConfiguration();
                 
-                // Load existing data within the lock
-                synchronized (getFileLock(file)) {
+                // Load existing data within write lock
+                ReadWriteLock rwLock = getFileLock(file);
+                rwLock.writeLock().lock();
+                try {
                     if (file.exists()) {
                         try {
                             config.load(file);
@@ -650,6 +733,8 @@ public class YamlRepository implements DataRepository {
                             plugin.getLogger().log(Level.WARNING, "Error loading existing player data for " + pd.getPlayerUuid(), e);
                         }
                     }
+                } finally {
+                    rwLock.writeLock().unlock();
                 }
                 
                 List<String> found = new ArrayList<>();
@@ -658,7 +743,6 @@ public class YamlRepository implements DataRepository {
                 }
                 config.set("found-treasures", found);
                 
-                // Only update indexes if file save succeeded (Issue 1.3-1.4)
                 boolean saved = saveConfigAtomicWithLock(config, file);
                 if (saved) {
                     updateFinderIndex(pd);
@@ -834,7 +918,6 @@ public class YamlRepository implements DataRepository {
             config.set("material", treasure.getMaterial());
             config.set("block-state", treasure.getBlockState());
             
-            // Only update indexes if file save succeeded (Issue 1.3-1.4)
             boolean saved = saveConfigAtomicWithLock(config, file);
             if (saved) {
                 // Update treasure-to-collection index
@@ -881,7 +964,6 @@ public class YamlRepository implements DataRepository {
                 config.set("material", treasure.getMaterial());
                 config.set("block-state", treasure.getBlockState());
 
-                // Only update indexes if file save succeeded (Issue 1.3-1.4)
                 boolean saved = saveConfigAtomicWithLock(config, file);
                 if (saved) {
                     treasureToCollectionIndex.put(treasure.getId(), treasure.getCollectionId());
@@ -900,11 +982,14 @@ public class YamlRepository implements DataRepository {
                 return;
             }
 
-            // Synchronize read/modify/write (Issue 1.7)
-            synchronized (getFileLock(treasureFile)) {
+            ReadWriteLock rwLock = getFileLock(treasureFile);
+            rwLock.writeLock().lock();
+            try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
                 config.set("rewards", serializeRewards(rewards));
                 saveConfigAtomicWithLock(config, treasureFile);
+            } finally {
+                rwLock.writeLock().unlock();
             }
         }));
     }
@@ -925,11 +1010,14 @@ public class YamlRepository implements DataRepository {
                     continue;
                 }
 
-                // Synchronize read/modify/write (Issue 1.7)
-                synchronized (getFileLock(treasureFile)) {
+                ReadWriteLock rwLock = getFileLock(treasureFile);
+                rwLock.writeLock().lock();
+                try {
                     YamlConfiguration config = YamlConfiguration.loadConfiguration(treasureFile);
                     config.set("rewards", serializedRewards);
                     saveConfigAtomicWithLock(config, treasureFile);
+                } finally {
+                    rwLock.writeLock().unlock();
                 }
             }
         }));
@@ -1145,10 +1233,13 @@ public class YamlRepository implements DataRepository {
             }
             File file = new File(dir, "config.yml");
             
-            // Synchronize read/modify/write (Issue 1.7)
             YamlConfiguration config;
-            synchronized (getFileLock(file)) {
+            ReadWriteLock rwLock = getFileLock(file);
+            rwLock.readLock().lock();
+            try {
                 config = YamlConfiguration.loadConfiguration(file);
+            } finally {
+                rwLock.readLock().unlock();
             }
             
             config.set("name", collection.getName());
@@ -1402,8 +1493,9 @@ public class YamlRepository implements DataRepository {
                 placePresetGroupsFile = new File(plugin.getDataFolder(), "place-item-groups.yml");
             }
 
-            // Synchronize read/modify/write (Issue 1.7)
-            synchronized (getFileLock(placePresetGroupsFile)) {
+            ReadWriteLock rwLock = getFileLock(placePresetGroupsFile);
+            rwLock.writeLock().lock();
+            try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
                 List<String> groups = new ArrayList<>(config.getStringList("groups"));
 
@@ -1414,6 +1506,8 @@ public class YamlRepository implements DataRepository {
                     config.set("groups", groups);
                     saveConfigAtomicWithLock(config, placePresetGroupsFile);
                 }
+            } finally {
+                rwLock.writeLock().unlock();
             }
         }));
     }
@@ -1431,8 +1525,9 @@ public class YamlRepository implements DataRepository {
             String oldTrimmed = oldGroup.trim();
             String newTrimmed = newGroup.trim();
 
-            // Synchronize read/modify/write (Issue 1.7)
-            synchronized (getFileLock(placePresetGroupsFile)) {
+            ReadWriteLock rwLock = getFileLock(placePresetGroupsFile);
+            rwLock.writeLock().lock();
+            try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
                 List<String> groups = new ArrayList<>(config.getStringList("groups"));
                 boolean changed = false;
@@ -1448,6 +1543,8 @@ public class YamlRepository implements DataRepository {
                     config.set("groups", groups);
                     saveConfigAtomicWithLock(config, placePresetGroupsFile);
                 }
+            } finally {
+                rwLock.writeLock().unlock();
             }
 
             // Best-effort folder rename/move to keep filesystem tidy.
@@ -1492,8 +1589,9 @@ public class YamlRepository implements DataRepository {
 
             String trimmed = group.trim();
 
-            // Synchronize read/modify/write (Issue 1.7)
-            synchronized (getFileLock(placePresetGroupsFile)) {
+            ReadWriteLock rwLock = getFileLock(placePresetGroupsFile);
+            rwLock.writeLock().lock();
+            try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(placePresetGroupsFile);
                 List<String> groups = new ArrayList<>(config.getStringList("groups"));
                 boolean removed = groups.removeIf(g -> g != null && g.equalsIgnoreCase(trimmed));
@@ -1501,6 +1599,8 @@ public class YamlRepository implements DataRepository {
                     config.set("groups", groups);
                     saveConfigAtomicWithLock(config, placePresetGroupsFile);
                 }
+            } finally {
+                rwLock.writeLock().unlock();
             }
 
             if (placeItemsFolder == null) {
@@ -1574,11 +1674,14 @@ public class YamlRepository implements DataRepository {
                 }
             }
 
-            // Synchronize read/modify/write (Issue 1.7)
-            synchronized (getFileLock(file)) {
+            ReadWriteLock rwLock = getFileLock(file);
+            rwLock.writeLock().lock();
+            try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
                 config.set("name", newName);
                 return saveConfigAtomicWithLock(config, file);
+            } finally {
+                rwLock.writeLock().unlock();
             }
         }));
     }
@@ -1647,8 +1750,9 @@ public class YamlRepository implements DataRepository {
                 File[] files = playerDataFolder.listFiles((dir, name) -> name.endsWith(YML_EXTENSION));
                 if (files != null) {
                     for (File file : files) {
-                        // Synchronize read/modify/write (Issue 1.7)
-                        synchronized (getFileLock(file)) {
+                        ReadWriteLock rwLock = getFileLock(file);
+                        rwLock.writeLock().lock();
+                        try {
                             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
                             List<String> found = new ArrayList<>(config.getStringList("found-treasures"));
                             int sizeBefore = found.size();
@@ -1659,6 +1763,8 @@ public class YamlRepository implements DataRepository {
                                 config.set("found-treasures", found);
                                 saveConfigAtomicWithLock(config, file);
                             }
+                        } finally {
+                            rwLock.writeLock().unlock();
                         }
                     }
                 }
@@ -1716,8 +1822,9 @@ public class YamlRepository implements DataRepository {
             
             List<String> collectionTreasureIds = getTreasureIdsForCollection(collectionId);
             
-            // Synchronize read/modify/write (Issue 1.7)
-            synchronized (getFileLock(file)) {
+            ReadWriteLock rwLock = getFileLock(file);
+            rwLock.writeLock().lock();
+            try {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
                 List<String> found = new ArrayList<>(config.getStringList("found-treasures"));
                 int sizeBefore = found.size();
@@ -1737,7 +1844,6 @@ public class YamlRepository implements DataRepository {
                     config.set("found-treasures", found);
                     boolean saved = saveConfigAtomicWithLock(config, file);
                 
-                    // Only update indexes if file save succeeded (Issue 1.3-1.4)
                     if (saved) {
                         // Update finder index
                         for (String treasureIdStr : removedTreasures) {
@@ -1754,6 +1860,8 @@ public class YamlRepository implements DataRepository {
                     return removed;
                 }
                 return 0;
+            } finally {
+                rwLock.writeLock().unlock();
             }
         }));
     }
@@ -1792,29 +1900,32 @@ public class YamlRepository implements DataRepository {
     public void updatePlayerLeaderboard(PlayerData playerData) {
         if (leaderboardFile == null) return;
         
-        // Synchronize read/modify/write (Issue 1.7)
-        synchronized (getFileLock(leaderboardFile)) {
+        ReadWriteLock rwLock = getFileLock(leaderboardFile);
+        rwLock.writeLock().lock();
+        try {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(leaderboardFile);
         
-        // Get all unique collection IDs from the index
-        Set<UUID> collectionIds = new HashSet<>(treasureToCollectionIndex.values());
+            // Get all unique collection IDs from the index
+            Set<UUID> collectionIds = new HashSet<>(treasureToCollectionIndex.values());
         
-        for (UUID collectionId : collectionIds) {
-            int count = 0;
-            for (UUID foundId : playerData.getFoundTreasures()) {
-                if (collectionId.equals(treasureToCollectionIndex.get(foundId))) {
-                    count++;
+            for (UUID collectionId : collectionIds) {
+                int count = 0;
+                for (UUID foundId : playerData.getFoundTreasures()) {
+                    if (collectionId.equals(treasureToCollectionIndex.get(foundId))) {
+                        count++;
+                    }
+                }
+            
+                String path = "collections." + collectionId + "." + playerData.getPlayerUuid();
+                if (count > 0) {
+                    config.set(path, count);
+                } else {
+                    config.set(path, null);
                 }
             }
-            
-            String path = "collections." + collectionId + "." + playerData.getPlayerUuid();
-            if (count > 0) {
-                config.set(path, count);
-            } else {
-                config.set(path, null);
-            }
-        }
-        saveConfigAtomicWithLock(config, leaderboardFile);
+            saveConfigAtomicWithLock(config, leaderboardFile);
+        } finally {
+            rwLock.writeLock().unlock();
         }
     }
     
@@ -2001,6 +2112,24 @@ public class YamlRepository implements DataRepository {
                 saveFinderIndex();
                 plugin.getLogger().fine("Flushed finder index to disk");
             }
+            // Periodically clean up locks for deleted files to prevent memory leaks
+            cleanupOrphanedLocks();
         }, intervalTicks, intervalTicks);
+    }
+    
+    /**
+     * Returns the current number of active file locks (for monitoring/debugging).
+     * @return the number of file locks currently held
+     */
+    public int getActiveLockCount() {
+        return fileLocks.size();
+    }
+    
+    /**
+     * Returns the current number of pending async operations (for monitoring/debugging).
+     * @return the number of pending operations
+     */
+    public int getPendingOperationCount() {
+        return pendingOperations.size();
     }
 }
