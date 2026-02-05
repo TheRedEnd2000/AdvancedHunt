@@ -499,6 +499,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Reset singleton handlers for proper reload support
+        TreasureInteractionHandler.reset();
+
         if (hintManager != null) {
             hintManager.cancelAllVisualHints();
         }
