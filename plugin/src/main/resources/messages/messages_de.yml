@@ -855,27 +855,27 @@ gui:
         - ""
         - "&cKlicke zum löschen"
     delete_handling:
-      title: "Löschen: Schatz-Behandlung"
+      title: "Löschen: Treasure-Behandlung"
       keep:
-        name: "&aSchätze platziert lassen"
+        name: "&aTreasures platziert lassen"
         lore:
           - "&7Löscht die Sammlungsdaten,"
-          - "&7aber lässt alle Schatz-Blöcke"
+          - "&7aber lässt alle Treasure-Blöcke"
           - "&7an ihrem Platz."
           - ""
-          - "&7Stellt auch Schätze wieder her,"
+          - "&7Stellt auch Treasures wieder her,"
           - "&7die aktuell versteckt sind."
           - ""
           - "&eKlicke zum Auswählen"
-        confirm_title: "Löschen & alle Schätze behalten?"
+        confirm_title: "Löschen & alle Treasures behalten?"
       remove_heads:
         name: "&eKöpfe/Schädel entfernen"
         lore:
           - "&7Löscht die Sammlungsdaten,"
           - "&7entfernt nur Spieler-Köpfe/Schädel,"
-          - "&7andere Schätze bleiben."
+          - "&7andere Treasures bleiben."
           - ""
-          - "&7Stellt Nicht-Kopf-Schätze wieder her,"
+          - "&7Stellt Nicht-Kopf-Treasures wieder her,"
           - "&7wenn sie aktuell versteckt sind."
           - ""
           - "&eKlicke zum Auswählen"
@@ -884,13 +884,13 @@ gui:
         name: "&cBlöcke & Möbel entfernen"
         lore:
           - "&7Löscht die Sammlungsdaten"
-          - "&7und entfernt alle Schatz-Blöcke"
+          - "&7und entfernt alle Treasure-Blöcke"
           - "&7und ItemsAdder-Möbel."
           - ""
           - "&c&lWARNUNG: Welt-Blöcke werden entfernt!"
           - ""
           - "&cKlicke zum Auswählen"
-        confirm_title: "Löschen & alle Schatz-Blöcke entfernen?"
+        confirm_title: "Löschen & alle Treasure-Blöcke entfernen?"
     hide_after_found:
       name: "&eVerstecke gefundene Treasures"
       lore:
