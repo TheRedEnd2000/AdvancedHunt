@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class TreasureInteractionHandler {
 
-    private static TreasureInteractionHandler instance;
+    private static volatile TreasureInteractionHandler instance;
 
     private final Main plugin;
     private final TreasureManager treasureManager;
@@ -34,16 +34,22 @@ public final class TreasureInteractionHandler {
      * @return the shared TreasureInteractionHandler instance
      */
     public static TreasureInteractionHandler getInstance(Main plugin) {
-        if (instance == null) {
-            instance = new TreasureInteractionHandler(plugin);
+        TreasureInteractionHandler localRef = instance;
+        if (localRef == null) {
+            synchronized (TreasureInteractionHandler.class) {
+                localRef = instance;
+                if (localRef == null) {
+                    instance = localRef = new TreasureInteractionHandler(plugin);
+                }
+            }
         }
-        return instance;
+        return localRef;
     }
 
     /**
      * Resets the singleton instance. Call this on plugin disable/reload.
      */
-    public static void reset() {
+    public static synchronized void reset() {
         instance = null;
     }
 

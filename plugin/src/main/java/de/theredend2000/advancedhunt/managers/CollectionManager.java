@@ -32,7 +32,7 @@ public class CollectionManager {
     private final PlayerManager playerManager;
     private final RewardManager rewardManager;
     private final ActRuleEvaluator actRuleEvaluator;
-    private List<Collection> cachedCollections;
+    private volatile List<Collection> cachedCollections;
     private BukkitTask resetTask;
 
     public CollectionManager(JavaPlugin plugin, DataRepository repository, TreasureManager treasureManager, PlayerManager playerManager, RewardManager rewardManager) {
