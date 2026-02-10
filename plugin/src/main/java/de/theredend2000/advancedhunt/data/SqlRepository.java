@@ -210,7 +210,7 @@ public class SqlRepository implements DataRepository {
 
         schemaMigrations.put(8, conn -> {
             try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_items_groups (" +
+                stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_preset_groups (" +
                         "grp VARCHAR(64) PRIMARY KEY)");
             } catch (SQLException ignored) {}
         });

@@ -29,13 +29,13 @@ public class TreasureManager {
     
     // Lightweight indexes using TreasureCore (~150 bytes per treasure)
     // Key: Chunk Key (x, z), Value: List of TreasureCores in that chunk
-    private final Map<Long, List<TreasureCore>> treasureChunkMap = new ConcurrentHashMap<>();
+    private volatile Map<Long, List<TreasureCore>> treasureChunkMap = new ConcurrentHashMap<>();
     // Key: Collection ID, Value: List of TreasureCores in that collection
-    private final Map<UUID, List<TreasureCore>> collectionTreasureMap = new ConcurrentHashMap<>();
+    private volatile Map<UUID, List<TreasureCore>> collectionTreasureMap = new ConcurrentHashMap<>();
     // Lightweight index: Treasure ID -> Collection ID (for O(1) collection lookups)
-    private final Map<UUID, UUID> treasureToCollectionIndex = new ConcurrentHashMap<>();
+    private volatile Map<UUID, UUID> treasureToCollectionIndex = new ConcurrentHashMap<>();
     // Core data by ID for fast lookups
-    private final Map<UUID, TreasureCore> treasureCoreById = new ConcurrentHashMap<>();
+    private volatile Map<UUID, TreasureCore> treasureCoreById = new ConcurrentHashMap<>();
     
     // On-demand cache for full Treasure objects (heavy data loaded when needed)
     // Expires after 5 minutes, max 500 entries to prevent memory bloat
@@ -64,19 +64,28 @@ public class TreasureManager {
 
     public void loadTreasures() {
         repository.loadTreasureCores().thenAccept(cores -> {
-            treasureChunkMap.clear();
-            collectionTreasureMap.clear();
-            treasureToCollectionIndex.clear();
-            treasureCoreById.clear();
-            fullTreasureCache.invalidateAll();
-            
-            if (cores == null) {
-                return;
+            // Build new maps before swapping to avoid an empty-cache window (CRIT-3)
+            Map<Long, List<TreasureCore>> newChunkMap = new ConcurrentHashMap<>();
+            Map<UUID, List<TreasureCore>> newCollectionMap = new ConcurrentHashMap<>();
+            Map<UUID, UUID> newTreasureToCollection = new ConcurrentHashMap<>();
+            Map<UUID, TreasureCore> newCoreById = new ConcurrentHashMap<>();
+
+            if (cores != null) {
+                for (TreasureCore core : cores) {
+                    long key = getChunkKey(core.getLocation());
+                    newChunkMap.computeIfAbsent(key, k -> new CopyOnWriteArrayList<>()).add(core);
+                    newCollectionMap.computeIfAbsent(core.getCollectionId(), k -> new CopyOnWriteArrayList<>()).add(core);
+                    newTreasureToCollection.put(core.getId(), core.getCollectionId());
+                    newCoreById.put(core.getId(), core);
+                }
             }
 
-            for (TreasureCore core : cores) {
-                addCoreToCache(core);
-            }
+            // Swap all references atomically (fields are volatile)
+            treasureChunkMap = newChunkMap;
+            collectionTreasureMap = newCollectionMap;
+            treasureToCollectionIndex = newTreasureToCollection;
+            treasureCoreById = newCoreById;
+            fullTreasureCache.invalidateAll();
         });
     }
 
