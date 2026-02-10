@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -37,6 +38,8 @@ public class BukkitSource implements UpdateSource {
 
                 if (connection.getResponseCode() == 200) {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     Document doc = builder.parse(connection.getInputStream());
                     
@@ -97,6 +100,8 @@ public class BukkitSource implements UpdateSource {
 
                 if (connection.getResponseCode() == 200) {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     Document doc = builder.parse(connection.getInputStream());
                     
