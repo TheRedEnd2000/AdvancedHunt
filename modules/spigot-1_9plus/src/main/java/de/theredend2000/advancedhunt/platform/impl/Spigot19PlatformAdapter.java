@@ -16,9 +16,9 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDe
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import de.theredend2000.advancedhunt.platform.PlatformAdapter;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -286,7 +286,7 @@ public class Spigot19PlatformAdapter implements PlatformAdapter {
         component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, copyText));
         
         if (hoverText != null && !hoverText.isEmpty()) {
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(hoverText).create()));
         }
         
         player.spigot().sendMessage(component);
