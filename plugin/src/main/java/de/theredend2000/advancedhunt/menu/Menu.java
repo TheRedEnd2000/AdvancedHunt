@@ -64,6 +64,7 @@ public abstract class Menu implements InventoryHolder {
     public abstract void setMenuItems();
 
     public void open() {
+        this.closing = false;
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
         this.buttons = new Button[getSlots()];
         this.setMenuItems();
