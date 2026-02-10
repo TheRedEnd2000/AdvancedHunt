@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.listeners;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.Menu;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,9 +15,16 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class MenuListener implements Listener {
 
     private final Main plugin;
+    /** Players who closed a Menu inventory this tick. Cleared automatically next tick. */
+    private final Set<UUID> closedThisTick = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public MenuListener(Main plugin) {
         this.plugin = plugin;
@@ -37,20 +45,11 @@ public class MenuListener implements Listener {
 
         event.setCancelled(true);
 
-        // ESCAPE + SHIFT-CLICK EXPLOIT PREVENTION
-        // Block all clicks if the menu is in the process of closing
-        if (menu.isClosing()) {
-            player.updateInventory();
-            return;
-        }
-
         if (event.getClickedInventory() != null) {
             menu.performClick(event);
         }
 
-        if (event.isCancelled()) {
-            player.updateInventory();
-        }
+        player.updateInventory();
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -86,6 +85,11 @@ public class MenuListener implements Listener {
             // Mark menu as closing immediately to block any pending click/drag events
             menu.markClosing();
             menu.onClose(event);
+
+            // Record that this player closed a menu this tick, so we can detect same-tick open
+            UUID uuid = player.getUniqueId();
+            closedThisTick.add(uuid);
+            Bukkit.getScheduler().runTask(plugin, () -> closedThisTick.remove(uuid));
             
             // 1. CURSOR SMUGGLING PREVENTION
             ItemStack cursorItem = player.getItemOnCursor();
@@ -103,7 +107,16 @@ public class MenuListener implements Listener {
         if (event.isCancelled()) return; 
         
         if (event.getInventory().getHolder() instanceof Menu) {
-            ((Menu) event.getInventory().getHolder()).onOpen(event);
+            Menu menu = (Menu) event.getInventory().getHolder();
+            Player player = (Player) event.getPlayer();
+
+            // If the player closed a menu on this same tick, close the newly opened one
+            if (closedThisTick.remove(player.getUniqueId())) {
+                Bukkit.getScheduler().runTask(plugin, player::closeInventory);
+                return;
+            }
+
+            menu.onOpen(event);
         }
     }
 }
