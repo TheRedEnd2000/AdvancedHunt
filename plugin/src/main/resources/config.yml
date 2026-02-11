@@ -159,16 +159,10 @@ hint:
 
 updater:
   enabled: true
-  sources:
-    Modrinth: ""
-    SpigotMC: ""
-    Bukkit: ""
-  dependencies: {}
-    # Example:
-    # PlaceholderAPI:
-    #   enabled: true
-    #   sources:
-    #     SpigotMC: "6245"
+  dependencies:
+    PacketEvents: true
+    NBT-API: true
+    PlaceholderAPI: true
 
 sounds:
   enabled: true
