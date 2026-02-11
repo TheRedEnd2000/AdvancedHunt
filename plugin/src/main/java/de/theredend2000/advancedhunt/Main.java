@@ -19,7 +19,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,9 +28,8 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 
 public final class Main extends JavaPlugin {
@@ -325,40 +323,24 @@ public final class Main extends JavaPlugin {
         if (getConfig().getBoolean("updater.enabled", true)) {
             pluginUpdater = new PluginUpdater(this);
 
-            // Track Main Plugin
-            Map<String, String> mainIds = new HashMap<>();
-            if (getConfig().isConfigurationSection("updater.sources")) {
-                ConfigurationSection sources = getConfig().getConfigurationSection("updater.sources");
-                for (String key : sources.getKeys(false)) {
-                    mainIds.put(key, sources.getString(key));
-                }
-            }
-            pluginUpdater.trackPlugin(getDescription().getName(), getDescription().getVersion(), mainIds);
+            pluginUpdater.trackPlugin(getDescription().getName(), getDescription().getVersion(),
+                    Collections.singletonMap("Modrinth", "8ZWWJnYu"));
 
             // Track Dependencies
-            if (getConfig().isConfigurationSection("updater.dependencies")) {
-                ConfigurationSection deps = getConfig().getConfigurationSection("updater.dependencies");
-                for (String depName : deps.getKeys(false)) {
-                    if (deps.getBoolean(depName + ".enabled")) {
-                        Map<String, String> depIds = new HashMap<>();
-                        if (deps.isConfigurationSection(depName + ".sources")) {
-                            ConfigurationSection depSources = deps.getConfigurationSection(depName + ".sources");
-                            for (String key : depSources.getKeys(false)) {
-                                depIds.put(key, depSources.getString(key));
-                            }
-                        }
-
-                        Plugin dep = Bukkit.getPluginManager().getPlugin(depName);
-                        String currentVersion = (dep != null) ? dep.getDescription().getVersion() : "0.0.0";
-
-                        pluginUpdater.trackPlugin(depName, currentVersion, depIds);
-                    }
-                }
-            }
+            trackDependency("PacketEvents", "HYKaKraK");
+            trackDependency("NBT-API", "nfGCP9fk");
+            trackDependency("PlaceholderAPI", "lKEzGugV");
 
             // Check for updates asynchronously
             getServer().getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
         }
+    }
+
+    private void trackDependency(String name, String modrinthId) {
+        if (!getConfig().getBoolean("updater.dependencies." + name, true)) return;
+        Plugin dep = Bukkit.getPluginManager().getPlugin(name);
+        String version = (dep != null) ? dep.getDescription().getVersion() : "0.0.0";
+        pluginUpdater.trackPlugin(name, version, Collections.singletonMap("Modrinth", modrinthId));
     }
 
     public PlaceItemManager getPlaceItemManager() {
