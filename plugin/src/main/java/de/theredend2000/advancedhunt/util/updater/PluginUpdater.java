@@ -6,8 +6,11 @@ import de.theredend2000.advancedhunt.util.updater.source.BukkitSource;
 import de.theredend2000.advancedhunt.util.updater.source.ModrinthSource;
 import de.theredend2000.advancedhunt.util.updater.source.SpigotSource;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -21,12 +24,16 @@ public class PluginUpdater {
     private final Map<String, UpdateSource> sources;
     private final Map<String, TrackedPlugin> trackedPlugins;
     private final VersionComparator versionComparator;
+    private final boolean paperOrPurpur;
+    private final boolean above1_19;
 
     public PluginUpdater(Main plugin) {
         this.plugin = plugin;
         this.sources = new HashMap<>();
         this.trackedPlugins = new HashMap<>();
         this.versionComparator = new VersionComparator();
+        this.paperOrPurpur = detectPaperOrPurpur();
+        this.above1_19 = detectAbove1_19();
 
         registerSource(new ModrinthSource());
         registerSource(new SpigotSource());
@@ -96,8 +103,15 @@ public class PluginUpdater {
             if (!updateFolder.exists()) {
                 updateFolder.mkdirs();
             }
-            
-            File destination = new File(updateFolder, tracked.name + "-" + update.version() + ".jar");
+
+            String destinationName;
+            if (paperOrPurpur && above1_19) {
+                destinationName = tracked.name + "-" + update.version() + ".jar";
+            } else {
+                File currentFile = resolvePluginFile(tracked.name);
+                destinationName = (currentFile != null) ? currentFile.getName() : tracked.name + ".jar";
+            }
+            File destination = new File(updateFolder, destinationName);
             
             if (destination.exists()) {
                  plugin.getLogger().info("[" + tracked.name + "] Update " + update.version() + " is already downloaded. It will be applied on next restart.");
@@ -112,6 +126,43 @@ public class PluginUpdater {
                 }
             });
         }
+    }
+
+    /**
+     * Checks if the server is running Paper or Purpur.
+     */
+    private static boolean detectPaperOrPurpur() {
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the server version is 1.19 or above.
+     */
+    private boolean detectAbove1_19() {
+        return versionComparator.isGreaterThanOrEqual(Bukkit.getBukkitVersion(), "1.19");
+    }
+
+    /**
+     * Resolves the jar file of a currently loaded plugin by name.
+     * On non-Paper or pre-1.19 servers the update folder requires an exact filename match.
+     */
+    private File resolvePluginFile(String pluginName) {
+        Plugin target = Bukkit.getPluginManager().getPlugin(pluginName);
+        if (target instanceof JavaPlugin) {
+            try {
+                Method getFileMethod = JavaPlugin.class.getDeclaredMethod("getFile");
+                getFileMethod.setAccessible(true);
+                return (File) getFileMethod.invoke(target);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Could not resolve jar file for " + pluginName + ": " + e.getMessage());
+            }
+        }
+        return null;
     }
 
     private static class TrackedPlugin {
