@@ -33,6 +33,7 @@ public class PluginUpdater {
     private final File pluginsDir;
     private final File updateDir;
     private final File oldPluginsDir;
+    private final Set<String> activeDownloads = ConcurrentHashMap.newKeySet();
 
     public PluginUpdater(Main plugin) {
         this.plugin = plugin;
@@ -87,11 +88,13 @@ public class PluginUpdater {
                         return;
                     }
 
-                    if (!isOldEnoughToAutoDownload(update)) {
-                        plugin.getLogger().info(
-                                "[" + tracked.name + "] Found a new version on " + sourceName + ": " + update.version()
-                                        + " (not auto-downloading; release is newer than " + MINIMUM_RELEASE_AGE.toDays() + " days or has no publish date)"
-                        );
+                    if (!isOldEnoughToAutoDownload(tracked.name, update)) {
+                        return;
+                    }
+
+                    // Prevent concurrent downloads of the same plugin from multiple sources
+                    if (!activeDownloads.add(tracked.name)) {
+                        plugin.getLogger().info("[" + tracked.name + "] Download already in progress from another source. Skipping " + sourceName + ".");
                         return;
                     }
 
@@ -141,23 +144,28 @@ public class PluginUpdater {
         }
 
         source.downloadPlugin(id, update, destination).thenAccept(success -> {
-            if (success) {
-                plugin.getLogger().info("[" + tracked.name + "] Downloaded " + filename + " to " + targetDir.getName());
+            try {
+                if (success) {
+                    plugin.getLogger().info("[" + tracked.name + "] Downloaded " + filename + " to " + targetDir.getName());
 
-                if (currentFile == null) {
-                    // New install — load immediately (like legacy)
-                    loadPlugin(tracked.name, destination);
-                    return;
-                }
+                    if (currentFile == null) {
+                        loadPlugin(tracked.name, destination);
+                        return;
+                    }
 
-                if (paperOrPurpur && above1_19) {
-                    plugin.getLogger().info("[" + tracked.name + "] Update will be applied on next restart.");
+                    if (paperOrPurpur && above1_19) {
+                        plugin.getLogger().info("[" + tracked.name + "] Update will be applied on next restart.");
+                    } else {
+                        handleFileOrder(tracked.name, filename, destination, currentFile);
+                    }
                 } else {
-                    // Non-Paper: placed directly in plugins dir, handle file ordering
-                    handleFileOrder(tracked.name, filename, destination, currentFile);
+                    plugin.getLogger().warning("[" + tracked.name + "] Failed to download update from " + sourceName);
+                    if (destination.exists()) {
+                        destination.delete();
+                    }
                 }
-            } else {
-                plugin.getLogger().warning("[" + tracked.name + "] Failed to download update from " + sourceName);
+            } finally {
+                activeDownloads.remove(tracked.name);
             }
         });
     }
@@ -267,15 +275,27 @@ public class PluginUpdater {
     }
 
     /**
-     * Loads a newly downloaded plugin that was not previously installed.
+     * Loads a newly downloaded plugin, disabling any existing instance first.
      */
     private void loadPlugin(String pluginName, File pluginFile) {
+        if (!pluginFile.exists()) {
+            plugin.getLogger().severe("[" + pluginName + "] Cannot find plugin file: " + pluginFile.getAbsolutePath());
+            return;
+        }
+
         PluginManager pluginManager = Bukkit.getPluginManager();
+
+        Plugin existing = pluginManager.getPlugin(pluginName);
+        if (existing != null) {
+            pluginManager.disablePlugin(existing);
+            plugin.getLogger().info("[" + pluginName + "] Disabled existing instance before loading new version.");
+        }
+
         try {
             Plugin loadedPlugin = pluginManager.loadPlugin(pluginFile);
             if (loadedPlugin != null) {
                 pluginManager.enablePlugin(loadedPlugin);
-                plugin.getLogger().info("[" + pluginName + "] Successfully loaded and enabled new plugin.");
+                plugin.getLogger().info("[" + pluginName + "] Successfully loaded and enabled plugin.");
             } else {
                 plugin.getLogger().severe("[" + pluginName + "] Failed to load plugin from " + pluginFile.getName());
             }
