@@ -100,8 +100,12 @@ public class ConfigUpdater {
                 }
             }
             
-            // Atomically move temp file to target file
-            Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            // Move temp file to target file, fall back to non-atomic if ATOMIC_MOVE is unsupported
+            try {
+                Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+                Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
             
             plugin.getLogger().info("Successfully updated " + resourceName);
         } catch (IOException e) {
@@ -155,7 +159,10 @@ public class ConfigUpdater {
                 pathStack.add(key);
                 String fullPath = String.join(".", pathStack);
 
-                if (userConfig.contains(fullPath)) {
+                // Always use the JAR value for config-version
+                if (fullPath.equals("config-version")) {
+                    lines.add(line);
+                } else if (userConfig.contains(fullPath)) {
                     Object userValue = userConfig.get(fullPath);
                     
                     if (userValue instanceof ConfigurationSection) {
