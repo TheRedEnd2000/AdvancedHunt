@@ -159,86 +159,7 @@ public class SqlRepository implements DataRepository {
     }
 
     private void registerMigrations() {
-        schemaMigrations.put(1, conn -> {
-            // Initial schema version
-        });
-        
-        schemaMigrations.put(2, conn -> {
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("ALTER TABLE ah_treasures ADD COLUMN block_data TEXT");
-            } catch (SQLException ignored) {}
-        });
-        
-        schemaMigrations.put(3, conn -> {
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("ALTER TABLE ah_treasures ADD COLUMN material VARCHAR(64)");
-                stmt.execute("ALTER TABLE ah_treasures ADD COLUMN block_state TEXT");
-            } catch (SQLException ignored) {}
-        });
-        
-        schemaMigrations.put(4, this::createPerformanceIndexes);
-        
-        schemaMigrations.put(5, conn -> {
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("ALTER TABLE ah_collections ADD COLUMN progress_reset_cron VARCHAR(64)");
-            } catch (SQLException ignored) {}
-        });
-
-        schemaMigrations.put(6, conn -> {
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("ALTER TABLE ah_collections ADD COLUMN default_treasure_reward_preset_id VARCHAR(36)");
-            } catch (SQLException ignored) {}
-
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
-                        "id VARCHAR(36) PRIMARY KEY, " +
-                        "type VARCHAR(16) NOT NULL, " +
-                        "name VARCHAR(64) NOT NULL, " +
-                        "rewards TEXT)");
-            } catch (SQLException ignored) {}
-        });
-
-            schemaMigrations.put(7, conn -> {
-                try (java.sql.Statement stmt = conn.createStatement()) {
-                    stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_items (" +
-                            "id VARCHAR(36) PRIMARY KEY, " +
-                            "grp VARCHAR(64) NOT NULL, " +
-                            "name VARCHAR(64) NOT NULL, " +
-                            "item TEXT)");
-                } catch (SQLException ignored) {}
-            });
-
-        schemaMigrations.put(8, conn -> {
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("CREATE TABLE IF NOT EXISTS ah_place_preset_groups (" +
-                        "grp VARCHAR(64) PRIMARY KEY)");
-            } catch (SQLException ignored) {}
-        });
-
-        schemaMigrations.put(9, conn -> {
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                stmt.execute("ALTER TABLE ah_collections ADD COLUMN hide_when_not_available BOOLEAN DEFAULT FALSE");
-            } catch (SQLException ignored) {}
-        });
-
-        schemaMigrations.put(10, conn -> {
-            // Rename hide_when_disabled to hide_when_not_available
-            try (java.sql.Statement stmt = conn.createStatement()) {
-                if (useSqlite) {
-                    // SQLite: try modern RENAME COLUMN syntax (3.25.0+)
-                    stmt.execute("ALTER TABLE ah_collections RENAME COLUMN hide_when_disabled TO hide_when_not_available");
-                } else {
-                    // MySQL: use CHANGE syntax
-                    stmt.execute("ALTER TABLE ah_collections CHANGE hide_when_disabled hide_when_not_available BOOLEAN DEFAULT FALSE");
-                }
-            } catch (SQLException e) {
-                // If rename fails (old SQLite), copy data manually
-                try (java.sql.Statement stmt = conn.createStatement()) {
-                    stmt.execute("UPDATE ah_collections SET hide_when_not_available = hide_when_disabled");
-                    stmt.execute("ALTER TABLE ah_collections DROP COLUMN hide_when_disabled");
-                } catch (SQLException ignored) {}
-            }
-        });
+        schemaMigrations.put(1, this::createPerformanceIndexes);
     }
 
     @Override
@@ -299,7 +220,8 @@ public class SqlRepository implements DataRepository {
                     "progress_reset_cron VARCHAR(64), " +
                     "single_player_find BOOLEAN, " +
                     "rewards TEXT, " +
-                    "default_treasure_reward_preset_id VARCHAR(36))");
+                    "default_treasure_reward_preset_id VARCHAR(36), " +
+                    "hide_when_not_available BOOLEAN DEFAULT FALSE)");
 
                 // Reward Presets Table
                 stmt.execute("CREATE TABLE IF NOT EXISTS ah_reward_presets (" +
