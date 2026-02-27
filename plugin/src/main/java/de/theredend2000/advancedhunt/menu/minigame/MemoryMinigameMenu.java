@@ -6,7 +6,6 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,17 +75,14 @@ public class MemoryMinigameMenu extends MinigameMenu {
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.watch"));
         
         final int[] index = {0};
-        final BukkitTask[] seqTask = {null};
-        seqTask[0] = scheduleTaskTimer(() -> {
+        scheduleTaskTimer(() -> {
             if (finished) {
-                if (seqTask[0] != null) seqTask[0].cancel();
                 return;
             }
 
             if (index[0] >= sequence.size()) {
                 showingSequence = false;
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.repeat"));
-                if (seqTask[0] != null) seqTask[0].cancel();
                 return;
             }
 
