@@ -11,7 +11,7 @@ permissions:
     default: true
   advancedhunt.list:
     description: Allows listing collections
-    default: true
+    default: op
   advancedhunt.leaderboard:
     description: Allows viewing the leaderboard
     default: true

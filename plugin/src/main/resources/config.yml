@@ -127,7 +127,7 @@ hint:
     reaction:
       enabled: true
       # Number of correct clicks required to win
-      required-clicks: 5
+      required-clicks: 15
       # Time in ticks (20 ticks = 1 second) before the target moves and counts as a miss
       update-time: 20
     
@@ -139,12 +139,16 @@ hint:
       # Time in ticks to show each color during the sequence display
       display-time: 20
 
+# Updates the plugin automatically when a new version comes out
 updater:
+  # Update for AdvancedHunt plugin
   enabled: true
+
+  # Update for dependency plugin
   dependencies:
-    PacketEvents: true
-    NBT-API: true
-    PlaceholderAPI: true
+    PacketEvents: false
+    NBT-API: false
+    PlaceholderAPI: false
 
 sounds:
   enabled: true

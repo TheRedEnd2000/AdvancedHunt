@@ -291,7 +291,7 @@ public class HintManager {
         }
         
         // Apply cooldown
-        applyCooldown(player.getUniqueId());
+        applyFailureCooldown(player);
     }
     
     /**
