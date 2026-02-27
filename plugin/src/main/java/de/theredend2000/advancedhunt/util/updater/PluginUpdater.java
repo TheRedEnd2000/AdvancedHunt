@@ -6,7 +6,10 @@ import de.theredend2000.advancedhunt.util.updater.source.BukkitSource;
 import de.theredend2000.advancedhunt.util.updater.source.ModrinthSource;
 import de.theredend2000.advancedhunt.util.updater.source.SpigotSource;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.InvalidDescriptionException;
+import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -15,6 +18,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class PluginUpdater {
 
@@ -26,6 +30,10 @@ public class PluginUpdater {
     private final VersionComparator versionComparator;
     private final boolean paperOrPurpur;
     private final boolean above1_19;
+    private final File pluginsDir;
+    private final File updateDir;
+    private final File oldPluginsDir;
+    private final Set<String> activeDownloads = ConcurrentHashMap.newKeySet();
 
     public PluginUpdater(Main plugin) {
         this.plugin = plugin;
@@ -34,10 +42,20 @@ public class PluginUpdater {
         this.versionComparator = new VersionComparator();
         this.paperOrPurpur = detectPaperOrPurpur();
         this.above1_19 = detectAbove1_19();
+        this.pluginsDir = Bukkit.getUpdateFolderFile().getParentFile();
+        this.updateDir = Bukkit.getUpdateFolderFile();
+        this.oldPluginsDir = new File(pluginsDir, "OLD_PLUGINS");
+
+        initializeDirectories();
 
         registerSource(new ModrinthSource());
         registerSource(new SpigotSource());
         registerSource(new BukkitSource());
+    }
+
+    private void initializeDirectories() {
+        if (!updateDir.exists()) updateDir.mkdirs();
+        if (!oldPluginsDir.exists()) oldPluginsDir.mkdirs();
     }
 
     public void registerSource(UpdateSource source) {
@@ -70,11 +88,13 @@ public class PluginUpdater {
                         return;
                     }
 
-                    if (!isOldEnoughToAutoDownload(update)) {
-                        plugin.getLogger().info(
-                                "[" + tracked.name + "] Found a new version on " + sourceName + ": " + update.version()
-                                        + " (not auto-downloading; release is newer than " + MINIMUM_RELEASE_AGE.toDays() + " days or has no publish date)"
-                        );
+                    if (!isOldEnoughToAutoDownload(tracked.name, update)) {
+                        return;
+                    }
+
+                    // Prevent concurrent downloads of the same plugin from multiple sources
+                    if (!activeDownloads.add(tracked.name)) {
+                        plugin.getLogger().info("[" + tracked.name + "] Download already in progress from another source. Skipping " + sourceName + ".");
                         return;
                     }
 
@@ -98,33 +118,189 @@ public class PluginUpdater {
         UpdateSource source = sources.get(sourceName);
         String id = tracked.ids.get(sourceName);
 
-        if (source != null && id != null) {
-            File updateFolder = Bukkit.getUpdateFolderFile();
-            if (!updateFolder.exists()) {
-                updateFolder.mkdirs();
-            }
+        if (source == null || id == null) return;
 
-            String destinationName;
-            if (paperOrPurpur && above1_19) {
-                destinationName = tracked.name + "-" + update.version() + ".jar";
-            } else {
-                File currentFile = resolvePluginFile(tracked.name);
-                destinationName = (currentFile != null) ? currentFile.getName() : tracked.name + ".jar";
-            }
-            File destination = new File(updateFolder, destinationName);
-            
-            if (destination.exists()) {
-                 plugin.getLogger().info("[" + tracked.name + "] Update " + update.version() + " is already downloaded. It will be applied on next restart.");
-                 return;
-            }
+        // Move old version to OLD_PLUGINS before downloading
+        moveOldVersion(tracked.name);
 
-            source.downloadPlugin(id, update, destination).thenAccept(success -> {
+        // Always use versioned filename (like legacy)
+        String filename = tracked.name + "-" + update.version() + ".jar";
+        File currentFile = resolvePluginFile(tracked.name);
+
+        // Determine target directory based on server type and scenario
+        File targetDir = determineTargetDirectory(tracked.name, filename, currentFile);
+        if (targetDir == null) {
+            return; // Cannot proceed (file order issue on non-Paper)
+        }
+        if (!targetDir.exists()) {
+            targetDir.mkdirs();
+        }
+
+        File destination = new File(targetDir, filename);
+
+        if (destination.exists()) {
+            plugin.getLogger().info("[" + tracked.name + "] Update " + update.version() + " is already downloaded.");
+            return;
+        }
+
+        source.downloadPlugin(id, update, destination).thenAccept(success -> {
+            try {
                 if (success) {
-                    plugin.getLogger().info("[" + tracked.name + "] Successfully downloaded update: " + update.version() + ". It will be applied on next restart.");
+                    plugin.getLogger().info("[" + tracked.name + "] Downloaded " + filename + " to " + targetDir.getName());
+
+                    if (currentFile == null) {
+                        loadPlugin(tracked.name, destination);
+                        return;
+                    }
+
+                    if (paperOrPurpur && above1_19) {
+                        plugin.getLogger().info("[" + tracked.name + "] Update will be applied on next restart.");
+                    } else {
+                        handleFileOrder(tracked.name, filename, destination, currentFile);
+                    }
                 } else {
                     plugin.getLogger().warning("[" + tracked.name + "] Failed to download update from " + sourceName);
+                    if (destination.exists()) {
+                        destination.delete();
+                    }
                 }
-            });
+            } finally {
+                activeDownloads.remove(tracked.name);
+            }
+        });
+    }
+
+    /**
+     * Determines the target directory for downloading a plugin (legacy logic).
+     * <ul>
+     *     <li>Paper/Purpur ≥1.19 + existing plugin → updateDir</li>
+     *     <li>Non-Paper + existing plugin + new versioned name sorts before old → pluginsDir</li>
+     *     <li>Non-Paper + existing plugin + new name doesn't sort first → abort (null)</li>
+     *     <li>No existing plugin → pluginsDir</li>
+     * </ul>
+     */
+    private File determineTargetDirectory(String pluginName, String filename, File currentFile) {
+        if (paperOrPurpur && above1_19 && currentFile != null) {
+            return updateDir;
+        }
+
+        if (currentFile != null && !isVersionedFileNameFirst(filename, currentFile.getName())) {
+            plugin.getLogger().warning("Cannot continue with automatic download of " + pluginName
+                    + ": new filename would not load before the current one.");
+            return null;
+        }
+
+        return pluginsDir;
+    }
+
+    /**
+     * Checks if filename1's version is greater than filename2's version,
+     * meaning the new versioned file would correctly replace the old one
+     * when Bukkit loads plugins alphabetically.
+     */
+    private boolean isVersionedFileNameFirst(String filename1, String filename2) {
+        String v1 = extractVersionFromFilename(filename1);
+        String v2 = extractVersionFromFilename(filename2);
+        return compareVersionSegments(v1, v2) > 0;
+    }
+
+    private String extractVersionFromFilename(String filename) {
+        int dashIndex = filename.lastIndexOf('-');
+        int dotJarIndex = filename.lastIndexOf(".jar");
+        if (dashIndex != -1 && dotJarIndex != -1 && dashIndex < dotJarIndex) {
+            return filename.substring(dashIndex + 1, dotJarIndex);
+        }
+        return "";
+    }
+
+    private int compareVersionSegments(String version1, String version2) {
+        String[] parts1 = version1.split("\\.");
+        String[] parts2 = version2.split("\\.");
+        int length = Math.max(parts1.length, parts2.length);
+        for (int i = 0; i < length; i++) {
+            int v1 = i < parts1.length ? parseIntSafe(parts1[i]) : 0;
+            int v2 = i < parts2.length ? parseIntSafe(parts2[i]) : 0;
+            if (v1 != v2) return Integer.compare(v1, v2);
+        }
+        return 0;
+    }
+
+    private int parseIntSafe(String s) {
+        try { return Integer.parseInt(s); } catch (NumberFormatException e) { return 0; }
+    }
+
+    /**
+     * Handles file ordering on non-Paper servers where both old and new jars coexist.
+     * Logs a warning if the new file would not load first among the plugins directory.
+     */
+    private void handleFileOrder(String pluginName, String filename, File newFile, File currentFile) {
+        File[] files = pluginsDir.listFiles();
+        if (files != null) {
+            boolean isFirst = true;
+            for (File f : files) {
+                if (f.getName().endsWith(".jar") && f.getName().compareToIgnoreCase(filename) < 0
+                        && !f.getName().equalsIgnoreCase(currentFile.getName())) {
+                    isFirst = false;
+                    break;
+                }
+            }
+            if (!isFirst) {
+                plugin.getLogger().warning("[" + pluginName + "] Downloaded plugin may not load first due to file ordering.");
+            }
+        }
+    }
+
+    /**
+     * Moves the old version of a plugin (if tracked) to the OLD_PLUGINS directory.
+     */
+    private void moveOldVersion(String pluginName) {
+        File currentFile = resolvePluginFile(pluginName);
+        if (currentFile == null || !currentFile.exists()) return;
+
+        // Only move if there's a different file in the plugins dir with the same plugin name prefix
+        File[] files = pluginsDir.listFiles();
+        if (files == null) return;
+        String prefix = pluginName + "-";
+        for (File f : files) {
+            if (f.getName().startsWith(prefix) && f.getName().endsWith(".jar")
+                    && !f.getName().equals(currentFile.getName())) {
+                File dest = new File(oldPluginsDir, f.getName());
+                if (f.renameTo(dest)) {
+                    plugin.getLogger().info("Moved old version " + f.getName() + " to OLD_PLUGINS");
+                } else {
+                    plugin.getLogger().severe("Failed to move old version " + f.getName() + " to OLD_PLUGINS");
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads a newly downloaded plugin, disabling any existing instance first.
+     */
+    private void loadPlugin(String pluginName, File pluginFile) {
+        if (!pluginFile.exists()) {
+            plugin.getLogger().severe("[" + pluginName + "] Cannot find plugin file: " + pluginFile.getAbsolutePath());
+            return;
+        }
+
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        Plugin existing = pluginManager.getPlugin(pluginName);
+        if (existing != null) {
+            pluginManager.disablePlugin(existing);
+            plugin.getLogger().info("[" + pluginName + "] Disabled existing instance before loading new version.");
+        }
+
+        try {
+            Plugin loadedPlugin = pluginManager.loadPlugin(pluginFile);
+            if (loadedPlugin != null) {
+                pluginManager.enablePlugin(loadedPlugin);
+                plugin.getLogger().info("[" + pluginName + "] Successfully loaded and enabled plugin.");
+            } else {
+                plugin.getLogger().severe("[" + pluginName + "] Failed to load plugin from " + pluginFile.getName());
+            }
+        } catch (InvalidPluginException | InvalidDescriptionException e) {
+            plugin.getLogger().log(Level.SEVERE, "[" + pluginName + "] Failed to load plugin", e);
         }
     }
 
