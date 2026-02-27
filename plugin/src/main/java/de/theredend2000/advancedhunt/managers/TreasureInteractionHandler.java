@@ -72,7 +72,6 @@ public final class TreasureInteractionHandler {
         if (!player.isSneaking()) return false;
 
         if (!player.hasPermission("advancedhunt.admin.rewards")) {
-            player.sendMessage(plugin.getMessageManager().getMessage("error.no_permission"));
             return true;
         }
 

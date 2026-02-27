@@ -39,6 +39,8 @@ public class TreasureProtectListener implements Listener {
 
         // Prevent breaking treasures by normal players
         event.setCancelled(true);
+
+        if(!player.hasPermission("advancedhunt.admin.place")) return;
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.protected"));
         plugin.getSoundManager().playBlockProtected(event.getPlayer());
     }
@@ -53,6 +55,7 @@ public class TreasureProtectListener implements Listener {
         if (placeModeManager.isInPlaceMode(player)) return;
 
         event.setCancelled(true);
+        if(!player.hasPermission("advancedhunt.admin.place")) return;
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.protected"));
         plugin.getSoundManager().playBlockProtected(player);
     }
