@@ -18,6 +18,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class PluginUpdater {
@@ -88,7 +90,7 @@ public class PluginUpdater {
                         return;
                     }
 
-                    if (!isOldEnoughToAutoDownload(tracked.name, update)) {
+                    if (!isOldEnoughToAutoDownload(update)) {
                         return;
                     }
 
