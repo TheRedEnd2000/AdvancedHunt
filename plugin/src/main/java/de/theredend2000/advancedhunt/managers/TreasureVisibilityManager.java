@@ -81,7 +81,9 @@ public class TreasureVisibilityManager implements Listener {
     private final Map<UUID, AtomicInteger> worldEntityIdCounters = new ConcurrentHashMap<>();
 
     private BukkitTask availabilityTask;
-    private PacketListenerAbstract packetListener;
+    // Stored as Object so that TreasureVisibilityManager can be loaded without PacketEvents
+    // on the classpath. The actual value is always a PacketListenerAbstract when non-null.
+    private Object packetListener;
 
     public TreasureVisibilityManager(Main plugin, TreasureManager treasureManager, CollectionManager collectionManager) {
         this.plugin = plugin;
@@ -449,18 +451,20 @@ public class TreasureVisibilityManager implements Listener {
 
     private void registerPacketListener() {
         if (!isPacketEventsReady()) {
+            plugin.getLogger().info("[TreasureVisibility] PacketEvents not available "
+                + "— treasure-visibility bypass and virtual block injection disabled.");
             return;
         }
 
-        packetListener = new PacketListenerAbstract(PacketListenerPriority.NORMAL) {
-            @Override
-            public void onPacketSend(PacketSendEvent event) {
-                handlePacketSend(event);
-            }
-        };
-
         try {
-            PacketEvents.getAPI().getEventManager().registerListener(packetListener);
+            PacketListenerAbstract listener = new PacketListenerAbstract(PacketListenerPriority.NORMAL) {
+                @Override
+                public void onPacketSend(PacketSendEvent event) {
+                    handlePacketSend(event);
+                }
+            };
+            PacketEvents.getAPI().getEventManager().registerListener(listener);
+            packetListener = listener;
         } catch (Throwable ignored) {
         }
     }
@@ -468,7 +472,11 @@ public class TreasureVisibilityManager implements Listener {
     private void unregisterPacketListener() {
         if (packetListener == null) return;
         try {
-            PacketEvents.getAPI().getEventManager().unregisterListener(packetListener);
+            // Cast is safe: packetListener is only ever set to a PacketListenerAbstract
+            // instance inside registerPacketListener(), which only runs when PacketEvents
+            // is confirmed available. The cast is in a method body and thus resolved lazily.
+            PacketEvents.getAPI().getEventManager().unregisterListener(
+                (PacketListenerAbstract) packetListener);
         } catch (Throwable ignored) {
         }
         packetListener = null;
