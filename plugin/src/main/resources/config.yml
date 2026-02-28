@@ -1,4 +1,4 @@
-config-version: 4
+config-version: 4.0
 
 storage:
   # Options: SQLITE, MYSQL, YAML
@@ -11,8 +11,6 @@ storage:
     database: advancedhunt
     username: root
     password: password
-
-dev-mode: false
 
 language: en
 
