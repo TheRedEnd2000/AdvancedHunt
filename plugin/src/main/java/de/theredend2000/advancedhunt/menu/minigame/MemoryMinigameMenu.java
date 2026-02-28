@@ -75,14 +75,22 @@ public class MemoryMinigameMenu extends MinigameMenu {
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.watch"));
         
         final int[] index = {0};
-        scheduleTaskTimer(() -> {
+        final org.bukkit.scheduler.BukkitTask[] task = new org.bukkit.scheduler.BukkitTask[1];
+
+        task[0] = scheduleTaskTimer(() -> {
             if (finished) {
+                if (task[0] != null) {
+                    task[0].cancel();
+                }
                 return;
             }
 
             if (index[0] >= sequence.size()) {
                 showingSequence = false;
                 playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.repeat"));
+                if (task[0] != null) {
+                    task[0].cancel();
+                }
                 return;
             }
 

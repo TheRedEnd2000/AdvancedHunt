@@ -25,6 +25,7 @@ import java.util.logging.Level;
 public class ModrinthSource implements UpdateSource {
 
     private static final String API_URL = "https://api.modrinth.com/v2/project/%s/version";
+    private static final String LOADER = detectLoader();
 
     /**
      * Detects the running server platform and returns the single Modrinth loader name
@@ -52,6 +53,8 @@ public class ModrinthSource implements UpdateSource {
             return true;
         } catch (ClassNotFoundException e) {
             return false;
+        } catch (Throwable e) {
+            return false;
         }
     }
 
@@ -59,8 +62,7 @@ public class ModrinthSource implements UpdateSource {
     public CompletableFuture<UpdateInfo> getLatestUpdate(String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String detectedLoader = detectLoader();
-                String loadersParam = URLEncoder.encode("[\"" + detectedLoader + "\"]", StandardCharsets.UTF_8.name());
+                String loadersParam = URLEncoder.encode("[\"" + LOADER + "\"]", StandardCharsets.UTF_8.name());
                 String mcVersion = getServerMinecraftVersion();
 
                 // Prefer an exact MC-version match; fall back to loader-only if none found
@@ -129,7 +131,7 @@ public class ModrinthSource implements UpdateSource {
      */
     private boolean isCompatibleLoader(JsonObject versionObj) {
         if (!versionObj.has("loaders")) return true;
-        String detected = detectLoader();
+        String detected = LOADER;
         JsonArray loaders = versionObj.getAsJsonArray("loaders");
         for (JsonElement loader : loaders) {
             if (isLoaderCompatibleWith(loader.getAsString().toLowerCase(), detected)) {
@@ -179,7 +181,7 @@ public class ModrinthSource implements UpdateSource {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // Re-fetch versions with loader filter to locate the matching release
-                String detectedLoader = detectLoader();
+                String detectedLoader = LOADER;
                 String loadersParam = URLEncoder.encode("[\"" + detectedLoader + "\"]", StandardCharsets.UTF_8.name());
                 URL url = new URL(String.format(API_URL, id) + "?loaders=" + loadersParam);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
