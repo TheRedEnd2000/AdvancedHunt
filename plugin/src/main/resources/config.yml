@@ -12,6 +12,7 @@ storage:
     username: root
     password: password
 
+# Supported languages are en, de, bn, vi
 language: en
 
 command:
