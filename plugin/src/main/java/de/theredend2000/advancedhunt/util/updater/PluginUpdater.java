@@ -42,7 +42,7 @@ public class PluginUpdater {
         this.sources = new HashMap<>();
         this.trackedPlugins = new HashMap<>();
         this.versionComparator = new VersionComparator();
-        this.paperOrPurpur = detectPaperOrPurpur();
+        this.paperOrPurpur = IS_PAPER_OR_PURPUR;
         this.above1_19 = detectAbove1_19();
         this.pluginsDir = Bukkit.getUpdateFolderFile().getParentFile();
         this.updateDir = Bukkit.getUpdateFolderFile();
@@ -280,31 +280,43 @@ public class PluginUpdater {
      * Loads a newly downloaded plugin, disabling any existing instance first.
      */
     private void loadPlugin(String pluginName, File pluginFile) {
-        if (!pluginFile.exists()) {
-            plugin.getLogger().severe("[" + pluginName + "] Cannot find plugin file: " + pluginFile.getAbsolutePath());
-            return;
-        }
-
-        PluginManager pluginManager = Bukkit.getPluginManager();
-
-        Plugin existing = pluginManager.getPlugin(pluginName);
-        if (existing != null) {
-            pluginManager.disablePlugin(existing);
-            plugin.getLogger().info("[" + pluginName + "] Disabled existing instance before loading new version.");
-        }
-
-        try {
-            Plugin loadedPlugin = pluginManager.loadPlugin(pluginFile);
-            if (loadedPlugin != null) {
-                pluginManager.enablePlugin(loadedPlugin);
-                plugin.getLogger().info("[" + pluginName + "] Successfully loaded and enabled plugin.");
-            } else {
-                plugin.getLogger().severe("[" + pluginName + "] Failed to load plugin from " + pluginFile.getName());
+        Runnable loadTask = () -> {
+            if (!pluginFile.exists()) {
+                plugin.getLogger().severe("[" + pluginName + "] Cannot find plugin file: " + pluginFile.getAbsolutePath());
+                return;
             }
-        } catch (InvalidPluginException | InvalidDescriptionException e) {
-            plugin.getLogger().log(Level.SEVERE, "[" + pluginName + "] Failed to load plugin", e);
+
+            PluginManager pluginManager = Bukkit.getPluginManager();
+
+            Plugin existing = pluginManager.getPlugin(pluginName);
+            if (existing != null) {
+                pluginManager.disablePlugin(existing);
+                plugin.getLogger().info("[" + pluginName + "] Disabled existing instance before loading new version.");
+            }
+
+            try {
+                Plugin loadedPlugin = pluginManager.loadPlugin(pluginFile);
+                if (loadedPlugin != null) {
+                    pluginManager.enablePlugin(loadedPlugin);
+                    plugin.getLogger().info("[" + pluginName + "] Successfully loaded and enabled plugin.");
+                } else {
+                    plugin.getLogger().severe("[" + pluginName + "] Failed to load plugin from " + pluginFile.getName());
+                }
+            } catch (InvalidPluginException | InvalidDescriptionException e) {
+                plugin.getLogger().log(Level.SEVERE, "[" + pluginName + "] Failed to load plugin", e);
+            }
+        };
+
+        if (Bukkit.isPrimaryThread()) {
+            loadTask.run();
+        } else if (plugin.isEnabled()) {
+            Bukkit.getScheduler().runTask(plugin, loadTask);
+        } else {
+            plugin.getLogger().info("[" + pluginName + "] Download complete. Will be loaded on next restart.");
         }
     }
+
+    private static final boolean IS_PAPER_OR_PURPUR = detectPaperOrPurpur();
 
     /**
      * Checks if the server is running Paper or Purpur.
@@ -314,6 +326,8 @@ public class PluginUpdater {
             Class.forName("com.destroystokyo.paper.PaperConfig");
             return true;
         } catch (ClassNotFoundException e) {
+            return false;
+        } catch (Throwable e) {
             return false;
         }
     }
