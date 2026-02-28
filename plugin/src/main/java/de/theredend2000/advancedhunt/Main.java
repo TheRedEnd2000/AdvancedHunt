@@ -17,6 +17,7 @@ import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -317,7 +318,7 @@ public final class Main extends JavaPlugin {
         setupCommands();
 
         // Initialize bStats
-    //        new Metrics(this, 19495);
+        new Metrics(this, 19495);
 
         // Initialize Updater
         if (getConfig().getBoolean("updater.enabled", true)) {
