@@ -3,7 +3,7 @@ version: '4.0.0-SNAPSHOT'
 main: de.theredend2000.advancedhunt.Main
 api-version: '1.21'
 authors: [ GrafterCrafter, TheRedEnd2000 ]
-softdepend: [ ItemsAdder, packetevents ]
+softdepend: [ ItemsAdder, packetevents, NBTAPI, PlaceholderAPI ]
 
 permissions:
   advancedhunt.help:

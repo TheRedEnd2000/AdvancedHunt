@@ -153,6 +153,30 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         random = new Random();
 
+        // Warn about missing optional dependencies
+        warnIfDependencyMissing("PacketEvents", "Holograms and client-side particle/glow effects",
+                "https://modrinth.com/plugin/packetevents", "packetevents");
+        warnIfDependencyMissing("NBTAPI", "Custom NBT data on treasures and rewards",
+                "https://modrinth.com/plugin/nbtapi");
+        warnIfDependencyMissing("PlaceholderAPI", "Placeholder support in messages and rewards",
+                "https://modrinth.com/plugin/placeholderapi");
+
+        // Initialize Updater
+        if (getConfig().getBoolean("updater.enabled", true)) {
+            pluginUpdater = new PluginUpdater(this);
+
+            pluginUpdater.trackPlugin(getDescription().getName(), getDescription().getVersion(),
+                    Collections.singletonMap("Modrinth", "8ZWWJnYu"));
+
+            // Track Dependencies
+            trackDependency("PacketEvents", "HYKaKraK");
+            trackDependency("NBT-API", "nfGCP9fk");
+            trackDependency("PlaceholderAPI", "lKEzGugV");
+
+            // Check for updates asynchronously
+            getServer().getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
+        }
+
         File configFile = new File(getDataFolder(), "config.yml");
         YamlConfiguration previousConfig = YamlConfiguration.loadConfiguration(configFile);
         int previousConfigVersion = previousConfig.getInt("config-version", 0);
@@ -319,22 +343,6 @@ public final class Main extends JavaPlugin {
 
         // Initialize bStats
         new Metrics(this, 19495);
-
-        // Initialize Updater
-        if (getConfig().getBoolean("updater.enabled", true)) {
-            pluginUpdater = new PluginUpdater(this);
-
-            pluginUpdater.trackPlugin(getDescription().getName(), getDescription().getVersion(),
-                    Collections.singletonMap("Modrinth", "8ZWWJnYu"));
-
-            // Track Dependencies
-            trackDependency("PacketEvents", "HYKaKraK");
-            trackDependency("NBT-API", "nfGCP9fk");
-            trackDependency("PlaceholderAPI", "lKEzGugV");
-
-            // Check for updates asynchronously
-            getServer().getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
-        }
     }
 
     private void trackDependency(String name, String modrinthId) {
@@ -342,6 +350,44 @@ public final class Main extends JavaPlugin {
         Plugin dep = Bukkit.getPluginManager().getPlugin(name);
         String version = (dep != null) ? dep.getDescription().getVersion() : "0.0.0";
         pluginUpdater.trackPlugin(name, version, Collections.singletonMap("Modrinth", modrinthId));
+    }
+
+    /**
+     * Logs a warning if a dependency plugin is not installed.
+     *
+     * @param pluginName  the plugin name registered with Bukkit (also used as the config key suffix)
+     * @param description brief description of what features require this dependency
+     * @param modrinthUrl direct download URL shown when auto-download is disabled
+     * @param aliases     additional names to check (e.g. alternate casing)
+     */
+    private void warnIfDependencyMissing(String pluginName, String description,
+                                          String modrinthUrl, String... aliases) {
+        boolean present = Bukkit.getPluginManager().getPlugin(pluginName) != null;
+        if (!present) {
+            for (String alias : aliases) {
+                if (Bukkit.getPluginManager().getPlugin(alias) != null) {
+                    present = true;
+                    break;
+                }
+            }
+        }
+        if (present) return;
+
+        String configKey = "updater.dependencies." + pluginName;
+        boolean autoDownload = getConfig().getBoolean("updater.enabled", true)
+                && getConfig().getBoolean(configKey, true);
+
+        getLogger().warning("================================================================");
+        getLogger().warning(pluginName + " is not installed! " + description);
+        getLogger().warning("will be unavailable until it is added.");
+        if (autoDownload) {
+            getLogger().warning("Auto-download is ENABLED - " + pluginName + " will be downloaded");
+            getLogger().warning("automatically. Please RESTART the server once complete.");
+        } else {
+            getLogger().warning("Download it from: " + modrinthUrl);
+            getLogger().warning("Or enable auto-download: " + configKey + ": true");
+        }
+        getLogger().warning("================================================================");
     }
 
     public PlaceItemManager getPlaceItemManager() {
