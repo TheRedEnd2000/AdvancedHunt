@@ -39,7 +39,7 @@ public class ItemsAdderIntegrationListener implements Listener {
     }
 
     @EventHandler
-    public void onFurniturePlaceSuccess(FurniturePlaceSuccessEvent event) {
+    public void onFurniturePlaceSuccess(FurniturePlacedEvent event) {
         Player player = event.getPlayer();
         if (!placeModeManager.isInPlaceMode(player)) return;
 
