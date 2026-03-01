@@ -382,7 +382,6 @@ public final class LegacyDataMigrator {
             
             // Remove legacy folders
             deletedDirs += deleteLegacySubfolder(legacyRoot, "eggs") ? 1 : 0;
-            deletedDirs += deleteLegacySubfolder(legacyRoot, "playerdata") ? 1 : 0;
             deletedDirs += deleteLegacySubfolder(legacyRoot, "invs") ? 1 : 0;
             deletedDirs += deleteLegacySubfolder(legacyRoot, "menus") ? 1 : 0;
             deletedDirs += deleteLegacySubfolder(legacyRoot, "messages") ? 1 : 0;

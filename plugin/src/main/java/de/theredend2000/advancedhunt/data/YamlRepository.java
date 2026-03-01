@@ -737,6 +737,11 @@ public class YamlRepository implements DataRepository {
                     rwLock.writeLock().unlock();
                 }
                 
+                // Strip legacy keys if present (left over from pre-migration format)
+                config.set("FoundEggs", null);
+                config.set("DeletionType", null);
+                config.set("SelectedSection", null);
+
                 List<String> found = new ArrayList<>();
                 for (UUID uuid : pd.getFoundTreasures()) {
                     found.add(uuid.toString());
