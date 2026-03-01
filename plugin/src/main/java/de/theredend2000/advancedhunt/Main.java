@@ -343,7 +343,7 @@ public final class Main extends JavaPlugin {
     }
 
     private void trackDependency(String name, String modrinthId) {
-        if (!getConfig().getBoolean("updater.dependencies." + name, true)) return;
+        if (!getConfig().getBoolean("updater.dependencies." + name, false)) return;
         Plugin dep = Bukkit.getPluginManager().getPlugin(name);
         String version = (dep != null) ? dep.getDescription().getVersion() : "0.0.0";
         pluginUpdater.trackPlugin(name, version, Collections.singletonMap("Modrinth", modrinthId));
