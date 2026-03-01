@@ -162,7 +162,7 @@ public final class Main extends JavaPlugin {
 
             // Track Dependencies
             trackDependency("PacketEvents", "HYKaKraK");
-            trackDependency("NBT-API", "nfGCP9fk");
+            trackDependency("NBTAPI", "nfGCP9fk");
             trackDependency("PlaceholderAPI", "lKEzGugV");
 
             // Check for updates asynchronously
