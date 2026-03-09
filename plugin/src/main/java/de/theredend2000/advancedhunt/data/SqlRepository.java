@@ -355,8 +355,8 @@ public class SqlRepository implements DataRepository {
         };
 
         for (String indexSql : indexes) {
-            try {
-                conn.createStatement().execute(indexSql);
+            try (java.sql.Statement stmt = conn.createStatement()) {
+                stmt.execute(indexSql);
                 plugin.getLogger().info("Created database index for performance optimization");
             } catch (SQLException e) {
                 // Index might already exist, ignore
@@ -397,7 +397,15 @@ public class SqlRepository implements DataRepository {
         }
 
         if (sqliteExecutor != null) {
-            sqliteExecutor.shutdownNow();
+            sqliteExecutor.shutdown();
+            try {
+                if (!sqliteExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    sqliteExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                sqliteExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -812,16 +820,23 @@ public class SqlRepository implements DataRepository {
                 conn.setAutoCommit(false);
                 try {
                     executeWithRetry(() -> {
-                        // Save collection
-                        try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO ah_collections (id, name, enabled, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                        // Save collection — include all columns to avoid REPLACE INTO dropping
+                        // unlisted columns. Use upsert syntax appropriate for the backend.
+                        final String upsertSql = useSqlite
+                            ? "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, enabled=excluded.enabled, reset_cron=excluded.reset_cron, active_start=excluded.active_start, active_end=excluded.active_end, progress_reset_cron=excluded.progress_reset_cron, single_player_find=excluded.single_player_find, rewards=excluded.rewards, default_treasure_reward_preset_id=excluded.default_treasure_reward_preset_id, hide_when_not_available=excluded.hide_when_not_available"
+                            : "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), enabled=VALUES(enabled), reset_cron=VALUES(reset_cron), active_start=VALUES(active_start), active_end=VALUES(active_end), progress_reset_cron=VALUES(progress_reset_cron), single_player_find=VALUES(single_player_find), rewards=VALUES(rewards), default_treasure_reward_preset_id=VALUES(default_treasure_reward_preset_id), hide_when_not_available=VALUES(hide_when_not_available)";
+                        try (PreparedStatement ps = conn.prepareStatement(upsertSql)) {
                             ps.setString(1, collection.getId().toString());
                             ps.setString(2, collection.getName());
                             ps.setBoolean(3, collection.isEnabled());
-                            ps.setString(4, collection.getProgressResetCron());
-                            ps.setBoolean(5, collection.isSinglePlayerFind());
-                            ps.setString(6, gson.toJson(collection.getCompletionRewards()));
-                            ps.setString(7, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
-                            ps.setBoolean(8, collection.isHideWhenNotAvailable());
+                            ps.setNull(4, java.sql.Types.VARCHAR); // reset_cron (not in Collection model)
+                            ps.setNull(5, java.sql.Types.VARCHAR); // active_start (not in Collection model)
+                            ps.setNull(6, java.sql.Types.VARCHAR); // active_end (not in Collection model)
+                            ps.setString(7, collection.getProgressResetCron());
+                            ps.setBoolean(8, collection.isSinglePlayerFind());
+                            ps.setString(9, gson.toJson(collection.getCompletionRewards()));
+                            ps.setString(10, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
+                            ps.setBoolean(11, collection.isHideWhenNotAvailable());
                             ps.executeUpdate();
                         }
 
@@ -1122,6 +1137,11 @@ public class SqlRepository implements DataRepository {
                 conn.setAutoCommit(false);
                 try {
                     executeWithRetry(() -> {
+                        // Delete orphaned player_found rows before removing treasures
+                        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_player_found WHERE treasure_id IN (SELECT id FROM ah_treasures WHERE collection_id = ?)")) {
+                            ps.setString(1, id.toString());
+                            ps.executeUpdate();
+                        }
                         // Delete collection
                         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_collections WHERE id = ?")) {
                             ps.setString(1, id.toString());
@@ -1196,7 +1216,8 @@ public class SqlRepository implements DataRepository {
         return supplyAsync(() -> {
             List<UUID> uuids = new ArrayList<>();
             try (Connection conn = dataSource.getConnection();
-                 ResultSet rs = conn.createStatement().executeQuery("SELECT uuid FROM ah_players")) {
+                 java.sql.Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT uuid FROM ah_players")) {
                 while (rs.next()) {
                     uuids.add(UUID.fromString(rs.getString("uuid")));
                 }

@@ -22,7 +22,7 @@ import java.util.Optional;
 public class ActRulesMenu extends PagedMenu {
 
     private final Collection collection;
-    private boolean processing = false;
+    private volatile boolean processing = false;
 
     public ActRulesMenu(Player player, Main plugin, Collection collection) {
         super(player, plugin);

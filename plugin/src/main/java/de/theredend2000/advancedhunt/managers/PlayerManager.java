@@ -37,9 +37,20 @@ public class PlayerManager implements Listener {
     }
 
     /**
+     * Returns true if the player's data is fully loaded and present in the cache.
+     * Callers that need accurate data should guard with this before calling getPlayerData().
+     *
+     * @param uuid The player's UUID
+     * @return true if the cache contains an entry for this player
+     */
+    public boolean isPlayerDataLoaded(UUID uuid) {
+        return playerDataCache.getIfPresent(uuid) != null;
+    }
+
+    /**
      * Gets player data from cache, or returns a placeholder and loads asynchronously.
      * This method is non-blocking and safe to call from the main thread.
-     * 
+     *
      * @param uuid The player's UUID
      * @return Cached PlayerData if available, otherwise a placeholder that will be updated async
      */
@@ -126,8 +137,9 @@ public class PlayerManager implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         // Pre-load data asynchronously when player joins
-        repository.loadPlayerData(event.getPlayer().getUniqueId())
-                .thenAccept(data -> playerDataCache.put(event.getPlayer().getUniqueId(), data));
+        UUID uuid = event.getPlayer().getUniqueId();
+        repository.loadPlayerData(uuid)
+                .thenAccept(data -> playerDataCache.put(uuid, data != null ? data : new PlayerData(uuid)));
     }
 
     @EventHandler

@@ -289,14 +289,15 @@ public class CollectionDeletionCleanupManager implements Listener {
         if (nbtData == null || nbtData.isEmpty()) return;
 
         try {
-            NBT.modify(block.getState(), nbt -> {
+            org.bukkit.block.BlockState state = block.getState();
+            NBT.modify(state, nbt -> {
                 try {
                     ReadWriteNBT data = NBT.parseNBT(nbtData);
                     nbt.mergeCompound(data);
                 } catch (Throwable ignored) {
                 }
             });
-            block.getState().update(true, false);
+            state.update(true, false);
         } catch (Throwable ignored) {
         }
     }

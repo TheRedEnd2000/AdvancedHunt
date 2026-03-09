@@ -130,8 +130,9 @@ public class CollectionManager {
                     ((Main) plugin).getSoundManager().playCollectionCompleted(player);
                     rewardManager.giveRewards(player, collection.getCompletionRewards(),collection);
                 });
-            }else
-                ((Main) plugin).getSoundManager().playTreasureFound(player);
+            } else {
+                Bukkit.getScheduler().runTask(plugin, () -> ((Main) plugin).getSoundManager().playTreasureFound(player));
+            }
         });
     }
 
@@ -308,7 +309,8 @@ public class CollectionManager {
 
     private void checkResets() {
         ZonedDateTime now = ZonedDateTime.now();
-        for (Collection c : cachedCollections) {
+        List<Collection> snapshot = cachedCollections;
+        for (Collection c : snapshot) {
             // Check progress reset cron
             if (c.getProgressResetCron() != null && !c.getProgressResetCron().isEmpty()) {
                 try {

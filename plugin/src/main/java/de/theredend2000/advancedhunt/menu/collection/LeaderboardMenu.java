@@ -249,11 +249,6 @@ public class LeaderboardMenu extends PagedMenu {
         return builder.build();
     }
 
-    @Override
-    public int getMaxItemsPerPage() {
-        if (isLoading) {
-            return maxItemsPerPage;
-        }
-        return entries.size();
-    }
+    // Do not override getMaxItemsPerPage() — use the parent class's per-page limit so
+    // pagination works correctly across multiple pages.
 }

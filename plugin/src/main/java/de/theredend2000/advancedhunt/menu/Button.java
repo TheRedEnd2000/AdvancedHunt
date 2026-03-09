@@ -64,4 +64,12 @@ public class Button {
     public void setClickSound(Sound clickSound) {
         this.clickSound = clickSound;
     }
+
+    /**
+     * Removes the cooldown entry for the given player.
+     * Call on player quit to prevent the static map from growing unboundedly.
+     */
+    public static void removeClickCooldown(UUID playerId) {
+        clickCooldowns.remove(playerId);
+    }
 }

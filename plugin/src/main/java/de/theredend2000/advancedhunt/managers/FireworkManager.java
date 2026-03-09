@@ -42,11 +42,25 @@ public class FireworkManager {
         meta.addEffect(buildEffect());
 
         firework.setFireworkMeta(meta);
-        fireworkUUIDs.add(firework.getUniqueId());
+        UUID fireworkId = firework.getUniqueId();
+        fireworkUUIDs.add(fireworkId);
+        // Schedule cleanup so the set does not grow unboundedly.
+        // Fireworks detonate within ~5 seconds at most (power 0-3).
+        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, () -> fireworkUUIDs.remove(fireworkId), 100L);
     }
 
     private FireworkEffect buildEffect() {
         ConfigurationSection effectsSec = plugin.getConfig().getConfigurationSection("fireworks.effects");
+
+        if (effectsSec == null) {
+            // Config section missing — return a safe default effect.
+            return FireworkEffect.builder()
+                    .flicker(true)
+                    .trail(true)
+                    .with(FireworkEffect.Type.BALL)
+                    .withColor(Collections.singletonList(Color.WHITE))
+                    .build();
+        }
 
         FireworkEffect.Builder builder = FireworkEffect.builder()
                 .flicker(effectsSec.getBoolean("flicker", true))
