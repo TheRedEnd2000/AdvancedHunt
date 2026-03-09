@@ -266,3 +266,13 @@ migration:
     database: "advancedhunt_target"
     username: "root"
     password: "password"
+
+# Anonymous usage statistics (bStats)
+# AdvancedHunt sends anonymous server metrics to bStats (https://bstats.org/plugin/bukkit/AdvancedHunt/19495).
+# Data collected: server version, Java version, online player count, server software type.
+# No player names, UUIDs, IPs, or personally identifiable information are ever collected.
+#
+# To opt out globally (all plugins): set enabled: false in plugins/bStats/config.yml
+# To opt out for AdvancedHunt only: set metrics.enabled to false below.
+metrics:
+  enabled: true

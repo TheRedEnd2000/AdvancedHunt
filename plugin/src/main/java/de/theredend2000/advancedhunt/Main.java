@@ -338,8 +338,10 @@ public final class Main extends JavaPlugin {
         // Initialize Commands
         setupCommands();
 
-        // Initialize bStats
-        new Metrics(this, 19495);
+        // Initialize bStats (opt-out via metrics.enabled=false in config.yml or plugins/bStats/config.yml)
+        if (getConfig().getBoolean("metrics.enabled", true)) {
+            new Metrics(this, 19495);
+        }
     }
 
     private void trackDependency(String name, String modrinthId) {
@@ -558,7 +560,10 @@ public final class Main extends JavaPlugin {
         TreasureInteractionHandler.reset();
 
         if (hintManager != null) {
-            hintManager.cancelAllVisualHints();
+            hintManager.stop();
+        }
+        if (leaderboardManager != null) {
+            leaderboardManager.stop();
         }
         if (treasureVisibilityManager != null) {
             treasureVisibilityManager.stop();

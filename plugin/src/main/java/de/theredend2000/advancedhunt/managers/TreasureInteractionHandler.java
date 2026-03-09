@@ -99,21 +99,30 @@ public final class TreasureInteractionHandler {
             return;
         }
 
-        try {
-            handleTreasureCollectInternal(player, treasureCore);
-        } finally {
-            playersCollecting.remove(playerId);
-        }
+        // Guard is released inside handleTreasureCollectInternal (or its async callbacks)
+        // to ensure it covers the full duration of the claim flow.
+        handleTreasureCollectInternal(player, treasureCore, playerId);
     }
 
-    private void handleTreasureCollectInternal(Player player, TreasureCore treasureCore) {
+    private void handleTreasureCollectInternal(Player player, TreasureCore treasureCore, UUID playerId) {
         if (placeModeManager.isInPlaceMode(player)) {
             player.sendMessage(plugin.getMessageManager().getMessage("treasure.placemode"));
             plugin.getSoundManager().playPlaceModeCollectDeny(player);
+            playersCollecting.remove(playerId);
+            return;
+        }
+
+        // Guard against interactions before player data is loaded.
+        if (!playerManager.isPlayerDataLoaded(player.getUniqueId())) {
+            playersCollecting.remove(playerId);
             return;
         }
 
         PlayerData data = playerManager.getPlayerData(player.getUniqueId());
+
+        // asyncGuardHeld: true when an async callback will release the guard later.
+        // Used to decide whether to release synchronously after ifPresent.
+        final boolean[] asyncGuardHeld = {false};
 
         collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
             if (!collectionManager.isCollectionAvailable(collection)) {
@@ -128,33 +137,51 @@ public final class TreasureInteractionHandler {
                                 "%time%", timeStr));
                     });
                 });
+                playersCollecting.remove(playerId);
                 return;
             }
 
             if (data.hasFound(treasureCore.getId())) {
                 player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
                 plugin.getSoundManager().playTreasureAlreadyFound(player);
+                playersCollecting.remove(playerId);
                 return;
             }
 
             plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().clone().add(0.5, 1, 0.5));
 
             if (collection.isSinglePlayerFind()) {
+                // Guard is held until the async callback releases it.
+                asyncGuardHeld[0] = true;
                 plugin.getDataRepository().getPlayersWhoFound(treasureCore.getId()).thenAccept(claimers -> {
                     if (!claimers.isEmpty()) {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_claimed_global"));
                             plugin.getSoundManager().playTreasureClaimedByOther(player);
                         });
+                        playersCollecting.remove(playerId);
                         return;
                     }
 
-                    Bukkit.getScheduler().runTask(plugin, () -> claimTreasure(player, treasureCore, data));
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        claimTreasure(player, treasureCore, data);
+                        playersCollecting.remove(playerId);
+                    });
+                }).exceptionally(ex -> {
+                    playersCollecting.remove(playerId);
+                    return null;
                 });
             } else {
                 claimTreasure(player, treasureCore, data);
+                playersCollecting.remove(playerId);
             }
         });
+
+        // Release guard if no collection was found (ifPresent body never ran) and no
+        // async path took ownership of releasing it.
+        if (!asyncGuardHeld[0]) {
+            playersCollecting.remove(playerId);
+        }
     }
 
     private void claimTreasure(Player player, TreasureCore treasureCore, PlayerData data) {

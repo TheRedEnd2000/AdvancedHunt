@@ -680,10 +680,12 @@ public class YamlRepository implements DataRepository {
         return trackFuture(CompletableFuture.runAsync(() -> {
             File file = new File(playerDataFolder, playerData.getPlayerUuid().toString() + YML_EXTENSION);
             YamlConfiguration config = new YamlConfiguration();
-            
-            // Load existing data within write lock to prevent race conditions
+
+            // Hold the write lock for the entire load-modify-save cycle to prevent
+            // interleaving with concurrent writers on the same file.
             ReadWriteLock rwLock = getFileLock(file);
             rwLock.writeLock().lock();
+            boolean saved = false;
             try {
                 if (file.exists()) {
                     try {
@@ -692,24 +694,25 @@ public class YamlRepository implements DataRepository {
                         plugin.getLogger().log(Level.WARNING, "Error loading existing player data for " + playerData.getPlayerUuid(), e);
                     }
                 }
+
+                List<String> found = new ArrayList<>();
+                for (UUID uuid : playerData.getFoundTreasures()) {
+                    found.add(uuid.toString());
+                }
+                config.set("found-treasures", found);
+
+                saved = saveConfigAtomicWithLock(config, file);
             } finally {
                 rwLock.writeLock().unlock();
             }
-            
-            List<String> found = new ArrayList<>();
-            for (UUID uuid : playerData.getFoundTreasures()) {
-                found.add(uuid.toString());
-            }
-            config.set("found-treasures", found);
-            
-            boolean saved = saveConfigAtomicWithLock(config, file);
+
             if (saved) {
                 // Update finder index (fast in-memory update)
                 updateFinderIndex(playerData);
             } else {
                 plugin.getLogger().warning("Failed to save player data for " + playerData.getPlayerUuid() + ", indexes not updated");
             }
-            
+
             // Note: Leaderboard is now updated by LeaderboardManager on a schedule,
             // not on every save, to avoid I/O storms on high-traffic servers
         }));
@@ -721,10 +724,12 @@ public class YamlRepository implements DataRepository {
             for (PlayerData pd : playerDataList) {
                 File file = new File(playerDataFolder, pd.getPlayerUuid() + YML_EXTENSION);
                 YamlConfiguration config = new YamlConfiguration();
-                
-                // Load existing data within write lock
+
+                // Hold the write lock for the entire load-modify-save cycle to prevent
+                // interleaving with concurrent writers on the same file.
                 ReadWriteLock rwLock = getFileLock(file);
                 rwLock.writeLock().lock();
+                boolean saved = false;
                 try {
                     if (file.exists()) {
                         try {
@@ -733,22 +738,23 @@ public class YamlRepository implements DataRepository {
                             plugin.getLogger().log(Level.WARNING, "Error loading existing player data for " + pd.getPlayerUuid(), e);
                         }
                     }
+
+                    // Strip legacy keys if present (left over from pre-migration format)
+                    config.set("FoundEggs", null);
+                    config.set("DeletionType", null);
+                    config.set("SelectedSection", null);
+
+                    List<String> found = new ArrayList<>();
+                    for (UUID uuid : pd.getFoundTreasures()) {
+                        found.add(uuid.toString());
+                    }
+                    config.set("found-treasures", found);
+
+                    saved = saveConfigAtomicWithLock(config, file);
                 } finally {
                     rwLock.writeLock().unlock();
                 }
-                
-                // Strip legacy keys if present (left over from pre-migration format)
-                config.set("FoundEggs", null);
-                config.set("DeletionType", null);
-                config.set("SelectedSection", null);
 
-                List<String> found = new ArrayList<>();
-                for (UUID uuid : pd.getFoundTreasures()) {
-                    found.add(uuid.toString());
-                }
-                config.set("found-treasures", found);
-                
-                boolean saved = saveConfigAtomicWithLock(config, file);
                 if (saved) {
                     updateFinderIndex(pd);
                 } else {
@@ -1237,41 +1243,43 @@ public class YamlRepository implements DataRepository {
                 dir.mkdirs();
             }
             File file = new File(dir, "config.yml");
-            
+
+            // Use write lock for the entire load-modify-save cycle to prevent
+            // a concurrent writer from interleaving between load and save.
             YamlConfiguration config;
             ReadWriteLock rwLock = getFileLock(file);
-            rwLock.readLock().lock();
+            rwLock.writeLock().lock();
             try {
                 config = YamlConfiguration.loadConfiguration(file);
+
+                config.set("name", collection.getName());
+                config.set("enabled", collection.isEnabled());
+                config.set("progress-reset-cron", collection.getProgressResetCron());
+                config.set("single-player-find", collection.isSinglePlayerFind());
+                config.set("hide-when-not-available", collection.isHideWhenNotAvailable());
+                config.set("default-treasure-reward-preset-id",
+                    collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
+
+                // Save ACT rules
+                List<Map<String, Object>> rulesList = new ArrayList<>();
+                for (ActRule rule : collection.getActRules()) {
+                    Map<String, Object> ruleMap = new HashMap<>();
+                    ruleMap.put("id", rule.getId().toString());
+                    ruleMap.put("name", rule.getName());
+                    ruleMap.put("date-range", rule.getDateRange());
+                    ruleMap.put("duration", rule.getDuration());
+                    ruleMap.put("cron", rule.getCronExpression());
+                    ruleMap.put("enabled", rule.isEnabled());
+                    rulesList.add(ruleMap);
+                }
+                config.set("act-rules", rulesList);
+
+                config.set("rewards", serializeRewards(collection.getCompletionRewards()));
+
+                saveConfigAtomicWithLock(config, file);
             } finally {
-                rwLock.readLock().unlock();
+                rwLock.writeLock().unlock();
             }
-            
-            config.set("name", collection.getName());
-            config.set("enabled", collection.isEnabled());
-            config.set("progress-reset-cron", collection.getProgressResetCron());
-            config.set("single-player-find", collection.isSinglePlayerFind());
-            config.set("hide-when-not-available", collection.isHideWhenNotAvailable());
-            config.set("default-treasure-reward-preset-id",
-                collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
-            
-            // Save ACT rules
-            List<Map<String, Object>> rulesList = new ArrayList<>();
-            for (ActRule rule : collection.getActRules()) {
-                Map<String, Object> ruleMap = new HashMap<>();
-                ruleMap.put("id", rule.getId().toString());
-                ruleMap.put("name", rule.getName());
-                ruleMap.put("date-range", rule.getDateRange());
-                ruleMap.put("duration", rule.getDuration());
-                ruleMap.put("cron", rule.getCronExpression());
-                ruleMap.put("enabled", rule.isEnabled());
-                rulesList.add(ruleMap);
-            }
-            config.set("act-rules", rulesList);
-            
-            config.set("rewards", serializeRewards(collection.getCompletionRewards()));
-            
-            saveConfigAtomicWithLock(config, file);
         }));
     }
 
