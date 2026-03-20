@@ -95,7 +95,7 @@ particle-settings:
 # Shows an action bar when the placer is in range of a treasure
 proximity-settings:
   enabled: true
-  range: 10
+  range: 10 # in blocks
 
 leaderboard:
   # Maximum number of entries to display in the GUI leaderboard (per collection)

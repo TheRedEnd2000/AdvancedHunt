@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -141,6 +142,14 @@ public class PlaceModeListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().sendMessage(plugin.getMessageManager().getMessage("command.place_mode.no_break"));
             plugin.getSoundManager().playPlaceModeBreakDeny(event.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onDisconnect(PlayerQuitEvent event){
+        Player player = event.getPlayer();
+        if(placeModeManager.isInPlaceMode(player)){
+            placeModeManager.removePlaceMode(player);
         }
     }
 }
