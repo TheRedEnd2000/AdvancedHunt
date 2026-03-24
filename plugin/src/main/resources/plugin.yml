@@ -9,7 +9,7 @@ permissions:
   advancedhunt.help:
     description: Allows access to the help command
     default: true
-  advancedhunt.list:
+  advancedhunt.admin.list:
     description: Allows listing collections
     default: op
   advancedhunt.leaderboard:
@@ -18,7 +18,7 @@ permissions:
   advancedhunt.progress:
     description: Allows viewing collection progress
     default: true
-  advancedhunt.collection.info:
+  advancedhunt.admin.collection.info:
     description: Allows viewing collection information and UUID
     default: op
   advancedhunt.hint:
@@ -29,10 +29,12 @@ permissions:
     default: op
     children:
       advancedhunt.admin.reload: true
+      advancedhunt.admin.list: true
       advancedhunt.admin.show: true
       advancedhunt.admin.collection.editor: true
       advancedhunt.admin.collection.rename: true
       advancedhunt.admin.collection.create: true
+      advancedhunt.admin.collection.info: true
       advancedhunt.admin.place: true
       advancedhunt.admin.place_items: true
       advancedhunt.admin.reset: true
