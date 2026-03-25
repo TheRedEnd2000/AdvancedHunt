@@ -1,0 +1,1793 @@
+config-version: 2
+
+common:
+  treasure: "宝藏"
+  collection: "合集"
+  chance: "几率"
+  message: "消息"
+  broadcast: "广播"
+  value: "内容"
+
+feedback:
+  gui:
+    first_page: "%prefix%&c你已经在第一页了。"
+    last_page: "%prefix%&c你已经在最后一页了。"
+  rewards:
+    prompt:
+      command: "%prefix%&a请输入要执行的命令（不带 /）："
+      chat_message: "%prefix%&a请输入要发送的聊天消息（使用 & 符号表示颜色）："
+      broadcast_message: "%prefix%&a请输入要向所有玩家广播的消息（使用 & 符号表示颜色）："
+      new_chance: "%prefix%&a请输入新的几率（当前：%current%%）："
+      new_message: "%prefix%&a请输入新的消息（当前：%current%）："
+      new_broadcast: "%prefix%&a请输入新的广播（当前：%current%）："
+      new_value: "%prefix%&a请输入新的内容（当前：%current%）："
+    added: "%prefix%&a奖励添加成功！"
+    deleted: "%prefix%&c奖励已删除。"
+    instance_given: "%prefix%&a已将奖励物品添加到你的物品栏。"
+    instance_dropped: "%prefix%&e物品栏已满 — 物品已掉落到你脚下。"
+    instance_invalid: "%prefix%&c此奖励物品无效，无法加载。"
+    command_preview: "%prefix%&e命令：&f/%command%"
+    chat_message_preview: "%prefix%&e消息：&f%message%"
+    broadcast_message_preview: "%prefix%&e广播消息：&f%message%"
+    updated: "%prefix%&a%type% 更新成功！"
+    reset: "%prefix%&a%type% 重置成功！"
+  teleport:
+    success: "%prefix%&a已传送到宝藏位置！"
+    unsafe: "%prefix%&c无法找到安全的传送位置！"
+    invalid_location: "%prefix%&c无效的宝藏位置！"
+    adjusted: "%prefix%&a已传送到附近的安全位置。"
+  settings:
+    delete:
+      success: "%prefix%&a已成功删除合集 &e%collection%&a 及其所有宝藏。"
+  act:
+    applied: "%prefix%&aACT 规则更新成功！"
+
+    components:
+      date_range:
+        prompt: "%prefix%&a请输入日期范围（YYYY-MM-DD:YYYY-MM-DD 或使用 * 表示始终）："
+      duration:
+        prompt: "%prefix%&a请输入持续时间（例如：2h、30m、1d 或使用 * 表示永久）："
+      act_format:
+        prompt: "%prefix%&a请输入 ACT 格式：[DATE_RANGE] [DURATION] [CRON] (例如：[*] [2h] [0 0 9 * * ?])"
+
+    presets:
+      applied: "%prefix%&a已应用预设：&e%preset%"
+
+    rules:
+      rule_deleted: "%prefix%&c已删除规则：&e%name%"
+
+    date_range:
+      success: "%prefix%&a日期范围更新成功！"
+    duration:
+      success: "%prefix%&a持续时间更新成功！"
+  cron:
+    applied: "%prefix%&a定时任务应用成功！"
+    cleared: "%prefix%&a定时任务已清除。"
+    preset_applied: "%prefix%&a已应用预设：&e%preset%"
+    preset:
+      daily:
+        name: "&e每日"
+      weekly:
+        name: "&e每周"
+      monthly:
+        name: "&e每月"
+      yearly:
+        name: "&e每年"
+  preset:
+    prompt_name: "%prefix%&e请输入此 %type% 预设的名称："
+    prompt_rename: "%prefix%&e请输入预设 '&f%name%&e' 的新名称："
+    saved: "%prefix%&a成功保存 %type% 预设 '&f%name%&a'！"
+    renamed: "%prefix%&a已将预设重命名为 '&f%name%&a'。"
+    loaded: "%prefix%&a成功加载 %type% 预设 '&f%name%&a'！"
+    deleted: "%prefix%&c已删除预设 '&f%name%&c'。"
+    set_default: "%prefix%&a已将 &e%collection%&a 的默认预设设置为 '&f%name%&a'。"
+    override:
+      none: "%prefix%&c此合集中未找到任何宝藏。"
+      started: "%prefix%&e正在使用预设 '&f%name%&e' 覆盖 &f%count%&e 个宝藏的奖励..."
+      progress: "&e覆盖进度：&f%percent%% &7(%current%/%total%)"
+      done: "%prefix%&a已使用预设 '&f%name%&a' 覆盖 &f%count%&a 个宝藏的奖励。"
+      failed: "%prefix%&c覆盖宝藏奖励失败。请查看控制台获取详细信息。"
+
+  place_items:
+    prompt_group: "%prefix%&7在聊天框中输入&e组名&7（或输入 'cancel' 取消）。"
+    prompt_rename_group: "%prefix%&7为组 &e%group%&7 输入新名称（或输入 'cancel' 取消）。"
+    group_created: "%prefix%&a已创建组 &e%group%&a。"
+    group_renamed: "%prefix%&a已将组 &e%old%&a 重命名为 &e%group%&a。"
+    group_deleted: "%prefix%&a已删除组 &e%group%&a。"
+    created: "%prefix%&a已在组 &e%group%&a 中创建放置物品 &e%name%&a。"
+    given: "%prefix%&a已给予物品 &e%name%&a (&7%group%&a)。"
+    deleted: "%prefix%&a已删除物品 &e%name%&a (&7%group%&a)。"
+
+prefix: "&6AdvancedHunt &8>> &7"
+
+error:
+  no_permission: "%prefix%&c你没有权限执行此操作！"
+  generic: "%prefix%&c发生错误。请检查控制台。"
+  place_items:
+    no_item: "%prefix%&c请先将方块物品放入槽位中。"
+    not_a_block: "%prefix%&c该物品不是方块，无法用于放置。"
+    invalid_group: "%prefix%&c无效的组名。"
+    duplicate_group: "%prefix%&c该组已经存在。"
+    serialize_failed: "%prefix%&c无法保存该物品。"
+    deserialize_failed: "%prefix%&c无法加载该物品。"
+    create_failed: "%prefix%&c创建放置物品失败。"
+    create_group_failed: "%prefix%&c创建组失败。"
+    rename_group_failed: "%prefix%&c重命名组失败。"
+
+  feature_disabled: "%prefix%&c该功能当前已禁用。"
+
+  validation:
+    date_range: "%prefix%&c无效的日期范围！请使用 ISO 格式（2024-01-01:2024-12-31）或使用 * 表示始终。"
+    duration: "%prefix%&c无效的持续时间！请使用如 90s、2h、30m 的格式，或使用 * 表示始终激活。"
+  rewards:
+    invalid_chance: "%prefix%&c无效的几率！必须是 0 到 100 之间的数字。"
+    command_blacklisted: "%prefix%&c该命令在黑名单中，无法使用！"
+    add:
+      item:
+        no_item: "%prefix%&c请先在槽位中放入物品！"
+  cron:
+    invalid: "%prefix%&c无效的 Cron 表达式！请检查格式。"
+  act:
+    format:
+      invalid_format: "%prefix%&c无效的 ACT 格式！预期格式：[DATE_RANGE] [DURATION] [CRON]"
+  preset:
+    invalid_name: "%prefix%&c无效的预设名称！请输入有效的名称。"
+    duplicate_name: "%prefix%&c同名预设已存在。"
+    save_failed: "%prefix%&c保存 %type% 预设失败！"
+  
+command:
+  help:
+    descriptions:
+      help: "显示此帮助菜单"
+      reload: "重载插件配置"
+      show: "以全息图形式显示附近的宝藏位置"
+      bypass: "切换宝藏绕过可见性"
+      list: "列出所有可用的合集"
+      list_collection: "查看某个合集中已放置的所有宝藏"
+      leaderboard: "打开某合集的排行榜"
+      progress: "查看你在某合集中的进度"
+      collection: "打开合集编辑器"
+      collection_create: "创建一个新合集"
+      collection_edit: "编辑一个现有的合集"
+      collection_delete: "删除一个合集"
+      collection_rename: "重命名一个合集"
+      collection_info: "显示详细的合集信息"
+      rewards: "查看你正在注视的宝藏的奖励"
+      placeitems: "打开放置物品菜单"
+      place: "切换放置模式（如果处于活动状态则退出）"
+      place_collection: "进入某合集的放置模式"
+      reset_all: "重置所有玩家进度"
+      reset_collection: "重置某合集的进度"
+      reset_player: "重置某个玩家的所有进度"
+      reset_player_collection: "重置某个玩家在某合集中的进度"
+      hint: "请求获取附近宝藏的提示"
+      migrate: "在不同存储系统间迁移数据（yaml/sqlite/mysql）"
+      debug_hint: "调试：测试提示系统"
+      debug_placecollection: "调试：随机放置宝藏"
+      debug_placecollection_random: "调试：随机放置宝藏"
+      debug_placecollection_plane: "调试：在平面网格中放置宝藏"
+      debug_removecollectionplaced: "调试：移除某合集中所有已放置的宝藏"
+      debug_minigame: "调试：测试小游戏系统"
+    minecraft:
+      help: "&6AdvancedHunt &8- &7帮助"
+      command: "命令"
+      description: "描述"
+      no_description: "无描述"
+      arguments: "参数"
+      optional: "可选"
+      showing_results_for_query: "&7显示查询结果"
+      no_results_for_query: "没有找到查询结果"
+      available_commands: "可用命令"
+      click_to_show_help: "点击显示此命令的帮助"
+      page_out_of_range: "错误：页码超出范围。"
+      click_for_next_page: "点击查看下一页"
+      click_for_previous_page: "点击查看上一页"
+
+  reload:
+    success: "%prefix%&a配置和消息重载成功！"
+    failed: "%prefix%&c重载失败。请检查控制台了解详情。"
+
+  show:
+    success: "%prefix%&a显示 &e%radius%&a 个方块范围内共 &e%count%&a 个宝藏位置，持续 &e%seconds%秒&a。"
+    success_truncated: "%prefix%&a显示 &e%radius%&a 个方块范围内共 &e%count%&a 个宝藏位置，持续 &e%seconds%秒&a。&7(仅显示前 %max% 个)"
+    none_found: "%prefix%&e在 &6%radius%&e 个方块范围内未找到宝藏。"
+    invalid_radius: "%prefix%&c半径必须在 &e1&c 到 &e500&c 个方块之间。"
+    invalid_duration: "%prefix%&c持续时间必须在 &e1&c 到 &e300&c 秒之间。"
+    packetevents_missing: "%prefix%&c无法显示标记。请安装/启用 &ePacketEvents&c 插件。"
+  bypass:
+    enabled: "%prefix%&a宝藏绕过可见性已启用。"
+    disabled: "%prefix%&c宝藏绕过可见性已禁用。"
+    usage: "%prefix%&e用法：/ah bypass <on|off>"
+  list:
+    header: "&6可用合集："
+    format: "&7- &e%collection%"
+    hint: "&e使用 /ah list <合集名称> 来查看宝藏。"
+  collection_not_found: "%prefix%&c找不到该合集。"
+
+  direction:
+    east: "东"
+    southeast: "东南"
+    south: "南"
+    southwest: "西南"
+    west: "西"
+    northwest: "西北"
+    north: "北"
+    northeast: "东北"
+  rewards:
+    no_block: "%prefix%&c你必须看着一个方块！"
+    not_treasure: "%prefix%&c该方块不是宝藏！"
+  rename:
+    success: "%prefix%&a成功将合集 &e%old_name% &a重命名为 &e%new_name%"
+    failed: "%prefix%&c重命名合集失败。请检查旧名称是否存在且新名称是唯一的。"
+  create:
+    success: "%prefix%&a成功创建合集 &e%name%"
+    failed: "%prefix%&c创建合集失败。可能已经存在同名合集。"
+  info:
+    lines:
+      - "&6━━━━━━ 合集信息: &e%collection% &6━━━━━━"
+      - "%uuid%"
+      - "&7宝藏数量: &f%count%"
+      - "%status%"
+      - "%timing%"
+      - "%reset%"
+      - "&7在 PlaceholderAPI 中使用的 UUID: &e%advancedhunt_found_treasures_<uuid>%"
+    uuid: "&7UUID: &f%uuid%"
+    click_to_copy: "&e点击复制/建议 UUID"
+    status_available: "&7状态: &a当前可用"
+    status_unavailable: "&7状态: &c当前不可用"
+    active_until_note: "&7  &8(持续激活时间由 ACT 规则设置)"
+    next_activation: "&7下次激活时间: &f%time%"
+    next_reset: "&7下次重置时间: &f%time%"
+    no_reset: "&7下次重置时间: &f从不 &8(无重置计划)"
+    invalid_reset_schedule: "&7下次重置时间: &c无效的计划任务"
+  place_mode:
+    disabled: "%prefix%&a放置模式已禁用。"
+    enabled: "%prefix%&a合集 &e%collection%&a 的放置模式已启用。请放置方块来添加宝藏。"
+    not_in_place_mode: "%prefix%&c你当前不在放置模式中。"
+    no_break: "%prefix%&c在放置模式中你不能破坏方块！"
+    use_command: "%prefix%&e使用 /ah placeitems &e来获取你已保存的宝藏。"
+  reset:
+    all_success: "%prefix%&a重置了所有合集中所有玩家的 &e%count% &a条宝藏记录！"
+    collection_success: "%prefix%&a重置了合集 &e%collection%&a 的 &e%count% &a条宝藏记录！"
+    player_success: "%prefix%&a重置了玩家 &e%player%&a 的 &e%count% &a条宝藏记录！"
+    player_collection_success: "%prefix%&a重置了玩家 &e%player% &a在合集 &e%collection%&a 中的 &e%count% &a条宝藏记录！"
+    player_not_found: "%prefix%&c找不到玩家或该玩家从未在此服务器上游玩过。"
+  migration:
+    started: "%prefix%&a存储迁移已开始（正在将所有数据复制到目标存储）..."
+    progress: "%prefix%&e迁移进度：&f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    progress_actionbar: "&e迁移进度：&f%percent%% &7(%current%/%total%) &8- &7%stage%"
+    success: "%prefix%&a存储迁移成功！所有数据已复制到目标存储。"
+    failed: "%prefix%&c存储迁移失败。请查看控制台错误信息。"
+    mysql_not_configured: "%prefix%&cMySQL 迁移设置尚未配置！请在 config.yml 的 'migration.target' 部分编辑你的目标数据库详细信息。"
+    mysql_config_reset: "%prefix%&eMySQL 迁移设置已在 config.yml 中重置。如果需要再次迁移请重新配置。"
+    existing_data_abort: "%prefix%&c&l迁移已中止！目标存储已包含数据：%collections% 个合集，%treasures% 个宝藏，%players% 名玩家。使用 '--purge' 先删除目标数据，或使用 '--force'（不推荐）进行覆盖：/ah migrate <type> --purge"
+    warning_existing_data: "%prefix%&e&l警告：目标存储包含现有数据！（%collections% 个合集，%treasures% 个宝藏，%players% 名玩家）。正在继续迁移...（不推荐使用 --force）"
+
+treasure:
+  found: "%prefix%&a你找到了一个宝藏！"
+  already_found: "%prefix%&c你已经找到过这个宝藏了！"
+  already_claimed_global: "%prefix%&c该宝藏已被其他玩家找到！"
+  added: "%prefix%&a宝藏已添加到合集中！"
+  removed: "%prefix%&c宝藏已从合集中移除。"
+  protected: "%prefix%&c你不能破坏宝藏方块！"
+  placemode: "%prefix%&c在放置模式下你不能收集宝藏！"
+
+collection:
+  unavailable: "%prefix%&c合集 &e%collection% &c目前不可用！"
+  available_at: "%prefix%&e它的可用时间为：&f%time%"
+  available: "&a✓ 可用"
+  not_available: "&c✗ 不可用"
+  completed: "%prefix%&6你已集齐 &e%collection% &6合集！"
+
+chat_input:
+  request: "%prefix%&a请在聊天框中输入你的内容。"
+  canceled: "%prefix%&c输入已取消。"
+  timeout: "%prefix%&c输入超时。"
+
+gui:
+  common:
+    back: "&7« 返回 %menu%"
+    close: "&c关闭"
+    previous_page: "&a上一页"
+    next_page: "&a下一页"
+    page_indicator: "&7(%page%/%total%)"
+    confirm: "&a确认"
+    cancel: "&c取消"
+    enabled: "&a已启用"
+    disabled: "&c已禁用"
+    none: "&c无"
+  place_items:
+    groups:
+      title: "&8放置物品组"
+      none:
+        name: "&c无分组"
+        lore:
+          - "&7当前没有任何组。"
+          - "&7点击下方按钮创建一个。"
+      group:
+        name: "&e%group%"
+        lore:
+          - "&7物品数量：&f%count%"
+          - ""
+          - "&a%action%"
+          - "&7%action2%"
+        action:
+          open: "点击打开"
+          manage: "右键点击管理"
+
+    group_actions:
+      title: "&8组：&e%group%"
+      rename:
+        name: "&e重命名组"
+        lore:
+          - "&7当前名称：&f%current%"
+          - ""
+          - "&e点击重命名"
+      delete:
+        name: "&c删除组"
+        lore:
+          - "&7组内物品数量：&f%count%"
+          - ""
+          - "&c&l警告：将删除此组内的所有物品！"
+          - ""
+          - "&c点击删除"
+        confirm_title: "&8确定要删除组 &c%group%&8 吗？"
+
+    list:
+      title: "&8放置物品：&e%group%"
+      none:
+        name: "&c无物品"
+        lore:
+          - "&7该组内没有物品。"
+          - "&7点击下方按钮添加一个。"
+      preset:
+        name: "&e%name%"
+        lore:
+          - "&a%action%"
+          - "&7%action2%"
+        action:
+          give: "左键点击获取物品"
+          manage: "右键点击管理"
+
+    actions:
+      title: "&8物品：&e%name%"
+      give:
+        name: "&a获取物品"
+        lore:
+          - "&7将该物品添加到你的物品栏中。"
+      delete:
+        name: "&c删除"
+        lore:
+          - "&7永久删除此物品。"
+        confirm_title: "&8确定要删除物品 &c%name%&8 吗？"
+
+    create:
+      name: "&a创建组"
+      lore:
+        - "&7创建一个新的空组。"
+    create_in_group:
+      name: "&a添加方块物品"
+      lore:
+        - "&7向 &e%group%&7 中添加一个方块物品。"
+        - "&7将方块物品放置在槽位中"
+        - "&7并确认以保存。"
+
+    add:
+      title: "&8添加放置物品：&e%group%"
+      placeholder:
+        name: "&7在此放置方块"
+        lore:
+          - "&7将方块物品拖入"
+          - "&7中心槽位。"
+      info:
+        name: "&e使用说明"
+        lore:
+          - "&7将任何&e方块物品&7放入槽位中。"
+          - "&7该物品将保存为 &f1 个方块&7。"
+          - "&7你的物品&a不会被消耗&7。"
+      confirm:
+        name: "&a保存物品"
+        lore:
+          - "&7将此方块保存为物品"
+          - "&7并存放到所选组中。"
+      cancel:
+        name: "&c取消"
+        lore:
+          - "&7不保存并返回。"
+  rewards:
+    title: "&8宝藏奖励"
+    collection_title: "&8合集收集奖励"
+    preset_title: "&8奖励预设"
+    open_reward_option_menu:
+      title: "&8奖励选项"
+      name: "&6+ 添加奖励"
+      lore:
+        - ""
+        - "&7选择你想要添加的"
+        - "&7奖励类型："
+        - ""
+        - "&e► 物品奖励"
+        - "&f  给予一个实体物品"
+        - ""
+        - "&e► 命令奖励"
+        - "&f  执行一条服务器命令"
+        - ""
+        - "&e► 聊天消息"
+        - "&f  向玩家发送一条消息"
+        - ""
+        - "&e► 广播消息"
+        - "&f  向所有玩家发送一条消息"
+        - ""
+        - "&a点击打开选项"
+    switch_to_collection:
+      name: "&e查看合集奖励"
+      lore:
+        - "&7点击查看当完成"
+        - "&7整个合集收集时"
+        - "&7给予的奖励。"
+    switch_to_treasure:
+      name: "&e查看宝藏奖励"
+      lore:
+        - "&7点击查看当找到"
+        - "&7特定宝藏时"
+        - "&7给予的奖励。"
+    no_rewards:
+      name: "&7无奖励"
+      lore:
+        - "&7此宝藏未配置"
+        - "&7任何奖励。"
+    reward_number: "&7奖励 #%number%"
+    chance_lore: "&7几率：&e%chance%%"
+    message_lore: "&7消息：&e%message%"
+    broadcast_lore: "&7广播：&e%broadcast%"
+    amount_lore: "&7数量：&fx%amount%"
+    command_name: "&6命令奖励"
+    command_label: "&7执行命令："
+    chat_message_name: "&b聊天消息奖励"
+    chat_message_label: "&7发送消息："
+    broadcast_message_name: "&dB广播消息奖励"
+    broadcast_message_label: "&7全局广播："
+    truncated:
+      command: "&8(命令已截断)"
+      message: "&8(消息已截断)"
+    invalid_item:
+      name: "&c无效物品"
+      lore:
+        - "&7无法加载该物品"
+        - ""
+        - "&8─────────────"
+        - "&7几率：&e%chance%%"
+    # Edit mode
+    click_to_edit: "&e&l左键点击 &7编辑  &8|  &e&l右键点击 &7%action%"
+    save_preset:
+      name: "&a创建 %Type% 预设"
+      lore:
+        - "&7将当前的奖励配置保存"
+        - "&7为可重用的 %type% 预设"
+        - ""
+        - "&7这允许你快速将相同的奖励"
+        - "&7应用到其他 %type% 上"
+        - ""
+        - "&e点击创建预设"
+    load_preset:
+      name: "&b加载 %Type% 预设"
+      lore:
+        - "&7从你的 %type% 预设中"
+        - "&7加载已保存的奖励配置"
+        - ""
+        - "&7使用以前保存的预设"
+        - "&7来替换当前的奖励"
+        - ""
+        - "&e点击查看预设"
+    quick_action:
+      delete: "&c删除"
+      get_instance: "&a获取物品"
+    quick_mode:
+      name: "&b快捷操作"
+      mode_delete: "&c删除"
+      mode_get_instance: "&a获取物品"
+      lore:
+        - "&7模式：%mode%"
+        - "&7右键点击奖励可 %action%"
+        - ""
+        - "&e点击切换模式"
+    add_item:
+      name: "&a+ 添加物品奖励"
+      lore:
+        - "&7点击添加一个物品"
+        - "&7作为该宝藏的奖励。"
+    add_command:
+      name: "&a+ 添加命令奖励"
+      lore:
+        - "&7点击添加一条命令"
+        - "&7作为该宝藏的奖励。"
+        - ""
+        - "&7使用 &f%player% &7代表玩家名称。"
+    add_chat_message:
+      name: "&a+ 添加聊天消息奖励"
+      lore:
+        - "&7点击添加一条聊天消息"
+        - "&7作为该宝藏的奖励。"
+        - ""
+        - "&7使用 &f%player% &7代表玩家名称。"
+        - "&7使用 &f& &7表示颜色代码和十六进制颜色。"
+    add_broadcast_message:
+      name: "&a+ 添加广播消息奖励"
+      lore:
+        - "&7点击添加一条所有玩家"
+        - "&7都能看到的广播消息。"
+        - ""
+        - "&7使用 &f%player% &7代表玩家名称。"
+        - "&7使用 &f& &7表示颜色代码和十六进制颜色。"
+    # Chat prompts
+    editor:
+      title: "&8奖励 #%number%"
+      edit_chance:
+        name: "&e编辑几率"
+        lore:
+          - "&7当前：&f%chance%%"
+          - ""
+          - "&7点击更改此奖励的"
+          - "&7掉落几率。"
+      edit_message:
+        name: "&e编辑消息"
+        lore:
+          - "&8仅针对此奖励！"
+          - "&7当前：&f%message%"
+          - ""
+          - "&e左键点击 &7更改"
+          - "&e右键点击 &7重置"
+          - ""
+          - "&8&m                    "
+          - "&7可用变量："
+          - "&f  %player% &8- &7玩家名称"
+          - "&f  %found_treasures% &8- &7已找到宝藏数"
+          - "&f  %max_treasures% &8- &7宝藏总数"
+          - "&f  %remaining_treasures% &8- &7剩余宝藏数"
+          - "&f  %chance% &8- &7奖励几率"
+          - "&f  %item% &8- &7物品名称 &c(仅限物品奖励)"
+          - "&f  \\n &8- &7换行符" # displays \n in menus
+          - "&f  & &8- &7颜色代码和十六进制颜色"
+      edit_broadcast:
+        name: "&e编辑广播"
+        lore:
+          - "&8仅针对此奖励！"
+          - "&7当前：&f%broadcast%"
+          - ""
+          - "&e左键点击 &7更改"
+          - "&e右键点击 &7重置"
+          - ""
+          - "&8&m                    "
+          - "&7可用变量："
+          - "&f  %player% &8- &7玩家名称"
+          - "&f  %found_treasures% &8- &7已找到宝藏数"
+          - "&f  %max_treasures% &8- &7宝藏总数"
+          - "&f  %remaining_treasures% &8- &7剩余宝藏数"
+          - "&f  %chance% &8- &7奖励几率"
+          - "&f  %item% &8- &7物品名称 &c(仅限物品奖励)"
+          - "&f  \\n &8- &7换行符" # displays \n in menus
+          - "&f  & &8- &7颜色代码和十六进制颜色"
+      edit_value:
+        name: "&e编辑内容"
+        lore:
+          - "&7当前：&f%value%"
+          - ""
+          - "&7点击更改此奖励的"
+          - "&7内容属性。"
+          - ""
+          - "&8&m                    "
+          - "&7可用变量："
+          - "&f  %player% &8- &7玩家名称"
+          - "&f  %found_treasures% &8- &7已找到宝藏数"
+          - "&f  %max_treasures% &8- &7宝藏总数"
+          - "&f  %remaining_treasures% &8- &7剩余宝藏数"
+          - "&f  %chance% &8- &7奖励几率"
+          - "&f  \\n &8- &7换行符" # displays \n in menus
+          - "&f  & &8- &7颜色代码和十六进制颜色"
+      delete:
+        name: "&c删除奖励"
+        lore:
+          - "&7点击将该奖励"
+          - "&7从宝藏中移除。"
+      confirm_delete:
+        title: "&8确认删除"
+
+    add:
+      item:
+        title: "&8添加物品奖励"
+        placeholder:
+          name: "&7在此放入物品"
+          lore:
+            - "&7放入你想要添加"
+            - "&7为奖励的物品。"
+        info:
+          name: "&e如何添加物品奖励"
+          lore:
+            - "&7将物品放入下方"
+            - "&7的中心槽位中。"
+            - ""
+            - "&7确切的物品（包括附魔、"
+            - "&7名称、Lore信息）将"
+            - "&7被作为奖励发放。"
+            - ""
+            - "&7准备好后点击 &a确认&7。"
+        confirm:
+          name: "&a确认"
+          lore:
+            - "&7点击将此物品"
+            - "&7添加为奖励。"
+        cancel:
+          name: "&c取消"
+          lore:
+            - "&7点击取消并"
+            - "&7返回到奖励菜单。"
+  collection_content:
+    title: "&8合集内容"
+    treasure_item:
+      name: "&6宝藏 #%number%"
+      lore:
+        - "&7已找到的玩家数：&f%count%"
+        - ""
+        - "&7位置："
+        - "&7X: &f%x%"
+        - "&7Y: &f%y%"
+        - "&7Z: &f%z%"
+        - "&7世界: &f%world%"
+        - ""
+      lore_teleport: "&e左键点击 &7传送"
+      lore_reward: "&eShift+左键点击 &7打开奖励菜单"
+      lore_who_found: "&e右键点击 &7查看是谁找到的"
+      lore_action_menu_bedrock: "&8基岩版/Geyser：&7按 &e丢弃键 (Q) &7打开操作菜单"
+  minigame:
+    reaction:
+      title: "&8反应力游戏"
+      click:
+        name: "&a点我！"
+        lore:
+          - "&6%current%&7/&6%required%"
+    memory:
+      title: "&8记忆力游戏"
+      button:
+        name: "&f按钮 %number%"
+  treasure_action:
+    title: "&8宝藏操作"
+    teleport:
+      name: "&a传送到宝藏位置"
+      lore:
+        - "&7点击传送至"
+        - "&7此宝藏的坐标。"
+    view_finders:
+      name: "&e查看找到宝藏的玩家"
+      lore:
+        - "&7点击查看哪些玩家"
+        - "&7已经找到了此宝藏。"
+    rewards:
+      name: "&6奖励设置"
+      lore:
+        - "&7点击打开该宝藏"
+        - "&7的奖励菜单。"
+  finders:
+    title: "&8谁找到了此宝藏"
+    loading: "&7正在加载玩家数据..."
+    empty:
+      name: "&7还没有人"
+      lore:
+        - "&7还没有任何人"
+        - "&7找到过这个宝藏。"
+    entry:
+      name: "&e%player%"
+      lore:
+        - "&7找到了此宝藏"
+  leaderboard:
+    title: "&8排行榜：%collection%"
+    loading:
+      name: "&7正在加载排行榜..."
+      lore:
+        - "&7请稍候，我们正在获取"
+        - "&7排行榜数据..."
+    empty:
+      name: "&7暂无数据"
+      lore:
+        - "&7此合集中尚未有玩家"
+        - "&7找到过宝藏。"
+    player_entry:
+      name: "&e#%rank% %player%"
+      lore:
+        - "&7已找到宝藏：&f%score%"
+    player_entry_highlighted:
+      name: "&6&l#%rank% %player% &7(你)"
+      lore:
+        - "&7已找到宝藏：&f%score%"
+        - ""
+        - "&6⭐ 这是你的排名！"
+    your_rank:
+      name: "&a你的排名"
+      lore:
+        - "&7排名：&f#%rank%"
+        - "&7已找到：&f%score%/%total%"
+        - "&7进度：&e%percentage%%"
+    not_ranked:
+      name: "&c未上榜"
+      lore:
+        - "&7你尚未在此合集中"
+        - "&7找到任何宝藏。"
+        - ""
+        - "&7快去探索以获得排名吧！"
+    view_button:
+      name: "&e宝藏排行榜"
+      lore:
+        - "&7点击查看在此合集中"
+        - "&7找到最多宝藏的"
+        - "&7顶级玩家。"
+    info:
+      name: "&b排行榜说明"
+      lore:
+        - "&7最大显示条目：&f%display_limit%"
+        - "&7缓存刷新时间：&f%refresh_interval%秒 &8(%minutes%分钟)"
+        - ""
+        - "&8排行榜会自动更新"
+  progress:
+    title: "&8进度：%collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    loading: "&7正在加载你的进度..."
+    no_treasures:
+      name: "&7没有宝藏"
+      lore:
+        - "&7此合集尚未配置"
+        - "&7任何宝藏。"
+    stats:
+      name: "&a你的进度统计"
+      lore:
+        - "&7合集：&e%collection%"
+        - "&7已找到：&a%found%&7/&e%total%"
+        - "&7完成度：&e%percentage%&7%"
+        - ""
+        - "&7继续探索以找到"
+        - "&7所有的宝藏吧！"
+    treasure:
+      name: "&7宝藏 #%number% &7- %status%"
+      status_found: "&a已找到"
+      status_not_found: "&c未找到"
+      lore_found:
+        - "&a✓ 你已经找到了这个宝藏！"
+        - ""
+        - "&7位置："
+        - "&7  X: &f%x%"
+        - "&7  Y: &f%y%"
+        - "&7  Z: &f%z%"
+        - "&7  世界: &f%world%"
+      lore_not_found:
+        - "&c✗ 你还没有找到它！"
+        - ""
+        - "&7继续探索来发现"
+        - "&7这个宝藏的位置吧！"
+  editor:
+    title: "合集编辑器"
+    collection_item:
+      name: "&6%collection%"
+      lore:
+        - "&7状态：%status%"
+        - "&7可用性：%availability%"
+        - "&7宝藏数量：&f%treasures%"
+        - "&7重置计划：%cron%"
+        - ""
+        - "&e点击编辑设置"
+    create:
+      name: "&a创建合集"
+      lore:
+        - "&7点击创建一个新合集"
+  settings:
+    title: "设置：%collection%"
+    rename:
+      name: "&e重命名合集"
+      lore:
+        - "&7当前名称：&f%name%"
+        - ""
+        - "&e点击重命名"
+    status:
+      name: "&e切换状态"
+      lore:
+        - "&7当前状态：%status%"
+        - ""
+        - "&e点击切换"
+    rewards:
+      name: "&e收集完成奖励"
+      lore:
+        - "&7点击配置当玩家找齐"
+        - "&7此合集中的所有宝藏时"
+        - "&7给予的奖励。"
+        - ""
+        - "&e点击打开"
+    default_treasure_preset:
+      name: "&e默认宝藏奖励预设"
+      lore:
+        - "&7当前：%preset%"
+        - ""
+        - "&7应用于此合集中（放置模式）"
+        - "&7新创建的宝藏。"
+        - ""
+        - "&e左键点击设置"
+        - "&e右键点击清除"
+    override_treasure_rewards:
+      name: "&c覆盖所有宝藏奖励"
+      lore:
+        - "&7使用预设替换此合集中"
+        - "&7所有宝藏的奖励。"
+        - ""
+        - "&c&l警告：这将替换现有的所有奖励！"
+        - ""
+        - "&e点击选择预设"
+      confirm_title: "确定使用预设 '%name%' 覆盖奖励吗？"
+    act_rules:
+      name: "&e计划规则"
+      lore:
+        - "&7使用 ACT 格式规则"
+        - "&7管理可用时间表。"
+        - ""
+        - "&7当前规则数量：&f%count%"
+        - ""
+        - "&e点击管理"
+    progress_reset_cron:
+      name: "&e进度重置计划"
+      lore:
+        - "&7当前：%cron%"
+        - ""
+        - "&7按照计划时间表"
+        - "&7自动重置玩家进度。"
+        - ""
+        - "&e点击配置"
+    single_player_find:
+      name: "&e全局唯一寻找"
+      lore:
+        - "&7当前状态：%status%"
+        - ""
+        - "&7启用后，全球只有一名玩家"
+        - "&7可以找到每个宝藏。"
+        - "&7仅在计划任务触发时重置。"
+        - ""
+        - "&e点击切换"
+    delete:
+      name: "&c删除合集"
+      lore:
+        - "&7永久删除此合集"
+        - "&7及其所有宝藏。"
+        - ""
+        - "&c&l警告：此操作无法撤销！"
+        - ""
+        - "&c点击删除"
+    delete_handling:
+      title: "删除：宝藏处理方式"
+      keep:
+        name: "&a保留已放置的宝藏"
+        lore:
+          - "&7删除合集数据，"
+          - "&7但保留所有宝藏方块"
+          - "&7在它们被放置的位置。"
+          - ""
+          - "&7同时恢复当前"
+          - "&7隐藏的宝藏。"
+          - ""
+          - "&e点击选择"
+        confirm_title: "确定删除并保留所有宝藏方块吗？"
+      remove_heads:
+        name: "&e移除头颅/骷髅头"
+        lore:
+          - "&7删除合集数据，"
+          - "&7仅移除玩家头颅/骷髅头，"
+          - "&7保留放置的其他宝藏方块。"
+          - ""
+          - "&7如果非头颅宝藏被隐藏，"
+          - "&7也将其恢复。"
+          - ""
+          - "&e点击选择"
+        confirm_title: "确定删除并移除头颅吗？"
+      remove_blocks:
+        name: "&c移除所有方块及家具"
+        lore:
+          - "&7删除合集数据，"
+          - "&7并移除所有宝藏方块"
+          - "&7以及 ItemsAdder 家具。"
+          - ""
+          - "&c&l警告：这将会移除世界中的方块！"
+          - ""
+          - "&c点击选择"
+        confirm_title: "确定删除并移除所有宝藏方块吗？"
+    hide_after_found:
+      name: "&e找到后隐藏"
+      lore:
+        - "&7当前状态：%status%"
+        - ""
+        - "&7启用后，你已经"
+        - "&7找到过的宝藏会在"
+        - "&7客户端一侧被隐藏。"
+        - ""
+        - "&8&m                    "
+        - "&7这可以帮助你专注"
+        - "&7寻找尚未找到的宝藏。"
+        - ""
+        - "&e点击切换"
+    hide_when_not_available:
+      name: "&e不可用时隐藏"
+      lore:
+        - "&7当前状态：%status%"
+        - ""
+        - "&7启用后，当此合集"
+        - "&7不可用时（已禁用或"
+        - "&7受 ACT 规则限制），合集内"
+        - "&7所有宝藏都会被隐藏。"
+        - ""
+        - "&8&m                    "
+        - "&7这可以防止玩家"
+        - "&7看到不可用的内容。"
+        - ""
+        - "&e点击切换"
+    reset_schedule:
+      title: "进度重置计划表"
+    categories:
+      basic:
+        name: "&6&l基本设置 &8------>"
+        lore:
+          - ""
+          - "&7配置合集的基础"
+          - "&7属性。"
+          - ""
+          - "&8&m                    "
+          - "&7• 重命名合集"
+          - "&7• 启用 / 禁用"
+          - "&7• 全局唯一寻找模式"
+          - "&7• 删除合集"
+      rewards:
+        name: "&6&l计划与奖励配置 &8------>"
+        lore:
+          - ""
+          - "&7管理合集的收集奖励"
+          - "&7以及可用时间表。"
+          - ""
+          - "&8&m                    "
+          - "&7• 合集奖励"
+          - "&7• 时间表规则"
+          - "&7• 进度重置时间"
+      presets:
+        name: "&6&l预设设置 &8------>"
+        lore:
+          - ""
+          - "&7配置合集的默认预设"
+          - "&7以及覆盖所有宝藏"
+          - "&7奖励的预设加载。"
+          - ""
+          - "&8&m                    "
+          - "&7• 默认预设"
+          - "&7• 批量覆盖奖励"
+      visibility:
+        name: "&6&l可见性选项 &8------>"
+        lore:
+          - ""
+          - "&7控制宝藏如何对玩家"
+          - "&7隐藏，或在不可用时隐藏。"
+          - ""
+          - "&8&m                    "
+          - "&7• 找到后隐藏"
+          - "&7• 禁用时隐藏"
+
+  presets:
+    treasure:
+      title: "宝藏预设"
+    collection:
+      title: "合集预设"
+    unknown: "&c未知"
+    none:
+      name: "&7无预设"
+      lore:
+        - "&7目前尚未创建任何奖励预设。"
+    preset:
+      name: "&6%name%"
+      lore:
+        - ""
+        - "&7奖励总数：&f%count%"
+        - ""
+        - "&e左键点击以 %action%"
+        - "&e右键点击以编辑"
+      action:
+        select: "选择"
+        load: "加载"
+        edit: "编辑"
+
+    actions:
+      title: "预设：%name%"
+      rename:
+        name: "&e重命名预设"
+        lore:
+          - "&7当前名称：&f%current%"
+          - ""
+          - "&7更改此奖励预设的"
+          - "&7显示名称。"
+          - ""
+          - "&e点击重命名"
+      load_all:
+        name: "&e应用至所有宝藏"
+        lore:
+          - ""
+          - "&7使用此预设的奖励覆盖"
+          - "&7此合集中的所有宝藏。"
+          - ""
+          - "&c这将替换所有现有奖励！"
+          - ""
+          - "&e点击继续"
+        lore_disabled:
+          - ""
+          - "&7此操作仅在编辑"
+          - "&7宝藏预设时可用。"
+          - "&8合集预设无法执行此操作！"
+        confirm_title: "确定覆盖所有宝藏吗？"
+      set_default:
+        option:
+          available: "&e点击设为默认"
+          already_selected: "&a✓ 已设为默认"
+        name: "&e设为默认"
+        lore:
+          - ""
+          - "&7当前默认：&f%current%"
+          - ""
+          - "&7将此预设设为此合集"
+          - "&7的默认宝藏奖励预设。"
+          - ""
+          - "%option%"
+        lore_disabled:
+          - ""
+          - "&7此操作仅在编辑"
+          - "&7宝藏预设时可用。"
+          - "&8合集预设无法执行此操作！"
+      edit_rewards:
+        name: "&a编辑奖励"
+        lore:
+          - ""
+          - "&7编辑存储在"
+          - "&7此预设中的奖励内容。"
+          - ""
+          - "&e点击编辑"
+      delete:
+        name: "&c删除"
+        lore:
+          - ""
+          - "&7永久删除"
+          - "&7此预设。"
+          - ""
+          - "&c此操作无法撤销！"
+          - ""
+          - "&e点击删除"
+        confirm_title: "确定删除预设 '%name%' 吗？"
+  cron:
+    common:
+      invalid_expression: "&c&l⚠ 无效的表达式"
+    type:
+      act: "ACT 规则"
+      reset: "进度重置"
+    editor:
+      title: "%cron_type% 定时任务编辑器"
+      current:
+        name: "&e&l当前计划任务"
+        expression: "&7表达式："
+        next_runs: "&7下次执行时间："
+        none: "&7未设置计划任务"
+    preset:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⏰ 快捷预设"
+          - ""
+          - "&7用于常见 %cron_type% 计划任务"
+          - "&7的预先配置模板。"
+          - ""
+          - "&e► 每日 &7- 每天 00:00"
+          - "&e► 每周 &7- 每周一 00:00"
+          - "&e► 每月 &7- 每月 1 号"
+          - "&e► 每年 &7- 1月 1日"
+          - "&e► 更多... &7- 更多其他选项"
+          - ""
+          - "&a✓ &7安全且易于使用"
+          - "&8非常适合新手！"
+      daily:
+        name: "&e每日"
+        lore:
+          - "&7每天午夜执行"
+          - "&7表达式：&f0 0 0 * * ? *"
+          - ""
+          - "&a点击应用"
+      weekly:
+        name: "&e每周"
+        lore:
+          - "&7每周一午夜执行"
+          - "&7表达式：&f0 0 0 ? * MON *"
+          - ""
+          - "&a点击应用"
+      monthly:
+        name: "&e每月"
+        lore:
+          - "&7每月 1 号执行"
+          - "&7表达式：&f0 0 0 1 * ? *"
+          - ""
+          - "&a点击应用"
+      yearly:
+        name: "&e每年"
+        lore:
+          - "&7每年 1 月 1 日执行"
+          - "&7表达式：&f0 0 0 1 1 ? *"
+          - ""
+          - "&a点击应用"
+      more:
+        name: "&6更多预设"
+        lore:
+          - "&7查看更多预设计划任务"
+          - "&7包括每小时、按工作日、"
+          - "&7季节性和特殊日期"
+          - ""
+          - "&e点击浏览"
+    presets:
+      title: "%cron_type% 定时任务预设"
+      item:
+        name: "&e%name%"
+      list:
+        hourly:
+          name: "每小时"
+          lore:
+            - "&7在每个小时的开始执行"
+            - "&7例如：1:00, 2:00, 3:00..."
+            - ""
+            - "&a点击应用"
+        every_6_hours:
+          name: "每 6 小时"
+          lore:
+            - "&7每隔 6 小时执行一次"
+            - "&7例如：00:00, 06:00, 12:00, 18:00"
+            - ""
+            - "&a点击应用"
+        every_12_hours:
+          name: "每 12 小时"
+          lore:
+            - "&7每天执行两次"
+            - "&7例如：00:00, 12:00"
+            - ""
+            - "&a点击应用"
+        daily_midnight:
+          name: "每日午夜"
+          lore:
+            - "&7每天 00:00 执行"
+            - ""
+            - "&a点击应用"
+        daily_noon:
+          name: "每日中午"
+          lore:
+            - "&7每天 12:00 执行"
+            - ""
+            - "&a点击应用"
+        daily_6am:
+          name: "每日早上 6 点"
+          lore:
+            - "&7每天 06:00 执行"
+            - ""
+            - "&a点击应用"
+        weekdays_9am:
+          name: "工作日早上 9 点"
+          lore:
+            - "&7周一到周五 09:00 执行"
+            - "&7非常适合工作日活动"
+            - ""
+            - "&a点击应用"
+        monday_midnight:
+          name: "每周一午夜"
+          lore:
+            - "&7每周一的时间表"
+            - "&7周一 00:00 执行"
+            - ""
+            - "&a点击应用"
+        friday_6pm:
+          name: "每周五下午 6 点"
+          lore:
+            - "&7周末活动起点"
+            - "&7周五 18:00 执行"
+            - ""
+            - "&a点击应用"
+        sunday_midnight:
+          name: "每周日午夜"
+          lore:
+            - "&7每周日的时间表"
+            - "&7周日 00:00 执行"
+            - ""
+            - "&a点击应用"
+        first_day_month:
+          name: "每月第一天"
+          lore:
+            - "&7每月计划"
+            - "&7在 1 号 00:00 执行"
+            - ""
+            - "&a点击应用"
+        last_day_month:
+          name: "每月最后一天"
+          lore:
+            - "&7月底计划"
+            - "&7在最后一天 00:00 执行"
+            - ""
+            - "&a点击应用"
+        first_monday_month:
+          name: "每月第一个周一"
+          lore:
+            - "&7每月第一个周一的计划"
+            - "&7在 00:00 执行"
+            - ""
+            - "&a点击应用"
+        new_year:
+          name: "新年 (1月1日)"
+          lore:
+            - "&7年度新年计划"
+            - "&7在 1月1日 00:00 执行"
+            - ""
+            - "&a点击应用"
+        christmas:
+          name: "圣诞节 (12月25日)"
+          lore:
+            - "&7圣诞特别活动"
+            - "&7在 12月25日 00:00 执行"
+            - ""
+            - "&a点击应用"
+        quarterly:
+          name: "每季度 (1月/4月/7月/10月的1号)"
+          lore:
+            - "&7季节性计划"
+            - "&7在 1、4、7、10 月"
+            - "&7的 1 号 00:00 执行"
+            - ""
+            - "&a点击应用"
+    custom:
+      information:
+        name: "&e---------->"
+        lore:
+          - "&6⚙ 高级选项"
+          - ""
+          - "&7适用于需要精确控制"
+          - "&7计划配置的高级用户。"
+          - ""
+          - "&e► 表达式构建器"
+          - "&f  单独配置每个时间字段"
+          - ""
+          - "&e► 手动输入"
+          - "&f  直接编写 Cron 表达式"
+          - ""
+          - "&c⚠ &7需要掌握 Cron 语法知识"
+          - "&8如果不确定请使用预设！"
+      builder:
+        name: "&d高级构建器"
+        lore:
+          - "&7通过可视化界面"
+          - "&7逐个字段构建你的"
+          - "&7Cron 表达式"
+          - ""
+          - "&e点击打开构建器"
+      manual:
+        name: "&b手动输入"
+        lore:
+          - "&7手动输入 Cron 表达式"
+          - "&7格式：秒 分 时 日 月 周 年"
+          - "&7例如：&f0 0 12 * * ? *"
+          - ""
+          - "&e点击输入表达式"
+    builder:
+      title: "%cron_type% Cron 表达式构建器"
+      fields:
+        second:
+          name: "秒"
+          description: "一分钟内的秒数"
+          values:
+            0: "在 0 秒时"
+            wildcard: "每一秒"
+            every_interval: "每 %interval% 秒"
+        minute:
+          name: "分钟"
+          description: "一小时内的分钟"
+          values:
+            0: "在 0 分时"
+            wildcard: "每一分钟"
+            every_interval: "每 %interval% 分钟"
+        hour:
+          name: "小时"
+          description: "一天内的小时 (0-23)"
+          values:
+            0: "午夜 (0点)"
+            6: "早上 6 点"
+            12: "中午 (12点)"
+            18: "下午 6 点"
+            wildcard: "每小时"
+            every_interval: "每 %interval% 小时"
+        day:
+          name: "日"
+          description: "一个月中的日 (1-31)"
+          values:
+            1: "每月第一天"
+            15: "月中"
+            last: "每月最后一天"
+            wildcard: "每天"
+            none: "不指定日期"
+        month:
+          name: "月"
+          description: "一年中的月 (1-12 或 JAN-DEC)"
+          values:
+            wildcard: "每个月"
+            1: "一月"
+            6: "六月"
+            12: "十二月"
+            "1_4_7_10": "每季度 (1月/4月/7月/10月)"
+        day_of_week:
+          name: "星期"
+          description: "一周中的日 (1-7 或 SUN-SAT)"
+          values:
+            none: "不指定星期"
+            wildcard: "每天"
+            mon: "星期一"
+            fri: "星期五"
+            sat: "星期六"
+            sun: "星期日"
+            mon_fri: "工作日"
+        year:
+          name: "年"
+          description: "年份 (可选，保留 * 表示任意年)"
+          values:
+            wildcard: "每年"
+            specific_year: "%year% 年"
+        custom_value: "自定义值"
+      preview:
+        name: "&e&l预览"
+        current_expression: "&7当前表达式："
+        next_runs: "&7下次执行："
+      field:
+        selected_name: "&a&l► %name%"
+        unselected_name: "&7%name%"
+        lore:
+          - "&7当前值：&f%value%"
+          - ""
+          - "&7%description%"
+          - ""
+          - "&e&l点击编辑此字段"
+      preset:
+        current_name: "&a✓ %value%"
+        set_name: "&f%value%"
+        current_lore:
+          - "&a当前值"
+          - ""
+          - "&7%description%"
+        set_lore:
+          - "&7点击设置"
+          - ""
+          - "&7%description%"
+      custom_input:
+        name: "&e&l自定义值"
+        lore:
+          - "&7输入一个自定义值"
+          - "&7用于 %field%"
+          - ""
+          - "&7示例："
+          - "&7  - 通配符：*"
+          - "&7  - 范围：1-5"
+          - "&7  - 列表：1,3,5"
+          - "&7  - 增量：*/15"
+          - ""
+          - "&e点击输入自定义值"
+      decrease:
+        name: "&c&l- 减少"
+        lore:
+          - "&7将数值减 1"
+      increase:
+        name: "&a&l+ 增加"
+        lore:
+          - "&7将数值加 1"
+      save:
+        name: "&a&l保存并应用"
+        lore:
+          - "&7将此 Cron 表达式"
+          - "&7应用到该合集"
+          - ""
+          - "&f表达式：&7%expression%"
+    clear:
+      name: "&c清除计划"
+      lore:
+        - "&7移除重置计划"
+        - "&7合集将不再自动重置"
+        - ""
+        - "&c点击清除"
+  act:
+    setup:
+      title: "&8ACT 设置"
+      date_window:
+        name: "&a日期窗口 (始终在线)"
+        lore:
+          - "&7在开始日期和结束日期"
+          - "&7之间全天激活。"
+          - ""
+          - "&7你将选择日期范围。"
+          - "&7不需要时间表。"
+          - ""
+          - "&e点击配置"
+      repeating_schedule:
+        name: "&e循环时间表"
+        lore:
+          - "&7在固定时间表内"
+          - "&7激活指定的 X 小时。"
+          - ""
+          - "&7你将选择持续时间，"
+          - "&7然后选择时间表。"
+          - ""
+          - "&e点击配置"
+      advanced:
+        name: "&c高级设置"
+        lore:
+          - "&7全面控制"
+          - "&7日期范围、持续时间"
+          - "&7以及时间表。"
+          - ""
+          - "&e点击打开编辑器"
+
+    editor:
+      title: "ACT 规则编辑器：%name%"
+      guided_setup:
+        name: "&b向导设置"
+        lore:
+          - "&7为此规则重新打开"
+          - "&7设置向导。"
+          - ""
+          - "&e点击打开"
+      manual_input:
+        name: "&b手动输入 ACT 格式"
+        lore:
+          - "&7直接在聊天框中"
+          - "&7输入 ACT 格式。"
+          - ""
+          - "&e点击输入"
+      current:
+        name: "&e&l当前规则配置"
+        date_range: "&7日期范围：&f%date_range%"
+        duration: "&7持续时间：&f%duration%"
+        cron: "&7Cron 表达式：&f%cron%"
+        next_activation: "&7下次激活："
+        validation: "&7验证状态：%status%"
+        valid: "&a✓ 有效"
+        invalid: "&c✗ 无效"
+    preset:
+      apply:
+        name: "&6快速设置 (预设)"
+        lore:
+          - "&7选择一个常见的时间表"
+          - "&7（不需要掌握 ACT 格式）"
+          - ""
+          - "&e点击浏览预设"
+    presets:
+      title: "ACT 规则预设"
+      list:
+        always_available:
+          name: "始终可用"
+          lore:
+            - "&7合集永久可用"
+            - "&7没有日期、时长或时间表限制"
+            - ""
+            - "&7格式：&f[*] [*] [NONE]"
+            - ""
+            - "&a点击应用"
+        daily_2h:
+          name: "每日 2 小时 (早晨)"
+          lore:
+            - "&7每天可用 2 小时"
+            - "&7早上 9:00 触发"
+            - ""
+            - "&7格式：&f[*] [2h] [0 0 9 * * ?]"
+            - ""
+            - "&a点击应用"
+        daily_4h:
+          name: "每日 4 小时 (下午)"
+          lore:
+            - "&7每天可用 4 小时"
+            - "&7下午 2:00 (14:00) 触发"
+            - ""
+            - "&7格式：&f[*] [4h] [0 0 14 * * ?]"
+            - ""
+            - "&a点击应用"
+        weekend_8h:
+          name: "周末活动 (8 小时)"
+          lore:
+            - "&7周六和周日可用"
+            - "&7从早上 10:00 开始，持续 8 小时"
+            - ""
+            - "&7格式：&f[*] [8h] [0 0 10 ? * SAT,SUN]"
+            - ""
+            - "&a点击应用"
+        weekly_24h:
+          name: "每周活动 (24 小时)"
+          lore:
+            - "&7每周一可用"
+            - "&7持续一整天"
+            - ""
+            - "&7格式：&f[*] [24h] [0 0 0 ? * MON]"
+            - ""
+            - "&a点击应用"
+        holiday_special:
+          name: "假期特别活动 (圣诞节)"
+          lore:
+            - "&7在圣诞节那一周可用"
+            - "&7该时间段内永久可用"
+            - "&7从 12月20日 到 12月26日"
+            - ""
+            - "&7格式：&f[2025-12-20:2025-12-26] [*] [0 0 0 * * ?]"
+            - ""
+            - "&a点击应用"
+        seasonal_summer:
+          name: "夏季限定"
+          lore:
+            - "&7在夏季月份可用"
+            - "&76月到8月期间永久可用"
+            - ""
+            - "&7格式：&f[2025-06-01:2025-08-31] [*] [NONE]"
+            - ""
+            - "&a点击应用"
+        hourly_30m:
+          name: "每小时 (30 分钟)"
+          lore:
+            - "&7每小时触发一次"
+            - "&7每次可用 30 分钟"
+            - ""
+            - "&7格式：&f[*] [30m] [0 0 * * * ?]"
+            - ""
+            - "&a点击应用"
+        twice_daily_3h:
+          name: "每天两次 (各 3 小时)"
+          lore:
+            - "&7每天可用两次"
+            - "&7在早上 9:00 和下午 6:00"
+            - "&7每次持续 3 小时"
+            - ""
+            - "&7格式：&f[*] [3h] [0 0 9,18 * * ?]"
+            - ""
+            - "&a点击应用"
+        monthly_week:
+          name: "每月第一周"
+          lore:
+            - "&7在每个月的第一周可用"
+            - "&7从 1 号到 7 号"
+            - "&7该时间段内永久可用"
+            - ""
+            - "&7格式：&f[*-*-01:*-*-07] [*] [NONE]"
+            - ""
+            - "&a点击应用"
+    component:
+      date_range:
+        name: "&e日期范围"
+        lore:
+          - "&7当前：&f%value%"
+          - "&7%description%"
+          - ""
+          - "&7可选：限制在特定日期之间"
+          - ""
+          - "&e点击编辑"
+      duration:
+        name: "&e持续时间"
+        lore:
+          - "&7当前：&f%value%"
+          - "&7%description%"
+          - ""
+          - "&7可选：限制活动持续多久"
+          - ""
+          - "&e点击编辑"
+      cron:
+        name: "&e计划时间表"
+        description:
+          none: "无计划任务"
+          invalid: "计划任务无效"
+        lore:
+          - "&7当前：&f%value%"
+          - "&7%description%"
+          - ""
+          - "&7可选：按循环时间表运行"
+          - ""
+          - "&e点击编辑"
+    rules:
+      list:
+        title: "计划规则：%collection%"
+        rule_item:
+          name: "&6%name%"
+          lore:
+            - "&7状态：%status%"
+            - "&7日期范围：&f%date_range%"
+            - "&7持续时间：&f%duration%"
+            - "&7Cron表达式：&f%cron%"
+            - "&7下次触发：%next_trigger%"
+            - ""
+            - "&e左键点击编辑"
+            - "&e右键点击切换状态"
+            - "&cShift+左键点击删除"
+        add_rule:
+          name: "&a添加新规则"
+          lore:
+            - "&7创建一个新规则"
+            - "&7并打开设置"
+      editor:
+        name:
+          name: "&e名称"
+          lore:
+            - "&7当前名称：&f%name%"
+            - ""
+            - "&e点击重命名"
+        enabled:
+          name: "&e启用状态"
+          lore:
+            - "&7当前状态：%status%"
+            - ""
+            - "&e点击切换"
+        delete:
+          name: "&c删除规则"
+          lore:
+            - "&7永久移除此规则"
+            - ""
+            - "&c点击删除"
+    components:
+      duration:
+        editor:
+          title: "编辑持续时间"
+          current:
+            name: "&e&l当前持续时间"
+            value: "&f%duration%"
+            description: "&7%description%"
+        preset:
+          permanent:
+            name: "&a永久"
+            lore:
+              - "&7一旦触发，合集将"
+              - "&7永远可用（直到重置）"
+              - ""
+              - "&7设定值：&f*"
+              - ""
+              - "&e点击应用"
+          30_minutes:
+            name: "&e30 分钟"
+            lore:
+              - "&7可用半小时"
+              - ""
+              - "&7设定值：&f30m"
+              - ""
+              - "&e点击应用"
+          1_hour:
+            name: "&e1 小时"
+            lore:
+              - "&7可用一小时"
+              - ""
+              - "&7设定值：&f1h"
+              - ""
+              - "&e点击应用"
+          2_hours:
+            name: "&e2 小时"
+            lore:
+              - "&7可用两小时"
+              - ""
+              - "&7设定值：&f2h"
+              - ""
+              - "&e点击应用"
+          4_hours:
+            name: "&e4 小时"
+            lore:
+              - "&7可用四小时"
+              - ""
+              - "&7设定值：&f4h"
+              - ""
+              - "&e点击应用"
+          8_hours:
+            name: "&e8 小时"
+            lore:
+              - "&7可用八小时"
+              - ""
+              - "&7设定值：&f8h"
+              - ""
+              - "&e点击应用"
+          24_hours:
+            name: "&e24 小时 (1 天)"
+            lore:
+              - "&7可用一整天"
+              - ""
+              - "&7设定值：&f24h"
+              - ""
+              - "&e点击应用"
+          7_days:
+            name: "&e7 天 (1 周)"
+            lore:
+              - "&7可用一星期"
+              - ""
+              - "&7设定值：&f7d"
+              - ""
+              - "&e点击应用"
+        custom:
+          name: "&d自定义持续时间"
+          lore:
+            - "&7输入自定义时长"
+            - "&7格式：<数字><单位>"
+            - "&7单位：s(秒), m(分), h(时), d(天)"
+            - "&7例如：90s, 90m, 12h, 3d"
+            - ""
+            - "&e点击手动输入"
+        increase:
+          name: "&a&l+ 增加"
+          lore:
+            - "&7将持续时间数值加 1"
+            - "&7（仅限数字格式的时长）"
+        decrease:
+          name: "&c&l- 减少"
+          lore:
+            - "&7将持续时间数值减 1"
+            - "&7（仅限数字格式的时长，最小值：1）"
+      date_range:
+        manual:
+          name: "&d手动输入日期范围"
+          lore:
+            - "&7输入自定义日期范围"
+            - "&7格式：YYYY-MM-DD:YYYY-MM-DD"
+            - "&7例如：2025-12-24:2025-12-31"
+            - "&7使用 &f* &7表示始终激活"
+            - ""
+            - "&e点击手动输入"
+        editor:
+          title: "编辑日期范围"
+          current:
+            name: "&e&l当前日期范围"
+            value: "&f%date_range%"
+            description: "&7%description%"
+        preset:
+          always:
+            name: "&a始终激活"
+            lore:
+              - "&7没有任何日期限制"
+              - "&7该规则可以在任意一天触发"
+              - ""
+              - "&7设定值：&f*"
+              - ""
+              - "&e点击应用"
+          this_year:
+            name: "&e今年 (%year%)"
+            lore:
+              - "&7仅在当前年份激活"
+              - "&7从 1月1日 到 12月31日"
+              - ""
+              - "&7设定值：&f%year%-01-01:%year%-12-31"
+              - ""
+              - "&e点击应用"
+          this_month:
+            name: "&e本月"
+            lore:
+              - "&7在当前月份内激活"
+              - ""
+              - "&7设定值：&f%start%:%end%"
+              - ""
+              - "&e点击应用"
+          next_month:
+            name: "&e下个月"
+            lore:
+              - "&7在下个月内激活"
+              - ""
+              - "&7设定值：&f%start%:%end%"
+              - ""
+              - "&e点击应用"
+minigame:
+  success: "%prefix%&a小游戏挑战成功！"
+  failed: "%prefix%&c小游戏挑战失败。"
+  reaction:
+    timeout: "%prefix%&c你花费的时间太长了！游戏结束。"
+    wrong_click: "%prefix%&c点错方块了！游戏结束。"
+  memory:
+    watch: "%prefix%&e请仔细观察顺序！"
+    repeat: "%prefix%&a现在请重复刚才的顺序！"
+    wrong: "%prefix%&c顺序错误！游戏结束。"
+  error:
+    invalid_type: "%prefix%&c无效的小游戏类型。可选：REACTION, MEMORY"
+
+proximity:
+  near_treasure: "&e你附近有一个宝藏！"
+  in_place_mode: "&e你当前正处于放置模式！"
+
+hint:
+  no_unfound_nearby: "%prefix%&c附近活动的合集中没有尚未发现的宝藏！"
+  cooldown: "%prefix%&c你必须等待 &e%time% 秒 &c后才能再次请求提示。"
+  coordinate_x: "%prefix%&a提示：X 坐标是 &e%value% &a(在 &a%direction% &e%distance%m)"
+  coordinate_z: "%prefix%&a提示：Z 坐标是 &e%value% &a(在 &a%direction% &e%distance%m)"
+  success: "%prefix%&a你获得了一个提示！"
+  visual_active: "%prefix%&e视觉提示已激活！"
+  minigame_failed: "%prefix%&c小游戏挑战失败。无法获得提示！"
