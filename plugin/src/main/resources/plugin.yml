@@ -1,7 +1,7 @@
 name: AdvancedHunt
 version: '4.0.2-Beta'
 main: de.theredend2000.advancedhunt.Main
-api-version: '1.21'
+api-version: '1.8.8'
 authors: [ GrafterCrafter, TheRedEnd2000 ]
 softdepend: [ ItemsAdder, packetevents, NBTAPI, PlaceholderAPI ]
 
