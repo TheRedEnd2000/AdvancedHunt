@@ -33,6 +33,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -436,14 +437,15 @@ public class TreasureVisibilityManager implements Listener {
             try {
                 Block block = location.getBlock();
                 if (block == null) return;
-                NBT.modify(block.getState(), nbt -> {
+                BlockState state = block.getState();
+                NBT.modify(state, nbt -> {
                     try {
                         ReadWriteNBT data = NBT.parseNBT(nbtData);
                         nbt.mergeCompound(data);
                     } catch (Throwable ignored) {
                     }
                 });
-                block.getState().update(true, false);
+                state.update(true, false);
             } catch (Throwable ignored) {
             }
         });
@@ -852,18 +854,8 @@ public class TreasureVisibilityManager implements Listener {
         AtomicInteger counter = worldEntityIdCounters.computeIfAbsent(world.getUID(),
             k -> new AtomicInteger(min + plugin.getRandom().nextInt(1_000_000)));
 
-        for (int i = 0; i < 32; i++) {
-            int candidate = counter.getAndIncrement();
-            if (candidate >= max) {
-                counter.set(min);
-                candidate = counter.getAndIncrement();
-            }
-            if (candidate > 0) {
-                return candidate;
-            }
-        }
-
-        return -1;
+        int id = counter.updateAndGet(current -> current >= max ? min : current + 1);
+        return id > 0 ? id : -1;
     }
 
     private static final class WrappedStateKey {

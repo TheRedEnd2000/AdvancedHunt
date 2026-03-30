@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
     private final Random random;
     private int round;
     private boolean showingSequence;
-    
+
     // Configurable
     private final int maxRounds;
     private final int displayTime;
@@ -68,14 +69,14 @@ public class MemoryMinigameMenu extends MinigameMenu {
         round++;
         playerSequence.clear();
         showingSequence = true;
-        
+
         // Add new step to sequence
         sequence.add(GAME_SLOTS[random.nextInt(GAME_SLOTS.length)]);
-        
+
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.watch"));
-        
+
         final int[] index = {0};
-        final org.bukkit.scheduler.BukkitTask[] task = new org.bukkit.scheduler.BukkitTask[1];
+        final BukkitTask[] task = new BukkitTask[1];
 
         task[0] = scheduleTaskTimer(() -> {
             if (finished) {

@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.listeners;
 
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.menu.Button;
 import de.theredend2000.advancedhunt.menu.Menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -100,10 +102,16 @@ public class MenuListener implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryOpen(InventoryOpenEvent event) {
-        if (event.isCancelled()) return; 
-        
+        if (event.isCancelled()) return;
+
         if (event.getInventory().getHolder() instanceof Menu) {
             ((Menu) event.getInventory().getHolder()).onOpen(event);
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        // Clean up the static click-cooldown map so it does not grow unboundedly.
+        Button.removeClickCooldown(event.getPlayer().getUniqueId());
     }
 }

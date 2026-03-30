@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -126,6 +127,11 @@ public class PlaceModeListener implements Listener {
         treasureManager.addTreasure(treasure);
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.added"));
         plugin.getSoundManager().playTreasurePlaced(player);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        placeModeManager.removePlaceMode(event.getPlayer());
     }
 
     @EventHandler
