@@ -137,9 +137,8 @@ public class PlayerManager implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         // Pre-load data asynchronously when player joins
-        UUID uuid = event.getPlayer().getUniqueId();
-        repository.loadPlayerData(uuid)
-                .thenAccept(data -> playerDataCache.put(uuid, data != null ? data : new PlayerData(uuid)));
+        repository.loadPlayerData(event.getPlayer().getUniqueId())
+                .thenAccept(data -> playerDataCache.put(event.getPlayer().getUniqueId(), data));
     }
 
     @EventHandler
