@@ -309,8 +309,7 @@ public class CollectionManager {
 
     private void checkResets() {
         ZonedDateTime now = ZonedDateTime.now();
-        List<Collection> snapshot = cachedCollections;
-        for (Collection c : snapshot) {
+        for (Collection c : cachedCollections) {
             // Check progress reset cron
             if (c.getProgressResetCron() != null && !c.getProgressResetCron().isEmpty()) {
                 try {
