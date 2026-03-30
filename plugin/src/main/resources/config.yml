@@ -1,4 +1,4 @@
-config-version: 4.0
+config-version: 4.1
 
 storage:
   # Options: SQLITE, MYSQL, YAML
@@ -12,7 +12,7 @@ storage:
     username: root
     password: password
 
-# Supported languages are en, de, bn, vi
+# Supported languages are en, de, bn, vi, zh
 language: en
 
 command:
