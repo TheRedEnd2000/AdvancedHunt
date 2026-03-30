@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.Bukkit;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +47,7 @@ public class FireworkManager {
         fireworkUUIDs.add(fireworkId);
         // Schedule cleanup so the set does not grow unboundedly.
         // Fireworks detonate within ~5 seconds at most (power 0-3).
-        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, () -> fireworkUUIDs.remove(fireworkId), 100L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> fireworkUUIDs.remove(fireworkId), 100L);
     }
 
     private FireworkEffect buildEffect() {
