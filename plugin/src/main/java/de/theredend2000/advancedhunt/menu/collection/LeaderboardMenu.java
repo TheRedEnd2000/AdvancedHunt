@@ -248,12 +248,4 @@ public class LeaderboardMenu extends PagedMenu {
         
         return builder.build();
     }
-
-    @Override
-    public int getMaxItemsPerPage() {
-        if (isLoading) {
-            return maxItemsPerPage;
-        }
-        return entries.size();
-    }
 }

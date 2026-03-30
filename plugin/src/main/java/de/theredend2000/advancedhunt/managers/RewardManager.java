@@ -260,8 +260,10 @@ public class RewardManager {
     private String replacePlaceholders(String message, String playerName, CollectionStats stats,
                                        double chance, String itemName) {
         String prefix = plugin.getConfig().getString("prefix", "[AdvancedHunt]");
-        return message
-                .replaceAll("&", "§")
+        // Apply placeholder substitutions first, then hex color conversion, then legacy & codes.
+        // Hex color (&#RRGGBB) must be processed before the blanket & -> § replacement so that
+        // HexColor can still see the & prefix in &#RRGGBB sequences.
+        String result = message
                 .replace("%player%", playerName)
                 .replace("%prefix%", prefix)
                 .replace("%found_treasures%", String.valueOf(stats.foundTreasures))
@@ -270,6 +272,9 @@ public class RewardManager {
                 .replace("%chance%", formatChance(chance))
                 .replace("%item%", itemName != null ? itemName : "")
                 .replace("\\n", System.lineSeparator());
+        result = HexColor.color(result, '&');
+        result = result.replace("&", "§");
+        return result;
     }
 
     /**

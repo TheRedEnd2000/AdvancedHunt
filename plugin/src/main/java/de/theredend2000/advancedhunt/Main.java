@@ -338,7 +338,7 @@ public final class Main extends JavaPlugin {
         // Initialize Commands
         setupCommands();
 
-        // Initialize bStats
+        // Initialize bStats (plugins/bStats/config.yml)
         new Metrics(this, 19495);
     }
 
@@ -558,7 +558,10 @@ public final class Main extends JavaPlugin {
         TreasureInteractionHandler.reset();
 
         if (hintManager != null) {
-            hintManager.cancelAllVisualHints();
+            hintManager.stop();
+        }
+        if (leaderboardManager != null) {
+            leaderboardManager.stop();
         }
         if (treasureVisibilityManager != null) {
             treasureVisibilityManager.stop();

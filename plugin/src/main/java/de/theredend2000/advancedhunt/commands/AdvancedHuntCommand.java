@@ -834,21 +834,25 @@ public class AdvancedHuntCommand {
 
     public void renameCollection(CommandSender sender, String oldName, String newName) {
         plugin.getCollectionManager().renameCollection(oldName, newName).thenAccept(success -> {
-            if (success) {
-                sender.sendMessage(plugin.getMessageManager().getMessage("command.rename.success", "%old_name%", oldName, "%new_name%", newName));
-            } else {
-                sender.sendMessage(plugin.getMessageManager().getMessage("command.rename.failed"));
-            }
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (success) {
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.rename.success", "%old_name%", oldName, "%new_name%", newName));
+                } else {
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.rename.failed"));
+                }
+            });
         });
     }
 
     public void createCollection(CommandSender sender, String name) {
         plugin.getCollectionManager().createCollection(name).thenAccept(success -> {
-            if (success) {
-                sender.sendMessage(plugin.getMessageManager().getMessage("command.create.success", "%name%", name));
-            } else {
-                sender.sendMessage(plugin.getMessageManager().getMessage("command.create.failed"));
-            }
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (success) {
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.create.success", "%name%", name));
+                } else {
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.create.failed"));
+                }
+            });
         });
     }
 
@@ -877,21 +881,25 @@ public class AdvancedHuntCommand {
 
     public void resetAll(CommandSender sender) {
         plugin.getDataRepository().resetAllProgress().thenAccept(count -> {
-            plugin.getParticleManager().clearAllGlobalCache();
-            invalidateAllPlayerCaches();
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.all_success",
-                    "%count%", String.valueOf(count)));
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                plugin.getParticleManager().clearAllGlobalCache();
+                invalidateAllPlayerCaches();
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.all_success",
+                        "%count%", String.valueOf(count)));
+            });
         });
     }
 
     public void resetCollection(CommandSender sender, String collectionName) {
         withCollection(sender, collectionName, collection ->
                 plugin.getDataRepository().resetCollectionProgress(collection.getId()).thenAccept(count -> {
-                    plugin.getParticleManager().clearGlobalCache(collection.getId());
-                    invalidateAllPlayerCaches();
-                    sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.collection_success",
-                            "%collection%", collection.getName(),
-                            "%count%", String.valueOf(count)));
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        plugin.getParticleManager().clearGlobalCache(collection.getId());
+                        invalidateAllPlayerCaches();
+                        sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.collection_success",
+                                "%collection%", collection.getName(),
+                                "%count%", String.valueOf(count)));
+                    });
                 })
         );
     }
@@ -902,12 +910,14 @@ public class AdvancedHuntCommand {
         OfflinePlayer offlinePlayer = offlinePlayerOpt.get();
 
         plugin.getDataRepository().resetPlayerProgress(offlinePlayer.getUniqueId()).thenAccept(count -> {
-            plugin.getParticleManager().clearAllGlobalCache();
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                plugin.getParticleManager().clearAllGlobalCache();
 
-            plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_success",
-                    "%player%", playerName,
-                    "%count%", String.valueOf(count)));
+                plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
+                sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_success",
+                        "%player%", playerName,
+                        "%count%", String.valueOf(count)));
+            });
         });
     }
 
@@ -923,15 +933,17 @@ public class AdvancedHuntCommand {
                         offlinePlayer.getUniqueId(),
                         collection.getId()
                 ).thenAccept(count -> {
-                    if (collection.isSinglePlayerFind()) {
-                        plugin.getParticleManager().clearGlobalCache(collection.getId());
-                    }
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (collection.isSinglePlayerFind()) {
+                            plugin.getParticleManager().clearGlobalCache(collection.getId());
+                        }
 
-                    plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
-                    sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_collection_success",
-                            "%player%", playerName,
-                            "%collection%", collection.getName(),
-                            "%count%", String.valueOf(count)));
+                        plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
+                        sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_collection_success",
+                                "%player%", playerName,
+                                "%collection%", collection.getName(),
+                                "%count%", String.valueOf(count)));
+                    });
                 })
         );
     }

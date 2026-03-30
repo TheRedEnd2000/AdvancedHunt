@@ -149,13 +149,4 @@ public class WhoFoundMenu extends PagedMenu {
 
         return builder.build();
     }
-
-    @Override
-    public int getMaxItemsPerPage() {
-        // Only return true max if we have loaded the data and know the size
-        if (isLoading) {
-            return maxItemsPerPage;
-        }
-        return finderUuids.size();
-    }
 }

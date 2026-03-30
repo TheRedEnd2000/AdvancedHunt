@@ -35,6 +35,8 @@ public class BukkitSource implements UpdateSource {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("User-Agent", "AdvancedHunt/Updater");
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(10000);
 
                 if (connection.getResponseCode() == 200) {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -42,12 +44,12 @@ public class BukkitSource implements UpdateSource {
                     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     Document doc = builder.parse(connection.getInputStream());
-                    
+
                     NodeList items = doc.getElementsByTagName("item");
                     for (int i = 0; i < items.getLength(); i++) {
                         Element item = (Element) items.item(i);
                         String title = item.getElementsByTagName("title").item(0).getTextContent();
-                        
+
                         if (!isUnstable(title)) {
                             Instant publishedAt = null;
                             NodeList pubDates = item.getElementsByTagName("pubDate");
@@ -97,6 +99,8 @@ public class BukkitSource implements UpdateSource {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("User-Agent", "AdvancedHunt/Updater");
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(10000);
 
                 if (connection.getResponseCode() == 200) {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -104,12 +108,12 @@ public class BukkitSource implements UpdateSource {
                     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     Document doc = builder.parse(connection.getInputStream());
-                    
+
                     NodeList items = doc.getElementsByTagName("item");
                     for (int i = 0; i < items.getLength(); i++) {
                         Element item = (Element) items.item(i);
                         String title = item.getElementsByTagName("title").item(0).getTextContent();
-                        
+
                         if (title.equals(update.sourceVersion())) {
                             String link = item.getElementsByTagName("link").item(0).getTextContent();
                             // The link in RSS is the page link, not the direct download link.
@@ -132,9 +136,11 @@ public class BukkitSource implements UpdateSource {
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "AdvancedHunt/Updater");
-            
+
             // Handle redirects (Bukkit/Curse often redirects)
             connection.setInstanceFollowRedirects(true);
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(60000);
             
             try (InputStream in = connection.getInputStream()) {
                 Files.copy(in, destination.toPath(), StandardCopyOption.REPLACE_EXISTING);

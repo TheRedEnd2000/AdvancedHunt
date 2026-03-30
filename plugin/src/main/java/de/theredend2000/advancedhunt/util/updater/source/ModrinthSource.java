@@ -97,6 +97,8 @@ public class ModrinthSource implements UpdateSource {
         HttpURLConnection connection = (HttpURLConnection) new URL(urlBuilder.toString()).openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("User-Agent", "AdvancedHunt/Updater");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(10000);
 
         if (connection.getResponseCode() != 200) return null;
 
@@ -187,6 +189,8 @@ public class ModrinthSource implements UpdateSource {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("User-Agent", "AdvancedHunt/Updater");
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(30000);
 
                 if (connection.getResponseCode() == 200) {
                     JsonArray versions = JsonParser.parseReader(new InputStreamReader(connection.getInputStream()))
@@ -234,7 +238,11 @@ public class ModrinthSource implements UpdateSource {
     private boolean downloadFile(String urlString, File destination) {
         try {
             URL url = new URL(urlString);
-            try (InputStream in = url.openStream()) {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(60000);
+            connection.setInstanceFollowRedirects(true);
+            try (InputStream in = connection.getInputStream()) {
                 Files.copy(in, destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 return true;
             }
