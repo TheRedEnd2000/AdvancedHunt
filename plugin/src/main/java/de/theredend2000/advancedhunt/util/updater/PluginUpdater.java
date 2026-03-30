@@ -90,7 +90,17 @@ public class PluginUpdater {
                         return;
                     }
 
-                    if (!isOldEnoughToAutoDownload(update)) {
+                    Instant publishedAt = update.publishedAt();
+                    if (publishedAt == null) {
+                        plugin.getLogger().info("[" + tracked.name + "] Skipping automatic download from " + sourceName
+                                + " for version " + update.version() + " because the release date is unavailable.");
+                        return;
+                    }
+
+                    if (!isOldEnoughToAutoDownload(publishedAt)) {
+                        plugin.getLogger().info("[" + tracked.name + "] Skipping automatic download from " + sourceName
+                                + " for version " + update.version() + " because it is newer than "
+                                + MINIMUM_RELEASE_AGE.toDays() + " days (published at " + publishedAt + ").");
                         return;
                     }
 
@@ -107,11 +117,7 @@ public class PluginUpdater {
         }
     }
 
-    private boolean isOldEnoughToAutoDownload(UpdateInfo update) {
-        Instant publishedAt = update.publishedAt();
-        if (publishedAt == null) {
-            return false;
-        }
+    private boolean isOldEnoughToAutoDownload(Instant publishedAt) {
         Instant threshold = Instant.now().minus(MINIMUM_RELEASE_AGE);
         return !publishedAt.isAfter(threshold);
     }
