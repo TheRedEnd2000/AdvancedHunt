@@ -240,7 +240,7 @@ public class AdvancedHuntCommand {
                         .literal("collection")
                         .literal("info")
                         .required("name", StringParser.stringParser(), collectionsSuggestions)
-                        .permission("advancedhunt.collection.info")
+                .permission("advancedhunt.admin.collection.info")
                         .commandDescription(desc("collection_info"))
                         .handler(context -> showCollectionInfo((Player) context.sender(), context.get("name")))
         );
@@ -249,7 +249,7 @@ public class AdvancedHuntCommand {
         commandManager.command(
                 playerBuilder()
                         .literal("list")
-                        .permission("advancedhunt.list")
+                .permission("advancedhunt.admin.list")
                         .commandDescription(desc("list"))
                         .handler(context -> list((Player) context.sender(), null))
         );
@@ -258,7 +258,7 @@ public class AdvancedHuntCommand {
                 playerBuilder()
                         .literal("list")
                         .required(collectionArg)
-                        .permission("advancedhunt.list")
+                .permission("advancedhunt.admin.list")
                         .commandDescription(desc("list_collection"))
                         .handler(context -> list((Player) context.sender(), context.get("collection")))
         );

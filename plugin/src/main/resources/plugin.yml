@@ -1,7 +1,7 @@
 name: AdvancedHunt
-version: '4.0.1'
+version: '4.0.2-Beta'
 main: de.theredend2000.advancedhunt.Main
-api-version: '1.21'
+api-version: '1.8.8'
 authors: [ GrafterCrafter, TheRedEnd2000 ]
 softdepend: [ ItemsAdder, packetevents, NBTAPI, PlaceholderAPI ]
 
@@ -9,8 +9,8 @@ permissions:
   advancedhunt.help:
     description: Allows access to the help command
     default: true
-  advancedhunt.list:
-    description: Allows listing collections
+  advancedhunt.admin.list:
+    description: Allows opening the treasure list menu
     default: op
   advancedhunt.leaderboard:
     description: Allows viewing the leaderboard
@@ -18,7 +18,7 @@ permissions:
   advancedhunt.progress:
     description: Allows viewing collection progress
     default: true
-  advancedhunt.collection.info:
+  advancedhunt.admin.collection.info:
     description: Allows viewing collection information and UUID
     default: op
   advancedhunt.hint:
@@ -29,10 +29,15 @@ permissions:
     default: op
     children:
       advancedhunt.admin.reload: true
+      advancedhunt.admin.list: true
       advancedhunt.admin.show: true
       advancedhunt.admin.collection.editor: true
       advancedhunt.admin.collection.rename: true
       advancedhunt.admin.collection.create: true
+      advancedhunt.admin.collection.edit: true
+      advancedhunt.admin.collection.delete: true
+      advancedhunt.admin.collection.info: true
+      advancedhunt.admin.migrate: true
       advancedhunt.admin.place: true
       advancedhunt.admin.place_items: true
       advancedhunt.admin.reset: true
@@ -58,8 +63,17 @@ permissions:
   advancedhunt.admin.collection.create:
     description: Allows creating collections
     default: op
+  advancedhunt.admin.collection.edit:
+    description: Allows opening collection settings directly
+    default: op
+  advancedhunt.admin.collection.delete:
+    description: Allows deleting collections
+    default: op
   advancedhunt.admin.place:
     description: Allows entering place mode
+    default: op
+  advancedhunt.admin.migrate:
+    description: Allows migrating data between storage backends
     default: op
   advancedhunt.admin.place_items:
     description: Allows managing place items

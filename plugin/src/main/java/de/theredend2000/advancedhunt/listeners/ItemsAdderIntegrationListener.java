@@ -41,6 +41,7 @@ public class ItemsAdderIntegrationListener implements Listener {
     @EventHandler
     public void onFurniturePlaceSuccess(FurniturePlacedEvent event) {
         Player player = event.getPlayer();
+        if (player == null) return;
         if (!placeModeManager.isInPlaceMode(player)) return;
 
         UUID collectionId = placeModeManager.getCollectionId(player);
@@ -71,6 +72,7 @@ public class ItemsAdderIntegrationListener implements Listener {
     @EventHandler
     public void onCustomBlockPlace(CustomBlockPlaceEvent event) {
         Player player = event.getPlayer();
+        if (player == null) return;
         if (!placeModeManager.isInPlaceMode(player)) return;
 
         UUID collectionId = placeModeManager.getCollectionId(player);
