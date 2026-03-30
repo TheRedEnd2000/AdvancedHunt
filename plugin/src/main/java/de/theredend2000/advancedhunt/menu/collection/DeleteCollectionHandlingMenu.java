@@ -10,15 +10,18 @@ import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Player;
 
 public class DeleteCollectionHandlingMenu extends Menu {
 
     private final Collection collection;
     private boolean processing;
+    private boolean isCommandExecution;
 
-    public DeleteCollectionHandlingMenu(org.bukkit.entity.Player playerMenuUtility, Main plugin, Collection collection) {
+    public DeleteCollectionHandlingMenu(Player playerMenuUtility, Main plugin, Collection collection, boolean isCommandExecution) {
         super(playerMenuUtility, plugin);
         this.collection = collection;
+        this.isCommandExecution = isCommandExecution;
     }
 
     @Override
@@ -108,7 +111,10 @@ public class DeleteCollectionHandlingMenu extends Menu {
                     "%collection%",
                     collection.getName()
                 ));
-                new CollectionEditorMenu(playerMenuUtility, plugin).open();
+                if(!isCommandExecution)
+                    new CollectionEditorMenu(playerMenuUtility, plugin).open();
+                else
+                    playerMenuUtility.closeInventory();
             });
         });
     }
