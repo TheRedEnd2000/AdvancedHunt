@@ -33,6 +33,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -436,7 +437,7 @@ public class TreasureVisibilityManager implements Listener {
             try {
                 Block block = location.getBlock();
                 if (block == null) return;
-                org.bukkit.block.BlockState state = block.getState();
+                BlockState state = block.getState();
                 NBT.modify(state, nbt -> {
                     try {
                         ReadWriteNBT data = NBT.parseNBT(nbtData);
