@@ -6,6 +6,7 @@ import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
     private final Random random;
     private int round;
     private boolean showingSequence;
-    private org.bukkit.scheduler.BukkitTask currentRoundTask;
+    private BukkitTask currentRoundTask;
 
     // Configurable
     private final int maxRounds;
