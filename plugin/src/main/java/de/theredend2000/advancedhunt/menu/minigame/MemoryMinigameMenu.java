@@ -20,7 +20,6 @@ public class MemoryMinigameMenu extends MinigameMenu {
     private final Random random;
     private int round;
     private boolean showingSequence;
-    private BukkitTask currentRoundTask;
 
     // Configurable
     private final int maxRounds;
@@ -67,11 +66,6 @@ public class MemoryMinigameMenu extends MinigameMenu {
     }
 
     private void startRound() {
-        // Cancel any previous round's repeating task before starting a new one.
-        if (currentRoundTask != null && !currentRoundTask.isCancelled()) {
-            currentRoundTask.cancel();
-        }
-
         round++;
         playerSequence.clear();
         showingSequence = true;
@@ -82,7 +76,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.watch"));
 
         final int[] index = {0};
-        final org.bukkit.scheduler.BukkitTask[] task = new org.bukkit.scheduler.BukkitTask[1];
+        final BukkitTask[] task = new BukkitTask[1];
 
         task[0] = scheduleTaskTimer(() -> {
             if (finished) {
@@ -105,8 +99,6 @@ public class MemoryMinigameMenu extends MinigameMenu {
             flashSlot(slot);
             index[0]++;
         }, displayTime, displayTime);
-
-        currentRoundTask = task[0];
     }
 
     private void flashSlot(int slot) {
