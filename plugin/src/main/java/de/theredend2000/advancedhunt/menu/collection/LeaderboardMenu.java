@@ -248,7 +248,4 @@ public class LeaderboardMenu extends PagedMenu {
         
         return builder.build();
     }
-
-    // Do not override getMaxItemsPerPage() — use the parent class's per-page limit so
-    // pagination works correctly across multiple pages.
 }
