@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -289,7 +290,7 @@ public class CollectionDeletionCleanupManager implements Listener {
         if (nbtData == null || nbtData.isEmpty()) return;
 
         try {
-            org.bukkit.block.BlockState state = block.getState();
+            BlockState state = block.getState();
             NBT.modify(state, nbt -> {
                 try {
                     ReadWriteNBT data = NBT.parseNBT(nbtData);
