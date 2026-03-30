@@ -827,8 +827,8 @@ public class AdvancedHuntCommand {
 
     public void deleteCollection(Player player, String name){
         withCollection(player, name, collection ->
-                new DeleteCollectionHandlingMenu(player, plugin, collection,true)
-                        .open()
+            new DeleteCollectionHandlingMenu(player, plugin, collection,true)
+                .open()
         );
     }
 
