@@ -1,5 +1,5 @@
 name: AdvancedHunt
-version: '4.0.1'
+version: '4.0.2-Beta'
 main: de.theredend2000.advancedhunt.Main
 api-version: '1.21'
 authors: [ GrafterCrafter, TheRedEnd2000 ]
