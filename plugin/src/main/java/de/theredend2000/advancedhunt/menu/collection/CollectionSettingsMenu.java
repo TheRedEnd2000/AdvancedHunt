@@ -142,7 +142,7 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.delete.name"))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.delete.lore").toArray(new String[0]))
                 .build(), (e) -> {
-            new DeleteCollectionHandlingMenu(playerMenuUtility, plugin, collection)
+            new DeleteCollectionHandlingMenu(playerMenuUtility, plugin, collection,false)
                     .setPreviousMenu(this)
                     .open();
         }, "advancedhunt.admin.collection.delete");

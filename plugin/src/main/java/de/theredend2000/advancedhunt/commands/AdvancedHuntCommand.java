@@ -827,11 +827,8 @@ public class AdvancedHuntCommand {
 
     public void deleteCollection(Player player, String name){
         withCollection(player, name, collection ->
-                plugin.getCollectionManager().deleteCollection(collection.getId()).thenRun(() -> {
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        player.sendMessage(plugin.getMessageManager().getMessage("feedback.settings.delete.success", "%collection%", collection.getName()));
-                    });
-                })
+                new DeleteCollectionHandlingMenu(player, plugin, collection,true)
+                        .open()
         );
     }
 
