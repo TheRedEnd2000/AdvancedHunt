@@ -7,13 +7,9 @@ import de.theredend2000.advancedhunt.menu.common.SkullInfo;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.platform.PlatformAccess;
-import de.theredend2000.advancedhunt.util.HeadHelper;
-import de.theredend2000.advancedhunt.util.ItemBuilder;
-import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
-import de.theredend2000.advancedhunt.util.XMaterialHelper;
+import de.theredend2000.advancedhunt.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -207,13 +203,15 @@ public class ProgressMenu extends PagedMenu {
             if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
                 item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
             }
+            if (item != null && MaterialUtils.isAir(item.getType())) {
+                item = null;
+            }
 
             if (item == null) {
-                Material material = Material.matchMaterial(treasureCore.getMaterial());
-                if (material == null) material = XMaterial.CHEST.get();
-
-                XMaterial xMaterial = XMaterial.matchXMaterial(material);
-                item = XMaterialHelper.getItemStack(xMaterial);
+                item = XMaterialHelper.getItemStack(treasureCore.getMaterial());
+                if (item != null && MaterialUtils.isAir(item.getType())) {
+                    item = null;
+                }
             }
 
             if (HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) && item != null) {

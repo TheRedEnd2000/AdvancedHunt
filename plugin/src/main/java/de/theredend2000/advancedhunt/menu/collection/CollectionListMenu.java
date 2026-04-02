@@ -161,13 +161,8 @@ public class CollectionListMenu extends PagedMenu {
             item = null;
         }
         if (item == null) {
-            Material material = Material.matchMaterial(treasureCore.getMaterial());
-            if (material == null) material = XMaterial.CHEST.get();
-
-            XMaterial xMaterial = XMaterial.matchXMaterial(material);
-            item = XMaterialHelper.getItemStack(xMaterial);
-            if (item == null) item = new ItemStack(XMaterial.CHEST.get());
-            if (MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
+            item = XMaterialHelper.getItemStack(treasureCore.getMaterial());
+            if (item == null || MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
         }
 
         if (HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) && item != null) {
