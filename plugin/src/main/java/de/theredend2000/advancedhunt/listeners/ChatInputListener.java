@@ -4,6 +4,7 @@ import de.theredend2000.advancedhunt.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
@@ -50,7 +51,7 @@ public class ChatInputListener implements Listener {
         player.sendMessage(plugin.getMessageManager().getMessage("chat_input.canceled"));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent event) {
         UUID playerId = event.getPlayer().getUniqueId();
         String message = event.getMessage();
