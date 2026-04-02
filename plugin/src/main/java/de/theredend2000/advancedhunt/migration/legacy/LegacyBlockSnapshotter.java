@@ -34,6 +34,10 @@ public final class LegacyBlockSnapshotter {
             this.blockState = blockState;
             this.nbtData = nbtData;
         }
+
+        static Snapshot of(String material, String blockState, String nbtData) {
+            return new Snapshot(material, blockState, nbtData);
+        }
     }
 
     private LegacyBlockSnapshotter() {

@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.migration.legacy;
 
 import de.theredend2000.advancedhunt.data.DataRepository;
+import de.theredend2000.advancedhunt.managers.CollectionManager;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.util.ZipBackupUtil;
@@ -21,6 +22,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public final class LegacyDataMigrator {
+
+    private static final String MISSING_SNAPSHOT_FALLBACK_MATERIAL = "STONE";
 
     private final Plugin plugin;
     private final DataRepository repository;
@@ -110,7 +113,7 @@ public final class LegacyDataMigrator {
 
         for (LegacyEggsParser.LegacyCollection lc : legacyCollections) {
             UUID newCollectionId = UUID.randomUUID();
-            legacyNameToCollectionId.put(lc.name, newCollectionId);
+            legacyNameToCollectionId.put(CollectionManager.normalizeCollectionName(lc.name), newCollectionId);
 
             Collection collection = new Collection(newCollectionId, lc.name, lc.enabled);
             collection.setSinglePlayerFind(lc.onePlayer);
@@ -136,24 +139,28 @@ public final class LegacyDataMigrator {
                 // Create treasures with snapshot data
                 List<Treasure> treasures = new ArrayList<>();
                 Map<LegacyLocationKey, UUID> legacyToTreasureId = new HashMap<>();
+                Map<String, List<UUID>> treasureIdsByCollection = new LinkedHashMap<>();
 
                 Set<UUID> usedTreasureIds = new HashSet<>();
+                int fallbackSnapshotCount = 0;
                 for (PlacedEggToCreate e : eggsToCreate) {
                     LegacyLocationKey key = new LegacyLocationKey(e.legacyCollectionName, e.egg.world, e.egg.x, e.egg.y, e.egg.z);
-                    LegacyBlockSnapshotter.Snapshot snap = snapshots.get(key);
-                    if (snap == null) {
-                        plugin.getLogger().warning("Skipping legacy egg (no world/block snapshot): " + key);
-                        continue;
-                    }
-
-                    UUID treasureId = generateUniqueId(usedTreasureIds);
-                    usedTreasureIds.add(treasureId);
-
                     org.bukkit.World world = org.bukkit.Bukkit.getWorld(e.egg.world);
                     if (world == null) {
                         plugin.getLogger().warning("Skipping legacy egg (world not loaded): " + key);
                         continue;
                     }
+
+                    MigratedSnapshotData snapshotData = resolveMigratedSnapshot(snapshots.get(key));
+                    if (snapshotData.usedFallback) {
+                        fallbackSnapshotCount++;
+                        plugin.getLogger().warning("Migrating legacy egg with generic "
+                            + MISSING_SNAPSHOT_FALLBACK_MATERIAL
+                            + " snapshot (original block unavailable): " + key);
+                    }
+
+                    UUID treasureId = generateUniqueId(usedTreasureIds);
+                    usedTreasureIds.add(treasureId);
 
                     org.bukkit.Location loc = new org.bukkit.Location(world, e.egg.x, e.egg.y, e.egg.z);
 
@@ -162,43 +169,86 @@ public final class LegacyDataMigrator {
                         e.collectionId,
                         loc,
                         e.egg.rewards,
-                        snap.nbtData,
-                        snap.material,
-                        snap.blockState
+                        snapshotData.nbtData,
+                        snapshotData.material,
+                        snapshotData.blockState
                     );
 
                     treasures.add(treasure);
                     legacyToTreasureId.put(key, treasureId);
+                    treasureIdsByCollection.computeIfAbsent(key.collectionName(), ignored -> new ArrayList<>()).add(treasureId);
                 }
+
+                if (fallbackSnapshotCount > 0) {
+                    plugin.getLogger().info("Migrated " + fallbackSnapshotCount
+                        + " legacy egg(s) using generic " + MISSING_SNAPSHOT_FALLBACK_MATERIAL
+                        + " snapshots because the original blocks could not be sampled.");
+                }
+
+                Map<String, LinkedHashSet<LegacyLocationKey>> missingKeysByCollection = new LinkedHashMap<>();
+                for (LegacyPlayerDataParser.LegacyPlayerData lp : legacyPlayers) {
+                    for (LegacyPlayerDataParser.LegacyFoundEgg fe : lp.found) {
+                        String normalizedCollectionName = CollectionManager.normalizeCollectionName(fe.collectionName);
+                        if (!legacyNameToCollectionId.containsKey(normalizedCollectionName)) {
+                            continue;
+                        }
+
+                        LegacyLocationKey key = new LegacyLocationKey(fe.collectionName, fe.world, fe.x, fe.y, fe.z);
+                        if (legacyToTreasureId.containsKey(key)) {
+                            continue;
+                        }
+
+                        missingKeysByCollection
+                            .computeIfAbsent(normalizedCollectionName, ignored -> new LinkedHashSet<>())
+                            .add(key);
+                    }
+                }
+
+                Map<LegacyLocationKey, UUID> fallbackLinks = buildCollectionFallbackLinks(missingKeysByCollection, treasureIdsByCollection);
 
                 // Convert players
                 List<PlayerData> playerDataList = new ArrayList<>();
                 int foundLinks = 0;
                 int missingLinks = 0;
+                int fallbackLinkCount = 0;
                 List<String> missingLinkDetails = new ArrayList<>();
 
                 for (LegacyPlayerDataParser.LegacyPlayerData lp : legacyPlayers) {
                     PlayerData pd = new PlayerData(lp.playerUuid);
 
                     for (LegacyPlayerDataParser.LegacyFoundEgg fe : lp.found) {
-                        if (!legacyNameToCollectionId.containsKey(fe.collectionName)) {
+                        String normalizedCollectionName = CollectionManager.normalizeCollectionName(fe.collectionName);
+                        if (!legacyNameToCollectionId.containsKey(normalizedCollectionName)) {
                             continue;
                         }
 
                         LegacyLocationKey key = new LegacyLocationKey(fe.collectionName, fe.world, fe.x, fe.y, fe.z);
                         UUID treasureId = legacyToTreasureId.get(key);
                         if (treasureId == null) {
+                            treasureId = fallbackLinks.get(key);
+                            if (treasureId != null) {
+                                fallbackLinkCount++;
+                            }
+                        }
+
+                        if (treasureId == null) {
                             missingLinks++;
-                            String detail = String.format("Player %s: treasure at %s/%d/%d/%d",
-                                lp.playerUuid, fe.collectionName, fe.x, fe.y, fe.z);
+                            String detail = String.format("Player %s: treasure at %s/%s/%d/%d/%d",
+                                lp.playerUuid, fe.collectionName, fe.world, fe.x, fe.y, fe.z);
                             missingLinkDetails.add(detail);
                             continue;
                         }
+
                         pd.addFoundTreasure(treasureId);
                         foundLinks++;
                     }
 
                     playerDataList.add(pd);
+                }
+
+                if (fallbackLinkCount > 0) {
+                    plugin.getLogger().info("Resolved " + fallbackLinkCount
+                        + " player progress link(s) using collection-level fallback matching.");
                 }
 
                 // Log warning if there are missing links
@@ -280,12 +330,58 @@ public final class LegacyDataMigrator {
         return f;
     }
 
+    static MigratedSnapshotData resolveMigratedSnapshot(LegacyBlockSnapshotter.Snapshot snapshot) {
+        if (snapshot == null) {
+            return new MigratedSnapshotData(MISSING_SNAPSHOT_FALLBACK_MATERIAL, null, null, true);
+        }
+        return new MigratedSnapshotData(snapshot.material, snapshot.blockState, snapshot.nbtData, false);
+    }
+
+    static Map<LegacyLocationKey, UUID> buildCollectionFallbackLinks(
+        Map<String, LinkedHashSet<LegacyLocationKey>> missingKeysByCollection,
+        Map<String, List<UUID>> treasureIdsByCollection
+    ) {
+        Map<LegacyLocationKey, UUID> resolved = new LinkedHashMap<>();
+
+        for (Map.Entry<String, LinkedHashSet<LegacyLocationKey>> entry : missingKeysByCollection.entrySet()) {
+            List<UUID> treasureIds = treasureIdsByCollection.get(entry.getKey());
+            if (treasureIds == null || treasureIds.isEmpty()) {
+                continue;
+            }
+
+            int index = 0;
+            for (LegacyLocationKey missingKey : entry.getValue()) {
+                if (index >= treasureIds.size()) {
+                    break;
+                }
+                resolved.put(missingKey, treasureIds.get(index));
+                index++;
+            }
+        }
+
+        return resolved;
+    }
+
     private static UUID generateUniqueId(Set<UUID> used) {
         UUID id;
         do {
             id = UUID.randomUUID();
         } while (used.contains(id));
         return id;
+    }
+
+    static final class MigratedSnapshotData {
+        final String material;
+        final String blockState;
+        final String nbtData;
+        final boolean usedFallback;
+
+        private MigratedSnapshotData(String material, String blockState, String nbtData, boolean usedFallback) {
+            this.material = material;
+            this.blockState = blockState;
+            this.nbtData = nbtData;
+            this.usedFallback = usedFallback;
+        }
     }
 
     private static String translateProgressResetCron(LegacyEggsParser.LegacyReset reset) {

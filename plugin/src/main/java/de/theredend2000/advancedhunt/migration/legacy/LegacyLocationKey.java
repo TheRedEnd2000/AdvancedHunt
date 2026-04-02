@@ -1,5 +1,7 @@
 package de.theredend2000.advancedhunt.migration.legacy;
 
+import de.theredend2000.advancedhunt.managers.CollectionManager;
+
 import java.util.Locale;
 import java.util.Objects;
 
@@ -17,11 +19,15 @@ public final class LegacyLocationKey {
     private final int z;
 
     public LegacyLocationKey(String collectionName, String world, int x, int y, int z) {
-        this.collectionName = normalize(collectionName);
+        this.collectionName = normalizeCollectionName(collectionName);
         this.world = normalize(world);
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    private static String normalizeCollectionName(String s) {
+        return CollectionManager.normalizeCollectionName(s);
     }
 
     private static String normalize(String s) {
