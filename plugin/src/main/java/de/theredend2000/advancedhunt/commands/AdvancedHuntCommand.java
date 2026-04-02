@@ -163,10 +163,10 @@ public class AdvancedHuntCommand {
         commandManager.command(
             playerBuilder()
                 .literal("bypass")
-                .required("state", StringParser.stringParser(), bypassSuggestions)
+                .optional("state", StringParser.stringParser(), bypassSuggestions)
                 .permission("advancedhunt.treasure.bypass")
                 .commandDescription(desc("bypass"))
-                .handler(context -> toggleBypass((Player) context.sender(), context.get("state")))
+                .handler(context -> toggleBypass((Player) context.sender(), context.<String>optional("state").orElse(null)))
         );
 
         commandManager.command(
@@ -557,7 +557,11 @@ public class AdvancedHuntCommand {
     private void toggleBypass(Player player, String stateRaw) {
         if (player == null) return;
         if (stateRaw == null || stateRaw.isEmpty()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("command.bypass.usage"));
+            boolean enableBypass = !plugin.getTreasureVisibilityManager().isBypassEnabled(player);
+            plugin.getTreasureVisibilityManager().setBypass(player, enableBypass);
+            player.sendMessage(plugin.getMessageManager().getMessage(enableBypass
+                    ? "command.bypass.enabled"
+                    : "command.bypass.disabled"));
             return;
         }
 

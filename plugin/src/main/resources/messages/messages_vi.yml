@@ -261,7 +261,7 @@ command:
   bypass:
     enabled: "%prefix%&aĐã bật chế độ nhìn xuyên kho báu."
     disabled: "%prefix%&cĐã tắt chế độ nhìn xuyên kho báu."
-    usage: "%prefix%&eCách dùng: /ah bypass <on|off>"
+    usage: "%prefix%&eCách dùng: /ah bypass [on|off]"
 
 treasure:
   found: "%prefix%&aBạn đã tìm thấy một kho báu!"

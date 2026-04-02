@@ -197,7 +197,7 @@ command:
   bypass:
     enabled: "%prefix%&a宝藏绕过可见性已启用。"
     disabled: "%prefix%&c宝藏绕过可见性已禁用。"
-    usage: "%prefix%&e用法：/ah bypass <on|off>"
+    usage: "%prefix%&e用法：/ah bypass [on|off]"
   list:
     header: "&6可用合集："
     format: "&7- &e%collection%"

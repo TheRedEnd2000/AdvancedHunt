@@ -197,7 +197,7 @@ command:
   bypass:
     enabled: "%prefix%&aTreasure-Bypass aktiviert."
     disabled: "%prefix%&cTreasure-Bypass deaktiviert."
-    usage: "%prefix%&eNutzung: /ah bypass <on|off>"
+    usage: "%prefix%&eNutzung: /ah bypass [on|off]"
   list:
     header: "&6Verfügbare Sammlungen:"
     format: "&7- &e%collection%"
