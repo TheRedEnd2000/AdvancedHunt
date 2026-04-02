@@ -172,14 +172,15 @@ public class TreasureManager {
     public CompletableFuture<Void> updateTreasure(Treasure oldTreasure, Treasure newTreasure) {
         // Save first, then update cache only on success
         return repository.saveTreasure(newTreasure).thenRun(() -> {
-            // Add new treasure to cache
+            // Remove the old entry first so same-ID updates do not leave stale chunk/collection entries.
+            removeCoreFromCache(oldTreasure.getId(), oldTreasure.getCollectionId(), oldTreasure.getLocation());
+
+            // Add the replacement treasure to cache.
             TreasureCore core = TreasureCore.from(newTreasure);
             addCoreToCache(core);
             fullTreasureCache.put(newTreasure.getId(), newTreasure);
             
-            // Remove old entry only if IDs are different (location/collection changed)
             if (!oldTreasure.getId().equals(newTreasure.getId())) {
-                removeCoreFromCache(oldTreasure.getId(), oldTreasure.getCollectionId(), oldTreasure.getLocation());
                 fullTreasureCache.invalidate(oldTreasure.getId());
             }
         });
