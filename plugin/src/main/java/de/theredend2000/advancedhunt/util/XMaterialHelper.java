@@ -1,7 +1,10 @@
 package de.theredend2000.advancedhunt.util;
 
 import com.cryptomorin.xseries.XMaterial;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Optional;
 
 public class XMaterialHelper {
     /**
@@ -33,5 +36,31 @@ public class XMaterialHelper {
         // Try to parse material directly
         item = material.parseItem();
         return item;
+    }
+
+    /**
+     * Resolves a stored material name into a displayable item stack.
+     * Head/skull aliases are normalized to a player head so texture application can run later.
+     */
+    public static ItemStack getItemStack(String materialName) {
+        if (materialName == null || materialName.trim().isEmpty()) {
+            return null;
+        }
+
+        if (HeadHelper.isHeadMaterialName(materialName)) {
+            return XMaterial.PLAYER_HEAD.parseItem();
+        }
+
+        Material material = Material.matchMaterial(materialName);
+        if (material != null) {
+            return getItemStack(XMaterial.matchXMaterial(material));
+        }
+
+        Optional<XMaterial> xMaterial = XMaterial.matchXMaterial(materialName);
+        if (xMaterial.isPresent()) {
+            return getItemStack(xMaterial.get());
+        }
+
+        return null;
     }
 }
