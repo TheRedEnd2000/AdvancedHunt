@@ -168,6 +168,7 @@ command:
       debug_placecollection_plane: "Debug: Đặt kho báu theo lưới phẳng"
       debug_removecollectionplaced: "Debug: Xoá toàn bộ kho báu đã đặt trong bộ sưu tập"
       debug_minigame: "Debug: Kiểm tra hệ thống minigame"
+      debug_inspect: "Debug: Xem dữ liệu đã lưu của kho báu bạn đang nhìn"
     minecraft:
       help: "&6AdvancedHunt &8- &7Trợ giúp"
       command: "Lệnh"

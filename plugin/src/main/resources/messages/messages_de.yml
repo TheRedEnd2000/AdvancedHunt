@@ -168,6 +168,7 @@ command:
       debug_placecollection_plane: "Debug: Platziert Treasures in einem Quadrat"
       debug_removecollectionplaced: "Debug: Entfernt alle platzierten Treasures in einer Sammlung"
       debug_minigame: "Debug: Testet das Minigame-System"
+      debug_inspect: "Debug: Zeigt die gespeicherten Blockdaten der angeschauten Treasure"
     minecraft:
       help: "&6AdvancedHunt &8- &7Hilfe"
       command: "Befehl"

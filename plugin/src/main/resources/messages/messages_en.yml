@@ -168,6 +168,7 @@ command:
       debug_placecollection_plane: "Debug: Place treasures in a plane grid"
       debug_removecollectionplaced: "Debug: Remove all placed treasures in a collection"
       debug_minigame: "Debug: Test minigame system"
+      debug_inspect: "Debug: Inspect the stored data of the treasure you're looking at"
     minecraft:
       help: "&6AdvancedHunt &8- &7Help"
       command: "Command"

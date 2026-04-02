@@ -168,6 +168,7 @@ command:
       debug_placecollection_random: "Debug: Random bhabe treasure place korar jonno"
       debug_placecollection_plane: "Debug: Somantoral Grid e treasure place korar jonno"
       debug_removecollectionplaced: "Debug: Collection-er sob placed treasure muche felar jonno"
+      debug_inspect: "Debug: Apni je treasure-ti dekhchen tar stored data dekhar jonno"
     minecraft:
       help: "&6AdvancedHunt &8- &7Help"
       command: "Command"

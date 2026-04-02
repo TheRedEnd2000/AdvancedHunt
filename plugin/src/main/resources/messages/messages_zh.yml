@@ -168,6 +168,7 @@ command:
       debug_placecollection_plane: "调试：在平面网格中放置宝藏"
       debug_removecollectionplaced: "调试：移除某合集中所有已放置的宝藏"
       debug_minigame: "调试：测试小游戏系统"
+      debug_inspect: "调试：查看当前注视宝藏的已存储数据"
     minecraft:
       help: "&6AdvancedHunt &8- &7帮助"
       command: "命令"

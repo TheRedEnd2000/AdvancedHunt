@@ -447,6 +447,15 @@ public class AdvancedHuntCommand {
         commandManager.command(
                 playerBuilder()
                         .literal("debug")
+                .literal("inspect")
+                .permission("advancedhunt.admin")
+                .commandDescription(desc("debug_inspect"))
+                .handler(context -> debugInspectTreasure((Player) context.sender()))
+        );
+
+        commandManager.command(
+            playerBuilder()
+                .literal("debug")
                         .literal("glow")
                         .permission("advancedhunt.admin")
                         .handler(context -> glowBlock((Player) context.sender()))
@@ -1050,6 +1059,40 @@ public class AdvancedHuntCommand {
         sendDebugChat(player, "&e[DEBUG] Hint delivered. Visual effects active if enabled in config.");
     }
 
+            private void debugInspectTreasure(Player player) {
+                if (player == null) return;
+
+                Block targetBlock = player.getTargetBlockExact(10);
+                if (targetBlock == null) {
+                    sendDebugChat(player, "&c[DEBUG] Look at a treasure block first.");
+                    return;
+                }
+
+                TreasureCore core = plugin.getTreasureManager().getTreasureCoreAt(targetBlock.getLocation());
+                if (core == null) {
+                    sendDebugChat(player, "&c[DEBUG] The looked-at block is not a stored treasure.");
+                    return;
+                }
+
+                Treasure treasure = plugin.getTreasureManager().getFullTreasure(core.getId());
+                Location location = targetBlock.getLocation();
+                World world = location.getWorld();
+
+                sendDebugChat(player, "&e[DEBUG] Inspecting treasure at &f"
+                        + (world != null ? world.getName() : "unknown")
+                        + " " + location.getBlockX()
+                        + " " + location.getBlockY()
+                        + " " + location.getBlockZ());
+                sendDebugField(player, "treasure_id", core.getId().toString());
+                sendDebugField(player, "block_data", treasure != null ? treasure.getNbtData() : null);
+                sendDebugField(player, "material", treasure != null ? treasure.getMaterial() : core.getMaterial());
+                sendDebugField(player, "block_state", treasure != null ? treasure.getBlockState() : core.getBlockState());
+
+                if (treasure == null) {
+                    sendDebugChat(player, "&e[DEBUG] Full treasure data could not be loaded; block_data may be unavailable.");
+                }
+            }
+
     private void debugPlaceCollectionRandom(Player player, String collectionName, String amountRaw) {
         int amount;
         try {
@@ -1434,6 +1477,21 @@ public class AdvancedHuntCommand {
     private void sendDebugChat(Player player, String message) {
         String prefix = plugin.getMessageManager().getMessage("prefix", false);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
+    }
+
+    private void sendDebugField(Player player, String field, String value) {
+        String prefix = plugin.getMessageManager().getMessage("prefix", false);
+        player.sendMessage(prefix + ChatColor.YELLOW + "[DEBUG] " + ChatColor.GRAY + field + ": " + ChatColor.WHITE + formatDebugValue(value));
+    }
+
+    private String formatDebugValue(String value) {
+        if (value == null) {
+            return "<null>";
+        }
+        if (value.isEmpty()) {
+            return "<empty>";
+        }
+        return value.replace("\r", "\\r").replace("\n", "\\n");
     }
 
     private List<PaletteEntry> getHotbarPaletteEntries(Player player) {
