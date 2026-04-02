@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,21 +39,17 @@ public class ActFormatParser {
      * @return Optional containing ActSchedule if valid, empty if invalid
      */
     public static Optional<ActSchedule> parse(String actFormat) {
-        if (actFormat == null || actFormat.trim().isEmpty()) {
+        ActComponents components = parseToComponents(actFormat);
+        if (components == null) {
             return Optional.empty();
         }
-
-        Matcher matcher = ACT_PATTERN.matcher(actFormat.trim());
-        if (!matcher.matches()) {
-            return Optional.empty();
-        }
-
-        String dateRange = matcher.group(1).trim();
-        String duration = matcher.group(2).trim();
-        String cron = matcher.group(3).trim();
 
         try {
-            return Optional.of(new ActSchedule(dateRange, duration, cron));
+            return Optional.of(new ActSchedule(
+                components.getDateRange(),
+                components.getDuration(),
+                components.getCron()
+            ));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
@@ -192,20 +189,71 @@ public class ActFormatParser {
      * @return ActComponents object containing individual components, or null if invalid
      */
     public static ActComponents parseToComponents(String actFormat) {
-        if (actFormat == null || actFormat.trim().isEmpty()) {
+        String normalizedInput = normalizeActFormatInput(actFormat);
+        if (normalizedInput == null || normalizedInput.isEmpty()) {
             return null;
         }
 
-        Matcher matcher = ACT_PATTERN.matcher(actFormat.trim());
-        if (!matcher.matches()) {
+        Matcher matcher = ACT_PATTERN.matcher(normalizedInput);
+        if (matcher.matches()) {
+            String dateRange = matcher.group(1).trim();
+            String duration = matcher.group(2).trim();
+            String cron = matcher.group(3).trim();
+
+            return new ActComponents(dateRange, duration, cron);
+        }
+
+        String[] parts = normalizedInput.split("\\s+");
+        if (parts.length < 3) {
             return null;
         }
 
-        String dateRange = matcher.group(1).trim();
-        String duration = matcher.group(2).trim();
-        String cron = matcher.group(3).trim();
+        String dateRange = parts[0];
+        String duration = parts[1];
+        StringJoiner cronJoiner = new StringJoiner(" ");
+        for (int i = 2; i < parts.length; i++) {
+            cronJoiner.add(parts[i]);
+        }
 
-        return new ActComponents(dateRange, duration, cron);
+        return new ActComponents(dateRange, duration, cronJoiner.toString());
+    }
+
+    private static String normalizeActFormatInput(String actFormat) {
+        if (actFormat == null) {
+            return null;
+        }
+
+        String normalized = actFormat.trim();
+        if (normalized.isEmpty()) {
+            return normalized;
+        }
+
+        boolean stripped;
+        do {
+            stripped = false;
+
+            if (normalized.length() >= 6
+                    && normalized.startsWith("```")
+                    && normalized.endsWith("```")) {
+                normalized = normalized.substring(3, normalized.length() - 3).trim();
+                stripped = true;
+                continue;
+            }
+
+            if (normalized.length() >= 2) {
+                char first = normalized.charAt(0);
+                char last = normalized.charAt(normalized.length() - 1);
+
+                if ((first == '`' && last == '`')
+                        || (first == '"' && last == '"')
+                        || (first == '\'' && last == '\'')) {
+                    normalized = normalized.substring(1, normalized.length() - 1).trim();
+                    stripped = true;
+                }
+            }
+        } while (stripped && !normalized.isEmpty());
+
+        return normalized;
     }
 
     /**

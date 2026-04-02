@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * Hub menu for ACT rule editing.
@@ -149,29 +148,7 @@ public class ActRuleEditorMenu extends Menu {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("feedback.act.components.act_format.prompt"));
 
             plugin.getChatInputListener().requestInput(playerMenuUtility, (input) -> {
-                ActFormatParser.ActComponents components = null;
-
-                // Prefer bracket format if provided
-                if (input.contains("[") && input.contains("]")) {
-                    components = ActFormatParser.parseToComponents(input);
-                }
-
-                // Fallback: token format (DATE_RANGE DURATION CRON...)
-                if (components == null) {
-                    String[] parts = input.trim().split("\\s+");
-                    if (parts.length >= 3) {
-                        String dateRange = parts[0];
-                        String duration = parts[1];
-
-                        StringJoiner joiner = new StringJoiner(" ");
-                        for (int i = 2; i < parts.length; i++) {
-                            joiner.add(parts[i]);
-                        }
-                        String cron = joiner.toString();
-
-                        components = new ActFormatParser.ActComponents(dateRange, duration, cron);
-                    }
-                }
+                ActFormatParser.ActComponents components = ActFormatParser.parseToComponents(input);
 
                 if (components == null) {
                     playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("error.act.format.invalid_format"));
