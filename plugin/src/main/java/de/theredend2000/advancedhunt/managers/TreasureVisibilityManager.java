@@ -438,6 +438,10 @@ public class TreasureVisibilityManager implements Listener {
                 Block block = location.getBlock();
                 if (block == null) return;
                 BlockState state = block.getState();
+                if (HeadHelper.applySkullProfile(state, nbtData)) {
+                    state.update(true, false);
+                    return;
+                }
                 NBT.modify(state, nbt -> {
                     try {
                         ReadWriteNBT data = NBT.parseNBT(nbtData);

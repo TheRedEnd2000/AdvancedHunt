@@ -4,9 +4,21 @@ import com.cryptomorin.xseries.XMaterial;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBTCompoundList;
+import org.bukkit.Bukkit;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class HeadHelper {
+
+    private static final Pattern SKIN_URL_PATTERN = Pattern.compile("\\\"url\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"");
 
     /**
      * Fast heuristic for determining whether a stored material name represents a head/skull.
@@ -71,10 +83,96 @@ public class HeadHelper {
         return null;
     }
 
+    public static boolean applySkullProfile(BlockState state, String nbtData) {
+        if (!(state instanceof Skull)) return false;
+        if (nbtData == null || nbtData.isEmpty()) return false;
+
+        Skull skull = (Skull) state;
+
+        String texture = getTextureFromNbt(nbtData);
+        if (texture != null && !texture.isEmpty() && applyTexture(skull, texture)) {
+            return true;
+        }
+
+        String profileName = getProfileNameFromNbt(nbtData);
+        if (profileName != null && !profileName.isEmpty()) {
+            return applyOwnerName(skull, profileName);
+        }
+
+        return false;
+    }
+
     private static ReadWriteNBT getProfileCompound(ReadWriteNBT nbt) {
         if (nbt.hasTag("Owner")) return nbt.getCompound("Owner");
         if (nbt.hasTag("SkullOwner")) return nbt.getCompound("SkullOwner");
         if (nbt.hasTag("profile")) return nbt.getCompound("profile");
+        if (nbt.hasTag("minecraft:profile")) return nbt.getCompound("minecraft:profile");
+        return null;
+    }
+
+    private static boolean applyTexture(Skull skull, String texture) {
+        String skinUrl = getSkinUrl(texture);
+        if (skinUrl == null || skinUrl.isEmpty()) return false;
+
+        try {
+            Class<?> profileClass = Class.forName("org.bukkit.profile.PlayerProfile");
+            Object profile = createPlayerProfile();
+            if (profile == null) return false;
+
+            Object textures = profileClass.getMethod("getTextures").invoke(profile);
+            if (textures == null) return false;
+
+            Class<?> texturesClass = textures.getClass();
+            texturesClass.getMethod("setSkin", URL.class).invoke(textures, new URL(skinUrl));
+            try {
+                profileClass.getMethod("setTextures", texturesClass).invoke(profile, textures);
+            } catch (Throwable ignored) {
+            }
+
+            skull.getClass().getMethod("setOwnerProfile", profileClass).invoke(skull, profile);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    private static Object createPlayerProfile() {
+        try {
+            return Bukkit.class.getMethod("createPlayerProfile", UUID.class, String.class)
+                    .invoke(null, UUID.randomUUID(), null);
+        } catch (Throwable ignored) {
+        }
+
+        try {
+            return Bukkit.class.getMethod("createPlayerProfile", UUID.class)
+                    .invoke(null, UUID.randomUUID());
+        } catch (Throwable ignored) {
+        }
+
+        return null;
+    }
+
+    private static boolean applyOwnerName(Skull skull, String ownerName) {
+        try {
+            skull.getClass().getMethod("setOwner", String.class).invoke(skull, ownerName);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    private static String getSkinUrl(String texture) {
+        if (texture == null || texture.isEmpty()) return null;
+
+        try {
+            String decoded = new String(Base64.getDecoder().decode(texture), StandardCharsets.UTF_8);
+            Matcher matcher = SKIN_URL_PATTERN.matcher(decoded);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+
         return null;
     }
 

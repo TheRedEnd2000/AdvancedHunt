@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.managers;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.MaterialUtils;
 import de.tr7zw.nbtapi.NBT;
@@ -291,6 +292,10 @@ public class CollectionDeletionCleanupManager implements Listener {
 
         try {
             BlockState state = block.getState();
+            if (HeadHelper.applySkullProfile(state, nbtData)) {
+                state.update(true, false);
+                return;
+            }
             NBT.modify(state, nbt -> {
                 try {
                     ReadWriteNBT data = NBT.parseNBT(nbtData);
