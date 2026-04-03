@@ -97,12 +97,12 @@ public interface PlatformAdapter {
     void sendClickableCopyText(Player player, String displayText, String copyText, String hoverText);
 
     /**
-     * Sends a packet to update a skull block entity with a specific texture.
-     * Use this for client-side only skulls (virtual blocks).
+     * Sends a packet to update a skull block entity for a client-side only skull (virtual block).
      *
      * @param player the player to send the packet to
      * @param location the location of the skull
-     * @param texture the base64 texture string
+     * @param texture the base64 texture string, when available
+     * @param ownerName the player profile name when only a named skull profile is stored
      */
-    void sendSkullUpdatePacket(Player player, Location location, String texture);
+    void sendSkullUpdatePacket(Player player, Location location, String texture, String ownerName);
 }

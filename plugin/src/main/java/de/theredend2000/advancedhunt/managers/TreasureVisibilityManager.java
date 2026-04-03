@@ -61,11 +61,11 @@ public class TreasureVisibilityManager implements Listener {
     private final Set<UUID> bypassPlayers = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Boolean> availabilityCache = new ConcurrentHashMap<>();
     private final Map<UUID, Map<Long, Integer>> furnitureMarkers = new ConcurrentHashMap<>();
-    private final Cache<UUID, String> headTextureCache = Caffeine.newBuilder()
+    private final Cache<UUID, HeadHelper.SkullProfileData> headProfileCache = Caffeine.newBuilder()
         .maximumSize(10_000)
         .expireAfterAccess(10, TimeUnit.MINUTES)
         .build();
-    private final Set<UUID> headTextureLoading = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> headProfileLoading = ConcurrentHashMap.newKeySet();
     private final Cache<String, BlockData> blockDataCache = Caffeine.newBuilder()
         .maximumSize(4_000)
         .expireAfterAccess(30, TimeUnit.MINUTES)
@@ -116,8 +116,8 @@ public class TreasureVisibilityManager implements Listener {
         unregisterPacketListener();
         availabilityCache.clear();
         bypassPlayers.clear();
-        headTextureCache.invalidateAll();
-        headTextureLoading.clear();
+        headProfileCache.invalidateAll();
+        headProfileLoading.clear();
         blockDataCache.invalidateAll();
         materialDataCache.invalidateAll();
         wrappedStateCache.invalidateAll();
@@ -619,11 +619,11 @@ public class TreasureVisibilityManager implements Listener {
 
     private void scheduleVirtualExtras(Player player, TreasureCore core, Location loc) {
         if (HeadHelper.isHeadMaterialName(core.getMaterial())) {
-            String texture = headTextureCache.getIfPresent(core.getId());
-            if (texture != null && !texture.isEmpty()) {
-                sendHeadBlockEntityData(player, loc, texture);
+            HeadHelper.SkullProfileData profileData = headProfileCache.getIfPresent(core.getId());
+            if (profileData != null && profileData.hasRenderableData()) {
+                sendHeadBlockEntityData(player, loc, profileData);
             } else {
-                loadHeadTextureAsync(player, core, loc);
+                loadHeadProfileAsync(player, core, loc);
             }
         }
 
@@ -632,27 +632,27 @@ public class TreasureVisibilityManager implements Listener {
         }
     }
 
-    private void loadHeadTextureAsync(Player player, TreasureCore core, Location loc) {
-        if (!headTextureLoading.add(core.getId())) return;
+    private void loadHeadProfileAsync(Player player, TreasureCore core, Location loc) {
+        if (!headProfileLoading.add(core.getId())) return;
 
         treasureManager.getFullTreasureAsync(core.getId()).thenAccept(treasure -> {
             if (treasure == null) {
-                headTextureLoading.remove(core.getId());
+                headProfileLoading.remove(core.getId());
                 return;
             }
 
-            String texture = HeadHelper.getTextureFromNbt(treasure.getNbtData());
-            if (texture != null && !texture.isEmpty()) {
-                headTextureCache.put(core.getId(), texture);
-                Bukkit.getScheduler().runTask(plugin, () -> sendHeadBlockEntityData(player, loc, texture));
+            HeadHelper.SkullProfileData profileData = HeadHelper.getSkullProfileData(treasure.getNbtData());
+            if (profileData != null && profileData.hasRenderableData()) {
+                headProfileCache.put(core.getId(), profileData);
+                Bukkit.getScheduler().runTask(plugin, () -> sendHeadBlockEntityData(player, loc, profileData));
             }
-            headTextureLoading.remove(core.getId());
+            headProfileLoading.remove(core.getId());
         });
     }
 
-    private void sendHeadBlockEntityData(Player player, Location loc, String texture) {
-        if (player == null || loc == null || texture == null || texture.isEmpty()) return;
-        PlatformAccess.get().sendSkullUpdatePacket(player, loc, texture);
+    private void sendHeadBlockEntityData(Player player, Location loc, HeadHelper.SkullProfileData profileData) {
+        if (player == null || loc == null || profileData == null || !profileData.hasRenderableData()) return;
+        PlatformAccess.get().sendSkullUpdatePacket(player, loc, profileData.texture(), profileData.ownerName());
     }
 
     private void ensureFurnitureMarker(Player player, Location loc) {

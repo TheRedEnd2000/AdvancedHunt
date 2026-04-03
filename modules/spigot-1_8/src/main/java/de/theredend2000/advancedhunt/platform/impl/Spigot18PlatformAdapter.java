@@ -249,8 +249,12 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
     }
 
     @Override
-    public void sendSkullUpdatePacket(Player player, Location loc, String texture) {
-        if (player == null || loc == null || texture == null || texture.isEmpty()) return;
+    public void sendSkullUpdatePacket(Player player, Location loc, String texture, String ownerName) {
+        if (player == null || loc == null) return;
+
+        String normalizedTexture = normalizeProfileValue(texture);
+        String normalizedOwnerName = normalizeProfileValue(ownerName);
+        if (normalizedTexture == null && normalizedOwnerName == null) return;
 
         try {
             if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
@@ -265,21 +269,34 @@ public final class Spigot18PlatformAdapter implements PlatformAdapter {
             root.setTag("SkullType", new NBTByte((byte) 3));
 
             NBTCompound skullOwner = new NBTCompound();
-            skullOwner.setTag("Id", new NBTString(UUID.randomUUID().toString()));
+            if (normalizedOwnerName != null) {
+                skullOwner.setTag("Name", new NBTString(normalizedOwnerName));
+            }
+            if (normalizedTexture != null) {
+                skullOwner.setTag("Id", new NBTString(UUID.randomUUID().toString()));
 
-            NBTCompound properties = new NBTCompound();
-            NBTList<NBTCompound> textures = NBTList.createCompoundList();
-            NBTCompound textureTag = new NBTCompound();
-            textureTag.setTag("Value", new NBTString(texture));
-            textures.addTag(textureTag);
+                NBTCompound properties = new NBTCompound();
+                NBTList<NBTCompound> textures = NBTList.createCompoundList();
+                NBTCompound textureTag = new NBTCompound();
+                textureTag.setTag("Value", new NBTString(normalizedTexture));
+                textures.addTag(textureTag);
 
-            properties.setTag("textures", textures);
-            skullOwner.setTag("Properties", properties);
+                properties.setTag("textures", textures);
+                skullOwner.setTag("Properties", properties);
+            }
             root.setTag("SkullOwner", skullOwner);
 
             WrapperPlayServerBlockEntityData packet = new WrapperPlayServerBlockEntityData(pos, BlockEntityTypes.SKULL, root);
             PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
         } catch (Throwable ignored) {
         }
+    }
+
+    private String normalizeProfileValue(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

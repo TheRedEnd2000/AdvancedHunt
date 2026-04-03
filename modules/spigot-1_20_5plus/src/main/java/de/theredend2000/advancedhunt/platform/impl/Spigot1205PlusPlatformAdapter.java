@@ -225,11 +225,14 @@ public class Spigot1205PlusPlatformAdapter extends Spigot115PlatformAdapter {
     }
 
     @Override
-    public void sendSkullUpdatePacket(Player player, Location loc, String texture) {
-        if (player == null || loc == null || texture == null || texture.isEmpty()) return;
+    public void sendSkullUpdatePacket(Player player, Location loc, String texture, String ownerName) {
+        if (player == null || loc == null) return;
         if (loc.getWorld() == null) return;
+        String normalizedTexture = normalizeProfileValue(texture);
+        String normalizedOwnerName = normalizeProfileValue(ownerName);
+        if (normalizedTexture == null && normalizedOwnerName == null) return;
         if (!isPacketEventsReady()) {
-            super.sendSkullUpdatePacket(player, loc, texture);
+            super.sendSkullUpdatePacket(player, loc, normalizedTexture, normalizedOwnerName);
             return;
         }
 
@@ -240,29 +243,32 @@ public class Spigot1205PlusPlatformAdapter extends Spigot115PlatformAdapter {
             root.setTag("id", new NBTString("minecraft:skull"));
 
             NBTCompound profile = new NBTCompound();
-            
-            UUID randomUUID = UUID.randomUUID();
-            int[] uuidInts = new int[] {
-                (int) (randomUUID.getMostSignificantBits() >> 32),
-                (int) randomUUID.getMostSignificantBits(),
-                (int) (randomUUID.getLeastSignificantBits() >> 32),
-                (int) randomUUID.getLeastSignificantBits()
-            };
-            profile.setTag("id", new NBTIntArray(uuidInts));
-            
-            NBTList<NBTCompound> properties = NBTList.createCompoundList();
-            NBTCompound textureTag = new NBTCompound();
-            textureTag.setTag("name", new NBTString("textures"));
-            textureTag.setTag("value", new NBTString(texture));
-            properties.addTag(textureTag);
+            if (normalizedOwnerName != null) {
+                profile.setTag("name", new NBTString(normalizedOwnerName));
+            }
+            if (normalizedTexture != null) {
+                UUID randomUUID = UUID.randomUUID();
+                int[] uuidInts = new int[] {
+                    (int) (randomUUID.getMostSignificantBits() >> 32),
+                    (int) randomUUID.getMostSignificantBits(),
+                    (int) (randomUUID.getLeastSignificantBits() >> 32),
+                    (int) randomUUID.getLeastSignificantBits()
+                };
+                profile.setTag("id", new NBTIntArray(uuidInts));
 
-            profile.setTag("properties", properties);
+                NBTList<NBTCompound> properties = NBTList.createCompoundList();
+                NBTCompound textureTag = new NBTCompound();
+                textureTag.setTag("name", new NBTString("textures"));
+                textureTag.setTag("value", new NBTString(normalizedTexture));
+                properties.addTag(textureTag);
+                profile.setTag("properties", properties);
+            }
             root.setTag("profile", profile);
 
             WrapperPlayServerBlockEntityData packet = new WrapperPlayServerBlockEntityData(pos, BlockEntityTypes.SKULL, root);
             PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
         } catch (Throwable ignored) {
-            super.sendSkullUpdatePacket(player, loc, texture);
+            super.sendSkullUpdatePacket(player, loc, normalizedTexture, normalizedOwnerName);
         }
     }
 }
