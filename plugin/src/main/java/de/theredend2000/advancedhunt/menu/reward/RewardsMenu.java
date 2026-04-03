@@ -1,22 +1,28 @@
 package de.theredend2000.advancedhunt.menu.reward;
 
+import com.cronutils.model.Cron;
+import com.cronutils.model.time.ExecutionTime;
 import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.model.*;
+import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.platform.PlatformAccess;
+import de.theredend2000.advancedhunt.util.CronUtils;
 import de.theredend2000.advancedhunt.util.ItemBuilder;
 import de.theredend2000.advancedhunt.util.ItemSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 /**
  * A GUI menu that displays the rewards configured for a RewardHolder (Treasure or Collection).
@@ -116,6 +122,27 @@ public class RewardsMenu extends PagedMenu {
     @Override
     public void addMenuBorder() {
         super.addMenuBorder();
+
+        // Info button
+        if (holder instanceof TreasureRewardHolder) {
+            Treasure treasure = ((TreasureRewardHolder) holder).getTreasure();
+            addButton(0, new ItemBuilder(XMaterial.PLAYER_HEAD)
+                    .setDisplayName(plugin.getMessageManager().getMessage("gui.rewards.treasure_info.name", false))
+                    .setLore(plugin.getMessageManager().getMessageList("gui.rewards.treasure_info.lore", false,
+                            "%uuid%", treasure.getId().toString()))
+                    .setSkullTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY0MzlkMmUzMDZiMjI1NTE2YWE5YTZkMDA3YTdlNzVlZGQyZDUwMTVkMTEzYjQyZjQ0YmU2MmE1MTdlNTc0ZiJ9fX0=")
+                    .build(), e ->{
+                        playerMenuUtility.closeInventory();
+                        showTreasureInfo(playerMenuUtility, treasure);
+                    });
+        }
+        /*
+        if (holder instanceof TreasureRewardHolder) {
+            Treasure treasure = ((TreasureRewardHolder) holder).getTreasure();
+            return plugin.getMessageManager().getMessage(holder.getRewardsTitleKey(), false)
+                    + " [" + treasure.getId() + "]";
+        }
+         */
 
         // Reward controls
         addButton(53, new ItemBuilder(XMaterial.HOPPER)
@@ -668,5 +695,62 @@ public class RewardsMenu extends PagedMenu {
             return String.valueOf((int) chance);
         }
         return String.format("%.1f", chance);
+    }
+
+    private void showTreasureInfo(Player player, Treasure treasure) {
+        String uuid = treasure.getId().toString();
+        String material = treasure.getMaterial();
+        String blockStateFull = treasure.getBlockState() != null ? treasure.getBlockState() : "";
+        String blockStateDisplay = blockStateFull.length() > 40 ? blockStateFull.substring(0, 40) + "..." : blockStateFull;
+        String nbtFull = treasure.getNbtData() != null ? treasure.getNbtData() : "-";
+        String nbtDisplay = nbtFull.length() > 60 ? nbtFull.substring(0, 60) + "..." : nbtFull;
+        Location loc = treasure.getLocation();
+        int rewardsCount = treasure.getRewards().size();
+
+        String locationStr = loc != null
+                ? plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.location", false,
+                "%x%", String.valueOf(loc.getBlockX()),
+                "%y%", String.valueOf(loc.getBlockY()),
+                "%z%", String.valueOf(loc.getBlockZ()),
+                "%world%", loc.getWorld() != null ? loc.getWorld().getName() : "?")
+                : "-";
+
+        String uuidLineTemplate = plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.uuid",false, "%uuid%", uuid);
+        String nbtLineTemplate = plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.nbt",false, "%nbtData%", nbtDisplay);
+        String blockStateLineTemplate = plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.block_states_line",false, "%block_states%", blockStateDisplay);
+        String hoverUuid = plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.click_to_copy_uuid",false);
+        String hoverNbt = plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.click_to_copy_nbt",false);
+        String hoverBlockState = plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.click_to_copy_blockstate",false);
+        String hoverAll = plugin.getMessageManager().getMessage("gui.rewards.treasure_info.info.click_to_copy_all",false);
+
+        // Build the "copy all" string
+        String copyAll = "UUID: " + uuid
+                + " | Material: " + material
+                + (!blockStateFull.isEmpty() ? " | BlockState: " + blockStateFull : "")
+                + (!nbtFull.equals("-")      ? " | NBT: "        + nbtFull        : "")
+                + " | Location: " + locationStr
+                + " | Rewards: " + rewardsCount;
+
+        List<String> lines = plugin.getMessageManager().getMessageList("gui.rewards.treasure_info.info.lines", false,
+                "%uuid%", uuidLineTemplate,
+                "%count%", String.valueOf(rewardsCount),
+                "%block%", material,
+                "%blockStateLine%", blockStateLineTemplate,
+                "%nbtData%", nbtLineTemplate,
+                "%location%",         locationStr);
+
+        for (String line : lines) {
+            if (line.contains(uuid)) {
+                PlatformAccess.get().sendClickableCopyText(player, line, uuid, hoverUuid);
+            } else if (!nbtFull.equals("-") && line.contains(nbtDisplay.replace("...", "").substring(0, Math.min(20, nbtDisplay.length())))) {
+                PlatformAccess.get().sendClickableCopyText(player, line, nbtFull, hoverNbt);
+            } else if (!blockStateFull.isEmpty() && line.contains(blockStateDisplay.replace("...", "").substring(0, Math.min(20, blockStateDisplay.length())))) {
+                PlatformAccess.get().sendClickableCopyText(player, line, blockStateFull, hoverBlockState);
+            } else if (line.contains("%copyall%") || line.contains("[COPY ALL DATA]")) {
+                PlatformAccess.get().sendClickableCopyText(player, line, copyAll, hoverAll);
+            } else {
+                player.sendMessage(line);
+            }
+        }
     }
 }

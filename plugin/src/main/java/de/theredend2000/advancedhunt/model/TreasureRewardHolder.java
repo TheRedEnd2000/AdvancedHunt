@@ -34,6 +34,10 @@ public class TreasureRewardHolder implements RewardHolder {
         this.treasure = newTreasure;
     }
 
+    public Treasure getTreasure() {
+        return treasure;
+    }
+
     @Override
     public String getRewardsTitleKey() {
         return "gui.rewards.title";
