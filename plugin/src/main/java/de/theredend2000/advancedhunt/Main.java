@@ -532,7 +532,7 @@ public final class Main extends JavaPlugin {
         minecraftHelp = MinecraftHelp.<CommandSender>builder()
                 .commandManager(commandManager)
                 .audienceProvider(adventure::sender)
-                .commandPrefix("/" + parts[0])
+                .commandPrefix("/" + parts[0] + " help")
                 .colors(MinecraftHelp.helpColors(
                         NamedTextColor.GOLD,
                         NamedTextColor.YELLOW,
