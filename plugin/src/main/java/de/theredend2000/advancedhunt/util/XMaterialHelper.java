@@ -40,15 +40,27 @@ public class XMaterialHelper {
 
     /**
      * Resolves a stored material name into a displayable item stack.
-     * Head/skull aliases are normalized to a player head so texture application can run later.
+     * Head/skull aliases are normalized to the correct display item, while player heads
+     * can still be upgraded later when texture or owner data is available.
      */
     public static ItemStack getItemStack(String materialName) {
+        return getItemStack(materialName, null);
+    }
+
+    public static ItemStack getItemStack(String materialName, String blockState) {
         if (materialName == null || materialName.trim().isEmpty()) {
             return null;
         }
 
-        if (HeadHelper.isHeadMaterialName(materialName)) {
-            return XMaterial.PLAYER_HEAD.parseItem();
+        String headMaterialName = HeadHelper.resolveHeadDisplayMaterialName(materialName, blockState);
+        if (headMaterialName != null) {
+            Optional<XMaterial> resolvedHeadMaterial = XMaterial.matchXMaterial(headMaterialName);
+            if (resolvedHeadMaterial.isPresent()) {
+                ItemStack item = getItemStack(resolvedHeadMaterial.get());
+                if (item != null) {
+                    return item;
+                }
+            }
         }
 
         Material material = Material.matchMaterial(materialName);

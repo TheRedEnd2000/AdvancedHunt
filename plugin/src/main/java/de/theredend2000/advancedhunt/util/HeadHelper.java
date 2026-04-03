@@ -49,12 +49,10 @@ public class HeadHelper {
      * resolve to a non-player skull type (e.g. creeper).
      */
     public static boolean isHeadMaterialName(String materialName) {
-        if (materialName == null) return false;
-        String name = materialName.trim();
-        if (name.isEmpty()) return false;
-        name = name.toUpperCase(java.util.Locale.ROOT);
+        String name = normalizeMaterialName(materialName);
+        if (name == null) return false;
 
-        if ("SKULL".equals(name) || "SKULL_ITEM".equals(name) || "LEGACY_SKULL".equals(name) || "LEGACY_SKULL_ITEM".equals(name)) {
+        if (isLegacySkullMaterial(name)) {
             return true;
         }
         return name.endsWith("_HEAD")
@@ -66,6 +64,88 @@ public class HeadHelper {
     public static boolean isPlayerHead(ItemStack item) {
         XMaterial material = XMaterial.matchXMaterial(item);
         return material == XMaterial.PLAYER_HEAD || material == XMaterial.PLAYER_WALL_HEAD;
+    }
+
+    public static boolean isPlayerHeadMaterialName(String materialName) {
+        return isPlayerHeadMaterialName(materialName, null);
+    }
+
+    public static boolean isPlayerHeadMaterialName(String materialName, String blockState) {
+        String normalizedMaterial = normalizeMaterialName(materialName);
+        if ("PLAYER_HEAD".equals(normalizedMaterial) || "PLAYER_WALL_HEAD".equals(normalizedMaterial)) {
+            return true;
+        }
+
+        String blockStateMaterial = extractMaterialNameFromBlockState(blockState);
+        return "PLAYER_HEAD".equals(blockStateMaterial) || "PLAYER_WALL_HEAD".equals(blockStateMaterial);
+    }
+
+    public static String resolveHeadDisplayMaterialName(String materialName, String blockState) {
+        String blockStateMaterial = toDisplayHeadMaterialName(extractMaterialNameFromBlockState(blockState));
+        if (blockStateMaterial != null) {
+            return blockStateMaterial;
+        }
+
+        String directMaterial = toDisplayHeadMaterialName(normalizeMaterialName(materialName));
+        if (directMaterial != null) {
+            return directMaterial;
+        }
+
+        String normalizedMaterial = normalizeMaterialName(materialName);
+        if (isLegacySkullMaterial(normalizedMaterial)) {
+            return isPlayerHeadMaterialName(materialName, blockState) ? "PLAYER_HEAD" : "SKELETON_SKULL";
+        }
+
+        return null;
+    }
+
+    private static String normalizeMaterialName(String materialName) {
+        if (materialName == null) return null;
+        String name = materialName.trim();
+        if (name.isEmpty()) return null;
+        return name.toUpperCase(java.util.Locale.ROOT);
+    }
+
+    private static boolean isLegacySkullMaterial(String materialName) {
+        return "SKULL".equals(materialName)
+                || "SKULL_ITEM".equals(materialName)
+                || "LEGACY_SKULL".equals(materialName)
+                || "LEGACY_SKULL_ITEM".equals(materialName);
+    }
+
+    private static String extractMaterialNameFromBlockState(String blockState) {
+        String normalized = normalizeMaterialName(blockState);
+        if (normalized == null) {
+            return null;
+        }
+
+        int bracketIndex = normalized.indexOf('[');
+        if (bracketIndex != -1) {
+            normalized = normalized.substring(0, bracketIndex);
+        }
+
+        int colonIndex = normalized.indexOf(':');
+        if (colonIndex != -1) {
+            normalized = normalized.substring(colonIndex + 1);
+        }
+
+        return isHeadMaterialName(normalized) ? normalized : null;
+    }
+
+    private static String toDisplayHeadMaterialName(String materialName) {
+        if (materialName == null) {
+            return null;
+        }
+        if (materialName.endsWith("_WALL_HEAD")) {
+            return materialName.substring(0, materialName.length() - "_WALL_HEAD".length()) + "_HEAD";
+        }
+        if (materialName.endsWith("_WALL_SKULL")) {
+            return materialName.substring(0, materialName.length() - "_WALL_SKULL".length()) + "_SKULL";
+        }
+        if (materialName.endsWith("_HEAD") || materialName.endsWith("_SKULL")) {
+            return materialName;
+        }
+        return null;
     }
 
     public static SkullProfileData getSkullProfileData(String nbtData) {

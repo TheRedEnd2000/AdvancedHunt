@@ -161,11 +161,13 @@ public class CollectionListMenu extends PagedMenu {
             item = null;
         }
         if (item == null) {
-            item = XMaterialHelper.getItemStack(treasureCore.getMaterial());
+            item = XMaterialHelper.getItemStack(treasureCore.getMaterial(), treasureCore.getBlockState());
             if (item == null || MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
         }
 
-        if (HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) && item != null) {
+        boolean isPlayerHeadTreasure = HeadHelper.isPlayerHeadMaterialName(treasureCore.getMaterial(), treasureCore.getBlockState())
+                || skullInfo != null;
+        if (isPlayerHeadTreasure && item != null) {
             item = PlatformAccess.get().ensurePlayerHeadItem(item);
         }
 

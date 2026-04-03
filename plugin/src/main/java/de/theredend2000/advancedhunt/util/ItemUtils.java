@@ -30,7 +30,7 @@ public class ItemUtils {
             getLogger().warning("ItemsAdder item '" + treasure.getBlockState() + "' not found, falling back to STONE");
             return XMaterial.STONE.parseItem();
         } else {
-            ItemStack item = XMaterialHelper.getItemStack(treasure.getMaterial());
+            ItemStack item = XMaterialHelper.getItemStack(treasure.getMaterial(), treasure.getBlockState());
             if (item != null) {
                 return item;
             }

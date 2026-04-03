@@ -208,13 +208,15 @@ public class ProgressMenu extends PagedMenu {
             }
 
             if (item == null) {
-                item = XMaterialHelper.getItemStack(treasureCore.getMaterial());
+                item = XMaterialHelper.getItemStack(treasureCore.getMaterial(), treasureCore.getBlockState());
                 if (item != null && MaterialUtils.isAir(item.getType())) {
                     item = null;
                 }
             }
 
-            if (HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) && item != null) {
+            boolean isPlayerHeadTreasure = HeadHelper.isPlayerHeadMaterialName(treasureCore.getMaterial(), treasureCore.getBlockState())
+                    || skullInfo != null;
+            if (isPlayerHeadTreasure && item != null) {
                 item = PlatformAccess.get().ensurePlayerHeadItem(item);
             }
 
