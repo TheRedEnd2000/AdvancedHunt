@@ -1,4 +1,4 @@
-config-version: 2
+config-version: 2.1
 
 common:
   treasure: "Kho báu"
@@ -398,6 +398,44 @@ gui:
     title: "&8Phần thưởng kho báu"
     collection_title: "&8Phần thưởng hoàn thành"
     preset_title: "&8Preset phần thưởng"
+    treasure_info:
+      name: "&eThông Tin Treasure"
+      lore:
+        - "&8▸ &7Treasure này có dữ liệu riêng."
+        - "&8▸ &7Dùng UUID trong PlaceholderAPI."
+        - ""
+        - "&8┌ &7UUID"
+        - "&8└ &b%uuid%"
+        - ""
+        - "&e▶ Click để xem chi tiết."
+      info:
+        lines:
+          - ""
+          - "&6&l━━━━━━ Thông Tin Treasure ━━━━━━"
+          - ""
+          - "&8▸ &7UUID"
+          - "&f  %uuid%"
+          - ""
+          - "&8▸ &7Phần Thưởng: &e%count%"
+          - "&8▸ &7Vật Liệu: &e%block%"
+          - "&8▸ &7Trạng Thái Khối: &e%blockStateLine%"
+          - "&8▸ &7Vị Trí: &e%location%"
+          - ""
+          - "&8▸ &7Dữ Liệu NBT"
+          - "&f  %nbtData%"
+          - ""
+          - "&8▸ &7PlaceholderAPI: &e%advancedhunt_has_found_<treasure_id>%"
+          - ""
+          - "&8▸ &6&l[SAO CHÉP TẤT CẢ DỮ LIỆU]"
+        uuid: "%uuid%"
+        nbt: "%nbtData%"
+        block_states: "&8(%block_states%)"
+        block_states_line: "%block_states%"
+        location: "%x%, %y%, %z% &8: &7%world%"
+        click_to_copy_uuid: "&eClick để sao chép UUID"
+        click_to_copy_nbt: "&eClick để sao chép NBT"
+        click_to_copy_blockstate: "&eClick để sao chép Trạng Thái Khối"
+        click_to_copy_all: "&eClick để sao chép tất cả dữ liệu"
     open_reward_option_menu:
       title: "&8Tuỳ chọn phần thưởng"
       name: "&6+ Thêm phần thưởng"

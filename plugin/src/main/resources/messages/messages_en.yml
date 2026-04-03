@@ -1,4 +1,4 @@
-config-version: 2
+config-version: 2.1
 
 common:
   treasure: "Treasure"
@@ -428,7 +428,6 @@ gui:
           - "&8▸ &7PlaceholderAPI: &e%advancedhunt_has_found_<treasure_id>%"
           - ""
           - "&8▸ &6&l[COPY ALL DATA]"
-          - ""
         uuid: "%uuid%"
         nbt: "%nbtData%"
         block_states: "&8(%block_states%)"

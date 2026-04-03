@@ -1,4 +1,4 @@
-config-version: 2
+config-version: 2.1
 
 common:
   treasure: "Treasure"
@@ -399,6 +399,45 @@ gui:
     title: "&8Treasure Puroshkar-somuho"
     collection_title: "&8Sompurno-korar-porer Puroshkar-somuho"
     preset_title: "&8Puroshkar-er Preset"
+    treasure_info:
+      name: "&eTransure Tothho"
+      lore:
+        - "&8▸ &7Ei treasure-er nijer alada data ache."
+        - "&8▸ &7PlaceholderAPI-te UUID use korun."
+        - ""
+        - "&8┌ &7UUID"
+        - "&8└ &b%uuid%"
+        - ""
+        - "&e▶ Bistarito dekhte click korun."
+      info:
+        lines:
+          - ""
+          - "&6&l━━━━━━ Treasure Tothho ━━━━━━"
+          - ""
+          - "&8▸ &7UUID"
+          - "&f  %uuid%"
+          - ""
+          - "&8▸ &7Puroshkar: &e%count%"
+          - "&8▸ &7Material: &e%block%"
+          - "&8▸ &7Block State: &e%blockStateLine%"
+          - "&8▸ &7Obasthaan: &e%location%"
+          - ""
+          - "&8▸ &7NBT Data"
+          - "&f  %nbtData%"
+          - ""
+          - "&8▸ &7PlaceholderAPI: &e%advancedhunt_has_found_<treasure_id>%"
+          - ""
+          - "&8▸ &6&l[SHOB DATA COPY KORUN]"
+          - ""
+        uuid: "%uuid%"
+        nbt: "%nbtData%"
+        block_states: "&8(%block_states%)"
+        block_states_line: "%block_states%"
+        location: "%x%, %y%, %z% &8: &7%world%"
+        click_to_copy_uuid: "&eUUID copy korte click korun"
+        click_to_copy_nbt: "&eNBT copy korte click korun"
+        click_to_copy_blockstate: "&eBlock State copy korte click korun"
+        click_to_copy_all: "&eShob data copy korte click korun"
     open_reward_option_menu:
       title: "&8Puroskar ba Reward-er Options"
       name: "&6+ Puroshkar ba Reward jog korun"

@@ -1,4 +1,4 @@
-config-version: 2
+config-version: 2.1
 
 common:
   treasure: "Treasure"
@@ -399,6 +399,44 @@ gui:
     title: "&8Treasure Belohnungen"
     collection_title: "&8Abschließung-Belohnungen"
     preset_title: "&8Belohnung-Vorlagen"
+    treasure_info:
+      name: "&eTreasure Informationen"
+      lore:
+        - "&8▸ &7Diese Treasure hat viele Daten."
+        - "&8▸ &7Nutze die UUID in der PlaceholderAPI."
+        - ""
+        - "&8┌ &7UUID"
+        - "&8└ &b%uuid%"
+        - ""
+        - "&e▶ Klicke für mehr Details."
+      info:
+        lines:
+          - ""
+          - "&6&l━━━━━━ Treasure Info ━━━━━━"
+          - ""
+          - "&8▸ &7UUID"
+          - "&f  %uuid%"
+          - ""
+          - "&8▸ &7Belohnungen: &e%count%"
+          - "&8▸ &7Material: &e%block%"
+          - "&8▸ &7BlockState: &e%blockStateLine%"
+          - "&8▸ &7Ort: &e%location%"
+          - ""
+          - "&8▸ &7NBT-Daten"
+          - "&f  %nbtData%"
+          - ""
+          - "&8▸ &7PlaceholderAPI: &e%advancedhunt_has_found_<treasure_id>%"
+          - ""
+          - "&8▸ &6&l[Alle Daten Kopieren]"
+        uuid: "%uuid%"
+        nbt: "%nbtData%"
+        block_states: "&8(%block_states%)"
+        block_states_line: "%block_states%"
+        location: "%x%, %y%, %z% &8: &7%world%"
+        click_to_copy_uuid: "&eClick to copy UUID"
+        click_to_copy_nbt: "&eClick to copy NBT"
+        click_to_copy_blockstate: "&eClick to copy BlockState"
+        click_to_copy_all: "&eClick to copy all data"
     open_reward_option_menu:
       title: "&8Belohnungsoptionen"
       name: "&6+ Belohnung hinzufügen"
