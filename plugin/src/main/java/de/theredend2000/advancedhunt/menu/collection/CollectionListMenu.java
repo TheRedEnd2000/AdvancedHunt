@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.menu.common.SkullInfo;
+import de.theredend2000.advancedhunt.menu.common.TreasureMenuItemSupport;
 import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.menu.treasure.TreasureActionMenu;
 import de.theredend2000.advancedhunt.menu.treasure.WhoFoundMenu;
@@ -11,8 +12,8 @@ import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.model.CollectionRewardHolder;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.model.TreasureRewardHolder;
-import de.theredend2000.advancedhunt.platform.PlatformAccess;
-import de.theredend2000.advancedhunt.util.*;
+import de.theredend2000.advancedhunt.util.HeadHelper;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -84,20 +85,7 @@ public class CollectionListMenu extends PagedMenu {
 
             boolean isHead = HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) || HeadHelper.isPlayerHead(item);
             CompletableFuture<SkullInfo> skullInfoFuture = isHead
-                    ? plugin.getTreasureManager().getFullTreasureAsync(treasureId).thenApply(fullTreasure -> {
-                        if (fullTreasure == null) {
-                            return null;
-                        }
-                        String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
-                        if (texture != null) {
-                            return new SkullInfo(texture, null);
-                        }
-                        String profileName = HeadHelper.getProfileNameFromNbt(fullTreasure.getNbtData());
-                        if (profileName != null) {
-                            return new SkullInfo(null, profileName);
-                        }
-                        return null;
-                    })
+                    ? TreasureMenuItemSupport.loadSkullInfo(plugin, treasureId)
                     : CompletableFuture.completedFuture(null);
 
             int finalI = i;
@@ -151,35 +139,10 @@ public class CollectionListMenu extends PagedMenu {
     }
 
     private ItemStack createTreasureItem(TreasureCore treasureCore, int index, Integer playerFoundSize, SkullInfo skullInfo) {
-        // For menu display, use the lightweight TreasureCore fields.
-        // ItemsAdder needs blockState (namespaced ID) to render correct icon.
-        ItemStack item = null;
-        if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
-            item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
-        }
-        if (item != null && MaterialUtils.isAir(item.getType())) {
-            item = null;
-        }
-        if (item == null) {
-            item = XMaterialHelper.getItemStack(treasureCore.getMaterial(), treasureCore.getBlockState());
-            if (item == null || MaterialUtils.isAir(item.getType())) item = new ItemStack(XMaterial.CHEST.get());
-        }
-
-        boolean isPlayerHeadTreasure = HeadHelper.isPlayerHeadMaterialName(treasureCore.getMaterial(), treasureCore.getBlockState())
-                || skullInfo != null;
-        if (isPlayerHeadTreasure && item != null) {
-            item = PlatformAccess.get().ensurePlayerHeadItem(item);
-        }
+        ItemStack item = TreasureMenuItemSupport.resolveDisplayItem(treasureCore, skullInfo);
 
         ItemBuilder builder = new ItemBuilder(item);
-
-        if (HeadHelper.isPlayerHead(item) && skullInfo != null) {
-            if (skullInfo.texture() != null) {
-                builder.setSkullTexture(skullInfo.texture());
-            } else if (skullInfo.ownerName() != null) {
-                builder.setSkullOwner(skullInfo.ownerName());
-            }
-        }
+        TreasureMenuItemSupport.applySkullInfo(builder, skullInfo);
 
         builder.setDisplayName(plugin.getMessageManager().getMessage("gui.collection_content.treasure_item.name", false,
             "%number%", String.valueOf(index + 1)));

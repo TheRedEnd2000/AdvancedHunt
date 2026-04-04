@@ -4,10 +4,11 @@ import com.cryptomorin.xseries.XMaterial;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.menu.PagedMenu;
 import de.theredend2000.advancedhunt.menu.common.SkullInfo;
+import de.theredend2000.advancedhunt.menu.common.TreasureMenuItemSupport;
 import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.TreasureCore;
-import de.theredend2000.advancedhunt.platform.PlatformAccess;
-import de.theredend2000.advancedhunt.util.*;
+import de.theredend2000.advancedhunt.util.HeadHelper;
+import de.theredend2000.advancedhunt.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -88,14 +89,16 @@ public class ProgressMenu extends PagedMenu {
             return;
         }
 
-        addPagedButtons(treasures.size());
-
         // IMPORTANT: Calculate the start and end index for this page
         int startIndex = page * maxItemsPerPage;
         int endIndex = Math.min(startIndex + maxItemsPerPage, treasures.size());
 
         // IMPORTANT: Set the hasNextPage flag
         this.hasNextPage = endIndex < treasures.size();
+
+        addPagedButtons(treasures.size());
+
+        int renderedPage = page;
 
         // Show only items for the current page
         for (int i = startIndex; i < endIndex; i++) {
@@ -107,33 +110,20 @@ public class ProgressMenu extends PagedMenu {
 
             int slot = getSlotForPagedIndex(pageIndex);
             ItemStack item = createTreasureItem(treasureCore, i, isFound, null);
-            addButton(slot, item, e -> handleTreasureClick(e, treasureCore, isFound));
+            addStaticItem(slot, item);
 
             boolean isHeadTreasure = HeadHelper.isHeadMaterialName(treasureCore.getMaterial()) || HeadHelper.isPlayerHead(item);
             if (isFound && isHeadTreasure) {
                 UUID treasureId = treasureCore.getId();
                 int finalI = i;
-                plugin.getTreasureManager().getFullTreasureAsync(treasureId)
-                        .thenApply(fullTreasure -> {
-                            if (fullTreasure == null) {
-                                return null;
-                            }
-                            String texture = HeadHelper.getTextureFromNbt(fullTreasure.getNbtData());
-                            if (texture != null) {
-                                return new SkullInfo(texture, null);
-                            }
-                            String profileName = HeadHelper.getProfileNameFromNbt(fullTreasure.getNbtData());
-                            if (profileName != null) {
-                                return new SkullInfo(null, profileName);
-                            }
-                            return null;
-                        })
+                int expectedPage = renderedPage;
+                TreasureMenuItemSupport.loadSkullInfo(plugin, treasureId)
                         .thenAccept(skullInfo -> {
                             if (skullInfo == null) {
                                 return;
                             }
                             Bukkit.getScheduler().runTask(plugin, () -> {
-                                if (!isViewingThisMenu()) {
+                                if (!isViewingThisMenu(expectedPage)) {
                                     return;
                                 }
                                 ItemStack updated = createTreasureItem(treasureCore, finalI, true, skullInfo);
@@ -155,15 +145,24 @@ public class ProgressMenu extends PagedMenu {
         return playerMenuUtility.getOpenInventory().getTopInventory().getHolder() == this;
     }
 
+    private boolean isViewingThisMenu(int expectedPage) {
+        return page == expectedPage && isViewingThisMenu();
+    }
+
     private void fetchData() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            this.playerData = plugin.getPlayerManager().getPlayerData(playerMenuUtility.getUniqueId());
+            PlayerData loadedPlayerData = plugin.getPlayerManager().getPlayerDataWithTimeout(playerMenuUtility.getUniqueId());
+            if (loadedPlayerData == null) {
+                loadedPlayerData = new PlayerData(playerMenuUtility.getUniqueId());
+            }
+
+            this.playerData = loadedPlayerData;
             this.treasures = plugin.getTreasureManager().getTreasureCoresInCollection(collectionId);
             this.isLoading = false;
             
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (playerMenuUtility.getOpenInventory().getTopInventory().getHolder() == this) {
-                    open();
+                if (isViewingThisMenu()) {
+                    refresh();
                 }
             });
         });
@@ -199,40 +198,9 @@ public class ProgressMenu extends PagedMenu {
 
         if (isFound) {
             statusColor = ChatColor.GREEN.toString();
-            ItemStack item = null;
-            if ("ITEMS_ADDER".equalsIgnoreCase(treasureCore.getMaterial())) {
-                item = ItemsAdderAdapter.getCustomItem(treasureCore.getBlockState());
-            }
-            if (item != null && MaterialUtils.isAir(item.getType())) {
-                item = null;
-            }
-
-            if (item == null) {
-                item = XMaterialHelper.getItemStack(treasureCore.getMaterial(), treasureCore.getBlockState());
-                if (item != null && MaterialUtils.isAir(item.getType())) {
-                    item = null;
-                }
-            }
-
-            boolean isPlayerHeadTreasure = HeadHelper.isPlayerHeadMaterialName(treasureCore.getMaterial(), treasureCore.getBlockState())
-                    || skullInfo != null;
-            if (isPlayerHeadTreasure && item != null) {
-                item = PlatformAccess.get().ensurePlayerHeadItem(item);
-            }
-
-            if (item != null) {
-                builder = new ItemBuilder(item);
-            } else {
-                builder = new ItemBuilder(XMaterial.CHEST);
-            }
-
-            if (HeadHelper.isPlayerHead(item) && skullInfo != null) {
-                if (skullInfo.texture() != null) {
-                    builder.setSkullTexture(skullInfo.texture());
-                } else if (skullInfo.ownerName() != null) {
-                    builder.setSkullOwner(skullInfo.ownerName());
-                }
-            }
+            ItemStack item = TreasureMenuItemSupport.resolveDisplayItem(treasureCore, skullInfo);
+            builder = new ItemBuilder(item);
+            TreasureMenuItemSupport.applySkullInfo(builder, skullInfo);
         } else {
             statusColor = ChatColor.RED.toString();
             builder = new ItemBuilder(XMaterial.RED_STAINED_GLASS_PANE);
@@ -259,10 +227,5 @@ public class ProgressMenu extends PagedMenu {
         builder.setLore(lore);
 
         return builder.build();
-    }
-
-    private void handleTreasureClick(InventoryClickEvent e, TreasureCore treasureCore, boolean isFound) {
-        // Optional: Add click functionality here, such as teleportation or showing more details
-        // For now, clicks do nothing - this is just a view-only progress menu
     }
 }

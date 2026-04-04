@@ -224,6 +224,10 @@ public abstract class Menu implements InventoryHolder {
         this.buttons = new Button[getSlots()];
         this.setMenuItems();
         this.addCloseOrBack();
+
+        if (playerMenuUtility != null && playerMenuUtility.isOnline()) {
+            playerMenuUtility.updateInventory();
+        }
     }
 
     /**
