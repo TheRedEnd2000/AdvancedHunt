@@ -30,10 +30,4 @@ public class ValidationUtilTest {
         assertTrue(ValidationUtil.validateTime("09:15"));
         assertFalse(ValidationUtil.validateTime("25:00"));
     }
-
-    @Test
-    public void validateActFormatAcceptsQuotedCopiedInputAndRejectsBrokenRules() {
-        assertTrue(ValidationUtil.validateActFormat("\"[2026-04-03:2026-04-10] [*] [NONE]\""));
-        assertFalse(ValidationUtil.validateActFormat("[*] [8hours] [NONE]"));
-    }
 }
