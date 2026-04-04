@@ -15,10 +15,7 @@ import de.theredend2000.advancedhunt.menu.reward.RewardsMenu;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
 import de.theredend2000.advancedhunt.platform.PlatformAccess;
-import de.theredend2000.advancedhunt.util.CronUtils;
-import de.theredend2000.advancedhunt.util.MaterialUtils;
-import de.theredend2000.advancedhunt.util.MessageUtils;
-import de.theredend2000.advancedhunt.util.ParticleUtils;
+import de.theredend2000.advancedhunt.util.*;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
 import org.bukkit.*;
@@ -30,6 +27,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -56,21 +54,15 @@ import java.util.stream.Collectors;
 
 public class AdvancedHuntCommand {
 
-    private static final String DEBUG_PLACED_MARKER = "AH_DEBUG_PLACED";
-
     private static final class PaletteEntry {
         private final Material type;
         private final PlayerProfile ownerProfile;
-        private final String materialName;
-        private final String blockState;
-        private final String nbtData;
+        private final String blockEntityNbt;
 
-        private PaletteEntry(Material type, PlayerProfile ownerProfile, String materialName, String blockState, String nbtData) {
+        private PaletteEntry(Material type, PlayerProfile ownerProfile, String blockEntityNbt) {
             this.type = type;
             this.ownerProfile = ownerProfile;
-            this.materialName = materialName;
-            this.blockState = blockState;
-            this.nbtData = nbtData;
+            this.blockEntityNbt = blockEntityNbt;
         }
 
         private Material type() {
@@ -81,16 +73,8 @@ public class AdvancedHuntCommand {
             return ownerProfile;
         }
 
-        private String materialName() {
-            return materialName;
-        }
-
-        private String blockState() {
-            return blockState;
-        }
-
-        private String nbtData() {
-            return nbtData;
+        private String blockEntityNbt() {
+            return blockEntityNbt;
         }
     }
 
@@ -1223,38 +1207,7 @@ public class AdvancedHuntCommand {
                     if (plugin.getTreasureManager().getTreasureCoreAt(loc) != null) continue;
 
                     PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
-                    block.setType(chosen.type(), false);
-
-                    if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null) {
-                        BlockState state = block.getState();
-                        if (state instanceof Skull) {
-                            Skull skullState = (Skull) state;
-                            try {
-                                skullState.setOwnerProfile(chosen.ownerProfile());
-                            } catch (Throwable ignored) {
-                            }
-                            skullState.update(true, false);
-                        }
-                    }
-
-                    {
-                        BlockState state = block.getState();
-                        if (state instanceof TileState) {
-                            TileState tileState = (TileState) state;
-                            tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
-                            tileState.update(true, false);
-                        }
-                    }
-
-                    Treasure treasure = new Treasure(
-                            plugin.getTreasureManager().generateUniqueTreasureId(),
-                            collection.getId(),
-                            loc,
-                            sharedRewards,
-                            chosen.nbtData(),
-                            chosen.materialName(),
-                            chosen.blockState()
-                    );
+                    Treasure treasure = createDebugPlacedTreasure(collection, block, sharedRewards, chosen, debugPlacedKey);
                     pendingSaveBatch.add(treasure);
 
                     if (pendingSaveBatch.size() >= saveBatchSize && inFlightBatches.get() < maxInFlightBatches) {
@@ -1401,38 +1354,7 @@ public class AdvancedHuntCommand {
 
                     if (MaterialUtils.isAir(block.getType()) && plugin.getTreasureManager().getTreasureCoreAt(block.getLocation()) == null) {
                         PaletteEntry chosen = palette.get(random.nextInt(palette.size()));
-                        block.setType(chosen.type(), false);
-
-                        if (chosen.type() == XMaterial.PLAYER_HEAD.get() && chosen.ownerProfile() != null) {
-                            BlockState state = block.getState();
-                            if (state instanceof Skull) {
-                                Skull skullState = (Skull) state;
-                                try {
-                                    skullState.setOwnerProfile(chosen.ownerProfile());
-                                } catch (Throwable ignored) {
-                                }
-                                skullState.update(true, false);
-                            }
-                        }
-
-                        {
-                            BlockState state = block.getState();
-                            if (state instanceof TileState) {
-                                TileState tileState = (TileState) state;
-                                tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
-                                tileState.update(true, false);
-                            }
-                        }
-
-                        Treasure treasure = new Treasure(
-                                plugin.getTreasureManager().generateUniqueTreasureId(),
-                                collection.getId(),
-                                block.getLocation(),
-                                sharedRewards,
-                                chosen.nbtData(),
-                                chosen.materialName(),
-                                chosen.blockState()
-                        );
+                        Treasure treasure = createDebugPlacedTreasure(collection, block, sharedRewards, chosen, debugPlacedKey);
                         pendingSaveBatch.add(treasure);
 
                         if (pendingSaveBatch.size() >= saveBatchSize && inFlightBatches.get() < maxInFlightBatches) {
@@ -1521,28 +1443,104 @@ public class AdvancedHuntCommand {
                 }
             }
 
-            String blockState;
-            try {
-                blockState = type.createBlockData().getAsString();
-            } catch (Throwable ignored) {
-                // Fallback: if something goes wrong, keep old behavior by computing later.
-                blockState = "";
-            }
+            entries.add(new PaletteEntry(type, ownerProfile, extractPaletteBlockEntityNbt(item)));
+        }
+        return entries;
+    }
 
-            String nbtData = DEBUG_PLACED_MARKER;
-            if (type == XMaterial.PLAYER_HEAD.get()) {
+    private Treasure createDebugPlacedTreasure(Collection collection, Block block, List<Reward> rewards, PaletteEntry chosen, NamespacedKey debugPlacedKey) {
+        applyDebugPaletteEntry(block, chosen, debugPlacedKey);
+        return new Treasure(
+                plugin.getTreasureManager().generateUniqueTreasureId(),
+                collection.getId(),
+                block.getLocation(),
+                rewards,
+                captureBlockNbt(block),
+                block.getType().name(),
+                BlockUtils.getBlockStateString(block)
+        );
+    }
+
+    private void applyDebugPaletteEntry(Block block, PaletteEntry chosen, NamespacedKey debugPlacedKey) {
+        block.setType(chosen.type(), false);
+
+        BlockState state = block.getState();
+        if (state instanceof Skull && chosen.ownerProfile() != null) {
+            Skull skullState = (Skull) state;
+            try {
+                skullState.setOwnerProfile(chosen.ownerProfile());
+            } catch (Throwable ignored) {
+            }
+        }
+
+        if (state instanceof TileState) {
+            if (chosen.blockEntityNbt() != null && !chosen.blockEntityNbt().isEmpty()) {
                 try {
-                    String headNbt = NBT.get(item, ReadableNBT::toString);
-                    if (headNbt != null && !headNbt.isEmpty()) {
-                        nbtData = DEBUG_PLACED_MARKER + "\n" + headNbt;
-                    }
+                    NBT.modify(state, nbt -> {
+                        try {
+                            nbt.mergeCompound(NBT.parseNBT(chosen.blockEntityNbt()));
+                        } catch (Throwable ignored) {
+                        }
+                    });
                 } catch (Throwable ignored) {
                 }
             }
 
-            entries.add(new PaletteEntry(type, ownerProfile, type.name(), blockState, nbtData));
+            TileState tileState = (TileState) state;
+            tileState.getPersistentDataContainer().set(debugPlacedKey, PersistentDataType.BYTE, (byte) 1);
         }
-        return entries;
+
+        try {
+            state.update(true, false);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private String extractPaletteBlockEntityNbt(ItemStack item) {
+        if (item == null) {
+            return null;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof BlockStateMeta) {
+            try {
+                String blockStateNbt = NBT.get(((BlockStateMeta) meta).getBlockState(), ReadableNBT::toString);
+                if (blockStateNbt != null && !blockStateNbt.isEmpty()) {
+                    return blockStateNbt;
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+
+        try {
+            return NBT.get(item, nbt -> {
+                if (!nbt.hasTag("BlockEntityTag")) {
+                    return null;
+                }
+
+                ReadableNBT blockEntityTag = nbt.getCompound("BlockEntityTag");
+                if (blockEntityTag == null) {
+                    return null;
+                }
+
+                String blockEntityNbt = blockEntityTag.toString();
+                return blockEntityNbt != null && !blockEntityNbt.isEmpty() ? blockEntityNbt : null;
+            });
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    private String captureBlockNbt(Block block) {
+        if (block == null) {
+            return null;
+        }
+
+        try {
+            return NBT.get(block.getState(), ReadableNBT::toString);
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     private void debugRemoveCollectionPlaced(Player player, String collectionName) {
