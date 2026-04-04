@@ -662,6 +662,11 @@ gui:
             - "&7quay lại menu phần thưởng."
   collection_content:
     title: "&8Nội dung bộ sưu tập"
+    no_treasures:
+      name: "&7Không có kho báu"
+      lore:
+        - "&7Bộ sưu tập này chưa có"
+        - "&7kho báu nào được cấu hình."
     treasure_item:
       name: "&6Kho báu #%number%"
       lore:

@@ -662,6 +662,11 @@ gui:
             - "&7返回到奖励菜单。"
   collection_content:
     title: "&8合集内容"
+    no_treasures:
+      name: "&7没有宝藏"
+      lore:
+        - "&7此合集尚未配置"
+        - "&7任何宝藏。"
     treasure_item:
       name: "&6宝藏 #%number%"
       lore:

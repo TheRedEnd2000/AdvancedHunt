@@ -57,10 +57,12 @@ public class CollectionListMenu extends PagedMenu {
         // Add leaderboard button at slot 8 (top right corner)
         addLeaderboardButton();
 
+
         // Use lightweight TreasureCore for menu display
         List<TreasureCore> treasures = plugin.getTreasureManager().getTreasureCoresInCollection(collectionId);
 
         if (treasures == null || treasures.isEmpty()) {
+            addStaticItem(22, getWarningIcon(plugin.getMessageManager().getMessage("gui.collection_content.no_treasures.name", false),plugin.getMessageManager().getMessageList("gui.collection_content.no_treasures.lore", false)));
             return;
         }
 

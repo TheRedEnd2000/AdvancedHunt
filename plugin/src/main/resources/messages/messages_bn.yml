@@ -663,6 +663,11 @@ gui:
             - "&7firiye newar jonno ekhane click korun."
   collection_content:
     title: "&8Collection Content"
+    no_treasures:
+      name: "&7Kono Treasure nei"
+      lore:
+        - "&7Ei collection-er jonno ekhono kono"
+        - "&7treasure thik kora hoyni."
     treasure_item:
       name: "&6Treasure #%number%"
       lore:

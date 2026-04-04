@@ -662,6 +662,11 @@ gui:
             - "&7kehre in das Belohnungsmenu zurück."
   collection_content:
     title: "&8Sammlung Inhalt"
+    no_treasures:
+      name: "&7Keine Treasures"
+      lore:
+        - "&7Diese Sammlung besitzt"
+        - "&7noch keine Treasures."
     treasure_item:
       name: "&6Treasure #%number%"
       lore:

@@ -662,6 +662,11 @@ gui:
             - "&7return to rewards menu."
   collection_content:
     title: "&8Collection Content"
+    no_treasures:
+      name: "&7No Treasures"
+      lore:
+        - "&7This collection has no"
+        - "&7treasures configured yet."
     treasure_item:
       name: "&6Treasure #%number%"
       lore:
