@@ -34,17 +34,8 @@ public class ProgressMenu extends PagedMenu {
 
     @Override
     public String getMenuName() {
-        if (isLoading || treasures == null || treasures.isEmpty()) {
-            return ChatColor.translateAlternateColorCodes('&',
-                plugin.getMessageManager().getMessage("gui.progress.title", false,
-                    "%collection%", collectionName,
-                    "%progress%", "0",
-                    "%total%", "0",
-                    "%percentage%", "0"));
-        }
-
         return ChatColor.translateAlternateColorCodes('&',
-            plugin.getMessageManager().getMessage("gui.progress.title", false));
+            plugin.getMessageManager().getMessage("gui.progress.title", false,"%collection%", collectionName));
     }
 
     @Override
