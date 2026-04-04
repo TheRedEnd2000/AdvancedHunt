@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.theredend2000</groupId>
         <artifactId>advancedhunt-parent</artifactId>
-        <version>4.0.3-Beta</version>
+        <version>4.0.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 

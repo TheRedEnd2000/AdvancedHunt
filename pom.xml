@@ -6,7 +6,7 @@
 
     <groupId>de.theredend2000</groupId>
     <artifactId>advancedhunt-parent</artifactId>
-    <version>4.0.3-Beta</version>
+    <version>4.0.3</version>
     <packaging>pom</packaging>
 
     <name>advancedhunt-parent</name>
