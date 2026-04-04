@@ -19,10 +19,11 @@ public class ConfigUpdater {
 
     private static final int INDENTATION_SIZE = 2;
     private static final int MARK_BUFFER_SIZE = 8192;
+    private static final VersionComparator VERSION_COMPARATOR = new VersionComparator();
 
     @FunctionalInterface
     public interface MigrationCallback {
-        void migrate(FileConfiguration config, int currentVersion, int newVersion);
+        void migrate(FileConfiguration config, String currentVersion, String newVersion);
     }
 
     /**
@@ -55,21 +56,31 @@ public class ConfigUpdater {
             return;
         }
 
-        int currentVersion = userConfig.getInt("config-version", 0);
+        String currentVersion = resolveVersion(
+            plugin,
+            userConfig.get("config-version"),
+            file.getName(),
+            "0"
+        );
         
         // Load the default config from JAR to check its version
-        int newVersion;
+        String newVersion;
         try (InputStream resource = plugin.getResource(resourceName)) {
             if (resource == null) return;
             
             FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(resource, StandardCharsets.UTF_8));
-            newVersion = defaultConfig.getInt("config-version", 1);
+            newVersion = resolveVersion(
+                plugin,
+                defaultConfig.get("config-version"),
+                resourceName,
+                "1"
+            );
         } catch (IOException e) {
             plugin.getLogger().severe("Failed to read default config version: " + e.getMessage());
             return;
         }
 
-        if (currentVersion >= newVersion) {
+        if (VERSION_COMPARATOR.compare(currentVersion, newVersion) >= 0) {
             return;
         }
 
@@ -125,6 +136,28 @@ public class ConfigUpdater {
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to create backup for " + file.getName());
         }
+    }
+
+    private static String resolveVersion(Plugin plugin, Object rawValue, String sourceName, String fallback) {
+        if (rawValue == null) {
+            return fallback;
+        }
+
+        String normalized = String.valueOf(rawValue).trim();
+        if (normalized.matches("\\d+(?:\\.\\d+)*")) {
+            return normalizeVersion(normalized);
+        }
+
+        plugin.getLogger().warning("Invalid config-version '" + rawValue + "' in " + sourceName + "; using " + fallback + " instead.");
+        return fallback;
+    }
+
+    private static String normalizeVersion(String version) {
+        String normalized = version;
+        while (normalized.endsWith(".0")) {
+            normalized = normalized.substring(0, normalized.length() - 2);
+        }
+        return normalized;
     }
 
     private static List<String> updateLines(InputStream resource, FileConfiguration userConfig) throws IOException {
