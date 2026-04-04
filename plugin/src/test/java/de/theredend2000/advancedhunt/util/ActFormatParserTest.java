@@ -47,27 +47,21 @@ public class ActFormatParserTest {
     }
 
     @Test
-    public void parseAcceptsCopiedBracketedExampleWrappedInBackticks() {
+    public void parseRejectsCopiedBracketedExampleWrappedInBackticks() {
         Optional<ActFormatParser.ActSchedule> parsed = ActFormatParser.parse(
             "`[2026-04-03:2026-04-10] [*] [NONE]`"
         );
 
-        assertTrue(parsed.isPresent());
-        assertEquals("2026-04-03:2026-04-10", parsed.get().getDateRange());
-        assertEquals("*", parsed.get().getDuration());
-        assertEquals("NONE", parsed.get().getCron());
+        assertFalse(parsed.isPresent());
     }
 
     @Test
-    public void parseAcceptsCodeFencedQuotedExample() {
+    public void parseRejectsCodeFencedQuotedExample() {
         Optional<ActFormatParser.ActSchedule> parsed = ActFormatParser.parse(
             "```\n\"[2026-04-03:2026-04-10] [*] [NONE]\"\n```"
         );
 
-        assertTrue(parsed.isPresent());
-        assertEquals("2026-04-03:2026-04-10", parsed.get().getDateRange());
-        assertEquals("*", parsed.get().getDuration());
-        assertEquals("NONE", parsed.get().getCron());
+        assertFalse(parsed.isPresent());
     }
 
     @Test

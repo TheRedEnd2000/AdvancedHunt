@@ -224,35 +224,6 @@ public class ActFormatParser {
         }
 
         String normalized = actFormat.trim();
-        if (normalized.isEmpty()) {
-            return normalized;
-        }
-
-        boolean stripped;
-        do {
-            stripped = false;
-
-            if (normalized.length() >= 6
-                    && normalized.startsWith("```")
-                    && normalized.endsWith("```")) {
-                normalized = normalized.substring(3, normalized.length() - 3).trim();
-                stripped = true;
-                continue;
-            }
-
-            if (normalized.length() >= 2) {
-                char first = normalized.charAt(0);
-                char last = normalized.charAt(normalized.length() - 1);
-
-                if ((first == '`' && last == '`')
-                        || (first == '"' && last == '"')
-                        || (first == '\'' && last == '\'')) {
-                    normalized = normalized.substring(1, normalized.length() - 1).trim();
-                    stripped = true;
-                }
-            }
-        } while (stripped && !normalized.isEmpty());
-
         return normalized;
     }
 
