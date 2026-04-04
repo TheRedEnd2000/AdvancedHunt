@@ -43,19 +43,8 @@ public class ProgressMenu extends PagedMenu {
                     "%percentage%", "0"));
         }
 
-        int foundCount = (int) treasures.stream()
-            .filter(treasure -> playerData.getFoundTreasures().contains(treasure.getId()))
-            .count();
-        
-        int total = treasures.size();
-        double percentage = total > 0 ? (foundCount * 100.0 / total) : 0;
-
         return ChatColor.translateAlternateColorCodes('&',
-            plugin.getMessageManager().getMessage("gui.progress.title", false,
-                "%collection%", collectionName,
-                "%progress%", String.valueOf(foundCount),
-                "%total%", String.valueOf(total),
-                "%percentage%", String.format(java.util.Locale.US, "%.1f", percentage)));
+            plugin.getMessageManager().getMessage("gui.progress.title", false));
     }
 
     @Override

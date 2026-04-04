@@ -767,7 +767,7 @@ gui:
         - ""
         - "&8Leaderboard-ti swongkriyobhabe update hoy"
   progress:
-    title: "&8Progress: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    title: "&8Progress: %collection%"
     loading: "&7Apnar progress load hocche..."
     no_treasures:
       name: "&7Kono Treasure nei"

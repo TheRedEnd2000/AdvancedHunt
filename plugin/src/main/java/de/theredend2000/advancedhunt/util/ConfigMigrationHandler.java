@@ -2,6 +2,7 @@ package de.theredend2000.advancedhunt.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -17,6 +18,7 @@ public class ConfigMigrationHandler {
     private static final VersionComparator VERSION_COMPARATOR = new VersionComparator();
     private static final NavigableMap<String, Consumer<FileConfiguration>> configMigrations = new TreeMap<>(VERSION_COMPARATOR);
     private static final NavigableMap<String, Consumer<FileConfiguration>> messageMigrations = new TreeMap<>(VERSION_COMPARATOR);
+    private static final Map<String, String> LEGACY_PROGRESS_MENU_TITLES = createLegacyProgressMenuTitles();
 
     static {
         // Register config migrations here
@@ -33,6 +35,7 @@ public class ConfigMigrationHandler {
 
     static {
         // Register message migrations here
+        messageMigrations.put("2.2", ConfigMigrationHandler::migrateProgressMenuTitle);
         
         // Example: Upgrade to version 2.1
         // messageMigrations.put("2.1", config -> {
@@ -89,5 +92,27 @@ public class ConfigMigrationHandler {
             normalized = normalized.substring(0, normalized.length() - 2);
         }
         return normalized;
+    }
+
+    private static void migrateProgressMenuTitle(FileConfiguration config) {
+        String currentTitle = config.getString("gui.progress.title");
+        if (currentTitle == null) {
+            return;
+        }
+
+        String migratedTitle = LEGACY_PROGRESS_MENU_TITLES.get(currentTitle);
+        if (migratedTitle != null) {
+            config.set("gui.progress.title", migratedTitle);
+        }
+    }
+
+    private static Map<String, String> createLegacyProgressMenuTitles() {
+        Map<String, String> titles = new LinkedHashMap<>();
+        titles.put("&8Progress: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]", "&8Progress: %collection%");
+        titles.put("&8Fortschritt: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]", "&8Fortschritt: %collection%");
+        titles.put("&8Tiến trình: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]", "&8Tiến trình: %collection%");
+        titles.put("&8进度：%collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]", "&8进度：%collection%");
+        titles.put("&8Progress: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]", "&8Progress: %collection%");
+        return titles;
     }
 }

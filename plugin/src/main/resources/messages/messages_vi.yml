@@ -764,7 +764,7 @@ gui:
         - ""
         - "&8Bảng xếp hạng tự động cập nhật"
   progress:
-    title: "&8Tiến trình: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    title: "&8Tiến trình: %collection%"
     loading: "&7Đang tải tiến trình của bạn..."
     no_treasures:
       name: "&7Không có kho báu"

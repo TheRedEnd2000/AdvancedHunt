@@ -766,7 +766,7 @@ gui:
         - ""
         - "&8排行榜会自动更新"
   progress:
-    title: "&8进度：%collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    title: "&8进度：%collection%"
     loading: "&7正在加载你的进度..."
     no_treasures:
       name: "&7没有宝藏"

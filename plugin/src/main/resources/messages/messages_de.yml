@@ -766,7 +766,7 @@ gui:
         - ""
         - "&8Das Leaderboard aktualisiert von selber"
   progress:
-    title: "&8Fortschritt: %collection% &7[&e%progress%&7/&e%total% &7- &e%percentage%&7%]"
+    title: "&8Fortschritt: %collection%"
     loading: "&7Dein Fortschritt wird geladen..."
     no_treasures:
       name: "&7Keine Treasures"
