@@ -4,7 +4,7 @@ import de.theredend2000.advancedhunt.data.DataRepository;
 import de.theredend2000.advancedhunt.model.Collection;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import sun.misc.Unsafe;
+import org.objenesis.ObjenesisStd;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -20,23 +20,13 @@ import static org.mockito.Mockito.*;
 
 public class CollectionManagerCacheTest {
 
-    private static final Unsafe UNSAFE = getUnsafe();
-
-    private static Unsafe getUnsafe() {
-        try {
-            Field field = Unsafe.class.getDeclaredField("theUnsafe");
-            field.setAccessible(true);
-            return (Unsafe) field.get(null);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Unable to access Unsafe for test setup", e);
-        }
-    }
+    private static final ObjenesisStd OBJENESIS = new ObjenesisStd();
 
     private static void setObjectField(Object target, String fieldName, Object value) {
         try {
             Field field = CollectionManager.class.getDeclaredField(fieldName);
-            long offset = UNSAFE.objectFieldOffset(field);
-            UNSAFE.putObject(target, offset, value);
+            field.setAccessible(true);
+            field.set(target, value);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Unable to set field " + fieldName, e);
         }
@@ -59,18 +49,14 @@ public class CollectionManagerCacheTest {
         }
 
         CollectionManager createManager() {
-            try {
-                CollectionManager manager = (CollectionManager) UNSAFE.allocateInstance(CollectionManager.class);
-                setObjectField(manager, "repository", repository);
-                setObjectField(manager, "treasureManager", treasureManager);
-                setObjectField(manager, "playerManager", null);
-                setObjectField(manager, "rewardManager", null);
-                setObjectField(manager, "actRuleEvaluator", actRuleEvaluator);
-                setObjectField(manager, "cachedCollections", new ArrayList<>(Collections.<Collection>emptyList()));
-                return manager;
-            } catch (InstantiationException e) {
-                throw new RuntimeException("Unable to allocate CollectionManager for test", e);
-            }
+            CollectionManager manager = OBJENESIS.newInstance(CollectionManager.class);
+            setObjectField(manager, "repository", repository);
+            setObjectField(manager, "treasureManager", treasureManager);
+            setObjectField(manager, "playerManager", null);
+            setObjectField(manager, "rewardManager", null);
+            setObjectField(manager, "actRuleEvaluator", actRuleEvaluator);
+            setObjectField(manager, "cachedCollections", new ArrayList<>(Collections.<Collection>emptyList()));
+            return manager;
         }
 
         @Override
