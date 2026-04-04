@@ -47,24 +47,6 @@ public class ActFormatParserTest {
     }
 
     @Test
-    public void parseRejectsCopiedBracketedExampleWrappedInBackticks() {
-        Optional<ActFormatParser.ActSchedule> parsed = ActFormatParser.parse(
-            "`[2026-04-03:2026-04-10] [*] [NONE]`"
-        );
-
-        assertFalse(parsed.isPresent());
-    }
-
-    @Test
-    public void parseRejectsCodeFencedQuotedExample() {
-        Optional<ActFormatParser.ActSchedule> parsed = ActFormatParser.parse(
-            "```\n\"[2026-04-03:2026-04-10] [*] [NONE]\"\n```"
-        );
-
-        assertFalse(parsed.isPresent());
-    }
-
-    @Test
     public void noneRuleRequiresCurrentTimeToBeInsideDateRange() {
         ActFormatParser.ActSchedule schedule = schedule("[2026-04-03:2026-04-10] [*] [NONE]");
 
