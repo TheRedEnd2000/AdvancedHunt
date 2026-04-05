@@ -1,4 +1,4 @@
-config-version: 2.1
+config-version: 2.2
 
 common:
   treasure: "Treasure"
@@ -535,29 +535,58 @@ gui:
       lore:
         - "&7Klicke um ein Item"
         - "&7als Belohnung für diese Treasure festzulegen."
+        - ""
+        - "&7Verfügbare Placeholder:"
+        - "&f  %player% &8- &7Spielername"
+        - "&f  %found_treasures% &8- &7Gefundene Treasures"
+        - "&f  %max_treasures% &8- &7Gesamte Treasures"
+        - "&f  %remaining_treasures% &8- &7Übrige Treasures"
+        - "&f  %chance% &8- &7Belohnungschance"
+        - "&f  %item% &8- &7Itemname"
+        - "&f  \\n &8- &7Neue Zeile" # displays \n in menus
+        - "&f  & &8- &7Color-Codes und Hex-Colors"
     add_command:
       name: "&a+ Befehl-Belohnung hinzufügen"
       lore:
         - "&7Klicke um einen Befehl"
         - "&7als Belohnung für diese Treasure festzulegen."
         - ""
-        - "&7Nutze &f%player% &7für den Spielername."
+        - "&7Verfügbare Placeholder:"
+        - "&f  %player% &8- &7Spielername"
+        - "&f  %found_treasures% &8- &7Gefundene Treasures"
+        - "&f  %max_treasures% &8- &7Gesamte Treasures"
+        - "&f  %remaining_treasures% &8- &7Übrige Treasures"
+        - "&f  %chance% &8- &7Belohnungschance"
+        - "&f  \\n &8- &7Neue Zeile" # displays \n in menus
+        - "&f  & &8- &7Color-Codes und Hex-Colors"
     add_chat_message:
       name: "&a+ Nachricht-Belohnung hinzufügen"
       lore:
         - "&7Klicke um eine Nachricht"
         - "&7als Belohnung für diese Treasure festzulegen."
         - ""
-        - "&7Nutze &f%player% &7für den Spielername."
-        - "&7Nutze &f& &7für Color-Codes und Hex-Colors."
+        - "&7Verfügbare Placeholder:"
+        - "&f  %player% &8- &7Spielername"
+        - "&f  %found_treasures% &8- &7Gefundene Treasures"
+        - "&f  %max_treasures% &8- &7Gesamte Treasures"
+        - "&f  %remaining_treasures% &8- &7Übrige Treasures"
+        - "&f  %chance% &8- &7Belohnungschance"
+        - "&f  \\n &8- &7Neue Zeile" # displays \n in menus
+        - "&f  & &8- &7Color-Codes und Hex-Colors"
     add_broadcast_message:
       name: "&a+ Broadcast-Belohnung hinzufügen"
       lore:
         - "&7Klicke um einen Broadcast hinzuzufügen,"
         - "&7den alle Spieler sehen werden."
         - ""
-        - "&7Nutze &f%player% &7für den Spielername."
-        - "&7Nutze &f& &7für Color-Codes und Hex-Colors."
+        - "&7Verfügbare Placeholder:"
+        - "&f  %player% &8- &7Spielername"
+        - "&f  %found_treasures% &8- &7Gefundene Treasures"
+        - "&f  %max_treasures% &8- &7Gesamte Treasures"
+        - "&f  %remaining_treasures% &8- &7Übrige Treasures"
+        - "&f  %chance% &8- &7Belohnungschance"
+        - "&f  \\n &8- &7Neue Zeile" # displays \n in menus
+        - "&f  & &8- &7Color-Codes und Hex-Colors"
     # Chat prompts
     editor:
       title: "&8Belohnung #%number%"

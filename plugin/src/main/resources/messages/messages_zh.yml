@@ -1,4 +1,4 @@
-config-version: 2.1
+config-version: 2.2
 
 common:
   treasure: "宝藏"
@@ -535,29 +535,58 @@ gui:
       lore:
         - "&7点击添加一个物品"
         - "&7作为该宝藏的奖励。"
+        - ""
+        - "&7可用变量："
+        - "&f  %player% &8- &7玩家名称"
+        - "&f  %found_treasures% &8- &7已找到宝藏数"
+        - "&f  %max_treasures% &8- &7宝藏总数"
+        - "&f  %remaining_treasures% &8- &7剩余宝藏数"
+        - "&f  %chance% &8- &7奖励几率"
+        - "&f  %item% &8- &7物品名称"
+        - "&f  \\n &8- &7换行符" # displays \n in menus
+        - "&f  & &8- &7颜色代码和十六进制颜色"
     add_command:
       name: "&a+ 添加命令奖励"
       lore:
         - "&7点击添加一条命令"
         - "&7作为该宝藏的奖励。"
         - ""
-        - "&7使用 &f%player% &7代表玩家名称。"
+        - "&7可用变量："
+        - "&f  %player% &8- &7玩家名称"
+        - "&f  %found_treasures% &8- &7已找到宝藏数"
+        - "&f  %max_treasures% &8- &7宝藏总数"
+        - "&f  %remaining_treasures% &8- &7剩余宝藏数"
+        - "&f  %chance% &8- &7奖励几率"
+        - "&f  \\n &8- &7换行符" # displays \n in menus
+        - "&f  & &8- &7颜色代码和十六进制颜色"
     add_chat_message:
       name: "&a+ 添加聊天消息奖励"
       lore:
         - "&7点击添加一条聊天消息"
         - "&7作为该宝藏的奖励。"
         - ""
-        - "&7使用 &f%player% &7代表玩家名称。"
-        - "&7使用 &f& &7表示颜色代码和十六进制颜色。"
+        - "&7可用变量："
+        - "&f  %player% &8- &7玩家名称"
+        - "&f  %found_treasures% &8- &7已找到宝藏数"
+        - "&f  %max_treasures% &8- &7宝藏总数"
+        - "&f  %remaining_treasures% &8- &7剩余宝藏数"
+        - "&f  %chance% &8- &7奖励几率"
+        - "&f  \\n &8- &7换行符" # displays \n in menus
+        - "&f  & &8- &7颜色代码和十六进制颜色"
     add_broadcast_message:
       name: "&a+ 添加广播消息奖励"
       lore:
         - "&7点击添加一条所有玩家"
         - "&7都能看到的广播消息。"
         - ""
-        - "&7使用 &f%player% &7代表玩家名称。"
-        - "&7使用 &f& &7表示颜色代码和十六进制颜色。"
+        - "&7可用变量："
+        - "&f  %player% &8- &7玩家名称"
+        - "&f  %found_treasures% &8- &7已找到宝藏数"
+        - "&f  %max_treasures% &8- &7宝藏总数"
+        - "&f  %remaining_treasures% &8- &7剩余宝藏数"
+        - "&f  %chance% &8- &7奖励几率"
+        - "&f  \\n &8- &7换行符" # displays \n in menus
+        - "&f  & &8- &7颜色代码和十六进制颜色"
     # Chat prompts
     editor:
       title: "&8奖励 #%number%"

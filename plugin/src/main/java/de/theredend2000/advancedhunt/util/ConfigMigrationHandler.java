@@ -35,7 +35,7 @@ public class ConfigMigrationHandler {
 
     static {
         // Register message migrations here
-        messageMigrations.put("2.1", ConfigMigrationHandler::migrateProgressMenuTitle);
+        messageMigrations.put("2.2", ConfigMigrationHandler::migrateProgressMenuTitle);
         
         // Example: Upgrade to version 2.1
         // messageMigrations.put("2.1", config -> {
