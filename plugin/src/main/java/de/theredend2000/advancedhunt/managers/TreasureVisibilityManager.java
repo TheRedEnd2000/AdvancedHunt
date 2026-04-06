@@ -142,6 +142,7 @@ public class TreasureVisibilityManager implements Listener {
 
         bypassPlayers.remove(player.getUniqueId());
         clearFurnitureMarkers(player.getUniqueId());
+        sendVirtualTreasuresInView(player, false);
     }
 
     private void sendVirtualTreasuresInView(Player player, boolean show) {
