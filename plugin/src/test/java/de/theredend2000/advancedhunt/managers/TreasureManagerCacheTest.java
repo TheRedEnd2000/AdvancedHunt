@@ -105,6 +105,27 @@ public class TreasureManagerCacheTest {
     }
 
     @Test
+    public void getTreasureCoreAtIgnoresCachedTreasuresWithMissingWorld() {
+        DataRepository repository = mock(DataRepository.class);
+        TreasureManager manager = new TreasureManager(repository);
+        Treasure missingWorldTreasure = new Treasure(
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            new Location(null, 16, 64, 16),
+            Collections.<Reward>emptyList(),
+            "nbt",
+            "STONE",
+            null
+        );
+
+        when(repository.saveTreasure(missingWorldTreasure)).thenReturn(CompletableFuture.completedFuture(null));
+
+        manager.addTreasureAsync(missingWorldTreasure).join();
+
+        assertNull(manager.getTreasureCoreAt(new Location(world("world"), 16, 64, 16)));
+    }
+
+    @Test
     public void updateTreasureRewardsRefreshesCachedFullTreasureData() {
         DataRepository repository = mock(DataRepository.class);
         TreasureManager manager = new TreasureManager(repository);

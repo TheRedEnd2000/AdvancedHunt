@@ -66,10 +66,18 @@ public class Treasure {
 
     @Override
     public String toString() {
+        String locationSummary;
+        if (location == null) {
+            locationSummary = "null";
+        } else {
+            String worldName = location.getWorld() != null ? location.getWorld().getName() : "null";
+            locationSummary = worldName + "@" + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
+        }
+
         return "Treasure{" +
                 "id=" + id +
                 ", collectionId=" + collectionId +
-                ", location=" + (location != null ? location.getWorld().getName() + "@" + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() : "null") +
+                ", location=" + locationSummary +
                 ", rewardsCount=" + rewards.size() +
                 ", material='" + material + '\'' +
                 '}';

@@ -441,6 +441,10 @@ public class TreasureManager {
     // ==================== UTILITY METHODS ====================
 
     private boolean locationsEqual(Location l1, Location l2) {
+        if (l1 == null || l2 == null || l1.getWorld() == null || l2.getWorld() == null) {
+            return false;
+        }
+
         return l1.getWorld().getName().equals(l2.getWorld().getName()) &&
                 l1.getBlockX() == l2.getBlockX() &&
                 l1.getBlockY() == l2.getBlockY() &&
