@@ -52,17 +52,30 @@ public class TreasureCore {
     }
 
     public boolean isInLoadedWorld(World world) {
-        return location != null
-            && location.getWorld() != null
-            && world != null
-            && location.getWorld().getName().equals(world.getName());
+        if (location == null) {
+            return false;
+        }
+
+        World locationWorld = location.getWorld();
+        if (locationWorld == null || world == null) {
+            return false;
+        }
+
+        if (locationWorld == world) {
+            return true;
+        }
+
+        String locationWorldName = locationWorld.getName();
+        String worldName = world.getName();
+        return locationWorldName != null && locationWorldName.equals(worldName);
     }
 
     public String getWorldNameOr(String fallback) {
         if (location == null || location.getWorld() == null) {
             return fallback;
         }
-        return location.getWorld().getName();
+        String worldName = location.getWorld().getName();
+        return worldName != null ? worldName : fallback;
     }
     
     /**
