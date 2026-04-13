@@ -190,9 +190,9 @@ public class TreasureProtectListener implements Listener {
             return;
         }
 
-        for(Player p : Bukkit.getOnlinePlayers()) {
-            Bukkit.broadcastMessage(p.getDisplayName()+" "+p.getAllowFlight());
-        }
+//        for(Player p : Bukkit.getOnlinePlayers()) {
+//            Bukkit.broadcastMessage(p.getDisplayName()+" "+p.getAllowFlight());
+//        }
 
         checkPlayer(event.getPlayer());
     }
