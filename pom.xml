@@ -14,7 +14,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <packetevents.version>2.11.1</packetevents.version>
+        <packetevents.version>2.12.0</packetevents.version>
         <bungeecord.chat.version>1.16-R0.4</bungeecord.chat.version>
         <spigot.version.modern>1.20.5-R0.1-SNAPSHOT</spigot.version.modern>
         <spigot.version.legacy>1.8.8-R0.1-SNAPSHOT</spigot.version.legacy>
