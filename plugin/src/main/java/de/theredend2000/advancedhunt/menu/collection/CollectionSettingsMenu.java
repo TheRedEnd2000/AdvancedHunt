@@ -277,12 +277,23 @@ public class CollectionSettingsMenu extends Menu {
         // Hide After Found
         String enabled = plugin.getMessageManager().getMessage("gui.common.enabled", false);
         String disabled = plugin.getMessageManager().getMessage("gui.common.disabled", false);
-        addButton(39, new ItemBuilder(Material.GLASS_BOTTLE)
+        String hafStatus = collection.isHideAfterFound() ? enabled : disabled;
+        addButton(39, new ItemBuilder(collection.isHideAfterFound() ? Material.GLASS : Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_after_found.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
-                        "%status%", disabled).toArray(new String[0]))
+                        "%status%", hafStatus).toArray(new String[0]))
                 .build(), (e) -> {
-            playerMenuUtility.sendMessage("§c§lThis feature is currently in development.");
+            if (processing) return;
+            processing = true;
+
+            collection.setHideAfterFound(!collection.isHideAfterFound());
+            plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    plugin.getTreasureVisibilityManager().refreshHideAfterFound(collection);
+                    processing = false;
+                    this.refresh();
+                });
+            });
         });
 
         // Hide When Not Available

@@ -190,6 +190,9 @@ public final class TreasureInteractionHandler {
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.found"));
 
         collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
+            if (collection.isHideAfterFound()) {
+                plugin.getTreasureVisibilityManager().hideFoundTreasureForPlayer(player, treasureCore);
+            }
             if (collection.isSinglePlayerFind()) {
                 plugin.getParticleManager().markTreasureAsGloballyClaimed(treasureCore.getId());
             }

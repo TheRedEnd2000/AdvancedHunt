@@ -19,6 +19,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCh
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerMultiBlockChange;
 import de.theredend2000.advancedhunt.Main;
 import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.model.PlayerData;
 import de.theredend2000.advancedhunt.model.Treasure;
 import de.theredend2000.advancedhunt.model.TreasureCore;
 import de.theredend2000.advancedhunt.platform.PlatformAccess;
@@ -493,42 +494,56 @@ public class TreasureVisibilityManager implements Listener {
         Object playerObj = event.getPlayer();
         if (!(playerObj instanceof Player)) return;
         Player player = (Player) playerObj;
-        if (!isBypassEnabled(player)) return;
+
+        boolean bypass = isBypassEnabled(player);
+        boolean anyHideAfterFound = hasAnyHideAfterFoundCollections();
+        if (!bypass && !anyHideAfterFound) return;
 
         PacketTypeCommon packetType = event.getPacketType();
         if (packetType == PacketType.Play.Server.BLOCK_CHANGE) {
-            handleBlockChange(event, player);
+            handleBlockChange(event, player, bypass);
             return;
         }
         if (packetType == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
-            handleMultiBlockChange(event, player);
+            handleMultiBlockChange(event, player, bypass);
             return;
         }
         if (packetType == PacketType.Play.Server.CHUNK_DATA) {
-            handleChunkData(event, player);
+            handleChunkData(event, player, bypass);
         }
     }
 
-    private void handleBlockChange(PacketSendEvent event, Player player) {
+    private void handleBlockChange(PacketSendEvent event, Player player, boolean bypass) {
         WrapperPlayServerBlockChange wrapper = new WrapperPlayServerBlockChange(event);
         Vector3i pos = wrapper.getBlockPosition();
         if (pos == null) return;
 
         Location loc = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
         TreasureCore core = treasureManager.getTreasureCoreAt(loc);
-        if (core == null || !isCollectionHidden(core.getCollectionId())) return;
+        if (core == null) return;
 
-        WrappedBlockState blockState = resolveWrappedBlockState(core, player);
-        if (blockState == null) return;
+        boolean collectionHidden = isCollectionHidden(core.getCollectionId());
 
-        wrapper.setBlockState(blockState);
-        wrapper.write();
-        event.markForReEncode(true);
+        if (bypass && collectionHidden) {
+            WrappedBlockState blockState = resolveWrappedBlockState(core, player);
+            if (blockState == null) return;
+            wrapper.setBlockState(blockState);
+            wrapper.write();
+            event.markForReEncode(true);
+            scheduleVirtualExtras(player, core, loc);
+            return;
+        }
 
-        scheduleVirtualExtras(player, core, loc);
+        if (!collectionHidden && shouldHideFoundForPlayer(core, player)) {
+            WrappedBlockState airState = WrappedBlockState.getByString("minecraft:air");
+            if (airState == null) return;
+            wrapper.setBlockState(airState);
+            wrapper.write();
+            event.markForReEncode(true);
+        }
     }
 
-    private void handleMultiBlockChange(PacketSendEvent event, Player player) {
+    private void handleMultiBlockChange(PacketSendEvent event, Player player, boolean bypass) {
         WrapperPlayServerMultiBlockChange wrapper = new WrapperPlayServerMultiBlockChange(event);
 
         Vector3i chunkPos = wrapper.getChunkPosition();
@@ -548,16 +563,22 @@ public class TreasureVisibilityManager implements Listener {
             Location loc = new Location(player.getWorld(), x, y, z);
 
             TreasureCore core = treasureManager.getTreasureCoreAt(loc);
-            if (core == null || !isCollectionHidden(core.getCollectionId())) {
-                continue;
+            if (core == null) continue;
+
+            boolean collectionHidden = isCollectionHidden(core.getCollectionId());
+
+            if (bypass && collectionHidden) {
+                WrappedBlockState state = resolveWrappedBlockState(core, player);
+                if (state == null) continue;
+                block.setBlockState(state);
+                changed = true;
+                scheduleVirtualExtras(player, core, loc);
+            } else if (!collectionHidden && shouldHideFoundForPlayer(core, player)) {
+                WrappedBlockState airState = WrappedBlockState.getByString("minecraft:air");
+                if (airState == null) continue;
+                block.setBlockState(airState);
+                changed = true;
             }
-
-            WrappedBlockState state = resolveWrappedBlockState(core, player);
-            if (state == null) continue;
-
-            block.setBlockState(state);
-            changed = true;
-            scheduleVirtualExtras(player, core, loc);
         }
 
         if (changed) {
@@ -567,7 +588,7 @@ public class TreasureVisibilityManager implements Listener {
         }
     }
 
-    private void handleChunkData(PacketSendEvent event, Player player) {
+    private void handleChunkData(PacketSendEvent event, Player player, boolean bypass) {
         WrapperPlayServerChunkData wrapper = new WrapperPlayServerChunkData(event);
 
         Column column = wrapper.getColumn();
@@ -585,10 +606,20 @@ public class TreasureVisibilityManager implements Listener {
         boolean changed = false;
 
         for (TreasureCore core : cores) {
-            if (core == null || !isCollectionHidden(core.getCollectionId())) continue;
+            if (core == null) continue;
             Location loc = core.getLocation();
             if (loc == null || loc.getWorld() == null) continue;
             if (!loc.getWorld().equals(player.getWorld())) continue;
+
+            boolean collectionHidden = isCollectionHidden(core.getCollectionId());
+
+            WrappedBlockState state = null;
+            if (bypass && collectionHidden) {
+                state = resolveWrappedBlockState(core, player);
+            } else if (!collectionHidden && shouldHideFoundForPlayer(core, player)) {
+                state = WrappedBlockState.getByString("minecraft:air");
+            }
+            if (state == null) continue;
 
             int y = loc.getBlockY();
             int sectionIndex = (y - minY) >> 4;
@@ -597,9 +628,6 @@ public class TreasureVisibilityManager implements Listener {
             BaseChunk section = sections[sectionIndex];
             if (section == null) continue;
 
-            WrappedBlockState state = resolveWrappedBlockState(core, player);
-            if (state == null) continue;
-
             int localX = loc.getBlockX() & 0xF;
             int localY = (y - minY) & 0xF;
             int localZ = loc.getBlockZ() & 0xF;
@@ -607,13 +635,92 @@ public class TreasureVisibilityManager implements Listener {
             section.set(localX, localY, localZ, state);
             changed = true;
 
-            scheduleVirtualExtras(player, core, loc);
+            if (bypass && collectionHidden) {
+                scheduleVirtualExtras(player, core, loc);
+            }
         }
 
         if (changed) {
             wrapper.setColumn(column);
             wrapper.write();
             event.markForReEncode(true);
+        }
+    }
+
+    /**
+     * Checks if a given treasure should be hidden for a specific player because
+     * the collection has hideAfterFound enabled and the player has already found it.
+     */
+    private boolean shouldHideFoundForPlayer(TreasureCore core, Player player) {
+        if (core == null || player == null) return false;
+        Optional<Collection> collectionOpt = collectionManager.getCollectionById(core.getCollectionId());
+        if (!collectionOpt.isPresent() || !collectionOpt.get().isHideAfterFound()) return false;
+
+        PlayerData data = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
+        return data != null && data.hasFound(core.getId());
+    }
+
+    /**
+     * Quick check whether any loaded collection has hideAfterFound enabled.
+     * Used to skip packet interception entirely when no collection uses the feature.
+     */
+    private boolean hasAnyHideAfterFoundCollections() {
+        for (Collection c : collectionManager.getAllCollections()) {
+            if (c.isHideAfterFound()) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Refreshes hide-after-found visibility for all online players in a collection.
+     * Called when the hideAfterFound toggle is changed.
+     */
+    public void refreshHideAfterFound(Collection collection) {
+        if (collection == null || !isPacketEventsReady()) return;
+
+        List<TreasureCore> cores = treasureManager.getTreasureCoresInCollection(collection.getId());
+        if (cores.isEmpty()) return;
+
+        boolean hiding = collection.isHideAfterFound();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PlayerData data = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
+            if (data == null) continue;
+
+            for (TreasureCore core : cores) {
+                if (core == null || !data.hasFound(core.getId())) continue;
+                Location loc = core.getLocation();
+                if (loc == null || loc.getWorld() == null) continue;
+                if (!loc.getWorld().equals(player.getWorld())) continue;
+
+                if (hiding) {
+                    WrappedBlockState airState = WrappedBlockState.getByString("minecraft:air");
+                    if (airState != null) {
+                        sendBlockChangeToPlayer(player, loc, airState);
+                    }
+                } else {
+                    WrappedBlockState state = resolveWrappedBlockState(core, player);
+                    if (state != null) {
+                        sendBlockChangeToPlayer(player, loc, state);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Immediately hides a single treasure for a player via a block change packet.
+     * Called right after a player finds a treasure in a hideAfterFound collection.
+     */
+    public void hideFoundTreasureForPlayer(Player player, TreasureCore core) {
+        if (player == null || core == null || !isPacketEventsReady()) return;
+        Location loc = core.getLocation();
+        if (loc == null || loc.getWorld() == null) return;
+        if (!loc.getWorld().equals(player.getWorld())) return;
+
+        WrappedBlockState airState = WrappedBlockState.getByString("minecraft:air");
+        if (airState != null) {
+            sendBlockChangeToPlayer(player, loc, airState);
         }
     }
 

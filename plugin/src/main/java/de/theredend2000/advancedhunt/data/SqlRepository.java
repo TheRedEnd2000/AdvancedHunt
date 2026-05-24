@@ -160,6 +160,7 @@ public class SqlRepository implements DataRepository {
 
     private void registerMigrations() {
         schemaMigrations.put(1, this::createPerformanceIndexes);
+        schemaMigrations.put(2, this::addHideAfterFoundColumn);
     }
 
     @Override
@@ -363,6 +364,22 @@ public class SqlRepository implements DataRepository {
                 if (!e.getMessage().contains("already exists") && !e.getMessage().contains("Duplicate")) {
                     plugin.getLogger().warning("Failed to create index: " + e.getMessage());
                 }
+            }
+        }
+    }
+
+    /**
+     * Adds the hide_after_found column to ah_collections for per-player found-treasure hiding.
+     */
+    private void addHideAfterFoundColumn(Connection conn) {
+        try (java.sql.Statement stmt = conn.createStatement()) {
+            stmt.execute(
+                "ALTER TABLE ah_collections ADD COLUMN hide_after_found BOOLEAN DEFAULT FALSE");
+        } catch (SQLException e) {
+            // Column may already exist
+            if (!e.getMessage().contains("duplicate") && !e.getMessage().contains("already exists")
+                    && !e.getMessage().contains("Duplicate")) {
+                plugin.getLogger().warning("Failed to add hide_after_found column: " + e.getMessage());
             }
         }
     }
@@ -785,6 +802,7 @@ public class SqlRepository implements DataRepository {
                     c.setProgressResetCron(rs.getString("progress_reset_cron"));
                     c.setSinglePlayerFind(rs.getBoolean("single_player_find"));
                     c.setHideWhenNotAvailable(rs.getBoolean("hide_when_not_available"));
+                    c.setHideAfterFound(rs.getBoolean("hide_after_found"));
 
                     String defaultPreset = rs.getString("default_treasure_reward_preset_id");
                     if (defaultPreset != null && !defaultPreset.trim().isEmpty()) {
@@ -823,8 +841,8 @@ public class SqlRepository implements DataRepository {
                         // Save collection — include all columns to avoid REPLACE INTO dropping
                         // unlisted columns. Use upsert syntax appropriate for the backend.
                         final String upsertSql = useSqlite
-                            ? "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, enabled=excluded.enabled, reset_cron=excluded.reset_cron, active_start=excluded.active_start, active_end=excluded.active_end, progress_reset_cron=excluded.progress_reset_cron, single_player_find=excluded.single_player_find, rewards=excluded.rewards, default_treasure_reward_preset_id=excluded.default_treasure_reward_preset_id, hide_when_not_available=excluded.hide_when_not_available"
-                            : "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), enabled=VALUES(enabled), reset_cron=VALUES(reset_cron), active_start=VALUES(active_start), active_end=VALUES(active_end), progress_reset_cron=VALUES(progress_reset_cron), single_player_find=VALUES(single_player_find), rewards=VALUES(rewards), default_treasure_reward_preset_id=VALUES(default_treasure_reward_preset_id), hide_when_not_available=VALUES(hide_when_not_available)";
+                            ? "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available, hide_after_found) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, enabled=excluded.enabled, reset_cron=excluded.reset_cron, active_start=excluded.active_start, active_end=excluded.active_end, progress_reset_cron=excluded.progress_reset_cron, single_player_find=excluded.single_player_find, rewards=excluded.rewards, default_treasure_reward_preset_id=excluded.default_treasure_reward_preset_id, hide_when_not_available=excluded.hide_when_not_available, hide_after_found=excluded.hide_after_found"
+                            : "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available, hide_after_found) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), enabled=VALUES(enabled), reset_cron=VALUES(reset_cron), active_start=VALUES(active_start), active_end=VALUES(active_end), progress_reset_cron=VALUES(progress_reset_cron), single_player_find=VALUES(single_player_find), rewards=VALUES(rewards), default_treasure_reward_preset_id=VALUES(default_treasure_reward_preset_id), hide_when_not_available=VALUES(hide_when_not_available), hide_after_found=VALUES(hide_after_found)";
                         try (PreparedStatement ps = conn.prepareStatement(upsertSql)) {
                             ps.setString(1, collection.getId().toString());
                             ps.setString(2, collection.getName());
@@ -837,6 +855,7 @@ public class SqlRepository implements DataRepository {
                             ps.setString(9, gson.toJson(collection.getCompletionRewards()));
                             ps.setString(10, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
                             ps.setBoolean(11, collection.isHideWhenNotAvailable());
+                            ps.setBoolean(12, collection.isHideAfterFound());
                             ps.executeUpdate();
                         }
 

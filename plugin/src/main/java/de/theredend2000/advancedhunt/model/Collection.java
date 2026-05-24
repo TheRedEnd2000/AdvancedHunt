@@ -13,6 +13,7 @@ public class Collection {
     private List<Reward> completionRewards; // Rewards for finding all treasures
     private UUID defaultTreasureRewardPresetId; // Applied to newly created treasures in this collection
     private boolean hideWhenNotAvailable; // If true, treasures are hidden when collection is not available
+    private boolean hideAfterFound; // If true, found treasures are hidden per-player via packets
 
     public Collection(UUID id, String name, boolean enabled) {
         this.id = Objects.requireNonNull(id, "Collection id cannot be null");
@@ -27,6 +28,7 @@ public class Collection {
         this.defaultTreasureRewardPresetId = null;
         this.progressResetCron = null;
         this.hideWhenNotAvailable = false;
+        this.hideAfterFound = false;
     }
 
     public UUID getId() {
@@ -151,6 +153,14 @@ public class Collection {
 
     public void setHideWhenNotAvailable(boolean hideWhenNotAvailable) {
         this.hideWhenNotAvailable = hideWhenNotAvailable;
+    }
+
+    public boolean isHideAfterFound() {
+        return hideAfterFound;
+    }
+
+    public void setHideAfterFound(boolean hideAfterFound) {
+        this.hideAfterFound = hideAfterFound;
     }
 
     @Override
