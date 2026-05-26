@@ -277,20 +277,22 @@ public class CollectionSettingsMenu extends Menu {
         // Hide After Found
         String enabled = plugin.getMessageManager().getMessage("gui.common.enabled", false);
         String disabled = plugin.getMessageManager().getMessage("gui.common.disabled", false);
-        addButton(39, new ItemBuilder(Material.GLASS_BOTTLE)
+
+        String singleHideStatus = disabled;
+        addButton(39, new ItemBuilder(false ? Material.POTION : Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_after_found.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
-                        "%status%", disabled).toArray(new String[0]))
+                        "%status%", singleHideStatus).toArray(new String[0]))
                 .build(), (e) -> {
             playerMenuUtility.sendMessage("§c§lThis feature is currently in development.");
         });
 
         // Hide When Not Available
-        String hideStatus = collection.isHideWhenNotAvailable() ? enabled : disabled;
-        addButton(40, new ItemBuilder(collection.isHideWhenNotAvailable() ? Material.GLASS : Material.GLASS_BOTTLE)
+        String publicHideStatus = collection.isHideWhenNotAvailable() ? enabled : disabled;
+        addButton(40, new ItemBuilder(collection.isHideWhenNotAvailable() ? Material.EXPERIENCE_BOTTLE : Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_when_not_available.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_when_not_available.lore", false,
-                        "%status%", hideStatus).toArray(new String[0]))
+                        "%status%", publicHideStatus).toArray(new String[0]))
                 .build(), (e) -> {
             if (processing) return;
             processing = true;
