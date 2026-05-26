@@ -36,6 +36,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.description.CommandDescription;
+import org.incendo.cloud.help.HelpQuery;
+import org.incendo.cloud.help.result.*;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 import org.incendo.cloud.parser.standard.IntegerParser;
 import org.incendo.cloud.parser.standard.StringParser;
@@ -53,6 +55,24 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AdvancedHuntCommand {
+
+    private static final class HelpRequest {
+        private final String query;
+        private final int page;
+
+        private HelpRequest(String query, int page) {
+            this.query = query;
+            this.page = page;
+        }
+
+        private String query() {
+            return query;
+        }
+
+        private int page() {
+            return page;
+        }
+    }
 
     private static final class PaletteEntry {
         private final Material type;
@@ -122,7 +142,7 @@ public class AdvancedHuntCommand {
                         .commandDescription(desc("help"))
                         .handler(context -> {
                             String query = context.getOrDefault("query", "");
-                            plugin.getMinecraftHelp().queryCommands(query, context.sender());
+                            sendHelp(context.sender(), query);
                         })
         );
 
@@ -613,6 +633,142 @@ public class AdvancedHuntCommand {
 
     private Command.Builder<CommandSender> playerBuilder() {
         return baseBuilder().senderType(Player.class);
+    }
+
+    private void sendHelp(CommandSender sender, String rawQuery) {
+        HelpRequest request = parseHelpRequest(rawQuery);
+        HelpQueryResult<CommandSender> result = plugin.getMinecraftHelp()
+                .helpHandler()
+                .query(HelpQuery.of(sender, request.query()));
+
+        if (result instanceof IndexCommandResult) {
+            sendIndexHelp(sender, request, (IndexCommandResult<CommandSender>) result);
+            return;
+        }
+
+        if (result instanceof MultipleCommandResult) {
+            sendMultipleHelp(sender, request, (MultipleCommandResult<CommandSender>) result);
+            return;
+        }
+
+        if (result instanceof VerboseCommandResult) {
+            sendVerboseHelp(sender, (VerboseCommandResult<CommandSender>) result);
+            return;
+        }
+
+        sender.sendMessage(plugin.getMessageManager().getMessage("error.generic"));
+    }
+
+    private HelpRequest parseHelpRequest(String rawQuery) {
+        String safeQuery = rawQuery == null ? "" : rawQuery.trim();
+        if (safeQuery.isEmpty()) {
+            return new HelpRequest("", 1);
+        }
+
+        String[] splitQuery = safeQuery.split("\\s+");
+        String pageText = splitQuery[splitQuery.length - 1];
+        try {
+            int page = Integer.parseInt(pageText);
+            String query = safeQuery.equals(pageText)
+                    ? ""
+                    : safeQuery.substring(0, safeQuery.lastIndexOf(pageText)).trim();
+            return new HelpRequest(query, page);
+        } catch (NumberFormatException ignored) {
+            return new HelpRequest(safeQuery, 1);
+        }
+    }
+
+    private void sendIndexHelp(CommandSender sender, HelpRequest request, IndexCommandResult<CommandSender> result) {
+        if (result.isEmpty()) {
+            sendNoResults(sender, request.query());
+            return;
+        }
+
+        List<CommandEntry<CommandSender>> entries = result.entries();
+        int pageSize = plugin.getMinecraftHelp().maxResultsPerPage();
+        int maxPages = Math.max(1, (entries.size() + pageSize - 1) / pageSize);
+        if (request.page() < 1 || request.page() > maxPages) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.page_out_of_range", false)
+                    + ChatColor.GRAY + " (1-" + maxPages + ")");
+            return;
+        }
+
+        int start = (request.page() - 1) * pageSize;
+        int end = Math.min(start + pageSize, entries.size());
+
+        sendHelpHeader(sender, request.query(), request.page(), maxPages);
+        sender.sendMessage(ChatColor.GRAY + plugin.getMessageManager().getMessage("command.help.minecraft.available_commands", false) + ":");
+        for (int index = start; index < end; index++) {
+            CommandEntry<CommandSender> entry = entries.get(index);
+            sender.sendMessage(ChatColor.GOLD + "/" + entry.syntax()
+                    + ChatColor.DARK_GRAY + " - "
+                    + ChatColor.GRAY + describe(entry));
+        }
+    }
+
+    private void sendMultipleHelp(CommandSender sender, HelpRequest request, MultipleCommandResult<CommandSender> result) {
+        List<String> suggestions = result.childSuggestions();
+        if (suggestions.isEmpty()) {
+            sendNoResults(sender, request.query());
+            return;
+        }
+
+        int pageSize = plugin.getMinecraftHelp().maxResultsPerPage();
+        int maxPages = Math.max(1, (suggestions.size() + pageSize - 1) / pageSize);
+        if (request.page() < 1 || request.page() > maxPages) {
+            sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.page_out_of_range", false)
+                    + ChatColor.GRAY + " (1-" + maxPages + ")");
+            return;
+        }
+
+        int start = (request.page() - 1) * pageSize;
+        int end = Math.min(start + pageSize, suggestions.size());
+
+        sendHelpHeader(sender, request.query(), request.page(), maxPages);
+        sender.sendMessage(ChatColor.GRAY + "/" + result.longestPath());
+        for (int index = start; index < end; index++) {
+            sender.sendMessage(ChatColor.GOLD + "/" + suggestions.get(index));
+        }
+    }
+
+    private void sendVerboseHelp(CommandSender sender, VerboseCommandResult<CommandSender> result) {
+        CommandEntry<CommandSender> entry = result.entry();
+        sendHelpHeader(sender, result.query().query(), 1, 1);
+        sender.sendMessage(ChatColor.YELLOW
+                + plugin.getMessageManager().getMessage("command.help.minecraft.command", false)
+                + ChatColor.GRAY + ": "
+                + ChatColor.GOLD + "/" + entry.syntax());
+        sender.sendMessage(ChatColor.YELLOW
+                + plugin.getMessageManager().getMessage("command.help.minecraft.description", false)
+                + ChatColor.GRAY + ": "
+                + ChatColor.WHITE + describe(entry));
+    }
+
+    private void sendNoResults(CommandSender sender, String query) {
+        sendHelpHeader(sender, query, 1, 1);
+        String visibleQuery = query == null || query.isEmpty() ? "/advancedhunt" : "/" + query;
+        sender.sendMessage(ChatColor.RED
+                + plugin.getMessageManager().getMessage("command.help.minecraft.no_results_for_query", false)
+                + ChatColor.GRAY + ": " + visibleQuery);
+    }
+
+    private void sendHelpHeader(CommandSender sender, String query, int page, int maxPages) {
+        sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.help", false)
+                + ChatColor.DARK_GRAY + " [" + page + "/" + maxPages + "]");
+        if (query != null && !query.isEmpty()) {
+            sender.sendMessage(ChatColor.GRAY
+                    + plugin.getMessageManager().getMessage("command.help.minecraft.showing_results_for_query", false)
+                    + ChatColor.DARK_GRAY + ": "
+                    + ChatColor.YELLOW + query);
+        }
+    }
+
+    private String describe(CommandEntry<CommandSender> entry) {
+        CommandDescription description = entry.command().commandDescription();
+        if (description == null || description.isEmpty()) {
+            return plugin.getMessageManager().getMessage("command.help.minecraft.no_description", false);
+        }
+        return description.description().textDescription();
     }
 
     private void withCollection(CommandSender sender, String collectionName, Consumer<Collection> action) {

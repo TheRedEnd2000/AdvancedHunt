@@ -90,7 +90,7 @@
                                 </filter>
                             </filters>
                             <relocations>
-                                <!-- Adventure MUSS VOR Cloud kommen! -->
+                                <!-- Adventure MUST COME BEFORE Cloud! -->
                                 <relocation>
                                     <pattern>net.kyori</pattern>
                                     <shadedPattern>de.theredend2000.advancedhunt.lib.kyori</shadedPattern>
@@ -115,7 +115,7 @@
                                     <pattern>com.cronutils</pattern>
                                     <shadedPattern>de.theredend2000.advancedhunt.lib.cronutils</shadedPattern>
                                 </relocation>
-                                <!-- bStats MUSS relocatet werden! -->
+                                <!-- bStats MUST be relocated! -->
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>de.theredend2000.advancedhunt.lib.bstats</shadedPattern>
