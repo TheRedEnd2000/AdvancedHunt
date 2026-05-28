@@ -36,6 +36,11 @@ public class ConfigMigrationHandler {
     static {
         // Register message migrations here
         messageMigrations.put("2.1", ConfigMigrationHandler::migrateProgressMenuTitle);
+        messageMigrations.put("4.2", config -> {
+             if (!config.contains("treasure-settings.replace-block")) {
+                 config.set("treasure-settings.replace-block", "BARRIER");
+             }
+        });
         
         // Example: Upgrade to version 2.1
         // messageMigrations.put("2.1", config -> {

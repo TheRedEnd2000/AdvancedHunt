@@ -398,26 +398,36 @@ public class ParticleManager {
      * Returns null if particles should not be shown (collection unavailable).
      */
     private ParticleConfig determineParticleConfig(TreasureCore treasure, PlayerData playerData,
-                                                  Set<UUID> availableCollections,
-                                                  Set<UUID> singlePlayerFindCollections,
-                                                  Map<UUID, Boolean> globallyClaimedCache) {
+                                                   Set<UUID> availableCollections,
+                                                   Set<UUID> singlePlayerFindCollections,
+                                                   Map<UUID, Boolean> globallyClaimedCache) {
         // Check availability (O(1))
         if (!availableCollections.contains(treasure.getCollectionId())) {
             return null;
         }
-        
+
         // Check found status (O(1))
         if (playerData.hasFound(treasure.getId())) {
+            // If hideAfterFound on → do not show particle
+            Optional<Collection> collectionOpt = collectionManager.getCollectionById(treasure.getCollectionId());
+            if (collectionOpt.isPresent() && collectionOpt.get().isHideAfterFound()) {
+                return null;
+            }
             return foundByPlayerConfig;
         }
-        
+
         // Check single player find (O(1))
         if (singlePlayerFindCollections.contains(treasure.getCollectionId())) {
             if (globallyClaimedCache.getOrDefault(treasure.getId(), Boolean.FALSE)) {
+                // If hideAfterFound on → do not show particle
+                Optional<Collection> collectionOpt = collectionManager.getCollectionById(treasure.getCollectionId());
+                if (collectionOpt.isPresent() && collectionOpt.get().isHideAfterFound()) {
+                    return null;
+                }
                 return foundByOthersConfig;
             }
         }
-        
+
         return notFoundConfig;
     }
 

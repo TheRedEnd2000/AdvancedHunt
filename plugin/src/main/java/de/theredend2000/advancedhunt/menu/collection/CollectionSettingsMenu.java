@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemFlag;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -278,10 +279,13 @@ public class CollectionSettingsMenu extends Menu {
         String enabled = plugin.getMessageManager().getMessage("gui.common.enabled", false);
         String disabled = plugin.getMessageManager().getMessage("gui.common.disabled", false);
         String hafStatus = collection.isHideAfterFound() ? enabled : disabled;
-        addButton(39, new ItemBuilder(collection.isHideAfterFound() ? Material.GLASS : Material.GLASS_BOTTLE)
+        String block = plugin.getConfig().getString("treasure-settings.replace-block", "BARRIER").toUpperCase();
+        if (!block.equals("BARRIER") && !block.equals("AIR")) block = "BARRIER";
+        addButton(39, new ItemBuilder(collection.isHideAfterFound() ? Material.POTION : Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_after_found.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
-                        "%status%", hafStatus).toArray(new String[0]))
+                        "%status%", hafStatus,"%block%", block).toArray(new String[0]))
+                .addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
                 .build(), (e) -> {
             if (processing) return;
             processing = true;
@@ -298,7 +302,7 @@ public class CollectionSettingsMenu extends Menu {
 
         // Hide When Not Available
         String hideStatus = collection.isHideWhenNotAvailable() ? enabled : disabled;
-        addButton(40, new ItemBuilder(collection.isHideWhenNotAvailable() ? Material.GLASS : Material.GLASS_BOTTLE)
+        addButton(40, new ItemBuilder(collection.isHideWhenNotAvailable() ? Material.EXPERIENCE_BOTTLE : Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_when_not_available.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_when_not_available.lore", false,
                         "%status%", hideStatus).toArray(new String[0]))
