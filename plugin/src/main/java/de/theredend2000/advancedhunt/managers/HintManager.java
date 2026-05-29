@@ -217,11 +217,13 @@ public class HintManager {
                 if (treasures == null || treasures.isEmpty()) continue;
 
                 for (TreasureCore treasure : treasures) {
+                    Location treasureLoc = treasure.getLocation();
+
                     // Check world match
-                    if (!treasure.getLocation().getWorld().equals(playerLoc.getWorld())) continue;
+                    if (treasureLoc == null || !treasure.isInLoadedWorld(playerLoc.getWorld())) continue;
                     
                     // Check distance (using squared distance for performance)
-                    if (treasure.getLocation().distanceSquared(playerLoc) > rangeSq) continue;
+                    if (treasureLoc.distanceSquared(playerLoc) > rangeSq) continue;
                     
                     // Check if player has found it
                     if (playerData.hasFound(treasure.getId())) continue;

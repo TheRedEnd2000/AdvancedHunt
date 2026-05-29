@@ -42,6 +42,10 @@ public class ProximityManager {
 
     private void checkPlayer(PlayerSnapshot snapshot, Set<UUID> availableCollections) {
         Location playerLoc = snapshot.location();
+        if (playerLoc == null || playerLoc.getWorld() == null) {
+            return;
+        }
+
         int chunkX = playerLoc.getBlockX() >> 4;
         int chunkZ = playerLoc.getBlockZ() >> 4;
         int chunkRadius = (int) Math.ceil((double) range / 16.0);
@@ -54,9 +58,10 @@ public class ProximityManager {
                 if (treasures == null || treasures.isEmpty()) continue;
 
                 for (TreasureCore treasure : treasures) {
-                    if (!treasure.getLocation().getWorld().equals(playerLoc.getWorld())) continue;
+                    Location treasureLoc = treasure.getLocation();
+                    if (treasureLoc == null || !treasure.isInLoadedWorld(playerLoc.getWorld())) continue;
                     
-                    if (treasure.getLocation().distanceSquared(playerLoc) <= rangeSq) {
+                    if (treasureLoc.distanceSquared(playerLoc) <= rangeSq) {
                         // Check if player has found it
                         if (!playerManager.getPlayerData(snapshot.player().getUniqueId()).hasFound(treasure.getId())) {
                             // Check if collection is available (O(1) lookup)

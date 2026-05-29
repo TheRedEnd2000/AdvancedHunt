@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.model;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -48,6 +49,33 @@ public class TreasureCore {
 
     public String getBlockState() {
         return blockState;
+    }
+
+    public boolean isInLoadedWorld(World world) {
+        if (location == null) {
+            return false;
+        }
+
+        World locationWorld = location.getWorld();
+        if (locationWorld == null || world == null) {
+            return false;
+        }
+
+        if (locationWorld == world) {
+            return true;
+        }
+
+        String locationWorldName = locationWorld.getName();
+        String worldName = world.getName();
+        return locationWorldName != null && locationWorldName.equals(worldName);
+    }
+
+    public String getWorldNameOr(String fallback) {
+        if (location == null || location.getWorld() == null) {
+            return fallback;
+        }
+        String worldName = location.getWorld().getName();
+        return worldName != null ? worldName : fallback;
     }
     
     /**

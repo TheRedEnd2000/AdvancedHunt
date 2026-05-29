@@ -1,4 +1,4 @@
-config-version: 2.1
+config-version: 2.2
 
 common:
   treasure: "Treasure"
@@ -534,31 +534,57 @@ gui:
     add_item:
       name: "&a+ Item Reward jog korte ekhane click korun"
       lore:
-        - "&7Ei treasure-er jonno ekti item"
-        - "&7reward hishebe jog korte ekhane click korun."
+        - "&7Available placeholders:"
+        - "&f  %player% &8- &7Player-er naam"
+        - "&f  %found_treasures% &8- &7Khuje pawa treasure"
+        - "&f  %max_treasures% &8- &7Mot treasure"
+        - "&f  %remaining_treasures% &8- &7Baki thaka treasure"
+        - "&f  %chance% &8- &7Reward-er sujog"
+        - "&f  %item% &8- &7Item-er naam"
+        - "&f  \\n &8- &7Notun line"
+        - "&f  & &8- &7Color code ebong hex color"
     add_command:
       name: "&a+ Command Reward jog korte ekhane click korun"
       lore:
         - "&7Ei treasure-er jonno ekti command"
         - "&7reward hishebe jog korte ekhane click korun."
         - ""
-        - "&7Player-er naam-er jonno &f%player% &7bebohar korun."
+        - "&7Available placeholders:"
+        - "&f  %player% &8- &7Player-er naam"
+        - "&f  %found_treasures% &8- &7Khuje pawa treasure"
+        - "&f  %max_treasures% &8- &7Mot treasure"
+        - "&f  %remaining_treasures% &8- &7Baki thaka treasure"
+        - "&f  %chance% &8- &7Reward-er sujog"
+        - "&f  \\n &8- &7Notun line"
+        - "&f  & &8- &7Color code ebong hex color"
     add_chat_message:
       name: "&a+ Chat Message Reward jog korte ekhane click korun"
       lore:
         - "&7Ei treasure-er jonno ekti chat message"
         - "&7reward hishebe jog korte ekhane click korun."
         - ""
-        - "&7Player-er naam-er jonno &f%player% &7bebohar korun."
-        - "&7Color code ebong hex-er jonno &f& &7bebohar korun."
+        - "&7Available placeholders:"
+        - "&f  %player% &8- &7Player-er naam"
+        - "&f  %found_treasures% &8- &7Khuje pawa treasure"
+        - "&f  %max_treasures% &8- &7Mot treasure"
+        - "&f  %remaining_treasures% &8- &7Baki thaka treasure"
+        - "&f  %chance% &8- &7Reward-er sujog"
+        - "&f  \\n &8- &7Notun line"
+        - "&f  & &8- &7Color code ebong hex color"
     add_broadcast_message:
       name: "&a+ Broadcast Message Reward jog korte ekhane click korun"
       lore:
         - "&7Ekti broadcast message jog korte ekhane click"
         - "&7korun ja sob player-ra dekhte pabe."
         - ""
-        - "&7Player-er naam-er jonno &f%player% &7bebohar korun."
-        - "&7Color code ebong hex-er jonno &f& &7bebohar korun."
+        - "&7Available placeholders:"
+        - "&f  %player% &8- &7Player-er naam"
+        - "&f  %found_treasures% &8- &7Khuje pawa treasure"
+        - "&f  %max_treasures% &8- &7Mot treasure"
+        - "&f  %remaining_treasures% &8- &7Baki thaka treasure"
+        - "&f  %chance% &8- &7Reward-er sujog"
+        - "&f  \\n &8- &7Notun line"
+        - "&f  & &8- &7Color code ebong hex color"
     # Chat prompts
     editor:
       title: "&8Reward #%number%"

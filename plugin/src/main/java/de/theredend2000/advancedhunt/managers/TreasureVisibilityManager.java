@@ -506,7 +506,7 @@ public class TreasureVisibilityManager implements Listener {
                 ItemsAdderAdapter.removeCustomFurniture(loc);
             } else {
                 if (!ItemsAdderAdapter.removeCustomBlock(loc)) {
-                    world.getBlockAt(loc).setType(Material.AIR, false);
+                    world.getBlockAt(loc).setType(Material.BARRIER, false);
                 }
             }
             return;
@@ -514,7 +514,7 @@ public class TreasureVisibilityManager implements Listener {
 
         Block block = world.getBlockAt(loc);
         if (!MaterialUtils.isAir(block.getType())) {
-            block.setType(Material.AIR, false);
+            block.setType(Material.BARRIER, false);
         }
     }
 
@@ -538,7 +538,7 @@ public class TreasureVisibilityManager implements Listener {
         }
 
         Block block = world.getBlockAt(loc);
-        if (!MaterialUtils.isAir(block.getType())) {
+        if (!MaterialUtils.isAir(block.getType()) && block.getType() != Material.BARRIER) {
             return;
         }
 

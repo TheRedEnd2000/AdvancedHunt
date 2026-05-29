@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.theredend2000</groupId>
         <artifactId>advancedhunt-parent</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4-Beta</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>13.6.0</version>
+            <version>13.7.0</version>
         </dependency>
     </dependencies>
 </project>

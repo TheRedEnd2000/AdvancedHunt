@@ -29,6 +29,7 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Random;

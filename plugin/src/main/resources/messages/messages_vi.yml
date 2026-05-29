@@ -1,4 +1,4 @@
-config-version: 2.1
+config-version: 2.2
 
 common:
   treasure: "Kho báu"
@@ -535,29 +535,58 @@ gui:
       lore:
         - "&7Nhấn để thêm một vật phẩm"
         - "&7làm phần thưởng cho kho báu này."
+        - ""
+        - "&7Placeholder khả dụng:"
+        - "&f  %player% &8- &7Tên người chơi"
+        - "&f  %found_treasures% &8- &7Kho báu đã tìm thấy"
+        - "&f  %max_treasures% &8- &7Tổng số kho báu"
+        - "&f  %remaining_treasures% &8- &7Kho báu còn lại"
+        - "&f  %chance% &8- &7Tỉ lệ phần thưởng"
+        - "&f  %item% &8- &7Tên vật phẩm"
+        - "&f  \\n &8- &7Xuống dòng mới"
+        - "&f  & &8- &7Mã màu và màu hex"
     add_command:
       name: "&a+ Thêm phần thưởng lệnh"
       lore:
         - "&7Nhấn để thêm một lệnh"
         - "&7làm phần thưởng cho kho báu này."
         - ""
-        - "&7Dùng &f%player% &7cho tên người chơi."
+        - "&7Placeholder khả dụng:"
+        - "&f  %player% &8- &7Tên người chơi"
+        - "&f  %found_treasures% &8- &7Kho báu đã tìm thấy"
+        - "&f  %max_treasures% &8- &7Tổng số kho báu"
+        - "&f  %remaining_treasures% &8- &7Kho báu còn lại"
+        - "&f  %chance% &8- &7Tỉ lệ phần thưởng"
+        - "&f  \\n &8- &7Xuống dòng mới"
+        - "&f  & &8- &7Mã màu và màu hex"
     add_chat_message:
       name: "&a+ Thêm phần thưởng tin nhắn chat"
       lore:
         - "&7Nhấn để thêm một tin nhắn chat"
         - "&7làm phần thưởng cho kho báu này."
         - ""
-        - "&7Dùng &f%player% &7cho tên người chơi."
-        - "&7Dùng &f& &7cho mã màu và màu hex."
+        - "&7Placeholder khả dụng:"
+        - "&f  %player% &8- &7Tên người chơi"
+        - "&f  %found_treasures% &8- &7Kho báu đã tìm thấy"
+        - "&f  %max_treasures% &8- &7Tổng số kho báu"
+        - "&f  %remaining_treasures% &8- &7Kho báu còn lại"
+        - "&f  %chance% &8- &7Tỉ lệ phần thưởng"
+        - "&f  \\n &8- &7Xuống dòng mới"
+        - "&f  & &8- &7Mã màu và màu hex"
     add_broadcast_message:
       name: "&a+ Thêm phần thưởng thông báo"
       lore:
         - "&7Nhấn để thêm một tin nhắn thông báo"
         - "&7mà tất cả người chơi sẽ thấy."
         - ""
-        - "&7Dùng &f%player% &7cho tên người chơi."
-        - "&7Dùng &f& &7cho mã màu và màu hex."
+        - "&7Placeholder khả dụng:"
+        - "&f  %player% &8- &7Tên người chơi"
+        - "&f  %found_treasures% &8- &7Kho báu đã tìm thấy"
+        - "&f  %max_treasures% &8- &7Tổng số kho báu"
+        - "&f  %remaining_treasures% &8- &7Kho báu còn lại"
+        - "&f  %chance% &8- &7Tỉ lệ phần thưởng"
+        - "&f  \\n &8- &7Xuống dòng mới"
+        - "&f  & &8- &7Mã màu và màu hex"
     # Chat prompts
     editor:
       title: "&8Phần thưởng #%number%"

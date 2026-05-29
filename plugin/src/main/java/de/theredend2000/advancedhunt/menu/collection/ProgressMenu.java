@@ -201,7 +201,7 @@ public class ProgressMenu extends PagedMenu {
             "%x%", String.valueOf(treasureCore.getLocation().getBlockX()),
             "%y%", String.valueOf(treasureCore.getLocation().getBlockY()),
             "%z%", String.valueOf(treasureCore.getLocation().getBlockZ()),
-            "%world%", treasureCore.getLocation().getWorld().getName()
+            "%world%", treasureCore.getWorldNameOr("?")
         );
         
         builder.setLore(lore);

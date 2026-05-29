@@ -157,7 +157,7 @@ public class CollectionListMenu extends PagedMenu {
                 "%x%", String.valueOf(treasureCore.getLocation().getBlockX()),
                 "%y%", String.valueOf(treasureCore.getLocation().getBlockY()),
                 "%z%", String.valueOf(treasureCore.getLocation().getBlockZ()),
-                "%world%", treasureCore.getLocation().getWorld().getName()
+            "%world%", treasureCore.getWorldNameOr("?")
         );
         
         if (playerMenuUtility.hasPermission("advancedhunt.admin.teleport")) {

@@ -81,7 +81,7 @@ public class ConfigMigrationHandlerTest {
             YamlConfiguration config = new YamlConfiguration();
             config.set(PROGRESS_TITLE_PATH, titlePair[0]);
 
-            ConfigMigrationHandler.migrateMessages(config, "2.0", "2.1");
+            ConfigMigrationHandler.migrateMessages(config, "2.0", "2.2");
 
             assertEquals(titlePair[1], config.getString(PROGRESS_TITLE_PATH));
         }
@@ -112,7 +112,7 @@ public class ConfigMigrationHandlerTest {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(
                 new InputStreamReader(resource, StandardCharsets.UTF_8)
             );
-            assertEquals(resourcePath, "2.1", String.valueOf(config.get("config-version")));
+            assertEquals(resourcePath, "2.2", String.valueOf(config.get("config-version")));
         }
     }
 }
