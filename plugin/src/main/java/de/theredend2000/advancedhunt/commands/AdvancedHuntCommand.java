@@ -822,6 +822,7 @@ public class AdvancedHuntCommand {
         plugin.reloadConfig();
         plugin.getMessageManager().reloadMessages();
         plugin.getSoundManager().reload();
+        plugin.getTreasureVisibilityManager().reloadReplaceBlock();
 
         // Storage backend (supports storage.type swap)
         plugin.reloadStorageBackend();
@@ -1037,6 +1038,9 @@ public class AdvancedHuntCommand {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 plugin.getParticleManager().clearAllGlobalCache();
                 invalidateAllPlayerCaches();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    plugin.getTreasureVisibilityManager().restoreFoundTreasuresForPlayer(player);
+                }
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.all_success",
                         "%count%", String.valueOf(count)));
             });
@@ -1049,6 +1053,9 @@ public class AdvancedHuntCommand {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         plugin.getParticleManager().clearGlobalCache(collection.getId());
                         invalidateAllPlayerCaches();
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            plugin.getTreasureVisibilityManager().restoreFoundTreasuresForPlayer(player, collection.getId());
+                        }
                         sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.collection_success",
                                 "%collection%", collection.getName(),
                                 "%count%", String.valueOf(count)));
@@ -1065,8 +1072,11 @@ public class AdvancedHuntCommand {
         plugin.getDataRepository().resetPlayerProgress(offlinePlayer.getUniqueId()).thenAccept(count -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 plugin.getParticleManager().clearAllGlobalCache();
-
                 plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
+                Player onlinePlayer = Bukkit.getPlayer(offlinePlayer.getUniqueId());
+                if (onlinePlayer != null) {
+                    plugin.getTreasureVisibilityManager().restoreFoundTreasuresForPlayer(onlinePlayer);
+                }
                 sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_success",
                         "%player%", playerName,
                         "%count%", String.valueOf(count)));
@@ -1090,8 +1100,11 @@ public class AdvancedHuntCommand {
                         if (collection.isSinglePlayerFind()) {
                             plugin.getParticleManager().clearGlobalCache(collection.getId());
                         }
-
                         plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
+                        Player onlinePlayer = Bukkit.getPlayer(offlinePlayer.getUniqueId());
+                        if (onlinePlayer != null) {
+                            plugin.getTreasureVisibilityManager().restoreFoundTreasuresForPlayer(onlinePlayer, collection.getId());
+                        }
                         sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_collection_success",
                                 "%player%", playerName,
                                 "%collection%", collection.getName(),

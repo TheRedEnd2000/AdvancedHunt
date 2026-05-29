@@ -1,4 +1,4 @@
-config-version: 4.1
+config-version: 4.2
 
 storage:
   # Options: SQLITE, MYSQL, YAML
@@ -57,6 +57,15 @@ rewards:
   # If true, blacklisted commands will also be blocked from executing.
   # If false, they will only be blocked when an admin tries to add them via the GUI.
   block-execution: true
+
+treasure-settings:
+  # Only used when "Hide Found Treasures" is enabled in the collection.
+  # Defines how the treasure block is replaced after being found.
+  #
+  # Allowed values:
+  # - AIR: Removes the block completely. This prevents visual glitches caused by client-side desync.
+  # - BARRIER: Replaces the block with an invisible solid block. Useful to indicate that the location is not empty in survival mode.
+  replace-block: BARRIER
 
 particle-settings:
   enabled: true
