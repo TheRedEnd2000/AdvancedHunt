@@ -305,7 +305,7 @@ public class CollectionSettingsMenu extends Menu {
         addButton(40, new ItemBuilder(collection.isHideWhenNotAvailable() ? Material.EXPERIENCE_BOTTLE : Material.GLASS_BOTTLE)
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_when_not_available.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_when_not_available.lore", false,
-                        "%status%", publicHideStatus).toArray(new String[0]))
+                        "%status%", hideStatus).toArray(new String[0]))
                 .build(), (e) -> {
             if (processing) return;
             processing = true;
