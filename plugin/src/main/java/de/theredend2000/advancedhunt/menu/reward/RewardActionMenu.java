@@ -316,7 +316,7 @@ public class RewardActionMenu extends Menu {
         if (chance == (int) chance) {
             return String.valueOf((int) chance);
         }
-        return String.format("%.1f", chance);
+        return String.format("%.3f", chance);
     }
 
     private String formatMessage(String message){

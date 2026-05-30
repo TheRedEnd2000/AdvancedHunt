@@ -307,7 +307,7 @@ public class RewardManager {
         if (chance == (int) chance) {
             return String.valueOf((int) chance);
         }
-        return String.format("%.1f", chance);
+        return String.format("%.3f", chance);
     }
 
     /**
