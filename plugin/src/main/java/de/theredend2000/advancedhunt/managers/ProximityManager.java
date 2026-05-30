@@ -27,7 +27,7 @@ public class ProximityManager {
     }
 
     public void reloadConfig() {
-        this.enabled = plugin.getConfig().getBoolean("proximity-settings.enabled", false);
+        this.enabled = plugin.getConfig().getBoolean("proximity-settings.enabled", true);
         this.range = plugin.getConfig().getInt("proximity-settings.range", 10);
         this.rangeSq = range * range;
     }
