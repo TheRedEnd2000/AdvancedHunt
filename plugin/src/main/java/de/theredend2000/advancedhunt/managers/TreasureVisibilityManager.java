@@ -86,8 +86,6 @@ public class TreasureVisibilityManager implements Listener {
     private final Map<UUID, AtomicInteger> worldEntityIdCounters = new ConcurrentHashMap<>();
 
     private BukkitTask availabilityTask;
-    // Stored as Object so that TreasureVisibilityManager can be loaded without PacketEvents
-    // on the classpath. The actual value is always a PacketListenerAbstract when non-null.
     private Object packetListener;
 
     public TreasureVisibilityManager(Main plugin, TreasureManager treasureManager, CollectionManager collectionManager) {
@@ -202,13 +200,14 @@ public class TreasureVisibilityManager implements Listener {
                     if (loc == null || !loc.getWorld().equals(player.getWorld())) continue;
 
                     if (data.hasFound(core.getId())) {
-                        // Spieler hat gefunden → verstecken
                         WrappedBlockState replaceState = getReplaceBlockState();
                         if (replaceState != null) sendBlockChangeToPlayer(player, loc, replaceState);
                     } else {
-                        // Spieler hat nicht gefunden → echten Block zeigen
                         WrappedBlockState state = resolveWrappedBlockState(core, player);
-                        if (state != null) sendBlockChangeToPlayer(player, loc, state);
+                        if (state != null) {
+                            sendBlockChangeToPlayer(player, loc, state);
+                            scheduleVirtualExtras(player, core, loc);
+                        }
                     }
                 }
             }
@@ -347,9 +346,7 @@ public class TreasureVisibilityManager implements Listener {
             boolean actAvailable = collectionManager.isCollectionAvailable(collection);
             Boolean previous = availabilityCache.put(collection.getId(), actAvailable);
 
-            // Determine if collection should be hidden (considering both ACT and hideWhenNotAvailable)
             boolean shouldBeHidden = shouldHideCollection(collection, actAvailable);
-            boolean wasHidden = previous != null && !previous;
 
             if (previous == null) {
                 if (shouldBeHidden) {
@@ -360,12 +357,9 @@ public class TreasureVisibilityManager implements Listener {
                 continue;
             }
 
-            // Only act on ACT availability changes, not hideWhenNotAvailable changes
-            // (hideWhenNotAvailable changes are handled by refreshCollectionVisibility)
             if (previous && !actAvailable) {
                 hideCollectionTreasures(collection.getId());
             } else if (!previous && actAvailable) {
-                // Only restore if hideWhenNotAvailable doesn't require hiding
                 if (!shouldBeHidden) {
                     restoreCollectionTreasures(collection.getId());
                 }
@@ -419,12 +413,10 @@ public class TreasureVisibilityManager implements Listener {
      * @return true if collection should be hidden
      */
     private boolean shouldHideCollection(Collection collection, boolean actAvailable) {
-        // Only hide if the hideWhenNotAvailable feature is enabled
         if (!collection.isHideWhenNotAvailable()) {
-            return false; // Feature disabled - don't hide treasures
+            return false;
         }
-        
-        // Hide if collection is disabled OR ACT says not available
+
         return !collection.isEnabled() || !actAvailable;
     }
 
@@ -435,8 +427,7 @@ public class TreasureVisibilityManager implements Listener {
         }
         
         Collection collection = collectionOpt.get();
-        
-        // Get ACT availability (from cache or calculate)
+
         Boolean actAvailable = availabilityCache.get(collectionId);
         if (actAvailable == null) {
             actAvailable = collectionManager.isCollectionAvailable(collection);
@@ -446,49 +437,72 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     private void hideCollectionTreasures(UUID collectionId) {
+        if (!isPacketEventsReady()) return;
+
         List<TreasureCore> cores = new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
         if (cores.isEmpty()) return;
 
-        new BukkitRunnable() {
-            int index = 0;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (isBypassEnabled(player)) continue;
 
-            @Override
-            public void run() {
-                int processed = 0;
-                while (index < cores.size() && processed < 400) {
-                    TreasureCore core = cores.get(index++);
-                    processed++;
-                    hideTreasureBlock(core);
-                }
+            new BukkitRunnable() {
+                int index = 0;
 
-                if (index >= cores.size()) {
-                    cancel();
+                @Override
+                public void run() {
+                    int processed = 0;
+                    while (index < cores.size() && processed < 400) {
+                        TreasureCore core = cores.get(index++);
+                        processed++;
+                        if (core == null) continue;
+
+                        Location loc = core.getLocation();
+                        if (loc == null || loc.getWorld() == null) continue;
+                        if (!loc.getWorld().equals(player.getWorld())) continue;
+
+                        WrappedBlockState replaceState = getReplaceBlockState();
+                        if (replaceState != null) {
+                            sendBlockChangeToPlayer(player, loc, replaceState);
+                        }
+                    }
+                    if (index >= cores.size()) cancel();
                 }
-            }
-        }.runTaskTimer(plugin, 1L, 1L);
+            }.runTaskTimer(plugin, 1L, 1L);
+        }
     }
 
     private void restoreCollectionTreasures(UUID collectionId) {
+        if (!isPacketEventsReady()) return;
+
         List<TreasureCore> cores = new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
         if (cores.isEmpty()) return;
 
-        new BukkitRunnable() {
-            int index = 0;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            new BukkitRunnable() {
+                int index = 0;
 
-            @Override
-            public void run() {
-                int processed = 0;
-                while (index < cores.size() && processed < 200) {
-                    TreasureCore core = cores.get(index++);
-                    processed++;
-                    restoreTreasureBlock(core);
-                }
+                @Override
+                public void run() {
+                    int processed = 0;
+                    while (index < cores.size() && processed < 200) {
+                        TreasureCore core = cores.get(index++);
+                        processed++;
+                        if (core == null) continue;
 
-                if (index >= cores.size()) {
-                    cancel();
+                        Location loc = core.getLocation();
+                        if (loc == null || loc.getWorld() == null) continue;
+                        if (!loc.getWorld().equals(player.getWorld())) continue;
+
+                        WrappedBlockState state = resolveWrappedBlockState(core, player);
+                        if (state != null) {
+                            sendBlockChangeToPlayer(player, loc, state);
+                            scheduleVirtualExtras(player, core, loc);
+                        }
+                    }
+                    if (index >= cores.size()) cancel();
                 }
-            }
-        }.runTaskTimer(plugin, 1L, 1L);
+            }.runTaskTimer(plugin, 1L, 1L);
+        }
     }
 
     private void hideTreasureBlock(TreasureCore core) {
@@ -612,9 +626,6 @@ public class TreasureVisibilityManager implements Listener {
     private void unregisterPacketListener() {
         if (packetListener == null) return;
         try {
-            // Cast is safe: packetListener is only ever set to a PacketListenerAbstract
-            // instance inside registerPacketListener(), which only runs when PacketEvents
-            // is confirmed available. The cast is in a method body and thus resolved lazily.
             PacketEvents.getAPI().getEventManager().unregisterListener(
                 (PacketListenerAbstract) packetListener);
         } catch (Throwable ignored) {
@@ -659,7 +670,6 @@ public class TreasureVisibilityManager implements Listener {
         boolean foundHidden = shouldHideFoundForPlayer(core, player);
 
         if (bypass && (collectionHidden || foundHidden)) {
-            // Bypass: echten Block zeigen
             WrappedBlockState blockState = resolveWrappedBlockState(core, player);
             if (blockState == null) return;
             wrapper.setBlockState(blockState);
