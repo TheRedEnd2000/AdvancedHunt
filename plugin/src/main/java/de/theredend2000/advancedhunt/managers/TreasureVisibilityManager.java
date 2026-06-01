@@ -36,7 +36,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -66,22 +65,22 @@ public class TreasureVisibilityManager implements Listener {
     private final Map<UUID, Boolean> availabilityCache = new ConcurrentHashMap<>();
     private final Map<UUID, Map<Long, Integer>> furnitureMarkers = new ConcurrentHashMap<>();
     private final Cache<UUID, HeadHelper.SkullProfileData> headProfileCache = Caffeine.newBuilder()
-        .maximumSize(10_000)
-        .expireAfterAccess(10, TimeUnit.MINUTES)
-        .build();
+            .maximumSize(10_000)
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .build();
     private final Set<UUID> headProfileLoading = ConcurrentHashMap.newKeySet();
     private final Cache<String, BlockData> blockDataCache = Caffeine.newBuilder()
-        .maximumSize(4_000)
-        .expireAfterAccess(30, TimeUnit.MINUTES)
-        .build();
+            .maximumSize(4_000)
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .build();
     private final Cache<Material, BlockData> materialDataCache = Caffeine.newBuilder()
-        .maximumSize(256)
-        .expireAfterAccess(30, TimeUnit.MINUTES)
-        .build();
+            .maximumSize(256)
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .build();
     private final Cache<WrappedStateKey, WrappedBlockState> wrappedStateCache = Caffeine.newBuilder()
-        .maximumSize(10_000)
-        .expireAfterAccess(30, TimeUnit.MINUTES)
-        .build();
+            .maximumSize(10_000)
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .build();
     private final Map<String, Material> materialNameCache = new ConcurrentHashMap<>();
     private final Map<UUID, AtomicInteger> worldEntityIdCounters = new ConcurrentHashMap<>();
 
@@ -97,16 +96,14 @@ public class TreasureVisibilityManager implements Listener {
     public void start() {
         reloadReplaceBlock();
         Bukkit.getPluginManager().registerEvents(this, plugin);
-
         registerPacketListener();
 
         availabilityTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
-            plugin,
-            this::refreshAvailabilityStates,
-            20L * 10,
-            20L * 60
+                plugin,
+                this::refreshAvailabilityStates,
+                20L * 10,
+                20L * 60
         );
-
         Bukkit.getScheduler().runTaskLater(plugin, this::refreshAvailabilityStates, 40L);
     }
 
@@ -152,9 +149,7 @@ public class TreasureVisibilityManager implements Listener {
                 if (!loc.getWorld().equals(player.getWorld())) continue;
 
                 WrappedBlockState state = getReplaceBlockState();
-                if (state != null) {
-                    sendBlockChangeToPlayer(player, loc, state);
-                }
+                if (state != null) sendBlockChangeToPlayer(player, loc, state);
             }
         }
     }
@@ -169,15 +164,88 @@ public class TreasureVisibilityManager implements Listener {
         if (player == null) return;
         if (enabled) {
             bypassPlayers.add(player.getUniqueId());
-            sendVirtualTreasuresInView(player, true);
+            sendVirtualBlocksInView(player);
             return;
         }
 
         bypassPlayers.remove(player.getUniqueId());
         clearFurnitureMarkers(player.getUniqueId());
+
+        sendCollectionHiddenStateForPlayer(player);
         sendHideAfterFoundStateForPlayer(player);
     }
 
+    /**
+     * Sends Air block-change packets for every collection-hidden treasure in the
+     * player's view. Called when bypass is disabled so the blocks vanish instantly
+     * without waiting for a chunk reload.
+     */
+    private void sendCollectionHiddenStateForPlayer(Player player) {
+        if (player == null || !isPacketEventsReady()) return;
+
+        int viewDistance = getServerViewDistance();
+        int cx = player.getLocation().getBlockX() >> 4;
+        int cz = player.getLocation().getBlockZ() >> 4;
+        World world = player.getWorld();
+
+        for (int x = cx - viewDistance; x <= cx + viewDistance; x++) {
+            for (int z = cz - viewDistance; z <= cz + viewDistance; z++) {
+                List<TreasureCore> cores = treasureManager.getTreasureCoresInChunk(x, z);
+                for (TreasureCore core : cores) {
+                    if (core == null) continue;
+                    if (!isCollectionHidden(core.getCollectionId())) continue;
+
+                    Location loc = core.getLocation();
+                    if (loc == null || loc.getWorld() == null) continue;
+                    if (!loc.getWorld().equals(world)) continue;
+
+                    WrappedBlockState airState = WrappedBlockState.getByString("minecraft:air");
+                    if (airState != null) sendBlockChangeToPlayer(player, loc, airState);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sends virtual block-change packets to a bypass player for every treasure
+     * that is currently hidden (either collection-hidden or found-hidden).
+     * Called when bypass is enabled.
+     */
+    private void sendVirtualBlocksInView(Player player) {
+        if (player == null || player.getWorld() == null || !isPacketEventsReady()) return;
+
+        int viewDistance = getServerViewDistance();
+        int cx = player.getLocation().getBlockX() >> 4;
+        int cz = player.getLocation().getBlockZ() >> 4;
+        World world = player.getWorld();
+
+        for (int x = cx - viewDistance; x <= cx + viewDistance; x++) {
+            for (int z = cz - viewDistance; z <= cz + viewDistance; z++) {
+                List<TreasureCore> cores = treasureManager.getTreasureCoresInChunk(x, z);
+                for (TreasureCore core : cores) {
+                    if (core == null) continue;
+                    Location loc = core.getLocation();
+                    if (loc == null || loc.getWorld() == null) continue;
+                    if (!loc.getWorld().equals(world)) continue;
+
+                    boolean collectionHidden = isCollectionHidden(core.getCollectionId());
+                    boolean foundHidden = shouldHideFoundForPlayer(core, player);
+
+                    if (collectionHidden || foundHidden) {
+                        WrappedBlockState state = resolveWrappedBlockState(core, player);
+                        if (state == null) continue;
+                        sendBlockChangeToPlayer(player, loc, state);
+                        scheduleVirtualExtras(player, core, loc);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Re-applies hide-after-found packet state for every treasure in the player's
+     * view. Called after bypass is turned off.
+     */
     private void sendHideAfterFoundStateForPlayer(Player player) {
         if (player == null || !isPacketEventsReady()) return;
         PlayerData data = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
@@ -214,68 +282,53 @@ public class TreasureVisibilityManager implements Listener {
         }
     }
 
-    private void sendVirtualTreasuresInView(Player player, boolean show) {
-        if (player == null || player.getWorld() == null) return;
-        if (!isPacketEventsReady()) return;
+    /**
+     * Called when the hideAfterFound toggle on a collection changes.
+     * Updates packet state for all online players who have found treasures in it.
+     */
+    public void refreshHideAfterFound(Collection collection) {
+        if (collection == null || !isPacketEventsReady()) return;
 
-        int viewDistance = getServerViewDistance();
-        int cx = player.getLocation().getBlockX() >> 4;
-        int cz = player.getLocation().getBlockZ() >> 4;
-        World world = player.getWorld();
+        List<TreasureCore> cores = treasureManager.getTreasureCoresInCollection(collection.getId());
+        if (cores.isEmpty()) return;
 
-        for (int x = cx - viewDistance; x <= cx + viewDistance; x++) {
-            for (int z = cz - viewDistance; z <= cz + viewDistance; z++) {
-                List<TreasureCore> cores = treasureManager.getTreasureCoresInChunk(x, z);
-                if (cores.isEmpty()) continue;
+        boolean hiding = collection.isHideAfterFound();
 
-                for (TreasureCore core : cores) {
-                    if (core == null) continue;
-                    Location loc = core.getLocation();
-                    if (loc == null || loc.getWorld() == null) continue;
-                    if (!loc.getWorld().equals(world)) continue;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PlayerData data = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
+            if (data == null) continue;
 
-                    boolean collectionHidden = isCollectionHidden(core.getCollectionId());
-                    boolean foundHidden = shouldHideFoundForPlayer(core, player);
+            for (TreasureCore core : cores) {
+                if (core == null || !data.hasFound(core.getId())) continue;
+                Location loc = core.getLocation();
+                if (loc == null || loc.getWorld() == null) continue;
+                if (!loc.getWorld().equals(player.getWorld())) continue;
 
-                    if (show) {
-                        if (collectionHidden || foundHidden) {
-                            WrappedBlockState state = resolveWrappedBlockState(core, player);
-                            if (state == null) continue;
-                            sendBlockChangeToPlayer(player, loc, state);
-                            scheduleVirtualExtras(player, core, loc);
-                        }
-                    } else {
-                        if (collectionHidden) {
-                            continue;
-                        }
-                        if (foundHidden) {
-                            WrappedBlockState replaceState = getReplaceBlockState();
-                            if (replaceState != null) sendBlockChangeToPlayer(player, loc, replaceState);
-                        } else {
-                            Block block = world.getBlockAt(loc);
-                            try {
-                                WrappedBlockState state = SpigotConversionUtil.fromBukkitBlockData(block.getBlockData());
-                                if (state != null) sendBlockChangeToPlayer(player, loc, state);
-                            } catch (Throwable ignored) {
-                            }
-                        }
+                if (hiding) {
+                    WrappedBlockState replaceState = getReplaceBlockState();
+                    if (replaceState != null) sendBlockChangeToPlayer(player, loc, replaceState);
+                } else {
+                    WrappedBlockState state = resolveWrappedBlockState(core, player);
+                    if (state != null) {
+                        sendBlockChangeToPlayer(player, loc, state);
+                        scheduleVirtualExtras(player, core, loc);
                     }
                 }
             }
         }
     }
 
+    /**
+     * Immediately sends the replace-block packet to hide a single just-found treasure.
+     */
+    public void hideFoundTreasureForPlayer(Player player, TreasureCore core) {
+        if (player == null || core == null || !isPacketEventsReady()) return;
+        Location loc = core.getLocation();
+        if (loc == null || loc.getWorld() == null) return;
+        if (!loc.getWorld().equals(player.getWorld())) return;
 
-    private void sendBlockChangeToPlayer(Player player, Location loc, WrappedBlockState state) {
-        if (player == null || loc == null || state == null) return;
-        try {
-            WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(
-                new Vector3i(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()),
-                state
-            );
-            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
-        } catch (Throwable ignored) {
-        }
+        WrappedBlockState replaceState = getReplaceBlockState();
+        if (replaceState != null) sendBlockChangeToPlayer(player, loc, replaceState);
     }
 
     public void restoreFoundTreasuresForPlayer(Player player, UUID collectionId) {
@@ -285,13 +338,13 @@ public class TreasureVisibilityManager implements Listener {
             if (!player.isOnline()) return;
 
             if (isBypassEnabled(player)) {
-                sendVirtualTreasuresInView(player, true);
+                sendVirtualBlocksInView(player);
                 return;
             }
 
             List<TreasureCore> cores = collectionId != null
                     ? treasureManager.getTreasureCoresInCollection(collectionId)
-                    : new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
+                    : new ArrayList<>();
 
             for (TreasureCore core : cores) {
                 if (core == null) continue;
@@ -303,7 +356,10 @@ public class TreasureVisibilityManager implements Listener {
                 if (!loc.getWorld().equals(player.getWorld())) continue;
 
                 WrappedBlockState state = resolveWrappedBlockState(core, player);
-                if (state != null) sendBlockChangeToPlayer(player, loc, state);
+                if (state != null) {
+                    sendBlockChangeToPlayer(player, loc, state);
+                    scheduleVirtualExtras(player, core, loc);
+                }
             }
         }, 2L);
     }
@@ -315,7 +371,7 @@ public class TreasureVisibilityManager implements Listener {
             if (!player.isOnline()) return;
 
             if (isBypassEnabled(player)) {
-                sendVirtualTreasuresInView(player, true);
+                sendVirtualBlocksInView(player);
                 return;
             }
 
@@ -329,182 +385,137 @@ public class TreasureVisibilityManager implements Listener {
                     if (!loc.getWorld().equals(player.getWorld())) continue;
 
                     WrappedBlockState state = resolveWrappedBlockState(core, player);
-                    if (state != null) sendBlockChangeToPlayer(player, loc, state);
+                    if (state != null) {
+                        sendBlockChangeToPlayer(player, loc, state);
+                        scheduleVirtualExtras(player, core, loc);
+                    }
                 }
             }
         }, 2L);
     }
 
-    /**
-     * Refreshes the availability states of all collections and updates treasure visibility accordingly.
-     * This method is called periodically by the scheduler to check ACT rule changes.
-     * For manual collection setting changes, use {@link #refreshCollectionVisibility(UUID)} instead.
-     */
     public void refreshAvailabilityStates() {
         List<Collection> collections = collectionManager.getAllCollections();
         for (Collection collection : collections) {
             boolean actAvailable = collectionManager.isCollectionAvailable(collection);
             Boolean previous = availabilityCache.put(collection.getId(), actAvailable);
-
             boolean shouldBeHidden = shouldHideCollection(collection, actAvailable);
 
             if (previous == null) {
-                if (shouldBeHidden) {
-                    hideCollectionTreasures(collection.getId());
-                } else {
-                    restoreCollectionTreasures(collection.getId());
-                }
+                if (shouldBeHidden) hideCollectionTreasures(collection.getId());
+                else restoreCollectionTreasures(collection.getId());
                 continue;
             }
 
             if (previous && !actAvailable) {
                 hideCollectionTreasures(collection.getId());
             } else if (!previous && actAvailable) {
-                if (!shouldBeHidden) {
-                    restoreCollectionTreasures(collection.getId());
-                }
+                if (!shouldBeHidden) restoreCollectionTreasures(collection.getId());
             }
         }
     }
 
-    /**
-     * Refreshes visibility for a specific collection when its settings change.
-     * This should be called when collection.enabled or collection.hideWhenNotAvailable changes.
-     * 
-     * @param collectionId the collection whose visibility should be refreshed
-     */
     public void refreshCollectionVisibility(UUID collectionId) {
         Optional<Collection> collectionOpt = collectionManager.getCollectionById(collectionId);
-        if (!collectionOpt.isPresent()) {
-            return;
-        }
-
+        if (!collectionOpt.isPresent()) return;
         refreshCollectionVisibility(collectionOpt.get());
     }
 
-    /**
-     * Refreshes visibility for a specific collection using the provided collection object.
-     * This ensures we use the most up-to-date collection state.
-     * 
-     * @param collection the collection whose visibility should be refreshed
-     */
     public void refreshCollectionVisibility(Collection collection) {
-        if (collection == null) {
-            return;
-        }
-
+        if (collection == null) return;
         boolean actAvailable = collectionManager.isCollectionAvailable(collection);
         availabilityCache.put(collection.getId(), actAvailable);
-
         boolean shouldBeHidden = shouldHideCollection(collection, actAvailable);
-
-        if (shouldBeHidden) {
-            hideCollectionTreasures(collection.getId());
-        } else {
-            restoreCollectionTreasures(collection.getId());
-        }
+        if (shouldBeHidden) hideCollectionTreasures(collection.getId());
+        else restoreCollectionTreasures(collection.getId());
     }
 
-    /**
-     * Determines if a collection should be hidden based on both hideWhenNotAvailable flag and ACT availability.
-     * 
-     * @param collection the collection to check
-     * @param actAvailable whether ACT rules say the collection is available
-     * @return true if collection should be hidden
-     */
     private boolean shouldHideCollection(Collection collection, boolean actAvailable) {
-        if (!collection.isHideWhenNotAvailable()) {
-            return false;
-        }
-
+        if (!collection.isHideWhenNotAvailable()) return false;
         return !collection.isEnabled() || !actAvailable;
     }
 
     private boolean isCollectionHidden(UUID collectionId) {
         Optional<Collection> collectionOpt = collectionManager.getCollectionById(collectionId);
-        if (!collectionOpt.isPresent()) {
-            return false;
-        }
-        
+        if (!collectionOpt.isPresent()) return false;
         Collection collection = collectionOpt.get();
-
         Boolean actAvailable = availabilityCache.get(collectionId);
-        if (actAvailable == null) {
-            actAvailable = collectionManager.isCollectionAvailable(collection);
-        }
-        
+        if (actAvailable == null) actAvailable = collectionManager.isCollectionAvailable(collection);
         return shouldHideCollection(collection, actAvailable);
     }
 
-    private void hideCollectionTreasures(UUID collectionId) {
-        if (!isPacketEventsReady()) return;
-
-        List<TreasureCore> cores = new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
+    /**
+     * Sets real blocks to Air for all treasures in a collection.
+     * Bypass players receive a virtual block-change packet so they still see the block.
+     */
+    private void hideCollectionTreasures(final UUID collectionId) {
+        final List<TreasureCore> cores = new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
         if (cores.isEmpty()) return;
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (isBypassEnabled(player)) continue;
+        final TreasureVisibilityManager self = this;
 
-            new BukkitRunnable() {
-                int index = 0;
+        new BukkitRunnable() {
+            int index = 0;
 
-                @Override
-                public void run() {
-                    int processed = 0;
-                    while (index < cores.size() && processed < 400) {
-                        TreasureCore core = cores.get(index++);
-                        processed++;
-                        if (core == null) continue;
+            @Override
+            public void run() {
+                int processed = 0;
+                while (index < cores.size() && processed < 400) {
+                    TreasureCore core = cores.get(index++);
+                    processed++;
+                    if (core == null) continue;
 
+                    self.hideTreasureBlock(core);
+
+                    if (self.isPacketEventsReady()) {
                         Location loc = core.getLocation();
-                        if (loc == null || loc.getWorld() == null) continue;
-                        if (!loc.getWorld().equals(player.getWorld())) continue;
-
-                        WrappedBlockState replaceState = getReplaceBlockState();
-                        if (replaceState != null) {
-                            sendBlockChangeToPlayer(player, loc, replaceState);
+                        if (loc != null && loc.getWorld() != null) {
+                            for (Player player : Bukkit.getOnlinePlayers()) {
+                                if (!self.isBypassEnabled(player)) continue;
+                                if (!loc.getWorld().equals(player.getWorld())) continue;
+                                WrappedBlockState state = self.resolveWrappedBlockState(core, player);
+                                if (state != null) {
+                                    self.sendBlockChangeToPlayer(player, loc, state);
+                                    self.scheduleVirtualExtras(player, core, loc);
+                                }
+                            }
                         }
                     }
-                    if (index >= cores.size()) cancel();
                 }
-            }.runTaskTimer(plugin, 1L, 1L);
-        }
+                if (index >= cores.size()) cancel();
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
     }
 
-    private void restoreCollectionTreasures(UUID collectionId) {
-        if (!isPacketEventsReady()) return;
-
-        List<TreasureCore> cores = new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
+    /**
+     * Restores real blocks for all treasures in a collection.
+     */
+    private void restoreCollectionTreasures(final UUID collectionId) {
+        final List<TreasureCore> cores = new ArrayList<>(treasureManager.getTreasureCoresInCollection(collectionId));
         if (cores.isEmpty()) return;
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            new BukkitRunnable() {
-                int index = 0;
+        final TreasureVisibilityManager self = this;
 
-                @Override
-                public void run() {
-                    int processed = 0;
-                    while (index < cores.size() && processed < 200) {
-                        TreasureCore core = cores.get(index++);
-                        processed++;
-                        if (core == null) continue;
+        new BukkitRunnable() {
+            int index = 0;
 
-                        Location loc = core.getLocation();
-                        if (loc == null || loc.getWorld() == null) continue;
-                        if (!loc.getWorld().equals(player.getWorld())) continue;
-
-                        WrappedBlockState state = resolveWrappedBlockState(core, player);
-                        if (state != null) {
-                            sendBlockChangeToPlayer(player, loc, state);
-                            scheduleVirtualExtras(player, core, loc);
-                        }
-                    }
-                    if (index >= cores.size()) cancel();
+            @Override
+            public void run() {
+                int processed = 0;
+                while (index < cores.size() && processed < 200) {
+                    TreasureCore core = cores.get(index++);
+                    processed++;
+                    if (core == null) continue;
+                    self.restoreTreasureBlock(core);
                 }
-            }.runTaskTimer(plugin, 1L, 1L);
-        }
+                if (index >= cores.size()) cancel();
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
     }
 
+    /**
+     * Sets the real world block to Air (server-side).
+     */
     private void hideTreasureBlock(TreasureCore core) {
         if (core == null || core.getLocation() == null) return;
         Location loc = core.getLocation();
@@ -520,7 +531,7 @@ public class TreasureVisibilityManager implements Listener {
                 ItemsAdderAdapter.removeCustomFurniture(loc);
             } else {
                 if (!ItemsAdderAdapter.removeCustomBlock(loc)) {
-                    world.getBlockAt(loc).setType(Material.BARRIER, false);
+                    world.getBlockAt(loc).setType(Material.AIR, false);
                 }
             }
             return;
@@ -528,10 +539,13 @@ public class TreasureVisibilityManager implements Listener {
 
         Block block = world.getBlockAt(loc);
         if (!MaterialUtils.isAir(block.getType())) {
-            block.setType(Material.BARRIER, false);
+            block.setType(Material.AIR, false);
         }
     }
 
+    /**
+     * Restores the real world block from TreasureCore data.
+     */
     private void restoreTreasureBlock(TreasureCore core) {
         if (core == null || core.getLocation() == null) return;
         Location loc = core.getLocation();
@@ -552,20 +566,15 @@ public class TreasureVisibilityManager implements Listener {
         }
 
         Block block = world.getBlockAt(loc);
-        if (!MaterialUtils.isAir(block.getType()) && block.getType() != Material.BARRIER) {
-            return;
-        }
+        if (!MaterialUtils.isAir(block.getType())) return;
 
         Material type = resolveMaterial(core.getMaterial());
         if (type == null) return;
 
         BlockData data = resolveBlockData(core, type);
         try {
-            if (data != null) {
-                block.setBlockData(data, false);
-            } else {
-                block.setType(type, false);
-            }
+            if (data != null) block.setBlockData(data, false);
+            else block.setType(type, false);
         } catch (Throwable ignored) {
             block.setType(type, false);
         }
@@ -592,24 +601,20 @@ public class TreasureVisibilityManager implements Listener {
                 }
                 NBT.modify(state, nbt -> {
                     try {
-                        ReadWriteNBT data = NBT.parseNBT(nbtData);
-                        nbt.mergeCompound(data);
-                    } catch (Throwable ignored) {
-                    }
+                        ReadWriteNBT parsed = NBT.parseNBT(nbtData);
+                        nbt.mergeCompound(parsed);
+                    } catch (Throwable ignored) {}
                 });
                 state.update(true, false);
-            } catch (Throwable ignored) {
-            }
+            } catch (Throwable ignored) {}
         });
     }
 
     private void registerPacketListener() {
         if (!isPacketEventsReady()) {
-            plugin.getLogger().info("[TreasureVisibility] PacketEvents not available "
-                + "— treasure-visibility bypass and virtual block injection disabled.");
+            plugin.getLogger().info("[TreasureVisibility] PacketEvents not available — bypass disabled.");
             return;
         }
-
         try {
             PacketListenerAbstract listener = new PacketListenerAbstract(PacketListenerPriority.NORMAL) {
                 @Override
@@ -619,17 +624,14 @@ public class TreasureVisibilityManager implements Listener {
             };
             PacketEvents.getAPI().getEventManager().registerListener(listener);
             packetListener = listener;
-        } catch (Throwable ignored) {
-        }
+        } catch (Throwable ignored) {}
     }
 
     private void unregisterPacketListener() {
         if (packetListener == null) return;
         try {
-            PacketEvents.getAPI().getEventManager().unregisterListener(
-                (PacketListenerAbstract) packetListener);
-        } catch (Throwable ignored) {
-        }
+            PacketEvents.getAPI().getEventManager().unregisterListener((PacketListenerAbstract) packetListener);
+        } catch (Throwable ignored) {}
         packetListener = null;
     }
 
@@ -641,22 +643,25 @@ public class TreasureVisibilityManager implements Listener {
 
         boolean bypass = isBypassEnabled(player);
         boolean anyHideAfterFound = hasAnyHideAfterFoundCollections();
+
         if (!bypass && !anyHideAfterFound) return;
 
         PacketTypeCommon packetType = event.getPacketType();
         if (packetType == PacketType.Play.Server.BLOCK_CHANGE) {
             handleBlockChange(event, player, bypass);
-            return;
-        }
-        if (packetType == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
+        } else if (packetType == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
             handleMultiBlockChange(event, player, bypass);
-            return;
-        }
-        if (packetType == PacketType.Play.Server.CHUNK_DATA) {
+        } else if (packetType == PacketType.Play.Server.CHUNK_DATA) {
             handleChunkData(event, player, bypass);
         }
     }
 
+    /**
+     * Bypass ON  + collection hidden (real Air) → inject real treasure block.
+     * Bypass ON  + found hidden                 → inject real treasure block.
+     * Bypass OFF + found hidden                 → inject replace-block (barrier/air packet).
+     * Bypass OFF + collection hidden            → real Air already on server, no action needed.
+     */
     private void handleBlockChange(PacketSendEvent event, Player player, boolean bypass) {
         WrapperPlayServerBlockChange wrapper = new WrapperPlayServerBlockChange(event);
         Vector3i pos = wrapper.getBlockPosition();
@@ -792,81 +797,30 @@ public class TreasureVisibilityManager implements Listener {
         }
     }
 
-    /**
-     * Checks if a given treasure should be hidden for a specific player because
-     * the collection has hideAfterFound enabled and the player has already found it.
-     */
+    private void sendBlockChangeToPlayer(Player player, Location loc, WrappedBlockState state) {
+        if (player == null || loc == null || state == null) return;
+        try {
+            WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(
+                    new Vector3i(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()),
+                    state
+            );
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+        } catch (Throwable ignored) {}
+    }
+
     private boolean shouldHideFoundForPlayer(TreasureCore core, Player player) {
         if (core == null || player == null) return false;
         Optional<Collection> collectionOpt = collectionManager.getCollectionById(core.getCollectionId());
         if (!collectionOpt.isPresent() || !collectionOpt.get().isHideAfterFound()) return false;
-
         PlayerData data = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
         return data != null && data.hasFound(core.getId());
     }
 
-    /**
-     * Quick check whether any loaded collection has hideAfterFound enabled.
-     * Used to skip packet interception entirely when no collection uses the feature.
-     */
     private boolean hasAnyHideAfterFoundCollections() {
         for (Collection c : collectionManager.getAllCollections()) {
             if (c.isHideAfterFound()) return true;
         }
         return false;
-    }
-
-    /**
-     * Refreshes hide-after-found visibility for all online players in a collection.
-     * Called when the hideAfterFound toggle is changed.
-     */
-    public void refreshHideAfterFound(Collection collection) {
-        if (collection == null || !isPacketEventsReady()) return;
-
-        List<TreasureCore> cores = treasureManager.getTreasureCoresInCollection(collection.getId());
-        if (cores.isEmpty()) return;
-
-        boolean hiding = collection.isHideAfterFound();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerData data = plugin.getPlayerManager().getPlayerData(player.getUniqueId());
-            if (data == null) continue;
-
-            for (TreasureCore core : cores) {
-                if (core == null || !data.hasFound(core.getId())) continue;
-                Location loc = core.getLocation();
-                if (loc == null || loc.getWorld() == null) continue;
-                if (!loc.getWorld().equals(player.getWorld())) continue;
-
-                if (hiding) {
-                    WrappedBlockState replaceState = getReplaceBlockState();
-                    if (replaceState != null) {
-                        sendBlockChangeToPlayer(player, loc, replaceState);
-                    }
-                } else {
-                    WrappedBlockState state = resolveWrappedBlockState(core, player);
-                    if (state != null) {
-                        sendBlockChangeToPlayer(player, loc, state);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Immediately hides a single treasure for a player via a block change packet.
-     * Called right after a player finds a treasure in a hideAfterFound collection.
-     */
-    public void hideFoundTreasureForPlayer(Player player, TreasureCore core) {
-        if (player == null || core == null || !isPacketEventsReady()) return;
-        Location loc = core.getLocation();
-        if (loc == null || loc.getWorld() == null) return;
-        if (!loc.getWorld().equals(player.getWorld())) return;
-
-        WrappedBlockState airState = getReplaceBlockState();
-        if (airState != null) {
-            sendBlockChangeToPlayer(player, loc, airState);
-        }
     }
 
     private void scheduleVirtualExtras(Player player, TreasureCore core, Location loc) {
@@ -878,7 +832,6 @@ public class TreasureVisibilityManager implements Listener {
                 loadHeadProfileAsync(player, core, loc);
             }
         }
-
         if (isItemsAdder(core) && isItemsAdderFurniture(core)) {
             ensureFurnitureMarker(player, loc);
         }
@@ -892,7 +845,6 @@ public class TreasureVisibilityManager implements Listener {
                 headProfileLoading.remove(core.getId());
                 return;
             }
-
             HeadHelper.SkullProfileData profileData = HeadHelper.getSkullProfileData(treasure.getNbtData());
             if (profileData != null && profileData.hasRenderableData()) {
                 headProfileCache.put(core.getId(), profileData);
@@ -909,7 +861,6 @@ public class TreasureVisibilityManager implements Listener {
 
     private void ensureFurnitureMarker(Player player, Location loc) {
         if (player == null || loc == null) return;
-
         Map<Long, Integer> playerMarkers = furnitureMarkers.computeIfAbsent(player.getUniqueId(), k -> new ConcurrentHashMap<>());
         long key = locationKey(loc);
         if (playerMarkers.containsKey(key)) return;
@@ -917,19 +868,17 @@ public class TreasureVisibilityManager implements Listener {
         int entityId = allocateEntityId(loc.getWorld());
         if (entityId == -1) return;
 
-        boolean spawned = PlatformAccess.get().spawnHologramArmorStandForPlayer(player, entityId, UUID.randomUUID(), loc.clone().add(0.5, 1.2, 0.5), FURNITURE_MARKER_NAME);
+        boolean spawned = PlatformAccess.get().spawnHologramArmorStandForPlayer(
+                player, entityId, UUID.randomUUID(), loc.clone().add(0.5, 1.2, 0.5), FURNITURE_MARKER_NAME);
         if (!spawned) return;
-
         playerMarkers.put(key, entityId);
     }
 
     private void clearFurnitureMarkers(UUID playerId) {
         Map<Long, Integer> markers = furnitureMarkers.remove(playerId);
         if (markers == null || markers.isEmpty()) return;
-
         Player player = Bukkit.getPlayer(playerId);
         if (player == null || !player.isOnline()) return;
-
         int[] ids = markers.values().stream().mapToInt(Integer::intValue).toArray();
         PlatformAccess.get().destroyEntitiesForPlayer(player, ids);
     }
@@ -956,11 +905,8 @@ public class TreasureVisibilityManager implements Listener {
 
         ClientVersion clientVersion = null;
         try {
-            if (player != null) {
-                clientVersion = PacketEvents.getAPI().getPlayerManager().getClientVersion(player);
-            }
-        } catch (Throwable ignored) {
-        }
+            if (player != null) clientVersion = PacketEvents.getAPI().getPlayerManager().getClientVersion(player);
+        } catch (Throwable ignored) {}
 
         String blockState = core.getBlockState();
         String cacheKey = null;
@@ -980,29 +926,20 @@ public class TreasureVisibilityManager implements Listener {
             try {
                 WrappedBlockState state = SpigotConversionUtil.fromBukkitBlockData(data);
                 if (state != null) {
-                    if (cacheKey != null) {
-                        wrappedStateCache.put(new WrappedStateKey(cacheKey, clientVersion), state);
-                    }
+                    if (cacheKey != null) wrappedStateCache.put(new WrappedStateKey(cacheKey, clientVersion), state);
                     return state;
                 }
-            } catch (Throwable ignored) {
-            }
+            } catch (Throwable ignored) {}
         }
 
         if (blockState != null && !blockState.isEmpty() && !isLegacyBlockData(blockState)) {
             try {
-                WrappedBlockState state;
-                if (clientVersion != null) {
-                    state = WrappedBlockState.getByString(clientVersion, blockState);
-                } else {
-                    state = WrappedBlockState.getByString(blockState);
-                }
-                if (state != null && cacheKey != null) {
-                    wrappedStateCache.put(new WrappedStateKey(cacheKey, clientVersion), state);
-                }
+                WrappedBlockState state = clientVersion != null
+                        ? WrappedBlockState.getByString(clientVersion, blockState)
+                        : WrappedBlockState.getByString(blockState);
+                if (state != null && cacheKey != null) wrappedStateCache.put(new WrappedStateKey(cacheKey, clientVersion), state);
                 return state;
-            } catch (Throwable ignored) {
-            }
+            } catch (Throwable ignored) {}
         }
 
         return null;
@@ -1012,19 +949,15 @@ public class TreasureVisibilityManager implements Listener {
         if (core == null) return null;
 
         if (isItemsAdder(core)) {
-            if (isItemsAdderFurniture(core)) {
-                return materialDataCache.get(DEFAULT_FURNITURE_BLOCK, Material::createBlockData);
-            }
+            if (isItemsAdderFurniture(core)) return materialDataCache.get(DEFAULT_FURNITURE_BLOCK, Material::createBlockData);
             String blockState = core.getBlockState();
             if (blockState != null && !blockState.isEmpty()) {
                 BlockData cached = blockDataCache.getIfPresent(blockState);
                 if (cached != null) return cached;
             }
-            BlockData data = ItemsAdderAdapter.getCustomBlockData(blockState);
+            BlockData data = ItemsAdderAdapter.getCustomBlockData(core.getBlockState());
             if (data != null) {
-                if (blockState != null && !blockState.isEmpty()) {
-                    blockDataCache.put(blockState, data);
-                }
+                if (core.getBlockState() != null && !core.getBlockState().isEmpty()) blockDataCache.put(core.getBlockState(), data);
                 return data;
             }
             return materialDataCache.get(DEFAULT_FURNITURE_BLOCK, Material::createBlockData);
@@ -1036,19 +969,14 @@ public class TreasureVisibilityManager implements Listener {
             if (cached != null) return cached;
             try {
                 BlockData data = Bukkit.createBlockData(blockState);
-                if (data != null) {
-                    blockDataCache.put(blockState, data);
-                }
+                if (data != null) blockDataCache.put(blockState, data);
                 return data;
-            } catch (Throwable ignored) {
-            }
+            } catch (Throwable ignored) {}
         }
 
         if (fallbackMaterial != null) {
-            try {
-                return materialDataCache.get(fallbackMaterial, Material::createBlockData);
-            } catch (Throwable ignored) {
-            }
+            try { return materialDataCache.get(fallbackMaterial, Material::createBlockData); }
+            catch (Throwable ignored) {}
         }
 
         return null;
@@ -1061,21 +989,15 @@ public class TreasureVisibilityManager implements Listener {
         if (cached != null) return cached;
         try {
             Material material = Material.getMaterial(key);
-            if (material != null) {
-                materialNameCache.put(key, material);
-                return material;
-            }
-        } catch (Throwable ignored) {
-        }
+            if (material != null) { materialNameCache.put(key, material); return material; }
+        } catch (Throwable ignored) {}
         return DEFAULT_FURNITURE_BLOCK;
     }
 
     private boolean isLegacyBlockData(String blockState) {
         if (blockState == null || blockState.isEmpty()) return false;
         for (int i = 0; i < blockState.length(); i++) {
-            if (!Character.isDigit(blockState.charAt(i))) {
-                return false;
-            }
+            if (!Character.isDigit(blockState.charAt(i))) return false;
         }
         return true;
     }
@@ -1086,7 +1008,6 @@ public class TreasureVisibilityManager implements Listener {
         int viewDistance = getServerViewDistance();
         int cx = player.getLocation().getBlockX() >> 4;
         int cz = player.getLocation().getBlockZ() >> 4;
-
         for (int x = cx - viewDistance; x <= cx + viewDistance; x++) {
             for (int z = cz - viewDistance; z <= cz + viewDistance; z++) {
                 player.getWorld().refreshChunk(x, z);
@@ -1098,9 +1019,7 @@ public class TreasureVisibilityManager implements Listener {
         try {
             int dist = Bukkit.getViewDistance();
             return dist > 0 ? dist : 8;
-        } catch (Throwable ignored) {
-            return 8;
-        }
+        } catch (Throwable ignored) { return 8; }
     }
 
     private int allocateEntityId(World world) {
@@ -1108,10 +1027,98 @@ public class TreasureVisibilityManager implements Listener {
         final int min = 1_000_000_000;
         final int max = Integer.MAX_VALUE;
         AtomicInteger counter = worldEntityIdCounters.computeIfAbsent(world.getUID(),
-            k -> new AtomicInteger(min + plugin.getRandom().nextInt(1_000_000)));
-
+                k -> new AtomicInteger(min + plugin.getRandom().nextInt(1_000_000)));
         int id = counter.updateAndGet(current -> current >= max ? min : current + 1);
         return id > 0 ? id : -1;
+    }
+
+    private boolean isPacketEventsReady() {
+        try {
+            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
+                    && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) return false;
+        } catch (Throwable ignored) { return false; }
+        try { return PacketEvents.getAPI().isInitialized(); }
+        catch (Throwable ignored) { return false; }
+    }
+
+    private long locationKey(Location loc) {
+        if (loc == null || loc.getWorld() == null) return 0L;
+        long posKey = packBlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        UUID worldId = loc.getWorld().getUID();
+        long worldHash = worldId.getMostSignificantBits() ^ worldId.getLeastSignificantBits();
+        return posKey ^ worldHash;
+    }
+
+    private long packBlockPos(int x, int y, int z) {
+        long lx = (long) (x & 0x3FFFFFF);
+        long ly = (long) (y & 0xFFF);
+        long lz = (long) (z & 0x3FFFFFF);
+        return (lx << 38) | (lz << 12) | ly;
+    }
+
+    private WrappedBlockState getReplaceBlockState() {
+        if (replaceBlockName.equals("barrier")) {
+            try {
+                BlockData barrierData = Material.BARRIER.createBlockData();
+                return SpigotConversionUtil.fromBukkitBlockData(barrierData);
+            } catch (Throwable ignored) {}
+        }
+        return WrappedBlockState.getByString("minecraft:air");
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        if (event == null || event.getChunk() == null) return;
+
+        int cx = event.getChunk().getX();
+        int cz = event.getChunk().getZ();
+        List<TreasureCore> cores = treasureManager.getTreasureCoresInChunk(cx, cz);
+        if (cores.isEmpty()) return;
+
+        final TreasureVisibilityManager self = this;
+
+        new BukkitRunnable() {
+            int index = 0;
+
+            @Override
+            public void run() {
+                int processed = 0;
+                while (index < cores.size() && processed < 200) {
+                    TreasureCore core = cores.get(index++);
+                    processed++;
+                    if (core == null) continue;
+
+                    if (self.isCollectionHidden(core.getCollectionId())) {
+                        self.hideTreasureBlock(core);
+                        if (self.isPacketEventsReady()) {
+                            Location loc = core.getLocation();
+                            if (loc != null && loc.getWorld() != null) {
+                                for (Player player : Bukkit.getOnlinePlayers()) {
+                                    if (!self.isBypassEnabled(player)) continue;
+                                    if (!loc.getWorld().equals(player.getWorld())) continue;
+                                    WrappedBlockState state = self.resolveWrappedBlockState(core, player);
+                                    if (state != null) {
+                                        self.sendBlockChangeToPlayer(player, loc, state);
+                                        self.scheduleVirtualExtras(player, core, loc);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        self.restoreTreasureBlock(core);
+                    }
+                }
+                if (index >= cores.size()) cancel();
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        if (event == null || event.getPlayer() == null) return;
+        UUID playerId = event.getPlayer().getUniqueId();
+        bypassPlayers.remove(playerId);
+        clearFurnitureMarkers(playerId);
     }
 
     private static final class WrappedStateKey {
@@ -1135,90 +1142,5 @@ public class TreasureVisibilityManager implements Listener {
         public int hashCode() {
             return Objects.hash(key, clientVersion);
         }
-    }
-
-    private boolean isPacketEventsReady() {
-        try {
-            if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")
-                && !Bukkit.getPluginManager().isPluginEnabled("PacketEvents")) {
-                return false;
-            }
-        } catch (Throwable ignored) {
-            return false;
-        }
-
-        try {
-            return PacketEvents.getAPI().isInitialized();
-        } catch (Throwable ignored) {
-            return false;
-        }
-    }
-
-    private long locationKey(Location loc) {
-        if (loc == null || loc.getWorld() == null) return 0L;
-        long posKey = packBlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        UUID worldId = loc.getWorld().getUID();
-        long worldHash = worldId.getMostSignificantBits() ^ worldId.getLeastSignificantBits();
-        return posKey ^ worldHash;
-    }
-
-    private long packBlockPos(int x, int y, int z) {
-        long lx = (long) (x & 0x3FFFFFF);
-        long ly = (long) (y & 0xFFF);
-        long lz = (long) (z & 0x3FFFFFF);
-        return (lx << 38) | (lz << 12) | ly;
-    }
-
-    @EventHandler
-    public void onChunkLoad(ChunkLoadEvent event) {
-        if (event == null || event.getChunk() == null) return;
-
-        int cx = event.getChunk().getX();
-        int cz = event.getChunk().getZ();
-        List<TreasureCore> cores = treasureManager.getTreasureCoresInChunk(cx, cz);
-        if (cores.isEmpty()) return;
-
-        new BukkitRunnable() {
-            int index = 0;
-
-            @Override
-            public void run() {
-                int processed = 0;
-                while (index < cores.size() && processed < 200) {
-                    TreasureCore core = cores.get(index++);
-                    processed++;
-                    if (core == null) continue;
-
-                    if (isCollectionHidden(core.getCollectionId())) {
-                        hideTreasureBlock(core);
-                    } else {
-                        restoreTreasureBlock(core);
-                    }
-                }
-
-                if (index >= cores.size()) {
-                    cancel();
-                }
-            }
-        }.runTaskTimer(plugin, 1L, 1L);
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        if (event == null || event.getPlayer() == null) return;
-        UUID playerId = event.getPlayer().getUniqueId();
-        bypassPlayers.remove(playerId);
-        clearFurnitureMarkers(playerId);
-    }
-
-    private WrappedBlockState getReplaceBlockState() {
-        if (replaceBlockName.equals("barrier")) {
-            try {
-                BlockData barrierData = Material.BARRIER.createBlockData();
-                return SpigotConversionUtil.fromBukkitBlockData(barrierData);
-            } catch (Throwable ignored) {
-            }
-        }
-        return WrappedBlockState.getByString("minecraft:air");
     }
 }
