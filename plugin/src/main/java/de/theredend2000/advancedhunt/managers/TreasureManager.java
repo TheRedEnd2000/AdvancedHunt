@@ -236,7 +236,7 @@ public class TreasureManager {
         final int total = cores.size();
         final int effectiveBatchSize = Math.max(1, batchSize);
         final int[] completed = {0};
-        final int[] nextPercentToReport = {10};
+        final int[] nextPercentToReport = {0};
 
         CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
         for (int i = 0; i < cores.size(); i += effectiveBatchSize) {
@@ -276,7 +276,7 @@ public class TreasureManager {
                     int percent = (int) ((completed[0] * 100L) / total);
                     while (percent >= nextPercentToReport[0] && nextPercentToReport[0] < 100) {
                         progressCallback.accept(nextPercentToReport[0], completed[0]);
-                        nextPercentToReport[0] += 10;
+                        nextPercentToReport[0] += 1;
                     }
                 });
             });
