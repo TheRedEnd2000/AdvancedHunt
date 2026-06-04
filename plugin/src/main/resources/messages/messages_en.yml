@@ -722,6 +722,42 @@ gui:
       title: "&8Memory Game"
       button:
         name: "&fButton %number%"
+    spot:
+      title: "&bSpot the Items"
+      item:
+        name: "&e&l★ Remember me!"
+        found: "&a&l✔ Found!"
+    oddoneout:
+      title: "&dOdd One Out"
+      odd:
+        name: "&c&l? I am different!"
+    order:
+      title: "&5Sequence"
+      sequence:
+        name: "&ePosition %pos%"
+      empty:
+        name: "&8[ Empty ]"
+      palette:
+        name: "&a&l➤ Select me"
+      placed:
+        name: "&f&l✔ Placed (#%pos%)"
+    sliderpuzzle:
+      title: "&9Slider Puzzle"
+      tile:
+        name: "&fTile %number%"
+      empty:
+        name: "&8[ Empty ]"
+    higherlower:
+      title: "&6Higher or Lower?"
+      number:
+        active: "&a%n% &7— Click to guess"
+        eliminated: "&c%n% &7— Eliminated"
+      guesses:
+        remaining: "&e%left% guesses remaining"
+      feedback:
+        neutral: "&7Guess a number!"
+        higher: "&a&l▲ Higher!"
+        lower: "&c&l▼ Lower!"
   treasure_action:
     title: "&8Treasure Actions"
     teleport:
@@ -1856,8 +1892,28 @@ minigame:
     watch: "%prefix%&eWatch the sequence carefully!"
     repeat: "%prefix%&aNow repeat the sequence!"
     wrong: "%prefix%&cWrong sequence! Game over."
+  spot:
+    memorise: "%prefix%&eMemorize the positions of the items!"
+    find: "%prefix%&aFind all hidden items!"
+    wrong: "%prefix%&cWrong slot! That was not a hidden item."
+  oddoneout:
+    find: "%prefix%&eRound &f%round%&e/&f%max% &8— &aFind the odd item!"
+    timeout: "%prefix%&cToo slow! Time ran out."
+    wrong: "%prefix%&cWrong! That was not the odd item."
+  order:
+    memorise: "%prefix%&eRound &f%round%&e/&f%max% &8— &eMemorize the sequence!"
+    recreate: "%prefix%&aRecreate the sequence using the palette below!"
+    wrong: "%prefix%&cWrong! That was not the correct item."
+  sliderpuzzle:
+    start: "%prefix%&eSlide the tiles into the correct order (1-8)!"
+  higherlower:
+    start: "%prefix%&eI am thinking of a number from &f1&e to &f%max%&e. You have &f%guesses% &eguesses!"
+    correct: "%prefix%&a&lCorrect! &7The number was &f%n%&7."
+    higher: "%prefix%&a▲ Higher! &7&f%left% &7guess(es) remaining."
+    lower: "%prefix%&c▼ Lower! &7&f%left% &7guess(es) remaining."
+    lose: "%prefix%&c&lGame over! &7The number was &f%n%&7."
   error:
-    invalid_type: "%prefix%&cInvalid minigame type. Available: REACTION, MEMORY"
+    invalid_type: "%prefix%&cInvalid minigame type. Available: REACTION, MEMORY, SPOT, ADDONEOUT, ORDER, SLIDERPUZZLE, HIGHERLOWER"
 
 proximity:
   near_treasure: "&eYou are near a treasure!"

@@ -125,14 +125,14 @@ hint:
   apply-cooldown-to-operators: false
   # Which coordinate to reveal: X, Z, or RANDOM (only X or Z)
   reveal-coordinate: RANDOM
-  
+
   # Minigame settings for hints
   minigames:
     # Global setting to enable/disable minigames entirely
     enabled: true
-    # Which minigame to use for hints (REACTION, MEMORY, or RANDOM)
+    # Which minigame to use for hints (REACTION, MEMORY, SPOT, ODDONEOUT, ORDER, SLIDERPUZZLE, HIGHERLOWER, or RANDOM)
     type: RANDOM
-    
+
     # Settings for the Reaction minigame
     reaction:
       enabled: true
@@ -140,7 +140,7 @@ hint:
       required-clicks: 15
       # Time in ticks (20 ticks = 1 second) before the target moves and counts as a miss
       update-time: 20
-    
+
     # Settings for the Memory (Simon) minigame
     memory:
       enabled: true
@@ -148,6 +148,53 @@ hint:
       rounds: 5
       # Time in ticks to show each color during the sequence display
       display-time: 20
+
+    # Settings for the Spot minigame
+    # Items are shown briefly, then hidden — find all their slots
+    spot:
+      enabled: true
+      # How many items are shown
+      item-count: 5
+      # Ticks the items are visible before being hidden (60 = 3 seconds)
+      display-time: 60
+
+    # Settings for the Odd One Out minigame
+    # The whole inventory is one colour — one slot is different, find it
+    oddoneout:
+      enabled: true
+      # Number of rounds to complete
+      rounds: 10
+      # Ticks allowed in round 1
+      base-time: 200
+      # Ticks subtracted per round (minimum enforced at 20)
+      time-decrease: 15
+
+    # Settings for the Order minigame
+    # A sequence of coloured items is shown briefly — recreate it from a palette
+    order:
+      enabled: true
+      # Number of rounds to complete
+      rounds: 3
+      # Items per sequence (max 8)
+      sequence-length: 5
+      # Ticks the sequence is visible before being hidden (60 = 3 seconds)
+      display-time: 60
+
+    # Settings for the Slider Puzzle minigame
+    # 8-puzzle in a 3x3 grid — slide tiles into order 1-8, empty slot bottom-right
+    sliderpuzzle:
+      enabled: true
+      # Random moves applied when shuffling the board (more = harder)
+      shuffles: 50
+
+    # Settings for the Higher / Lower minigame
+    # Guess the secret number — get told if the answer is higher or lower
+    higherlower:
+      enabled: true
+      # Upper bound of the guessing range (max 27 due to inventory size)
+      max-number: 18
+      # Number of wrong guesses allowed before losing
+      max-guesses: 3
 
 # Updates the plugin automatically when a new version comes out
 updater:

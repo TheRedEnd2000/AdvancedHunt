@@ -1,8 +1,7 @@
 package de.theredend2000.advancedhunt.managers.minigame;
 
 import de.theredend2000.advancedhunt.Main;
-import de.theredend2000.advancedhunt.menu.minigame.MemoryMinigameMenu;
-import de.theredend2000.advancedhunt.menu.minigame.ReactionMinigameMenu;
+import de.theredend2000.advancedhunt.menu.minigame.*;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -45,6 +44,36 @@ public class MinigameManager {
                 break;
             case MEMORY:
                 new MemoryMinigameMenu(player, plugin, (success) -> {
+                    endSession(player);
+                    onFinish.accept(success);
+                }).open();
+                break;
+            case ORDER:
+                new OrderMinigameMenu(player, plugin, (success) -> {
+                    endSession(player);
+                    onFinish.accept(success);
+                }).open();
+                break;
+            case ODDONEOUT:
+                new OddOneOutMinigameMenu(player, plugin, (success) -> {
+                    endSession(player);
+                    onFinish.accept(success);
+                }).open();
+                break;
+            case SPOT:
+                new SpotMinigameMenu(player, plugin, (success) -> {
+                    endSession(player);
+                    onFinish.accept(success);
+                }).open();
+                break;
+            case HIGHER_LOWER:
+                new HigherLowerMinigameMenu(player, plugin, (success) -> {
+                    endSession(player);
+                    onFinish.accept(success);
+                }).open();
+                break;
+            case SLIDERPUZZLE:
+                new SliderPuzzleMinigameMenu(player, plugin, (success) -> {
                     endSession(player);
                     onFinish.accept(success);
                 }).open();
