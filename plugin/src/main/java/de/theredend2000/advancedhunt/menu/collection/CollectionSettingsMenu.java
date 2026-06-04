@@ -260,7 +260,10 @@ public class CollectionSettingsMenu extends Menu {
                 new ConfirmationMenu(playerMenuUtility, plugin,
                         plugin.getMessageManager().getMessage("gui.settings.override_treasure_rewards.confirm_title", false,
                                 "%name%", selected.getName()),
-                        (confirmEvent) -> runBulkOverride(selected),
+                        (confirmEvent) -> {
+                            playerMenuUtility.closeInventory();
+                            runBulkOverride(selected);
+                        },
                         (cancelEvent) -> open()
                 ).setPreviousMenu(this).open();
             }, collection).setPreviousMenu(this).open();

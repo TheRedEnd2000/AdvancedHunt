@@ -87,7 +87,10 @@ public class DeleteCollectionHandlingMenu extends Menu {
 
             new ConfirmationMenu(playerMenuUtility, plugin,
                 plugin.getMessageManager().getMessage(confirmTitleKey, false, "%collection%", collection.getName()),
-                (confirmEvent) -> runDelete(confirmEvent, handling),
+                (confirmEvent) -> {
+                    playerMenuUtility.closeInventory();
+                    runDelete(confirmEvent, handling);
+                },
                 (cancelEvent) -> openPreviousMenu()
             ).setPreviousMenu(this).open();
         });

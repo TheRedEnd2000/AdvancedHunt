@@ -176,7 +176,10 @@ public class RewardPresetActionsMenu extends Menu {
                 plugin.getMessageManager().getMessage("gui.presets.actions.load_all.confirm_title", false,
                         "%collection%", collectionContext.getName(),
                         "%name%", preset.getName()),
-                confirmEvent -> runBulkOverride(),
+                confirmEvent -> {
+                    playerMenuUtility.closeInventory();
+                    runBulkOverride();
+                },
                 cancelEvent -> open()
         ).setPreviousMenu(this).open();
     }
