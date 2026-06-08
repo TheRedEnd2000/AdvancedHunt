@@ -722,6 +722,42 @@ gui:
       title: "&8Erinnerungsspiel"
       button:
         name: "&fKnopf %number%"
+    spot:
+      title: "&bFinde die Items"
+      item:
+        name: "&e&l★ Erinnere dich an mich!"
+        found: "&a&l✔ Gefunden!"
+    oddoneout:
+      title: "&dFalsche Items raus"
+      odd:
+        name: "&c&l? Ich bin anders!"
+    order:
+      title: "&5Abfolge"
+      sequence:
+        name: "&ePosition %pos%"
+      empty:
+        name: "&8[ Leer ]"
+      palette:
+        name: "&a&l➤ Wähle mich"
+      placed:
+        name: "&f&l✔ Platziert (#%pos%)"
+    sliderpuzzle:
+      title: "&9Schiebepuzzle"
+      tile:
+        name: "&fKachel %number%"
+      empty:
+        name: "&8[ Leer ]"
+    higherlower:
+      title: "&6Höher oder Niedriger?"
+      number:
+        active: "&a%n% &7— Klicke zum Raten"
+        eliminated: "&c%n% &7— Ausgeschieden"
+      guesses:
+        remaining: "&e%left% Versuche übrig."
+      feedback:
+        neutral: "&7Rate eine Zahl!"
+        higher: "&a&l▲ Höher!"
+        lower: "&c&l▼ Niedriger!"
   treasure_action:
     title: "&8Treasure Aktionen"
     teleport:
@@ -1854,8 +1890,28 @@ minigame:
     watch: "%prefix%&eBeobachte die Sequenz aufmerksam!"
     repeat: "%prefix%&aJetzt wiederhole die Sequenz!"
     wrong: "%prefix%&cFalsche Sequenz! Spiel vorbei."
+  spot:
+    memorise: "%prefix%&eMerke dir die Position der Items!"
+    find: "%prefix%&aFinde alle versteckten Items!"
+    wrong: "%prefix%&cFalscher Slot! Dies war nicht das versteckte Item."
+  oddoneout:
+    find: "%prefix%&eRunde &f%round%&e/&f%max% &8— &aFinde das Item, welches nicht passt!"
+    timeout: "%prefix%&cZu langsam! Die Zeit ist ausgelaufen."
+    wrong: "%prefix%&cFalsch! Das war nicht das passende Items."
+  order:
+    memorise: "%prefix%&eRunde &f%round%&e/&f%max% &8— &eMerke dir die Abfolge!"
+    recreate: "%prefix%&aStellen Sie die Abfolge mithilfe der untenstehenden Items nach!"
+    wrong: "%prefix%&cFalsch! Das war nicht das korrekte Item."
+  sliderpuzzle:
+    start: "%prefix%&eSchiebe die Kacheln in die richtige Reihenfolge (1–8)!"
+  higherlower:
+    start: "%prefix%&eIch denke an eine Zahl zwischen &f1&e und &f%max%&e. Du hast &f%guesses% &eVersuche!"
+    correct: "%prefix%&a&lRichtig! &7Die Zahl war &f%n%&7."
+    higher: "%prefix%&a▲ Höher! &7&f%left% &7Versuch(e) übrig."
+    lower: "%prefix%&c▼ Niedriger! &7&f%left% &7Versuch(e) übrig."
+    lose: "%prefix%&c&lSpiel vorbei! &7Die Zahl war &f%n%&7."
   error:
-    invalid_type: "%prefix%&cUngültiger Minigame-Typ. Verfügbar: REACTION, MEMORY"
+    invalid_type: "%prefix%&cUngültiger Minigame-Typ. Verfügbar: REACTION, MEMORY, SPOT, ADDONEOUT, ORDER, SLIDERPUZZLE, HIGHERLOWER"
 
 proximity:
   near_treasure: "&eDu bist in der Nähe einer Treasure!"

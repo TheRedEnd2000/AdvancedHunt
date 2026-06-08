@@ -720,6 +720,42 @@ gui:
       title: "&8Memory Game"
       button:
         name: "&fButton %number%"
+    spot:
+      title: "&bItem Gula Khujo"
+      item:
+        name: "&e&l★ Amake mone rakho!"
+        found: "&a&l✔ Pawa gese!"
+    oddoneout:
+      title: "&dBhinnodhormi Ta Khujo"
+      odd:
+        name: "&c&l? Ami alada!"
+    order:
+      title: "&5Sequence"
+      sequence:
+        name: "&ePosition %pos%"
+      empty:
+        name: "&8[ Khali ]"
+      palette:
+        name: "&a&l➤ Amake select koro"
+      placed:
+        name: "&f&l✔ Bosano hoyeche (#%pos%)"
+    sliderpuzzle:
+      title: "&9Slider Puzzle"
+      tile:
+        name: "&fTile %number%"
+      empty:
+        name: "&8[ Khali ]"
+    higherlower:
+      title: "&6Boro na Choto?"
+      number:
+        active: "&a%n% &7— Click kore onuman koro"
+        eliminated: "&c%n% &7— Bad pore gese"
+      guesses:
+        remaining: "&e%left% ta onuman baki achee"
+      feedback:
+        neutral: "&7Ekta songkha onuman koro!"
+        higher: "&a&l▲ Aro boro!"
+        lower: "&c&l▼ Aro choto!"
   treasure_action:
     title: "&8Treasure Actions"
     teleport:
@@ -1852,8 +1888,28 @@ minigame:
     watch: "%prefix%&eSequence-ti khub bhalo bhabe dekhun!"
     repeat: "%prefix%&aEkhon sequence-ti repeat korun!"
     wrong: "%prefix%&cBhul sequence! Game Over."
+  spot:
+    memorise: "%prefix%&eItem gular esthan mone rakho!"
+    find: "%prefix%&aShob lukano item gula khuje ber koro!"
+    wrong: "%prefix%&cBhul slot! Eta kono lukano item chilo na."
+  oddoneout:
+    find: "%prefix%&eRound &f%round%&e/&f%max% &8— &aBhinnodhormi item ta khuje ber koro!"
+    timeout: "%prefix%&cOnek deri hoye geche! Shomoy shesh."
+    wrong: "%prefix%&cBhul! Eta bhinnodhormi item chilo na."
+  order:
+    memorise: "%prefix%&eRound &f%round%&e/&f%max% &8— &eSequence ta mone rakho!"
+    recreate: "%prefix%&aNicher palette use kore sequence ta abar banao!"
+    wrong: "%prefix%&cBhul! Eta sothik item chilo na."
+  sliderpuzzle:
+    start: "%prefix%&eTile gula slide kore thik order (1-8) e ano!"
+  higherlower:
+    start: "%prefix%&eAmi &f1&e theke &f%max%&e er moddhe ekta songkha bhabtesi. Tumi &f%guesses% &bar onuman korte parbe!"
+    correct: "%prefix%&a&lSothik! &7Number ta chilo &f%n%&7."
+    higher: "%prefix%&a▲ Aro boro! &7Aro &f%left% &7ta onuman baki ache."
+    lower: "%prefix%&c▼ Aro choto! &7Aro &f%left% &7ta onuman baki ache."
+    lose: "%prefix%&c&lKhela sesh! &7Songkha-ti chilo &f%n%&7."
   error:
-    invalid_type: "%prefix%&cMinigame-er dhoron thik nei. Available: REACTION, MEMORY"
+    invalid_type: "%prefix%&cMinigame-er dhoron thik nei. Available: REACTION, MEMORY, SPOT, ADDONEOUT, ORDER, SLIDERPUZZLE, HIGHERLOWER"
 
 proximity:
   near_treasure: "&eApni ekti treasure-er khub kache achen!"

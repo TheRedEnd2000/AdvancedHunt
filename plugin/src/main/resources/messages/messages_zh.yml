@@ -1854,7 +1854,7 @@ minigame:
     repeat: "%prefix%&a现在请重复刚才的顺序！"
     wrong: "%prefix%&c顺序错误！游戏结束。"
   error:
-    invalid_type: "%prefix%&c无效的小游戏类型。可选：REACTION, MEMORY"
+    invalid_type: "%prefix%&c无效的小游戏类型。可选：REACTION, MEMORY, SPOT, ADDONEOUT, ORDER, SLIDERPUZZLE, HIGHERLOWER"
 
 proximity:
   near_treasure: "&e你附近有一个宝藏！"

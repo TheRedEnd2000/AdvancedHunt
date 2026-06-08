@@ -722,6 +722,42 @@ gui:
       title: "&8Trò chơi ghi nhớ"
       button:
         name: "&fNút %number%"
+    spot:
+      title: "&bTìm Vật Phẩm"
+      item:
+        name: "&e&l★ Hãy ghi nhớ tôi!"
+        found: "&a&l✔ Đã tìm thấy!"
+    oddoneout:
+      title: "&dTìm Điểm Khác Biệt"
+      odd:
+        name: "&c&l? Tôi là vật phẩm khác biệt!"
+    order:
+      title: "&5Chuỗi Thứ Tự"
+      sequence:
+        name: "&eVị trí %pos%"
+      empty:
+        name: "&8[ Trống ]"
+      palette:
+        name: "&a&l➤ Chọn tôi"
+      placed:
+        name: "&f&l✔ Đã đặt (#%pos%)"
+    sliderpuzzle:
+      title: "&9Trò Chơi Trượt Ô"
+      tile:
+        name: "&fÔ số %number%"
+      empty:
+        name: "&8[ Trống ]"
+    higherlower:
+      title: "&6Cao Hơn Hay Thấp Hơn?"
+      number:
+        active: "&a%n% &7— Nhấn để đoán"
+        eliminated: "&c%n% &7— Đã loại"
+      guesses:
+        remaining: "&eCòn %left% lượt đoán"
+      feedback:
+        neutral: "&7Hãy đoán một số!"
+        higher: "&a&l▲ Cao hơn!"
+        lower: "&c&l▼ Thấp hơn!"
   treasure_action:
     title: "&8Hành động kho báu"
     teleport:
@@ -1858,8 +1894,28 @@ minigame:
     watch: "%prefix%&eHãy quan sát chuỗi thật kỹ!"
     repeat: "%prefix%&aBây giờ hãy lặp lại chuỗi!"
     wrong: "%prefix%&cSai chuỗi! Kết thúc trò chơi."
+  spot:
+    memorise: "%prefix%&eHãy ghi nhớ vị trí của các vật phẩm!"
+    find: "%prefix%&aTìm tất cả vật phẩm được ẩn!"
+    wrong: "%prefix%&cSai ô! Đó không phải là vật phẩm được ẩn."
+  oddoneout:
+    find: "%prefix%&eVòng &f%round%&e/&f%max% &8— &aTìm vật phẩm khác biệt!"
+    timeout: "%prefix%&cQuá chậm! Đã hết thời gian."
+    wrong: "%prefix%&cSai rồi! Đó không phải là vật phẩm khác biệt."
+  order:
+    memorise: "%prefix%&eVòng &f%round%&e/&f%max% &8— &eHãy ghi nhớ thứ tự!"
+    recreate: "%prefix%&aHãy xếp lại đúng thứ tự bằng bảng chọn bên dưới!"
+    wrong: "%prefix%&cSai rồi! Đó không phải là vật phẩm đúng."
+  sliderpuzzle:
+    start: "%prefix%&eHãy trượt các ô về đúng thứ tự (1-8)!"
+  higherlower:
+    start: "%prefix%&eTôi đang nghĩ đến một số từ &f1&e đến &f%max%&e. Bạn có &f%guesses% &elượt đoán!"
+    correct: "%prefix%&a&lChính xác! &7Con số là &f%n%&7."
+    higher: "%prefix%&a▲ Cao hơn! &7Còn &f%left% &7lượt đoán."
+    lower: "%prefix%&c▼ Thấp hơn! &7Còn &f%left% &7lượt đoán."
+    lose: "%prefix%&c&lKết thúc trò chơi! &7Con số là &f%n%&7."
   error:
-    invalid_type: "%prefix%&cLoại minigame không hợp lệ. Có sẵn: REACTION, MEMORY"
+    invalid_type: "%prefix%&cLoại minigame không hợp lệ. Có sẵn: REACTION, MEMORY, SPOT, ADDONEOUT, ORDER, SLIDERPUZZLE, HIGHERLOWER"
 
 proximity:
   near_treasure: "&eBạn đang ở gần một kho báu!"
