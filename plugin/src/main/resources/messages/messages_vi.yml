@@ -731,6 +731,7 @@ gui:
       title: "&dTìm Điểm Khác Biệt"
       odd:
         name: "&c&l? Tôi là vật phẩm khác biệt!"
+      timer: "&e%seconds%s"
     order:
       title: "&5Chuỗi Thứ Tự"
       sequence:

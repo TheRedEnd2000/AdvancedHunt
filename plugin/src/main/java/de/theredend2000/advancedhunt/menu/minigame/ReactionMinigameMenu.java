@@ -66,12 +66,12 @@ public class ReactionMinigameMenu extends MinigameMenu {
         if (!active || finished) return;
 
         if (timeout) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.reaction.timeout"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.reaction.timeout",true));
             finish(false);
             return;
         }
         if (!clickedCorrectSlot) {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.reaction.wrong_click"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.reaction.wrong_click",true));
             finish(false);
             return;
         }
@@ -121,7 +121,7 @@ public class ReactionMinigameMenu extends MinigameMenu {
 
             restartFailedTask();
         } else {
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.reaction.wrong_click"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.reaction.wrong_click",true));
             finish(false);
         }
     }

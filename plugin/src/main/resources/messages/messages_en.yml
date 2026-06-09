@@ -731,6 +731,7 @@ gui:
       title: "&dOdd One Out"
       odd:
         name: "&c&l? I am different!"
+      timer: "&e%seconds%s"
     order:
       title: "&5Sequence"
       sequence:

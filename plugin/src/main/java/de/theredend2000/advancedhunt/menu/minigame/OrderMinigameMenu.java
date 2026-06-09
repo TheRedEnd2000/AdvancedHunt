@@ -112,7 +112,7 @@ public class OrderMinigameMenu extends MinigameMenu {
         }
 
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                "minigame.order.memorise", false,
+                "minigame.order.memorise", true,
                 "%round%", String.valueOf(round),
                 "%max%",   String.valueOf(maxRounds)));
 
@@ -140,7 +140,7 @@ public class OrderMinigameMenu extends MinigameMenu {
         }
 
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                "minigame.order.recreate", false));
+                "minigame.order.recreate", true));
     }
 
     @Override
@@ -172,7 +172,7 @@ public class OrderMinigameMenu extends MinigameMenu {
 
         if (typeIdx != correctSequence.get(pos)) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                    "minigame.order.wrong", false));
+                    "minigame.order.wrong", true));
             playerMenuUtility.playSound(playerMenuUtility.getLocation(),
                     XSound.ENTITY_VILLAGER_NO.get(), 1, 1f);
             finish(false);

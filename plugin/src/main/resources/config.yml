@@ -163,11 +163,11 @@ hint:
     oddoneout:
       enabled: true
       # Number of rounds to complete
-      rounds: 10
-      # Ticks allowed in round 1
-      base-time: 200
-      # Ticks subtracted per round (minimum enforced at 20)
-      time-decrease: 15
+      rounds: 8
+      # Ticks per round
+      base-time: 100
+      # 1=easy 10=hard
+      difficulty: 5
 
     # Settings for the Order minigame
     # A sequence of coloured items is shown briefly — recreate it from a palette

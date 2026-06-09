@@ -79,7 +79,7 @@ public class SpotMinigameMenu extends MinigameMenu {
         }
 
         playerMenuUtility.sendMessage(
-                plugin.getMessageManager().getMessage("minigame.spot.memorise", false));
+                plugin.getMessageManager().getMessage("minigame.spot.memorise", true));
 
         scheduleTask(this::startGuessPhase, displayTime);
     }
@@ -94,7 +94,7 @@ public class SpotMinigameMenu extends MinigameMenu {
         }
 
         playerMenuUtility.sendMessage(
-                plugin.getMessageManager().getMessage("minigame.spot.find", false));
+                plugin.getMessageManager().getMessage("minigame.spot.find", true));
     }
 
     @Override
@@ -124,7 +124,7 @@ public class SpotMinigameMenu extends MinigameMenu {
             }
         } else {
             playerMenuUtility.sendMessage(
-                    plugin.getMessageManager().getMessage("minigame.spot.wrong", false));
+                    plugin.getMessageManager().getMessage("minigame.spot.wrong", true));
             playerMenuUtility.playSound(playerMenuUtility.getLocation(),
                     XSound.ENTITY_VILLAGER_NO.get(), 1, 1f);
             finish(false);

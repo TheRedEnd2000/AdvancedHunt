@@ -729,6 +729,7 @@ gui:
       title: "&dBhinnodhormi Ta Khujo"
       odd:
         name: "&c&l? Ami alada!"
+      timer: "&e%seconds%s"
     order:
       title: "&5Sequence"
       sequence:

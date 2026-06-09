@@ -731,6 +731,7 @@ gui:
       title: "&dFalsche Items raus"
       odd:
         name: "&c&l? Ich bin anders!"
+      timer: "&e%seconds%s"
     order:
       title: "&5Abfolge"
       sequence:

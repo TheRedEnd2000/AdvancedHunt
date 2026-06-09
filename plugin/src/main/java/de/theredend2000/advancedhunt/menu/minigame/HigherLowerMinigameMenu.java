@@ -58,7 +58,7 @@ public class HigherLowerMinigameMenu extends MinigameMenu {
         renderFeedback(null);
 
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                "minigame.higherlower.start", false,
+                "minigame.higherlower.start", true,
                 "%max%",     String.valueOf(maxNumber),
                 "%guesses%", String.valueOf(maxGuesses)));
     }
@@ -148,7 +148,7 @@ public class HigherLowerMinigameMenu extends MinigameMenu {
 
         if (guess == secretNumber) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                    "minigame.higherlower.correct", false,
+                    "minigame.higherlower.correct", true,
                     "%n%", String.valueOf(secretNumber)));
             playerMenuUtility.playSound(playerMenuUtility.getLocation(),
                     XSound.ENTITY_PLAYER_LEVELUP.get(), 1f, 1f);
@@ -165,13 +165,13 @@ public class HigherLowerMinigameMenu extends MinigameMenu {
             lowerBound = guess + 1;
             direction  = "higher";
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                    "minigame.higherlower.higher", false,
+                    "minigame.higherlower.higher", true,
                     "%left%", String.valueOf(guessesLeft)));
         } else {
             upperBound = guess - 1;
             direction  = "lower";
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                    "minigame.higherlower.lower", false,
+                    "minigame.higherlower.lower", true,
                     "%left%", String.valueOf(guessesLeft)));
         }
 
@@ -181,7 +181,7 @@ public class HigherLowerMinigameMenu extends MinigameMenu {
 
         if (guessesLeft <= 0) {
             playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                    "minigame.higherlower.lose", false,
+                    "minigame.higherlower.lose", true,
                     "%n%", String.valueOf(secretNumber)));
             playerMenuUtility.playSound(playerMenuUtility.getLocation(),
                     XSound.ENTITY_VILLAGER_NO.get(), 1f, 0.5f);

@@ -55,7 +55,7 @@ public class SliderPuzzleMinigameMenu extends MinigameMenu {
         renderBoard();
 
         playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage(
-                "minigame.sliderpuzzle.start", false));
+                "minigame.sliderpuzzle.start", true));
     }
 
     private void shuffleBoard() {

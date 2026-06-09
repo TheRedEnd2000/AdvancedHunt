@@ -166,7 +166,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
             }
         } else {
             // Wrong
-            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.wrong"));
+            playerMenuUtility.sendMessage(plugin.getMessageManager().getMessage("minigame.memory.wrong",true));
             playerMenuUtility.playSound(playerMenuUtility.getLocation(), XSound.ENTITY_VILLAGER_NO.get(), 1, 1);
             finish(false);
         }
