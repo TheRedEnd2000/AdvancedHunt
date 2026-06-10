@@ -144,6 +144,13 @@ public final class TreasureInteractionHandler {
             if (data.hasFound(treasureCore.getId())) {
                 player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
                 plugin.getSoundManager().playTreasureAlreadyFound(player);
+
+                collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(col -> {
+                    if (col.isHideAfterFound()) {
+                        plugin.getTreasureVisibilityManager().hideFoundTreasureForPlayer(player, treasureCore);
+                    }
+                });
+
                 playersCollecting.remove(playerId);
                 return;
             }
@@ -189,12 +196,19 @@ public final class TreasureInteractionHandler {
         playerManager.savePlayerData(player.getUniqueId());
         player.sendMessage(plugin.getMessageManager().getMessage("treasure.found"));
 
-        collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(collection -> {
-            if (collection.isHideAfterFound()) {
-                plugin.getTreasureVisibilityManager().hideFoundTreasureForPlayer(player, treasureCore);
-            }
-            if (collection.isSinglePlayerFind()) {
+        collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(col -> {
+            if (col.isSinglePlayerFind()) {
                 plugin.getParticleManager().markTreasureAsGloballyClaimed(treasureCore.getId());
+            }
+            if (col.isHideAfterFound()) {
+                plugin.getTreasureVisibilityManager().hideFoundTreasureForPlayer(player, treasureCore);
+
+                if (col.isSinglePlayerFind()) {
+                    for (Player other : Bukkit.getOnlinePlayers()) {
+                        if (other.equals(player)) continue;
+                        plugin.getTreasureVisibilityManager().hideFoundTreasureForPlayer(other, treasureCore);
+                    }
+                }
             }
         });
 

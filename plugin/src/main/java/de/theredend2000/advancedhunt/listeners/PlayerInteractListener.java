@@ -1,6 +1,7 @@
 package de.theredend2000.advancedhunt.listeners;
 
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.managers.CollectionManager;
 import de.theredend2000.advancedhunt.managers.TreasureInteractionHandler;
 import de.theredend2000.advancedhunt.managers.TreasureManager;
 import de.theredend2000.advancedhunt.model.TreasureCore;
@@ -18,11 +19,13 @@ public class PlayerInteractListener implements Listener {
     private final Main plugin;
     private final TreasureManager treasureManager;
     private final TreasureInteractionHandler treasureInteractionHandler;
+    private final CollectionManager collectionManager;
 
     public PlayerInteractListener(Main plugin) {
         this.plugin = plugin;
         this.treasureManager = plugin.getTreasureManager();
         this.treasureInteractionHandler = TreasureInteractionHandler.getInstance(plugin);
+        this.collectionManager = plugin.getCollectionManager();
     }
 
     @EventHandler
@@ -32,19 +35,33 @@ public class PlayerInteractListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
 
-        // Skip ItemsAdder blocks - let ItemsAdderIntegrationListener handle them
         if (isItemsAdderBlock(block)) return;
 
-        // Use lightweight core first - fast O(1) lookup
         TreasureCore treasureCore = treasureManager.getTreasureCoreAt(block.getLocation());
         if (treasureCore == null) return;
 
         Player player = event.getPlayer();
 
-        // Shift + Right-Click: Admin reward editor (requires permission)
         if (player.isSneaking()) {
             event.setCancelled(true);
             treasureInteractionHandler.handleSneakRewardsEditor(player, treasureCore);
+            return;
+        }
+
+        if (plugin.getTreasureVisibilityManager().shouldHideFoundForPlayer(treasureCore, player)) {
+            event.setCancelled(true);
+            plugin.getTreasureVisibilityManager().hideFoundTreasureForPlayer(player, treasureCore);
+
+            collectionManager.getCollectionById(treasureCore.getCollectionId()).ifPresent(col -> {
+                if (col.isSinglePlayerFind()) {
+                    player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_claimed_global"));
+                    plugin.getSoundManager().playTreasureClaimedByOther(player);
+                } else {
+                    player.sendMessage(plugin.getMessageManager().getMessage("treasure.already_found"));
+                    plugin.getSoundManager().playTreasureAlreadyFound(player);
+                }
+            });
+
             return;
         }
 

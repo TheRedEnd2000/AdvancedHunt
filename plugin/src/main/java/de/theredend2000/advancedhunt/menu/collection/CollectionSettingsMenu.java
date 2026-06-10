@@ -128,10 +128,13 @@ public class CollectionSettingsMenu extends Menu {
                 .build(), (e) -> {
             if (processing) return;
             processing = true;
-            
+
             collection.setSinglePlayerFind(!collection.isSinglePlayerFind());
             plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (collection.isHideAfterFound()) {
+                        plugin.getTreasureVisibilityManager().refreshHideAfterFound(collection);
+                    }
                     processing = false;
                     this.refresh();
                 });
