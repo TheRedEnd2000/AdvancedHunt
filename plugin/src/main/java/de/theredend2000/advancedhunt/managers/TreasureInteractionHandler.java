@@ -148,8 +148,6 @@ public final class TreasureInteractionHandler {
                 return;
             }
 
-            plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().clone().add(0.5, 1, 0.5));
-
             if (collection.isSinglePlayerFind()) {
                 // Guard is held until the async callback releases it.
                 asyncGuardHeld[0] = true;
@@ -164,6 +162,7 @@ public final class TreasureInteractionHandler {
                     }
 
                     Bukkit.getScheduler().runTask(plugin, () -> {
+                        plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().clone().add(0.5, 1, 0.5));
                         claimTreasure(player, treasureCore, data);
                         playersCollecting.remove(playerId);
                     });
@@ -172,6 +171,7 @@ public final class TreasureInteractionHandler {
                     return null;
                 });
             } else {
+                plugin.getFireworkManager().spawnFireworkRocket(treasureCore.getLocation().clone().add(0.5, 1, 0.5));
                 claimTreasure(player, treasureCore, data);
                 playersCollecting.remove(playerId);
             }
