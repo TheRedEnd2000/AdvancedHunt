@@ -1067,50 +1067,58 @@ public class AdvancedHuntCommand {
     public void resetPlayer(CommandSender sender, String playerName) {
         Optional<OfflinePlayer> offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
         if (!offlinePlayerOpt.isPresent()) return;
-        OfflinePlayer offlinePlayer = offlinePlayerOpt.get();
+        UUID playerId = offlinePlayerOpt.get().getUniqueId();
 
-        plugin.getDataRepository().resetPlayerProgress(offlinePlayer.getUniqueId()).thenAccept(count -> {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                plugin.getParticleManager().clearAllGlobalCache();
-                plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
-                Player onlinePlayer = Bukkit.getPlayer(offlinePlayer.getUniqueId());
-                if (onlinePlayer != null) {
-                    plugin.getTreasureVisibilityManager().restoreFoundTreasuresForPlayer(onlinePlayer);
-                }
-                sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_success",
-                        "%player%", playerName,
-                        "%count%", String.valueOf(count)));
-            });
-        });
+        plugin.getDataRepository().resetPlayerProgress(playerId).thenAccept(count ->
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    plugin.getPlayerManager().invalidate(playerId);
+
+                    List<CompletableFuture<Void>> recomputes = new ArrayList<>();
+                    for (Collection collection : plugin.getCollectionManager().getAllCollections()) {
+                        if (collection.isSinglePlayerFind()) {
+                            recomputes.add(plugin.getParticleManager().refreshGlobalCache(collection.getId()));
+                        }
+                    }
+
+                    CompletableFuture.allOf(recomputes.toArray(new CompletableFuture[0]))
+                            .thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> {
+                                for (Collection collection : plugin.getCollectionManager().getAllCollections()) {
+                                    if (collection.isHideAfterFound()) {
+                                        plugin.getTreasureVisibilityManager().refreshHideAfterFound(collection);
+                                    }
+                                }
+                            }));
+
+                    sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_success",
+                            "%player%", playerName,
+                            "%count%", String.valueOf(count)));
+                })
+        );
     }
 
-    public void resetPlayerCollection(CommandSender sender,
-                                      String playerName,
-                                      String collectionName) {
+    public void resetPlayerCollection(CommandSender sender, String playerName, String collectionName) {
         Optional<OfflinePlayer> offlinePlayerOpt = validateOfflinePlayer(sender, playerName);
         if (!offlinePlayerOpt.isPresent()) return;
-        OfflinePlayer offlinePlayer = offlinePlayerOpt.get();
+        UUID playerId = offlinePlayerOpt.get().getUniqueId();
 
         withCollection(sender, collectionName, collection ->
-                plugin.getDataRepository().resetPlayerCollectionProgress(
-                        offlinePlayer.getUniqueId(),
-                        collection.getId()
-                ).thenAccept(count -> {
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (collection.isSinglePlayerFind()) {
-                            plugin.getParticleManager().clearGlobalCache(collection.getId());
-                        }
-                        plugin.getPlayerManager().invalidate(offlinePlayer.getUniqueId());
-                        Player onlinePlayer = Bukkit.getPlayer(offlinePlayer.getUniqueId());
-                        if (onlinePlayer != null) {
-                            plugin.getTreasureVisibilityManager().restoreFoundTreasuresForPlayer(onlinePlayer, collection.getId());
-                        }
-                        sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_collection_success",
-                                "%player%", playerName,
-                                "%collection%", collection.getName(),
-                                "%count%", String.valueOf(count)));
-                    });
-                })
+                plugin.getDataRepository().resetPlayerCollectionProgress(playerId, collection.getId())
+                        .thenAccept(count -> Bukkit.getScheduler().runTask(plugin, () -> {
+                            plugin.getPlayerManager().invalidate(playerId);
+
+                            if (collection.isSinglePlayerFind()) {
+                                plugin.getParticleManager().refreshGlobalCache(collection.getId())
+                                        .thenRun(() -> Bukkit.getScheduler().runTask(plugin, () ->
+                                                plugin.getTreasureVisibilityManager().refreshHideAfterFound(collection)));
+                            } else {
+                                plugin.getTreasureVisibilityManager().refreshHideAfterFound(collection);
+                            }
+
+                            sender.sendMessage(plugin.getMessageManager().getMessage("command.reset.player_collection_success",
+                                    "%player%", playerName,
+                                    "%collection%", collection.getName(),
+                                    "%count%", String.valueOf(count)));
+                        }))
         );
     }
 

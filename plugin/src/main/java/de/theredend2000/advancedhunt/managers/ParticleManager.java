@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -136,26 +137,80 @@ public class ParticleManager {
      * Preloads globally claimed treasures from the database.
      * Called during startup to populate the cache for single-player-find collections.
      */
-    private void preloadGloballyClaimedTreasures() {
-        // Get all collections
-        List<Collection> collections = collectionManager.getAllCollections();
-        
-        for (Collection collection : collections) {
-            // Only check single-player-find collections
+
+    private CompletableFuture<Void> preloadGloballyClaimedTreasures() {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (Collection collection : collectionManager.getAllCollections()) {
             if (collection.isSinglePlayerFind()) {
-                // Use lightweight TreasureCore - we only need IDs
-                List<TreasureCore> treasures = treasureManager.getTreasureCoresInCollection(collection.getId());
-                
-                for (TreasureCore treasure : treasures) {
-                    // Async check if anyone has found this treasure
-                    plugin.getDataRepository().getPlayersWhoFound(treasure.getId()).thenAccept(claimers -> {
-                        if (!claimers.isEmpty()) {
-                            globallyClaimedCache.put(treasure.getId(), Boolean.TRUE);
-                        }
-                    });
-                }
+                futures.add(refreshGlobalCache(collection.getId()));
             }
         }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    /**
+     * Re-applies hide-after-found visibility for all single-player-find collections.
+     * Runs on the main thread once the global claim cache is populated.
+     */
+    private void refreshSinglePlayerFindVisibility() {
+        TreasureVisibilityManager vis = plugin.getTreasureVisibilityManager();
+        if (vis == null) return;
+        for (Collection collection : collectionManager.getAllCollections()) {
+            if (collection.isSinglePlayerFind() && collection.isHideAfterFound()) {
+                vis.refreshHideAfterFound(collection);
+            }
+        }
+    }
+
+    /**
+     * Recomputes the global claimed cache for a collection from the repository.
+     * Same pattern as preloadGloballyClaimedTreasures, but scoped to one collection.
+     * Use after per-player resets so only treasures still claimed by SOMEONE stay hidden.
+     */
+    public CompletableFuture<Void> refreshGlobalCache(UUID collectionId) {
+        List<TreasureCore> treasures = treasureManager.getTreasureCoresInCollection(collectionId);
+        if (treasures.isEmpty()) return CompletableFuture.completedFuture(null);
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>(treasures.size());
+        for (TreasureCore treasure : treasures) {
+            UUID treasureId = treasure.getId();
+            futures.add(plugin.getDataRepository().getPlayersWhoFound(treasureId).thenAccept(claimers -> {
+                if (claimers != null && !claimers.isEmpty()) {
+                    globallyClaimedCache.put(treasureId, Boolean.TRUE);
+                } else {
+                    globallyClaimedCache.remove(treasureId);
+                }
+            }));
+        }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    /**
+     * Repopulates the global claim cache for all single-player-find collections from
+     * the repository, then re-applies hide-after-found visibility for online players.
+     * Call once treasures + collections are loaded (e.g. end of startup) so already
+     * claimed treasures are hidden without needing a manual /ah reload.
+     */
+    public void reapplyGlobalClaimVisibility() {
+        List<Collection> collections = collectionManager.getAllCollections();
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (Collection collection : collections) {
+            if (collection.isSinglePlayerFind()) {
+                futures.add(refreshGlobalCache(collection.getId()));
+            }
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> {
+                    TreasureVisibilityManager vis = plugin.getTreasureVisibilityManager();
+                    if (vis == null) return;
+                    for (Collection collection : collections) {
+                        if (collection.isSinglePlayerFind() && collection.isHideAfterFound()) {
+                            vis.refreshHideAfterFound(collection);
+                        }
+                    }
+                }));
     }
 
     /**
@@ -187,7 +242,8 @@ public class ParticleManager {
             false, "SMOKE_NORMAL", 1, 0.02, 0.3, 0.3, 0.3);
         
         // Preload globally claimed treasures cache
-        preloadGloballyClaimedTreasures();
+        preloadGloballyClaimedTreasures().thenRun(() ->
+                Bukkit.getScheduler().runTask(plugin, this::refreshSinglePlayerFindVisibility));
     }
     
     /**

@@ -313,6 +313,7 @@ public final class Main extends JavaPlugin {
         placeItemManager.reloadItems();
         treasureManager.loadTreasures();
         treasureVisibilityManager.start();
+        Bukkit.getScheduler().runTaskLater(this, () -> particleManager.reapplyGlobalClaimVisibility(), 60L);
         if (collectionDeletionCleanupManager != null) {
             collectionDeletionCleanupManager.start();
         }

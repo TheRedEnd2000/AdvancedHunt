@@ -813,16 +813,26 @@ public class TreasureVisibilityManager implements Listener {
         if (!headProfileLoading.add(core.getId())) return;
 
         treasureManager.getFullTreasureAsync(core.getId()).thenAccept(treasure -> {
-            if (treasure == null) {
-                headProfileLoading.remove(core.getId());
-                return;
-            }
-            HeadHelper.SkullProfileData profileData = HeadHelper.getSkullProfileData(treasure.getNbtData());
-            if (profileData != null && profileData.hasRenderableData()) {
+            try {
+                if (treasure == null) return;
+
+                HeadHelper.SkullProfileData profileData = HeadHelper.getSkullProfileData(treasure.getNbtData());
+                if (profileData == null || !profileData.hasRenderableData()) return;
+
                 headProfileCache.put(core.getId(), profileData);
-                Bukkit.getScheduler().runTask(plugin, () -> sendHeadBlockEntityData(player, loc, profileData));
+
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (!player.isOnline()) return;
+                    WrappedBlockState state = resolveWrappedBlockState(core, player);
+                    if (state != null) sendBlockChangeToPlayer(player, loc, state);
+                    sendHeadBlockEntityData(player, loc, profileData);
+                });
+            } finally {
+                headProfileLoading.remove(core.getId());
             }
+        }).exceptionally(ex -> {
             headProfileLoading.remove(core.getId());
+            return null;
         });
     }
 
