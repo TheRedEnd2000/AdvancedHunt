@@ -157,14 +157,13 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public boolean isBypassEnabled(Player player) {
-        if (player == null) return false;
-        if (!player.hasPermission("advancedhunt.treasure.bypass")) return false;
-        return bypassPlayers.contains(player.getUniqueId());
+        return player != null && bypassPlayers.contains(player.getUniqueId());
     }
 
     public void setBypass(Player player, boolean enabled) {
         if (player == null) return;
         if (enabled) {
+            if (!player.hasPermission("advancedhunt.treasure.bypass")) return;
             bypassPlayers.add(player.getUniqueId());
             sendVirtualBlocksInView(player);
             return;
