@@ -24,7 +24,6 @@
 
 - English (Default)
 - German
-- French (Thanks to auracio)
 - Vietnamese (Thanks to ThuongTr)
 - Bangla (Thanks to Udoyy)
 
