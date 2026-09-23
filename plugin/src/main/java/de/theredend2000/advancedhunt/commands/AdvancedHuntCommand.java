@@ -36,6 +36,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.description.CommandDescription;
+import org.incendo.cloud.help.HelpHandler;
 import org.incendo.cloud.help.HelpQuery;
 import org.incendo.cloud.help.result.*;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
@@ -55,6 +56,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AdvancedHuntCommand {
+
+    private static final int HELP_PAGE_SIZE = 6;
 
     private static final class HelpRequest {
         private final String query;
@@ -637,9 +640,8 @@ public class AdvancedHuntCommand {
 
     private void sendHelp(CommandSender sender, String rawQuery) {
         HelpRequest request = parseHelpRequest(rawQuery);
-        HelpQueryResult<CommandSender> result = plugin.getMinecraftHelp()
-                .helpHandler()
-                .query(HelpQuery.of(sender, request.query()));
+        HelpHandler<CommandSender> helpHandler = plugin.createHelpHandler();
+        HelpQueryResult<CommandSender> result = helpHandler.query(HelpQuery.of(sender, request.query()));
 
         if (result instanceof IndexCommandResult) {
             sendIndexHelp(sender, request, (IndexCommandResult<CommandSender>) result);
@@ -685,7 +687,7 @@ public class AdvancedHuntCommand {
         }
 
         List<CommandEntry<CommandSender>> entries = result.entries();
-        int pageSize = plugin.getMinecraftHelp().maxResultsPerPage();
+        int pageSize = HELP_PAGE_SIZE;
         int maxPages = Math.max(1, (entries.size() + pageSize - 1) / pageSize);
         if (request.page() < 1 || request.page() > maxPages) {
             sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.page_out_of_range", false)
@@ -713,7 +715,7 @@ public class AdvancedHuntCommand {
             return;
         }
 
-        int pageSize = plugin.getMinecraftHelp().maxResultsPerPage();
+        int pageSize = HELP_PAGE_SIZE;
         int maxPages = Math.max(1, (suggestions.size() + pageSize - 1) / pageSize);
         if (request.page() < 1 || request.page() > maxPages) {
             sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.page_out_of_range", false)

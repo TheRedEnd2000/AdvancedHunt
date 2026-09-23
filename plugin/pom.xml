@@ -58,13 +58,6 @@
                                         <include>**</include>
                                     </includes>
                                 </filter>
-                                <!-- Adventure Filter -->
-                                <filter>
-                                    <artifact>net.kyori:*</artifact>
-                                    <includes>
-                                        <include>**</include>
-                                    </includes>
-                                </filter>
                                 <!-- Exclude signature files -->
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -90,11 +83,6 @@
                                 </filter>
                             </filters>
                             <relocations>
-                                <!-- Adventure MUST COME BEFORE Cloud! -->
-                                <relocation>
-                                    <pattern>net.kyori</pattern>
-                                    <shadedPattern>de.theredend2000.advancedhunt.lib.kyori</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>org.incendo.cloud</pattern>
                                     <shadedPattern>de.theredend2000.advancedhunt.lib.cloud</shadedPattern>
@@ -188,49 +176,6 @@
             <groupId>org.incendo</groupId>
             <artifactId>cloud-paper</artifactId>
             <version>2.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- cloud-minecraft-extras Help -->
-        <dependency>
-            <groupId>org.incendo</groupId>
-            <artifactId>cloud-minecraft-extras</artifactId>
-            <version>2.0.1</version>
-            <exclusions>
-                <!-- Exclude Adventure from cloud-minecraft-extras to avoid conflicts -->
-                <exclusion>
-                    <groupId>net.kyori</groupId>
-                    <artifactId>n
-                        *</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Adventure API -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-api</artifactId>
-            <version>5.2.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Adventure Platform Bukkit -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-platform-bukkit</artifactId>
-            <version>4.4.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Adventure Text Serializer Legacy -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-text-serializer-legacy</artifactId>
-            <version>5.1.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Adventure Text Serializer Plain -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-text-serializer-plain</artifactId>
-            <version>5.1.1</version>
             <scope>compile</scope>
         </dependency>
         <!-- Database -->

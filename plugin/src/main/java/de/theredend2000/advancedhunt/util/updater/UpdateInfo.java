@@ -14,11 +14,17 @@ public final class UpdateInfo {
 	private final String version;
 	private final String sourceVersion;
 	private final Instant publishedAt;
+	private final UpdateChannel channel;
 
 	public UpdateInfo(String version, String sourceVersion, Instant publishedAt) {
+		this(version, sourceVersion, publishedAt, UpdateChannel.RELEASE);
+	}
+
+	public UpdateInfo(String version, String sourceVersion, Instant publishedAt, UpdateChannel channel) {
 		this.version = version;
 		this.sourceVersion = sourceVersion;
 		this.publishedAt = publishedAt;
+		this.channel = channel != null ? channel : UpdateChannel.RELEASE;
 	}
 
 	public String version() {
@@ -33,6 +39,10 @@ public final class UpdateInfo {
 		return publishedAt;
 	}
 
+	public UpdateChannel channel() {
+		return channel;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -40,12 +50,13 @@ public final class UpdateInfo {
 		UpdateInfo that = (UpdateInfo) o;
 		return Objects.equals(version, that.version)
 				&& Objects.equals(sourceVersion, that.sourceVersion)
-				&& Objects.equals(publishedAt, that.publishedAt);
+				&& Objects.equals(publishedAt, that.publishedAt)
+				&& channel == that.channel;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(version, sourceVersion, publishedAt);
+		return Objects.hash(version, sourceVersion, publishedAt, channel);
 	}
 
 	@Override
@@ -54,6 +65,7 @@ public final class UpdateInfo {
 				"version='" + version + '\'' +
 				", sourceVersion='" + sourceVersion + '\'' +
 				", publishedAt=" + publishedAt +
+				", channel=" + channel +
 				'}';
 	}
 }

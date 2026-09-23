@@ -14,9 +14,6 @@ import de.theredend2000.advancedhunt.util.ConfigMigrationHandler;
 import de.theredend2000.advancedhunt.util.ConfigUpdater;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.updater.PluginUpdater;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -25,11 +22,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
 import org.incendo.cloud.execution.ExecutionCoordinator;
-import org.incendo.cloud.minecraft.extras.MinecraftHelp;
+import org.incendo.cloud.help.HelpHandler;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Random;
@@ -55,8 +51,6 @@ public final class Main extends JavaPlugin {
     }
 
     private LegacyPaperCommandManager<CommandSender> commandManager;
-    private MinecraftHelp<CommandSender> minecraftHelp;
-    private BukkitAudiences adventure;
     private DataRepository dataRepository;
     private TreasureManager treasureManager;
     private PlayerManager playerManager;
@@ -200,8 +194,6 @@ public final class Main extends JavaPlugin {
     private void runLegacyMigrationThenStartup(File configFile, YamlConfiguration previousConfig, LegacyMigrationConfig legacyCfg) {
         getLogger().warning("Legacy migration detected. Running BEFORE config update to preserve backup...");
 
-        // Initialize Adventure early (needed for some components)
-        adventure = BukkitAudiences.create(this);
         migrationService = new MigrationService(getLogger());
 
         // Create repository - use storage.type from legacy config if present, else default to YAML
@@ -258,9 +250,6 @@ public final class Main extends JavaPlugin {
         saveDefaultConfig();
         ConfigUpdater.update(this, "config.yml", configFile, ConfigMigrationHandler::migrateConfig);
         reloadConfig();
-
-        // Initialize Adventure
-        adventure = BukkitAudiences.create(this);
 
         migrationService = new MigrationService(getLogger());
         // Initialize Message Manager
@@ -530,27 +519,6 @@ public final class Main extends JavaPlugin {
             commandManager.registerAsynchronousCompletions();
         }
 
-        String[] parts = getConfig().getString("command.name", "advancedhunt").split("\\|");
-        minecraftHelp = MinecraftHelp.<CommandSender>builder()
-                .commandManager(commandManager)
-                .audienceProvider(adventure::sender)
-                .commandPrefix("/" + parts[0] + " help")
-                .colors(MinecraftHelp.helpColors(
-                        NamedTextColor.GOLD,
-                        NamedTextColor.YELLOW,
-                        NamedTextColor.AQUA,
-                        NamedTextColor.GRAY,
-                        NamedTextColor.DARK_GRAY
-                ))
-                .messageProvider((sender, key, args) -> {
-                    String raw = getMessageManager().getMessage("command.help.minecraft." + key, false);
-
-                    // Nur Legacy-Farben ersetzen
-                    return LegacyComponentSerializer.legacyAmpersand().deserialize(raw);
-                })
-                .build();
-
-
         new AdvancedHuntCommand(this).register(commandManager, isDebugMode());
     }
 
@@ -582,9 +550,6 @@ public final class Main extends JavaPlugin {
         }
         if (dataRepository != null) {
             dataRepository.shutdown();
-        }
-        if (adventure != null) {
-            adventure.close();
         }
     }
 
@@ -672,12 +637,8 @@ public final class Main extends JavaPlugin {
         return collectionDeletionCleanupManager;
     }
 
-    public MinecraftHelp<CommandSender> getMinecraftHelp() {
-        return minecraftHelp;
-    }
-
-    public BukkitAudiences getAdventure() {
-        return adventure;
+    public HelpHandler<CommandSender> createHelpHandler() {
+        return commandManager.createHelpHandler();
     }
 
     /**
