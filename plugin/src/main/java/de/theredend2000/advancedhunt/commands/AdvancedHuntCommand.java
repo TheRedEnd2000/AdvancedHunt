@@ -18,6 +18,10 @@ import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import de.theredend2000.advancedhunt.util.*;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadableNBT;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -58,6 +62,7 @@ import java.util.stream.Collectors;
 public class AdvancedHuntCommand {
 
     private static final int HELP_PAGE_SIZE = 6;
+    private static final int HELP_HEADER_LENGTH = 46;
 
     private static final class HelpRequest {
         private final String query;
@@ -690,8 +695,7 @@ public class AdvancedHuntCommand {
         int pageSize = HELP_PAGE_SIZE;
         int maxPages = Math.max(1, (entries.size() + pageSize - 1) / pageSize);
         if (request.page() < 1 || request.page() > maxPages) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.page_out_of_range", false)
-                    + ChatColor.GRAY + " (1-" + maxPages + ")");
+            sendPageOutOfRange(sender, request.page(), maxPages);
             return;
         }
 
@@ -699,13 +703,30 @@ public class AdvancedHuntCommand {
         int end = Math.min(start + pageSize, entries.size());
 
         sendHelpHeader(sender, request.query(), request.page(), maxPages);
-        sender.sendMessage(ChatColor.GRAY + plugin.getMessageManager().getMessage("command.help.minecraft.available_commands", false) + ":");
+        TextComponent availableCommands = new TextComponent("");
+        availableCommands.addExtra(helpBranch(true));
+        availableCommands.addExtra(legacyText(" " + plugin.getMessageManager()
+                .getMessage("command.help.minecraft.available_commands", false)));
+        availableCommands.addExtra(text(":", net.md_5.bungee.api.ChatColor.GRAY));
+        sendHelpLine(sender, availableCommands);
+
         for (int index = start; index < end; index++) {
             CommandEntry<CommandSender> entry = entries.get(index);
-            sender.sendMessage(ChatColor.GOLD + "/" + entry.syntax()
-                    + ChatColor.DARK_GRAY + " - "
-                    + ChatColor.GRAY + describe(entry));
+            TextComponent row = new TextComponent("   ");
+            row.addExtra(helpBranch(index == end - 1 || index == entries.size() - 1));
+            TextComponent syntax = text(" /" + entry.syntax(), net.md_5.bungee.api.ChatColor.YELLOW);
+            String hoverText = entry.command().commandDescription() == null
+                    || entry.command().commandDescription().isEmpty()
+                    ? plugin.getMessageManager().getMessage("command.help.minecraft.click_to_show_help", false)
+                    : describe(entry);
+            syntax.setHoverEvent(helpHoverText(hoverText));
+            syntax.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                    helpCommandPrefix() + " " + entry.syntax()));
+            row.addExtra(syntax);
+            sendHelpLine(sender, row);
         }
+
+        sendHelpFooter(sender, request.query(), request.page(), maxPages);
     }
 
     private void sendMultipleHelp(CommandSender sender, HelpRequest request, MultipleCommandResult<CommandSender> result) {
@@ -718,8 +739,7 @@ public class AdvancedHuntCommand {
         int pageSize = HELP_PAGE_SIZE;
         int maxPages = Math.max(1, (suggestions.size() + pageSize - 1) / pageSize);
         if (request.page() < 1 || request.page() > maxPages) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.page_out_of_range", false)
-                    + ChatColor.GRAY + " (1-" + maxPages + ")");
+            sendPageOutOfRange(sender, request.page(), maxPages);
             return;
         }
 
@@ -727,42 +747,227 @@ public class AdvancedHuntCommand {
         int end = Math.min(start + pageSize, suggestions.size());
 
         sendHelpHeader(sender, request.query(), request.page(), maxPages);
-        sender.sendMessage(ChatColor.GRAY + "/" + result.longestPath());
+        TextComponent path = new TextComponent("");
+        path.addExtra(helpBranch(true));
+        path.addExtra(text(" /" + result.longestPath(), net.md_5.bungee.api.ChatColor.YELLOW));
+        sendHelpLine(sender, path);
+
         for (int index = start; index < end; index++) {
-            sender.sendMessage(ChatColor.GOLD + "/" + suggestions.get(index));
+            String suggestion = suggestions.get(index);
+            TextComponent row = new TextComponent(repeatSpaces(result.longestPath().length()));
+            row.addExtra(helpBranch(index == end - 1 || index == suggestions.size() - 1));
+            TextComponent suggestionText = text(" /" + suggestion, net.md_5.bungee.api.ChatColor.YELLOW);
+            suggestionText.setHoverEvent(helpHoverText(plugin.getMessageManager()
+                    .getMessage("command.help.minecraft.click_to_show_help", false)));
+            suggestionText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                    helpCommandPrefix() + " " + suggestion));
+            row.addExtra(suggestionText);
+            sendHelpLine(sender, row);
         }
+
+        sendHelpFooter(sender, request.query(), request.page(), maxPages);
     }
 
     private void sendVerboseHelp(CommandSender sender, VerboseCommandResult<CommandSender> result) {
         CommandEntry<CommandSender> entry = result.entry();
-        sendHelpHeader(sender, result.query().query(), 1, 1);
-        sender.sendMessage(ChatColor.YELLOW
-                + plugin.getMessageManager().getMessage("command.help.minecraft.command", false)
-                + ChatColor.GRAY + ": "
-                + ChatColor.GOLD + "/" + entry.syntax());
-        sender.sendMessage(ChatColor.YELLOW
-                + plugin.getMessageManager().getMessage("command.help.minecraft.description", false)
-                + ChatColor.GRAY + ": "
-                + ChatColor.WHITE + describe(entry));
+        sendHelpHeader(sender, result.query().query(), 1, 1, false);
+
+        TextComponent command = new TextComponent("");
+        command.addExtra(helpBranch(true));
+        command.addExtra(legacyText(" " + plugin.getMessageManager()
+                .getMessage("command.help.minecraft.command", false) + ": "));
+        command.addExtra(text("/" + entry.syntax(), net.md_5.bungee.api.ChatColor.YELLOW));
+        sendHelpLine(sender, command);
+
+        TextComponent description = new TextComponent("   ");
+        description.addExtra(helpBranch(entry.command().components().size() <= 1));
+        description.addExtra(legacyText(" " + plugin.getMessageManager()
+                .getMessage("command.help.minecraft.description", false) + ": "));
+        description.addExtra(legacyText(describe(entry)));
+        sendHelpLine(sender, description);
+
+        if (entry.command().components().size() > 1) {
+            TextComponent arguments = new TextComponent("   ");
+            arguments.addExtra(helpBranch(true));
+            arguments.addExtra(legacyText(" " + plugin.getMessageManager()
+                    .getMessage("command.help.minecraft.arguments", false) + ":"));
+            sendHelpLine(sender, arguments);
+
+            Iterator<CommandComponent<CommandSender>> components = entry.command().components().iterator();
+            if (components.hasNext()) {
+                components.next();
+            }
+            while (components.hasNext()) {
+                CommandComponent<CommandSender> component = components.next();
+                String syntax = commandManager.commandSyntaxFormatter()
+                        .apply(sender, Collections.singletonList(component), null);
+                TextComponent argument = new TextComponent("       ");
+                argument.addExtra(helpBranch(!components.hasNext()));
+                argument.addExtra(text(" " + syntax, net.md_5.bungee.api.ChatColor.YELLOW));
+                if (component.optional()) {
+                    argument.addExtra(text(" (" + plugin.getMessageManager()
+                            .getMessage("command.help.minecraft.optional", false) + ")",
+                            net.md_5.bungee.api.ChatColor.YELLOW));
+                }
+                if (!component.description().isEmpty()) {
+                    argument.addExtra(text(" - ", net.md_5.bungee.api.ChatColor.DARK_GRAY));
+                    argument.addExtra(legacyText(component.description().textDescription()));
+                }
+                sendHelpLine(sender, argument);
+            }
+        }
+
+        sendSimpleHelpFooter(sender);
     }
 
     private void sendNoResults(CommandSender sender, String query) {
-        sendHelpHeader(sender, query, 1, 1);
-        String visibleQuery = query == null || query.isEmpty() ? "/advancedhunt" : "/" + query;
-        sender.sendMessage(ChatColor.RED
-                + plugin.getMessageManager().getMessage("command.help.minecraft.no_results_for_query", false)
-                + ChatColor.GRAY + ": " + visibleQuery);
+        sendHelpHeader(sender, query, 1, 1, false);
+        TextComponent noResults = new TextComponent("");
+        noResults.addExtra(legacyText(plugin.getMessageManager()
+                .getMessage("command.help.minecraft.no_results_for_query", false) + ": \""));
+        noResults.addExtra(text("/" + (query == null ? "" : query), net.md_5.bungee.api.ChatColor.AQUA));
+        noResults.addExtra(text("\"", net.md_5.bungee.api.ChatColor.GRAY));
+        sendHelpLine(sender, noResults);
+        sendSimpleHelpFooter(sender);
     }
 
     private void sendHelpHeader(CommandSender sender, String query, int page, int maxPages) {
-        sender.sendMessage(plugin.getMessageManager().getMessage("command.help.minecraft.help", false)
-                + ChatColor.DARK_GRAY + " [" + page + "/" + maxPages + "]");
-        if (query != null && !query.isEmpty()) {
-            sender.sendMessage(ChatColor.GRAY
-                    + plugin.getMessageManager().getMessage("command.help.minecraft.showing_results_for_query", false)
-                    + ChatColor.DARK_GRAY + ": "
-                    + ChatColor.YELLOW + query);
+        sendHelpHeader(sender, query, page, maxPages, true);
+    }
+
+    private void sendHelpHeader(CommandSender sender, String query, int page, int maxPages, boolean paginated) {
+        TextComponent title = legacyText(plugin.getMessageManager().getMessage("command.help.minecraft.help", false));
+        if (paginated) {
+            title.addExtra(text(" (", net.md_5.bungee.api.ChatColor.YELLOW));
+            title.addExtra(text(String.valueOf(page), net.md_5.bungee.api.ChatColor.GRAY));
+            title.addExtra(text("/", net.md_5.bungee.api.ChatColor.YELLOW));
+            title.addExtra(text(String.valueOf(maxPages), net.md_5.bungee.api.ChatColor.GRAY));
+            title.addExtra(text(")", net.md_5.bungee.api.ChatColor.YELLOW));
         }
+        sendHelpLine(sender, centeredHelpHeader(title));
+
+        TextComponent queryLine = legacyText(plugin.getMessageManager()
+                .getMessage("command.help.minecraft.showing_results_for_query", false) + ": \"");
+        queryLine.addExtra(text("/" + (query == null ? "" : query), net.md_5.bungee.api.ChatColor.AQUA));
+        queryLine.addExtra(text("\"", net.md_5.bungee.api.ChatColor.GRAY));
+        sendHelpLine(sender, queryLine);
+    }
+
+    private void sendHelpFooter(CommandSender sender, String query, int page, int maxPages) {
+        if (maxPages == 1) {
+            sendSimpleHelpFooter(sender);
+            return;
+        }
+
+        TextComponent buttons = new TextComponent("");
+        if (page > 1) {
+            buttons.addExtra(helpPageButton('\u2190',
+                    pageCommand(query, page - 1), "command.help.minecraft.click_for_previous_page"));
+            buttons.addExtra(helpLine(3));
+        }
+        buttons.addExtra(helpPageButton('\u2192',
+                pageCommand(query, page + 1), "command.help.minecraft.click_for_next_page"));
+        sendHelpLine(sender, centeredHelpHeader(buttons));
+    }
+
+    private void sendSimpleHelpFooter(CommandSender sender) {
+        sendHelpLine(sender, centeredHelpHeader(null));
+    }
+
+    private void sendPageOutOfRange(CommandSender sender, int page, int maxPages) {
+        TextComponent message = legacyText(plugin.getMessageManager()
+                .getMessage("command.help.minecraft.page_out_of_range", false));
+        message.addExtra(text(" (" + page + "/" + maxPages + ")", net.md_5.bungee.api.ChatColor.GRAY));
+        sendHelpLine(sender, message);
+    }
+
+    private TextComponent helpPageButton(char icon, String command, String hoverKey) {
+        TextComponent button = new TextComponent("");
+        button.addExtra(text(" ", net.md_5.bungee.api.ChatColor.GRAY));
+        button.addExtra(text("[", net.md_5.bungee.api.ChatColor.DARK_GRAY));
+        button.addExtra(text(String.valueOf(icon), net.md_5.bungee.api.ChatColor.YELLOW));
+        button.addExtra(text("]", net.md_5.bungee.api.ChatColor.DARK_GRAY));
+        button.addExtra(text(" ", net.md_5.bungee.api.ChatColor.GRAY));
+        button.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+        button.setHoverEvent(helpHoverText(plugin.getMessageManager().getMessage(hoverKey, false)));
+        return button;
+    }
+
+    private HoverEvent helpHoverText(String message) {
+        String translated = ChatColor.translateAlternateColorCodes('&', message == null ? "" : message);
+        return new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                TextComponent.fromLegacyText(translated, net.md_5.bungee.api.ChatColor.GRAY));
+    }
+
+    private String pageCommand(String query, int page) {
+        String command = helpCommandPrefix();
+        if (query != null && !query.trim().isEmpty()) {
+            command += " " + query.trim();
+        }
+        return command + " " + page;
+    }
+
+    private String helpCommandPrefix() {
+        String[] parts = plugin.getConfig().getString("command.name", "advancedhunt|ah").split("\\|");
+        return "/" + parts[0] + " help";
+    }
+
+    private TextComponent centeredHelpHeader(TextComponent title) {
+        if (title == null) {
+            return helpLine(HELP_HEADER_LENGTH);
+        }
+        int sideLength = Math.max(0, (HELP_HEADER_LENGTH - BaseComponent.toPlainText(title).length()) / 2);
+        TextComponent header = new TextComponent("");
+        header.addExtra(helpLine(sideLength));
+        header.addExtra(title);
+        header.addExtra(helpLine(sideLength));
+        return header;
+    }
+
+    private TextComponent helpLine(int length) {
+        TextComponent line = text(repeat("-", length), net.md_5.bungee.api.ChatColor.GOLD);
+        line.setStrikethrough(true);
+        return line;
+    }
+
+    private TextComponent helpBranch(boolean last) {
+        return text(last ? "\u2514\u2500" : "\u251C\u2500", net.md_5.bungee.api.ChatColor.DARK_GRAY);
+    }
+
+    private TextComponent legacyText(String message) {
+        String translated = ChatColor.translateAlternateColorCodes('&', message == null ? "" : message);
+        TextComponent root = new TextComponent("");
+        for (BaseComponent component : TextComponent.fromLegacyText(
+                translated, net.md_5.bungee.api.ChatColor.GRAY)) {
+            root.addExtra(component);
+        }
+        return root;
+    }
+
+    private TextComponent text(String value, net.md_5.bungee.api.ChatColor color) {
+        TextComponent component = new TextComponent(value);
+        component.setColor(color);
+        return component;
+    }
+
+    private void sendHelpLine(CommandSender sender, BaseComponent message) {
+        if (sender instanceof Player) {
+            ((Player) sender).spigot().sendMessage(message);
+        } else {
+            sender.sendMessage(message.toLegacyText());
+        }
+    }
+
+    private String repeat(String value, int count) {
+        StringBuilder repeated = new StringBuilder(value.length() * count);
+        for (int i = 0; i < count; i++) {
+            repeated.append(value);
+        }
+        return repeated.toString();
+    }
+
+    private String repeatSpaces(int count) {
+        return repeat(" ", count);
     }
 
     private String describe(CommandEntry<CommandSender> entry) {
