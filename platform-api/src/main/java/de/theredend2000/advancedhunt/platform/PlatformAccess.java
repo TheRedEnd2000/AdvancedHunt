@@ -23,6 +23,10 @@ public final class PlatformAccess {
         }
     }
 
+    public static boolean supportsBlockDataApi() {
+        return !MinecraftVersion.detect().isLessThan(1, 13, 0);
+    }
+
     private static PlatformAdapter loadAdapter() {
         MinecraftVersion version = MinecraftVersion.detect();
 

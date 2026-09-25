@@ -85,6 +85,7 @@ public class TreasureVisibilityManager implements Listener {
     private final Map<String, Material> materialNameCache = new ConcurrentHashMap<>();
     private final Map<UUID, AtomicInteger> worldEntityIdCounters = new ConcurrentHashMap<>();
 
+    private volatile boolean blockDataSupported = true;
     private BukkitTask availabilityTask;
     private Object packetListener;
 
@@ -95,6 +96,12 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void start() {
+        blockDataSupported = PlatformAccess.supportsBlockDataApi();
+        if (!blockDataSupported) {
+            plugin.getLogger().warning("Treasure hiding and collection deletion cleanup are disabled on Minecraft versions below 1.13 because Bukkit BlockData is unavailable.");
+            return;
+        }
+
         reloadReplaceBlock();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         registerPacketListener();
@@ -129,6 +136,8 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void reloadReplaceBlock() {
+        if (!blockDataSupported) return;
+
         String block = plugin.getConfig().getString("treasure-settings.replace-block", "BARRIER").toUpperCase();
         if (!block.equals("BARRIER") && !block.equals("AIR")) block = "BARRIER";
         replaceBlockName = block.toLowerCase();
@@ -157,11 +166,11 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public boolean isBypassEnabled(Player player) {
-        return player != null && bypassPlayers.contains(player.getUniqueId());
+        return blockDataSupported && player != null && bypassPlayers.contains(player.getUniqueId());
     }
 
     public void setBypass(Player player, boolean enabled) {
-        if (player == null) return;
+        if (!blockDataSupported || player == null) return;
         if (enabled) {
             if (!player.hasPermission("advancedhunt.treasure.bypass")) return;
             bypassPlayers.add(player.getUniqueId());
@@ -287,7 +296,7 @@ public class TreasureVisibilityManager implements Listener {
      * Immediately sends the replace-block packet to hide a single just-found treasure.
      */
     public void hideFoundTreasureForPlayer(Player player, TreasureCore core) {
-        if (player == null || core == null || !isPacketEventsReady()) return;
+        if (!blockDataSupported || player == null || core == null || !isPacketEventsReady()) return;
         Location loc = core.getLocation();
         if (loc == null || loc.getWorld() == null) return;
         if (!loc.getWorld().equals(player.getWorld())) return;
@@ -297,7 +306,7 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void restoreFoundTreasuresForPlayer(Player player, UUID collectionId) {
-        if (player == null || !isPacketEventsReady()) return;
+        if (!blockDataSupported || player == null || !isPacketEventsReady()) return;
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!player.isOnline()) return;
@@ -330,7 +339,7 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void restoreFoundTreasuresForPlayer(Player player) {
-        if (player == null || !isPacketEventsReady()) return;
+        if (!blockDataSupported || player == null || !isPacketEventsReady()) return;
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!player.isOnline()) return;
@@ -360,6 +369,8 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void refreshAvailabilityStates() {
+        if (!blockDataSupported) return;
+
         List<Collection> collections = collectionManager.getAllCollections();
         for (Collection collection : collections) {
             boolean actAvailable = collectionManager.isCollectionAvailable(collection);
@@ -381,13 +392,15 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void refreshCollectionVisibility(UUID collectionId) {
+        if (!blockDataSupported) return;
+
         Optional<Collection> collectionOpt = collectionManager.getCollectionById(collectionId);
         if (!collectionOpt.isPresent()) return;
         refreshCollectionVisibility(collectionOpt.get());
     }
 
     public void refreshCollectionVisibility(Collection collection) {
-        if (collection == null) return;
+        if (!blockDataSupported || collection == null) return;
         boolean actAvailable = collectionManager.isCollectionAvailable(collection);
         availabilityCache.put(collection.getId(), actAvailable);
         boolean shouldBeHidden = shouldHideCollection(collection, actAvailable);
@@ -774,7 +787,7 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public boolean shouldHideFoundForPlayer(TreasureCore core, Player player) {
-        if (core == null || player == null) return false;
+        if (!blockDataSupported || core == null || player == null) return false;
         Optional<Collection> collectionOpt = collectionManager.getCollectionById(core.getCollectionId());
         if (!collectionOpt.isPresent() || !collectionOpt.get().isHideAfterFound()) return false;
         Collection collection = collectionOpt.get();
@@ -997,7 +1010,7 @@ public class TreasureVisibilityManager implements Listener {
     }
 
     public void refreshHideAfterFound(Collection collection) {
-        if (collection == null || !isPacketEventsReady()) return;
+        if (!blockDataSupported || collection == null || !isPacketEventsReady()) return;
 
         List<TreasureCore> cores = treasureManager.getTreasureCoresInCollection(collection.getId());
         if (cores.isEmpty()) return;

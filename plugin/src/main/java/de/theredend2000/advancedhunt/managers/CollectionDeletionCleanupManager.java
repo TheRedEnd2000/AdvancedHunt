@@ -3,6 +3,7 @@ package de.theredend2000.advancedhunt.managers;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import de.theredend2000.advancedhunt.Main;
+import de.theredend2000.advancedhunt.platform.PlatformAccess;
 import de.theredend2000.advancedhunt.util.HeadHelper;
 import de.theredend2000.advancedhunt.util.ItemsAdderAdapter;
 import de.theredend2000.advancedhunt.util.MaterialUtils;
@@ -43,6 +44,8 @@ public class CollectionDeletionCleanupManager implements Listener {
 
     private final AtomicInteger queuedEdits = new AtomicInteger(0);
 
+    private volatile boolean blockDataSupported = true;
+
     // Avoid unbounded growth for chunks that never load.
     private final Cache<ChunkKey, Boolean> chunkTouched = Caffeine.newBuilder()
         .expireAfterWrite(30, TimeUnit.MINUTES)
@@ -56,6 +59,9 @@ public class CollectionDeletionCleanupManager implements Listener {
     }
 
     public void start() {
+        blockDataSupported = PlatformAccess.supportsBlockDataApi();
+        if (!blockDataSupported) return;
+
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
         // Periodically drop entries for chunks that haven't loaded in a while.
@@ -93,7 +99,7 @@ public class CollectionDeletionCleanupManager implements Listener {
      * and applied when the chunk loads.
      */
     public void scheduleEdits(List<TreasureWorldEdit> edits) {
-        if (edits == null || edits.isEmpty()) {
+        if (!blockDataSupported || edits == null || edits.isEmpty()) {
             return;
         }
 
