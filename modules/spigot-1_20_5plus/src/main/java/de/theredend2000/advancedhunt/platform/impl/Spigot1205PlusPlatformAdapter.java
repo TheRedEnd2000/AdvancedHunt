@@ -23,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
@@ -40,6 +41,12 @@ public class Spigot1205PlusPlatformAdapter extends Spigot115PlatformAdapter {
     public void applyHideTooltip(ItemMeta meta, boolean hide) {
         if (meta == null) return;
         meta.setHideTooltip(hide);
+    }
+
+    @Override
+    public void applyHideAdditionalTooltip(ItemMeta meta) {
+        if (meta == null) return;
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
     }
 
     /**

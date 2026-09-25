@@ -23,6 +23,9 @@ public interface PlatformAdapter {
 
     void applyHideTooltip(ItemMeta meta, boolean hide);
 
+    default void applyHideAdditionalTooltip(ItemMeta meta) {
+    }
+
     void applyUnbreakable(ItemMeta meta, boolean unbreakable);
 
     void applyCustomModelData(ItemMeta meta, Integer customModelData);

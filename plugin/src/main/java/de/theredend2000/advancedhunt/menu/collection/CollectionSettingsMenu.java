@@ -15,8 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemFlag;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -291,7 +289,7 @@ public class CollectionSettingsMenu extends Menu {
                 .setDisplayName(plugin.getMessageManager().getMessage("gui.settings.hide_after_found.name", false))
                 .setLore(plugin.getMessageManager().getMessageList("gui.settings.hide_after_found.lore", false,
                         "%status%", hafStatus,"%block%", block).toArray(new String[0]))
-                .addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+                .hideAdditionalTooltip()
                 .build(), (e) -> {
             if (processing) return;
             processing = true;

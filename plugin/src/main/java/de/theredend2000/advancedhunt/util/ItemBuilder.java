@@ -140,6 +140,14 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder hideAdditionalTooltip() {
+        ItemMeta meta = ensureMeta();
+        if (meta != null) {
+            PlatformAccess.get().applyHideAdditionalTooltip(meta);
+        }
+        return this;
+    }
+
     public ItemBuilder setUnbreakable(boolean unbreakable) {
         ItemMeta meta = ensureMeta();
         PlatformAccess.get().applyUnbreakable(meta, unbreakable);
