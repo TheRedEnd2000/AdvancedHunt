@@ -17,6 +17,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sqlite-jdbc.version>3.45.3.0</sqlite-jdbc.version>
     </properties>
 
     <build>
@@ -37,6 +38,7 @@
                 <version>3.6.1</version>
                 <executions>
                     <execution>
+                        <id>server-driver</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -44,6 +46,11 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <minimizeJar>false</minimizeJar>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.xerial:sqlite-jdbc</exclude>
+                                </excludes>
+                            </artifactSet>
                             <filters>
                                 <!-- Prevent removal of classes accessed via reflection or dynamically -->
                                 <filter>
@@ -109,6 +116,85 @@
                                     <shadedPattern>de.theredend2000.advancedhunt.lib.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-sqlite-jdbc-for-bundled-artifact</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.xerial</groupId>
+                                    <artifactId>sqlite-jdbc</artifactId>
+                                    <version>${sqlite-jdbc.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/embedded</outputDirectory>
+                                    <destFileName>sqlite-jdbc.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>assemble-bundled-sqlite-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.build.directory}/with-sqlite-stage" />
+                                <mkdir dir="${project.build.directory}/with-sqlite-stage" />
+                                <unzip
+                                    src="${project.build.directory}/${project.build.finalName}.jar"
+                                    dest="${project.build.directory}/with-sqlite-stage" />
+                                <mkdir dir="${project.build.directory}/with-sqlite-stage/META-INF/advancedhunt" />
+                                <copy
+                                    file="${project.build.directory}/embedded/sqlite-jdbc.jar"
+                                    tofile="${project.build.directory}/with-sqlite-stage/META-INF/advancedhunt/sqlite-jdbc.jar" />
+                                <zip
+                                    destfile="${project.build.directory}/${project.build.finalName}-with-sqlite.jar"
+                                    basedir="${project.build.directory}/with-sqlite-stage" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-bundled-sqlite-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.build.finalName}-with-sqlite.jar</file>
+                                    <type>jar</type>
+                                    <classifier>with-sqlite</classifier>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>
@@ -184,6 +270,12 @@
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version> <!--DO NOT CHANGE-->
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqlite-jdbc.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <!-- Caching -->
         <dependency>
@@ -278,4 +370,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>

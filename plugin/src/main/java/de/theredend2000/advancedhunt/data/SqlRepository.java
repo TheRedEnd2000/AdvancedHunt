@@ -6,16 +6,14 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.theredend2000.advancedhunt.model.*;
 import de.theredend2000.advancedhunt.model.Collection;
+import de.theredend2000.advancedhunt.util.VersionComparator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -25,7 +23,41 @@ import java.util.logging.Level;
 public class SqlRepository implements DataRepository {
 
     private static final Type REWARD_LIST_TYPE = new TypeToken<List<Reward>>(){}.getType();
-    
+    private static final String SQLITE_UPSERT_MINIMUM_VERSION = "3.24.0";
+    private static final VersionComparator VERSION_COMPARATOR = new VersionComparator();
+    private static final String COLLECTION_INSERT_SQL =
+            "INSERT INTO ah_collections (" +
+            "id, name, enabled, reset_cron, active_start, active_end, " +
+            "progress_reset_cron, single_player_find, rewards, " +
+            "default_treasure_reward_preset_id, hide_when_not_available, hide_after_found" +
+            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String COLLECTION_SQLITE_UPSERT_SQL =
+            COLLECTION_INSERT_SQL +
+            " ON CONFLICT(id) DO UPDATE SET " +
+            "name=excluded.name, enabled=excluded.enabled, reset_cron=excluded.reset_cron, " +
+            "active_start=excluded.active_start, active_end=excluded.active_end, " +
+            "progress_reset_cron=excluded.progress_reset_cron, single_player_find=excluded.single_player_find, " +
+            "rewards=excluded.rewards, default_treasure_reward_preset_id=excluded.default_treasure_reward_preset_id, " +
+            "hide_when_not_available=excluded.hide_when_not_available, hide_after_found=excluded.hide_after_found";
+    private static final String COLLECTION_MYSQL_UPSERT_SQL =
+            COLLECTION_INSERT_SQL +
+            " ON DUPLICATE KEY UPDATE " +
+            "name=VALUES(name), enabled=VALUES(enabled), reset_cron=VALUES(reset_cron), " +
+            "active_start=VALUES(active_start), active_end=VALUES(active_end), " +
+            "progress_reset_cron=VALUES(progress_reset_cron), single_player_find=VALUES(single_player_find), " +
+            "rewards=VALUES(rewards), default_treasure_reward_preset_id=VALUES(default_treasure_reward_preset_id), " +
+            "hide_when_not_available=VALUES(hide_when_not_available), hide_after_found=VALUES(hide_after_found)";
+    private static final String COLLECTION_SQLITE_UPDATE_SQL =
+            "UPDATE ah_collections SET " +
+            "name=?, enabled=?, reset_cron=?, active_start=?, active_end=?, " +
+            "progress_reset_cron=?, single_player_find=?, rewards=?, " +
+            "default_treasure_reward_preset_id=?, hide_when_not_available=?, hide_after_found=? " +
+            "WHERE id=?";
+    private static final int COLLECTION_ID_PARAMETER_INDEX = 1;
+    private static final int COLLECTION_INSERT_FIRST_FIELD_PARAMETER_INDEX = 2;
+    private static final int COLLECTION_UPDATE_FIRST_FIELD_PARAMETER_INDEX = 1;
+    private static final int COLLECTION_UPDATE_ID_PARAMETER_INDEX = 12;
+
     private HikariDataSource dataSource;
     private final JavaPlugin plugin;
     private final String host, database, username, password;
@@ -35,6 +67,8 @@ public class SqlRepository implements DataRepository {
 
     private volatile ExecutorService sqliteExecutor;
     private volatile Executor asyncExecutor;
+    private volatile boolean sqliteSupportsUpsert;
+    private BundledSqliteDriver bundledSqliteDriver;
 
     private final Map<Integer, Consumer<Connection>> schemaMigrations = new HashMap<>();
     // Cache the version to avoid repeated DB queries
@@ -178,7 +212,15 @@ public class SqlRepository implements DataRepository {
                 dataFolder.mkdirs();
             }
             File dbFile = new File(dataFolder, "database.db");
-            config.setJdbcUrl("jdbc:sqlite:" + dbFile.getAbsolutePath());
+            String jdbcUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+            bundledSqliteDriver = BundledSqliteDriver.load(plugin, jdbcUrl);
+            if (bundledSqliteDriver == null) {
+                config.setJdbcUrl(jdbcUrl);
+                config.setDriverClassName(BundledSqliteDriver.DRIVER_CLASS_NAME);
+                plugin.getLogger().info("Using the server-provided SQLite JDBC driver.");
+            } else {
+                config.setDataSource(bundledSqliteDriver.getDataSource());
+            }
 
             // SQLite is single-writer; using a pool > 1 causes frequent SQLITE_BUSY during concurrent writes.
             // Serialize access and let SQLite wait a bit for locks.
@@ -193,8 +235,42 @@ public class SqlRepository implements DataRepository {
         }
         dataSource = new HikariDataSource(config);
 
+        if (useSqlite) {
+            detectSqliteCapabilities();
+        }
+
         createTables();
         upgradeSchema();
+    }
+
+    private void detectSqliteCapabilities() {
+        String sqliteVersion;
+        try (Connection conn = dataSource.getConnection();
+             Statement statement = conn.createStatement();
+             ResultSet rs = statement.executeQuery("SELECT sqlite_version()")) {
+            if (!rs.next()) {
+                throw new SQLException("SQLite version query returned no rows");
+            }
+            sqliteVersion = rs.getString(1);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Failed to detect the SQLite engine version", e);
+        }
+
+        try {
+            sqliteSupportsUpsert = supportsSqliteUpsert(sqliteVersion);
+        } catch (SQLException e) {
+            throw new IllegalStateException("SQLite returned an invalid engine version: " + sqliteVersion, e);
+        }
+
+        String saveMode = sqliteSupportsUpsert ? "native UPSERT" : "UPDATE/INSERT compatibility";
+        plugin.getLogger().info("Detected SQLite " + sqliteVersion + "; collection saves use " + saveMode + ".");
+    }
+
+    static boolean supportsSqliteUpsert(String sqliteVersion) throws SQLException {
+        if (sqliteVersion == null || !sqliteVersion.matches("\\d+\\.\\d+\\.\\d+")) {
+            throw new SQLException("Unexpected SQLite version: " + sqliteVersion);
+        }
+        return VERSION_COMPARATOR.compare(sqliteVersion, SQLITE_UPSERT_MINIMUM_VERSION) >= 0;
     }
 
     @Override
@@ -423,6 +499,11 @@ public class SqlRepository implements DataRepository {
                 sqliteExecutor.shutdownNow();
                 Thread.currentThread().interrupt();
             }
+        }
+
+        if (bundledSqliteDriver != null) {
+            bundledSqliteDriver.close();
+            bundledSqliteDriver = null;
         }
     }
 
@@ -838,26 +919,7 @@ public class SqlRepository implements DataRepository {
                 conn.setAutoCommit(false);
                 try {
                     executeWithRetry(() -> {
-                        // Save collection — include all columns to avoid REPLACE INTO dropping
-                        // unlisted columns. Use upsert syntax appropriate for the backend.
-                        final String upsertSql = useSqlite
-                            ? "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available, hide_after_found) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, enabled=excluded.enabled, reset_cron=excluded.reset_cron, active_start=excluded.active_start, active_end=excluded.active_end, progress_reset_cron=excluded.progress_reset_cron, single_player_find=excluded.single_player_find, rewards=excluded.rewards, default_treasure_reward_preset_id=excluded.default_treasure_reward_preset_id, hide_when_not_available=excluded.hide_when_not_available, hide_after_found=excluded.hide_after_found"
-                            : "INSERT INTO ah_collections (id, name, enabled, reset_cron, active_start, active_end, progress_reset_cron, single_player_find, rewards, default_treasure_reward_preset_id, hide_when_not_available, hide_after_found) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), enabled=VALUES(enabled), reset_cron=VALUES(reset_cron), active_start=VALUES(active_start), active_end=VALUES(active_end), progress_reset_cron=VALUES(progress_reset_cron), single_player_find=VALUES(single_player_find), rewards=VALUES(rewards), default_treasure_reward_preset_id=VALUES(default_treasure_reward_preset_id), hide_when_not_available=VALUES(hide_when_not_available), hide_after_found=VALUES(hide_after_found)";
-                        try (PreparedStatement ps = conn.prepareStatement(upsertSql)) {
-                            ps.setString(1, collection.getId().toString());
-                            ps.setString(2, collection.getName());
-                            ps.setBoolean(3, collection.isEnabled());
-                            ps.setNull(4, java.sql.Types.VARCHAR); // reset_cron (not in Collection model)
-                            ps.setNull(5, java.sql.Types.VARCHAR); // active_start (not in Collection model)
-                            ps.setNull(6, java.sql.Types.VARCHAR); // active_end (not in Collection model)
-                            ps.setString(7, collection.getProgressResetCron());
-                            ps.setBoolean(8, collection.isSinglePlayerFind());
-                            ps.setString(9, gson.toJson(collection.getCompletionRewards()));
-                            ps.setString(10, collection.getDefaultTreasureRewardPresetId() != null ? collection.getDefaultTreasureRewardPresetId().toString() : null);
-                            ps.setBoolean(11, collection.isHideWhenNotAvailable());
-                            ps.setBoolean(12, collection.isHideAfterFound());
-                            ps.executeUpdate();
-                        }
+                        saveCollectionRow(conn, collection);
 
                         // Delete existing ACT rules for this collection
                         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM ah_act_rules WHERE collection_id = ?")) {
@@ -892,6 +954,82 @@ public class SqlRepository implements DataRepository {
                 plugin.getLogger().severe("Failed to save collection: " + e.getMessage());
             }
         });
+    }
+
+    private void saveCollectionRow(Connection conn, Collection collection) throws SQLException {
+        if (useSqlite) {
+            upsertSqliteCollection(conn, collection, gson, sqliteSupportsUpsert);
+            return;
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(COLLECTION_MYSQL_UPSERT_SQL)) {
+            bindCollectionInsertValues(ps, collection, gson);
+            ps.executeUpdate();
+        }
+    }
+
+    static void upsertSqliteCollection(
+            Connection conn,
+            Collection collection,
+            Gson gson,
+            boolean sqliteSupportsUpsert
+    ) throws SQLException {
+        if (sqliteSupportsUpsert) {
+            try (PreparedStatement ps = conn.prepareStatement(COLLECTION_SQLITE_UPSERT_SQL)) {
+                bindCollectionInsertValues(ps, collection, gson);
+                ps.executeUpdate();
+            }
+            return;
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(COLLECTION_SQLITE_UPDATE_SQL)) {
+            bindCollectionFields(
+                    ps,
+                    collection,
+                    gson,
+                    COLLECTION_UPDATE_FIRST_FIELD_PARAMETER_INDEX
+            );
+            ps.setString(COLLECTION_UPDATE_ID_PARAMETER_INDEX, collection.getId().toString());
+            if (ps.executeUpdate() != 0) {
+                return;
+            }
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(COLLECTION_INSERT_SQL)) {
+            bindCollectionInsertValues(ps, collection, gson);
+            ps.executeUpdate();
+        }
+    }
+
+    private static void bindCollectionInsertValues(
+            PreparedStatement ps,
+            Collection collection,
+            Gson gson
+    ) throws SQLException {
+        ps.setString(COLLECTION_ID_PARAMETER_INDEX, collection.getId().toString());
+        bindCollectionFields(ps, collection, gson, COLLECTION_INSERT_FIRST_FIELD_PARAMETER_INDEX);
+    }
+
+    private static void bindCollectionFields(
+            PreparedStatement ps,
+            Collection collection,
+            Gson gson,
+            int firstParameterIndex
+    ) throws SQLException {
+        int parameterIndex = firstParameterIndex;
+        ps.setString(parameterIndex++, collection.getName());
+        ps.setBoolean(parameterIndex++, collection.isEnabled());
+        ps.setNull(parameterIndex++, java.sql.Types.VARCHAR); // reset_cron (not in Collection model)
+        ps.setNull(parameterIndex++, java.sql.Types.VARCHAR); // active_start (not in Collection model)
+        ps.setNull(parameterIndex++, java.sql.Types.VARCHAR); // active_end (not in Collection model)
+        ps.setString(parameterIndex++, collection.getProgressResetCron());
+        ps.setBoolean(parameterIndex++, collection.isSinglePlayerFind());
+        ps.setString(parameterIndex++, gson.toJson(collection.getCompletionRewards()));
+        ps.setString(parameterIndex++, collection.getDefaultTreasureRewardPresetId() != null
+                ? collection.getDefaultTreasureRewardPresetId().toString()
+                : null);
+        ps.setBoolean(parameterIndex++, collection.isHideWhenNotAvailable());
+        ps.setBoolean(parameterIndex, collection.isHideAfterFound());
     }
 
     @Override
@@ -1384,4 +1522,5 @@ public class SqlRepository implements DataRepository {
             return treasures;
         });
     }
+
 }

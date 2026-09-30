@@ -49,3 +49,13 @@ This plugin is developed by volunteers. We welcome:
 - Code contributions through GitHub
 - Translations to new languages
 - Documentation improvements
+
+## 🔨 Build Artifacts
+
+From the repository root:
+
+- `mvn -pl plugin -am clean package` creates both artifacts:
+  - `plugin/target/advancedhunt-<version>.jar` uses the SQLite JDBC driver supplied by the server and selects SQL compatible with its SQLite version.
+  - `plugin/target/advancedhunt-<version>-with-sqlite.jar` embeds Xerial SQLite JDBC 3.45.3.0 and loads it in an isolated classloader.
+
+Use the server-driver jar when the server provides `org.sqlite.JDBC`. The bundled jar avoids driver conflicts when the server has an older SQLite JDBC version or no driver. The bundled driver remains unmodified because relocating Xerial's JNI classes can break native method binding.
