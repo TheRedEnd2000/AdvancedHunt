@@ -4,11 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 public class ItemSerializer {
 
@@ -22,7 +22,7 @@ public class ItemSerializer {
              BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
             dataOutput.writeObject(item);
             dataOutput.flush();
-            return Base64Coder.encodeLines(outputStream.toByteArray());
+            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
         } catch (IOException e) {
             Bukkit.getLogger().severe("Failed to serialize item: " + e.getMessage());
             return null;
@@ -34,7 +34,7 @@ public class ItemSerializer {
             throw new IllegalArgumentException("Data cannot be null or empty");
         }
 
-        byte[] decodedData = Base64Coder.decodeLines(data);
+        byte[] decodedData = Base64.getMimeDecoder().decode(data);
         if (decodedData.length > MAX_SERIALIZED_SIZE) {
             throw new IllegalArgumentException("Serialized data exceeds maximum allowed size of " + MAX_SERIALIZED_SIZE + " bytes");
         }
