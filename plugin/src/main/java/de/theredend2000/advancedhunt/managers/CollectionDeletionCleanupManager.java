@@ -238,7 +238,13 @@ public class CollectionDeletionCleanupManager implements Listener {
 
         if (isItemsAdder(edit)) {
             if (isItemsAdderFurniture(edit)) {
-                ItemsAdderAdapter.removeCustomFurniture(loc);
+                String furnitureId = edit.getBlockState();
+                boolean furniturePresent = ItemsAdderAdapter.hasCustomFurnitureAt(furnitureId, loc);
+                boolean removed = ItemsAdderAdapter.removeCustomFurniture(furnitureId, loc);
+                if (furniturePresent && !removed) {
+                    plugin.getLogger().warning("[CollectionDeletionCleanup] Failed to remove ItemsAdder furniture '"
+                            + furnitureId + "' at " + loc);
+                }
             } else {
                 if (!ItemsAdderAdapter.removeCustomBlock(loc)) {
                     world.getBlockAt(loc).setType(Material.AIR, false);
@@ -263,7 +269,10 @@ public class CollectionDeletionCleanupManager implements Listener {
 
         if (isItemsAdder(edit)) {
             if (isItemsAdderFurniture(edit)) {
-                ItemsAdderAdapter.spawnCustomFurniture(edit.getBlockState(), loc);
+                if (!ItemsAdderAdapter.spawnCustomFurniture(edit.getBlockState(), loc)) {
+                    plugin.getLogger().warning("[CollectionDeletionCleanup] Failed to restore ItemsAdder furniture '"
+                            + edit.getBlockState() + "' at " + loc);
+                }
             } else {
                 ItemsAdderAdapter.placeCustomBlock(edit.getBlockState(), loc);
             }

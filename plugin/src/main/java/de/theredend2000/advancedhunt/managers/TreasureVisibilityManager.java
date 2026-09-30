@@ -506,7 +506,13 @@ public class TreasureVisibilityManager implements Listener {
 
         if (isItemsAdder(core)) {
             if (isItemsAdderFurniture(core)) {
-                ItemsAdderAdapter.removeCustomFurniture(loc);
+                String furnitureId = core.getBlockState();
+                boolean furniturePresent = ItemsAdderAdapter.hasCustomFurnitureAt(furnitureId, loc);
+                boolean removed = ItemsAdderAdapter.removeCustomFurniture(furnitureId, loc);
+                if (furniturePresent && !removed) {
+                    plugin.getLogger().warning("[TreasureVisibility] Failed to remove ItemsAdder furniture '"
+                            + furnitureId + "' at " + loc);
+                }
             } else {
                 if (!ItemsAdderAdapter.removeCustomBlock(loc)) {
                     world.getBlockAt(loc).setType(Material.AIR, false);
@@ -536,7 +542,10 @@ public class TreasureVisibilityManager implements Listener {
 
         if (isItemsAdder(core)) {
             if (isItemsAdderFurniture(core)) {
-                ItemsAdderAdapter.spawnCustomFurniture(core.getBlockState(), loc);
+                if (!ItemsAdderAdapter.spawnCustomFurniture(core.getBlockState(), loc)) {
+                    plugin.getLogger().warning("[TreasureVisibility] Failed to restore ItemsAdder furniture '"
+                            + core.getBlockState() + "' at " + loc);
+                }
             } else {
                 ItemsAdderAdapter.placeCustomBlock(core.getBlockState(), loc);
             }

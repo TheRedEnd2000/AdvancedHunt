@@ -34,11 +34,13 @@ public interface ItemsAdderBridge {
 
     boolean isCustomFurnitureId(String namespacedId);
 
+    boolean hasCustomFurnitureAt(String namespacedId, Location location);
+
     boolean placeCustomBlock(String namespacedId, Location location);
 
     boolean removeCustomBlock(Location location);
 
     boolean spawnCustomFurniture(String namespacedId, Location location);
 
-    boolean removeCustomFurniture(Location location);
+    boolean removeCustomFurniture(String namespacedId, Location location);
 }

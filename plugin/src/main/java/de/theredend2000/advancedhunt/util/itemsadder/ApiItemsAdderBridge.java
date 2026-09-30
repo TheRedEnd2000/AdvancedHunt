@@ -122,6 +122,11 @@ public class ApiItemsAdderBridge implements ItemsAdderBridge {
     }
 
     @Override
+    public boolean hasCustomFurnitureAt(String namespacedId, Location location) {
+        return findCustomFurnitureAt(namespacedId, location) != null;
+    }
+
+    @Override
     public boolean placeCustomBlock(String namespacedId, Location location) {
         if (namespacedId == null || location == null) return false;
         try {
@@ -144,6 +149,8 @@ public class ApiItemsAdderBridge implements ItemsAdderBridge {
     @Override
     public boolean spawnCustomFurniture(String namespacedId, Location location) {
         if (namespacedId == null || location == null) return false;
+        if (hasCustomFurnitureAt(namespacedId, location)) return true;
+
         try {
             CustomFurniture furniture = CustomFurniture.spawnPreciseNonSolid(namespacedId, location);
             if (furniture != null) {
@@ -152,26 +159,59 @@ public class ApiItemsAdderBridge implements ItemsAdderBridge {
         } catch (Throwable ignored) {
         }
 
+        if (hasCustomFurnitureAt(namespacedId, location)) return true;
+
         try {
             if (location.getBlock() == null) return false;
-            return CustomFurniture.spawn(namespacedId, location.getBlock()) != null;
+            CustomFurniture furniture = CustomFurniture.spawn(namespacedId, location.getBlock());
+            return furniture != null || hasCustomFurnitureAt(namespacedId, location);
+        } catch (Throwable ignored) {
+            return hasCustomFurnitureAt(namespacedId, location);
+        }
+    }
+
+    @Override
+    public boolean removeCustomFurniture(String namespacedId, Location location) {
+        if (namespacedId == null || location == null) return false;
+        CustomFurniture furniture = findCustomFurnitureAt(namespacedId, location);
+        if (furniture == null) return false;
+
+        try {
+            furniture.remove(false);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
     }
 
-    @Override
-    public boolean removeCustomFurniture(Location location) {
-        if (location == null) return false;
-        try {
-            if (location.getBlock() == null) return false;
-            CustomFurniture furniture = CustomFurniture.byAlreadySpawned(location.getBlock());
-            if (furniture != null) {
-                furniture.remove(false);
-                return true;
-            }
-        } catch (Throwable ignored) {
+    private CustomFurniture findCustomFurnitureAt(String namespacedId, Location location) {
+        if (namespacedId == null || namespacedId.isEmpty() || location == null || location.getWorld() == null) {
+            return null;
         }
-        return false;
+
+        CustomFurniture furniture = CustomFurniture.byAlreadySpawned(location.getBlock());
+        if (matchesFurniture(furniture, namespacedId)) return furniture;
+
+        for (Entity entity : location.getWorld().getNearbyEntities(location, 1.0, 1.0, 1.0)) {
+            Location entityLocation = entity.getLocation();
+            if (!isSameBlock(location, entityLocation)) continue;
+
+            furniture = CustomFurniture.byAlreadySpawned(entity);
+            if (matchesFurniture(furniture, namespacedId)) return furniture;
+        }
+
+        return null;
+    }
+
+    private boolean matchesFurniture(CustomFurniture furniture, String namespacedId) {
+        return furniture != null && namespacedId.equals(furniture.getNamespacedID());
+    }
+
+    private boolean isSameBlock(Location first, Location second) {
+        return first != null && second != null
+                && first.getWorld() != null && first.getWorld().equals(second.getWorld())
+                && first.getBlockX() == second.getBlockX()
+                && first.getBlockY() == second.getBlockY()
+                && first.getBlockZ() == second.getBlockZ();
     }
 }

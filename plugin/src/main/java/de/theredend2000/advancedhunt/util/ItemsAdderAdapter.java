@@ -111,6 +111,12 @@ public class ItemsAdderAdapter {
         return bridge.isCustomFurnitureId(namespacedId);
     }
 
+    public static boolean hasCustomFurnitureAt(String namespacedId, Location location) {
+        ItemsAdderBridge bridge = getBridge();
+        if (bridge == null) return false;
+        return bridge.hasCustomFurnitureAt(namespacedId, location);
+    }
+
     public static boolean placeCustomBlock(String namespacedId, Location location) {
         ItemsAdderBridge bridge = getBridge();
         if (bridge == null) return false;
@@ -129,9 +135,9 @@ public class ItemsAdderAdapter {
         return bridge.spawnCustomFurniture(namespacedId, location);
     }
 
-    public static boolean removeCustomFurniture(Location location) {
+    public static boolean removeCustomFurniture(String namespacedId, Location location) {
         ItemsAdderBridge bridge = getBridge();
         if (bridge == null) return false;
-        return bridge.removeCustomFurniture(location);
+        return bridge.removeCustomFurniture(namespacedId, location);
     }
 }
