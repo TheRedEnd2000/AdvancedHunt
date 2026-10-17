@@ -134,7 +134,7 @@ public class MemoryMinigameMenu extends MinigameMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        if (showingSequence || finished) return;
+        if (showingSequence || finished || playerSequence.size() >= sequence.size()) return;
 
         int slot = event.getSlot();
         boolean isGameSlot = false;
