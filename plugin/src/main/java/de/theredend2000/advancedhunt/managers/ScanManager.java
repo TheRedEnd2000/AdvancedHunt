@@ -67,6 +67,7 @@ public class ScanManager {
                 // Run Proximity Logic
                 proximityManager.processTick(snapshots, availableCollections);
 
+                // Place Mode Logic
                 placeModeManager.processTick(snapshots);
 
                 // Run Particle Logic

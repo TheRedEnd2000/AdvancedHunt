@@ -10,108 +10,116 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
 public class OddOneOutMinigameMenu extends MinigameMenu {
 
-    /**
-     * 10 difficulty groups, ordered easiest → hardest.
-     * Each group has at least 4 materials; two are picked randomly each round.
-     *
-     * Rule of thumb per tier:
-     *  1-2  → clearly different colours/shapes   (warm-up)
-     *  3-4  → same material family, visible diff  (easy)
-     *  5-6  → similar tones, same texture family  (medium)
-     *  7-8  → almost identical, subtle difference (hard)
-     *  9-10 → near-identical palette/texture      (very hard)
-     */
-    private static final XMaterial[][] DIFFICULTY_GROUPS = {
-
-            // ── Tier 1 – bold primary wools ──────────────────────────────
+    private static final XMaterial[][][] DIFFICULTY_PAIRS = {
             {
-                    XMaterial.RED_WOOL,     XMaterial.BLUE_WOOL,
-                    XMaterial.YELLOW_WOOL,  XMaterial.GREEN_WOOL,
-                    XMaterial.BLACK_WOOL,   XMaterial.ORANGE_WOOL,
-                    XMaterial.PURPLE_WOOL,  XMaterial.WHITE_WOOL
+                    {XMaterial.CYAN_CONCRETE_POWDER, XMaterial.DIAMOND_BLOCK},
+                    {XMaterial.MAGENTA_WOOL,         XMaterial.PINK_CONCRETE_POWDER},
+                    {XMaterial.ACACIA_PLANKS,        XMaterial.NETHER_WART_BLOCK},
+                    {XMaterial.BIRCH_PLANKS,         XMaterial.LIME_WOOL},
+                    {XMaterial.GLOWSTONE,            XMaterial.YELLOW_CONCRETE_POWDER},
+                    {XMaterial.CUT_RED_SANDSTONE,    XMaterial.RED_TERRACOTTA},
+                    {XMaterial.COAL_BLOCK,           XMaterial.GRAY_CONCRETE_POWDER},
+                    {XMaterial.HAY_BLOCK,            XMaterial.LIME_TERRACOTTA}
             },
-
-            // ── Tier 2 – different block categories (still very obvious) ─
             {
-                    XMaterial.RED_CONCRETE,    XMaterial.BLUE_CONCRETE,
-                    XMaterial.YELLOW_CONCRETE, XMaterial.GREEN_CONCRETE,
-                    XMaterial.BLACK_CONCRETE,  XMaterial.ORANGE_CONCRETE,
-                    XMaterial.PURPLE_CONCRETE, XMaterial.WHITE_CONCRETE
+                    {XMaterial.BLUE_TERRACOTTA,   XMaterial.LIGHT_BLUE_TERRACOTTA},
+                    {XMaterial.BROWN_WOOL,        XMaterial.SMOOTH_RED_SANDSTONE},
+                    {XMaterial.MAGENTA_CONCRETE,  XMaterial.MAGENTA_TERRACOTTA},
+                    {XMaterial.ORANGE_TERRACOTTA, XMaterial.PUMPKIN},
+                    {XMaterial.CYAN_TERRACOTTA,   XMaterial.SOUL_SAND},
+                    {XMaterial.GREEN_WOOL,        XMaterial.MELON},
+                    {XMaterial.GRAY_TERRACOTTA,   XMaterial.NETHERRACK},
+                    {XMaterial.BLACK_TERRACOTTA,  XMaterial.NETHERITE_BLOCK}
             },
-
-            // ── Tier 3 – mid-tone wools (warm vs cool) ───────────────────
             {
-                    XMaterial.CYAN_WOOL,       XMaterial.LIGHT_BLUE_WOOL,
-                    XMaterial.LIME_WOOL,       XMaterial.GREEN_WOOL,
-                    XMaterial.MAGENTA_WOOL,    XMaterial.PINK_WOOL,
-                    XMaterial.PURPLE_WOOL,     XMaterial.BLUE_WOOL
+                    {XMaterial.DIRT,                    XMaterial.RED_SAND},
+                    {XMaterial.MAGENTA_CONCRETE_POWDER, XMaterial.PINK_CONCRETE},
+                    {XMaterial.GREEN_CONCRETE_POWDER,   XMaterial.GREEN_TERRACOTTA},
+                    {XMaterial.CLAY,                    XMaterial.WHITE_CONCRETE},
+                    {XMaterial.SPONGE,                  XMaterial.YELLOW_WOOL},
+                    {XMaterial.POLISHED_DIORITE,        XMaterial.SNOW_BLOCK},
+                    {XMaterial.ORANGE_CONCRETE_POWDER,  XMaterial.RED_SANDSTONE},
+                    {XMaterial.CRACKED_STONE_BRICKS,    XMaterial.LIGHT_GRAY_TERRACOTTA}
             },
-
-            // ── Tier 4 – mid-tone concretes (same palette as tier 3) ─────
             {
-                    XMaterial.CYAN_CONCRETE,       XMaterial.LIGHT_BLUE_CONCRETE,
-                    XMaterial.LIME_CONCRETE,       XMaterial.GREEN_CONCRETE,
-                    XMaterial.MAGENTA_CONCRETE,    XMaterial.PINK_CONCRETE,
-                    XMaterial.PURPLE_CONCRETE,     XMaterial.BLUE_CONCRETE
+                    {XMaterial.GOLD_BLOCK,            XMaterial.YELLOW_CONCRETE},
+                    {XMaterial.BLUE_CONCRETE,         XMaterial.PURPLE_CONCRETE},
+                    {XMaterial.DIORITE,               XMaterial.QUARTZ_BLOCK},
+                    {XMaterial.BLACK_CONCRETE_POWDER, XMaterial.GRAY_CONCRETE},
+                    {XMaterial.GRAY_WOOL,             XMaterial.POLISHED_BLACKSTONE},
+                    {XMaterial.BROWN_CONCRETE,        XMaterial.BROWN_CONCRETE_POWDER},
+                    {XMaterial.BONE_BLOCK,            XMaterial.IRON_BLOCK},
+                    {XMaterial.MOSSY_STONE_BRICKS,    XMaterial.POLISHED_ANDESITE}
             },
-
-            // ── Tier 5 – stone family (grey/brown, similar brightness) ───
             {
-                    XMaterial.STONE,       XMaterial.COBBLESTONE,
-                    XMaterial.ANDESITE,    XMaterial.DIORITE,
-                    XMaterial.GRANITE,     XMaterial.DEEPSLATE,
-                    XMaterial.TUFF,        XMaterial.CALCITE
+                    {XMaterial.GRANITE,         XMaterial.JUNGLE_PLANKS},
+                    {XMaterial.END_STONE,       XMaterial.SAND},
+                    {XMaterial.DARK_OAK_PLANKS, XMaterial.SOUL_SOIL},
+                    {XMaterial.PINK_TERRACOTTA, XMaterial.RED_CONCRETE_POWDER},
+                    {XMaterial.BLACKSTONE,      XMaterial.BLACK_WOOL},
+                    {XMaterial.BLUE_CONCRETE,   XMaterial.BLUE_CONCRETE_POWDER},
+                    {XMaterial.CYAN_WOOL,       XMaterial.WARPED_WART_BLOCK},
+                    {XMaterial.GRAVEL,          XMaterial.LIGHT_GRAY_WOOL}
             },
-
-            // ── Tier 6 – wood planks (organic grain, different hues) ─────
             {
-                    XMaterial.OAK_PLANKS,      XMaterial.BIRCH_PLANKS,
-                    XMaterial.SPRUCE_PLANKS,   XMaterial.JUNGLE_PLANKS,
-                    XMaterial.ACACIA_PLANKS,   XMaterial.DARK_OAK_PLANKS,
-                    XMaterial.MANGROVE_PLANKS, XMaterial.CHERRY_PLANKS
+                    {XMaterial.ORANGE_CONCRETE,     XMaterial.ORANGE_WOOL},
+                    {XMaterial.CRIMSON_PLANKS,      XMaterial.PURPLE_TERRACOTTA},
+                    {XMaterial.DEEPSLATE_TILES,     XMaterial.POLISHED_DEEPSLATE},
+                    {XMaterial.LIGHT_GRAY_CONCRETE, XMaterial.MOSSY_COBBLESTONE},
+                    {XMaterial.BRICKS,              XMaterial.TERRACOTTA},
+                    {XMaterial.OXIDIZED_COPPER,     XMaterial.PRISMARINE},
+                    {XMaterial.MUD,                 XMaterial.POLISHED_BLACKSTONE_BRICKS},
+                    {XMaterial.ANDESITE,            XMaterial.STONE_BRICKS}
             },
-
-            // ── Tier 7 – terracotta (muted, earthy – hard to tell apart) ─
             {
-                    XMaterial.TERRACOTTA,              XMaterial.WHITE_TERRACOTTA,
-                    XMaterial.LIGHT_GRAY_TERRACOTTA,   XMaterial.GRAY_TERRACOTTA,
-                    XMaterial.BROWN_TERRACOTTA,        XMaterial.ORANGE_TERRACOTTA,
-                    XMaterial.YELLOW_TERRACOTTA,       XMaterial.RED_TERRACOTTA
+                    {XMaterial.SMOOTH_QUARTZ,        XMaterial.WHITE_WOOL},
+                    {XMaterial.BLUE_CONCRETE_POWDER, XMaterial.BLUE_WOOL},
+                    {XMaterial.COARSE_DIRT,          XMaterial.SPRUCE_PLANKS},
+                    {XMaterial.POLISHED_GRANITE,     XMaterial.ROOTED_DIRT},
+                    {XMaterial.QUARTZ_BRICKS,        XMaterial.WHITE_CONCRETE_POWDER},
+                    {XMaterial.RED_CONCRETE,         XMaterial.RED_WOOL},
+                    {XMaterial.BLUE_ICE,             XMaterial.PACKED_ICE},
+                    {XMaterial.DEEPSLATE,            XMaterial.DEEPSLATE_BRICKS}
             },
-
-            // ── Tier 8 – glazed terracotta (complex pattern, similar hues)
             {
-                    XMaterial.WHITE_GLAZED_TERRACOTTA,      XMaterial.LIGHT_GRAY_GLAZED_TERRACOTTA,
-                    XMaterial.GRAY_GLAZED_TERRACOTTA,       XMaterial.BROWN_GLAZED_TERRACOTTA,
-                    XMaterial.ORANGE_GLAZED_TERRACOTTA,     XMaterial.YELLOW_GLAZED_TERRACOTTA,
-                    XMaterial.GREEN_GLAZED_TERRACOTTA,      XMaterial.CYAN_GLAZED_TERRACOTTA
+                    {XMaterial.PINK_CONCRETE_POWDER,       XMaterial.PINK_WOOL},
+                    {XMaterial.POLISHED_GRANITE,           XMaterial.RAW_COPPER_BLOCK},
+                    {XMaterial.PURPLE_CONCRETE_POWDER,     XMaterial.PURPLE_WOOL},
+                    {XMaterial.DIRT,                       XMaterial.PACKED_MUD},
+                    {XMaterial.PRISMARINE,                 XMaterial.PRISMARINE_BRICKS},
+                    {XMaterial.COBBLESTONE,                XMaterial.STONE_BRICKS},
+                    {XMaterial.BLACK_CONCRETE,             XMaterial.BLACK_WOOL},
+                    {XMaterial.LIGHT_BLUE_CONCRETE_POWDER, XMaterial.LIGHT_BLUE_WOOL}
             },
-
-            // ── Tier 9 – pale/neutral wools (very similar brightness) ────
             {
-                    XMaterial.WHITE_WOOL,        XMaterial.LIGHT_GRAY_WOOL,
-                    XMaterial.GRAY_WOOL,         XMaterial.WHITE_CONCRETE,
-                    XMaterial.LIGHT_GRAY_CONCRETE, XMaterial.GRAY_CONCRETE,
-                    XMaterial.QUARTZ_BLOCK,      XMaterial.SNOW_BLOCK
+                    {XMaterial.GREEN_CONCRETE_POWDER, XMaterial.LIME_TERRACOTTA},
+                    {XMaterial.CALCITE,               XMaterial.IRON_BLOCK},
+                    {XMaterial.COBBLED_DEEPSLATE,     XMaterial.GRAY_CONCRETE_POWDER},
+                    {XMaterial.BLACKSTONE,            XMaterial.POLISHED_BLACKSTONE_BRICKS},
+                    {XMaterial.BROWN_CONCRETE_POWDER, XMaterial.COARSE_DIRT},
+                    {XMaterial.COBBLESTONE,           XMaterial.STONE},
+                    {XMaterial.WHITE_CONCRETE_POWDER, XMaterial.WHITE_WOOL},
+                    {XMaterial.SOUL_SAND,             XMaterial.SOUL_SOIL}
             },
-
-            // ── Tier 10 – polished stones (near-identical grey palette) ──
             {
-                    XMaterial.POLISHED_ANDESITE,   XMaterial.POLISHED_DIORITE,
-                    XMaterial.POLISHED_GRANITE,    XMaterial.POLISHED_DEEPSLATE,
-                    XMaterial.SMOOTH_STONE,        XMaterial.SMOOTH_QUARTZ,
-                    XMaterial.CHISELED_STONE_BRICKS, XMaterial.STONE_BRICKS
+                    {XMaterial.CUT_SANDSTONE,    XMaterial.SMOOTH_SANDSTONE},
+                    {XMaterial.ANDESITE,         XMaterial.POLISHED_ANDESITE},
+                    {XMaterial.RED_SAND,         XMaterial.RED_SANDSTONE},
+                    {XMaterial.DIORITE,          XMaterial.POLISHED_DIORITE},
+                    {XMaterial.MUD_BRICKS,       XMaterial.PACKED_MUD},
+                    {XMaterial.QUARTZ_BRICKS,    XMaterial.SMOOTH_QUARTZ},
+                    {XMaterial.SAND,             XMaterial.SANDSTONE},
+                    {XMaterial.DEEPSLATE_BRICKS, XMaterial.POLISHED_DEEPSLATE}
             }
     };
 
-    private static final int MAX_DIFFICULTY = DIFFICULTY_GROUPS.length; // 10
+    private static final int MAX_DIFFICULTY = DIFFICULTY_PAIRS.length;
     private static final int TOTAL_SLOTS    = 54;
 
     private final int    maxRounds;
@@ -121,13 +129,14 @@ public class OddOneOutMinigameMenu extends MinigameMenu {
     private final Random random = new Random();
 
     private int     round           = 0;
-    private int     currentDifficulty;   // 1-based, updated each round
-    private int     roundsOnDifficulty = 0; // rounds spent without going up
+    private int     currentDifficulty;
+    private int     roundsOnDifficulty = 0;
     private int     oddSlot         = -1;
     private boolean waitingForClick = false;
 
     private XMaterial currentMain = null;
     private XMaterial currentOdd  = null;
+    private XMaterial[] lastPair  = null;
 
     private BukkitTask countdownTask = null;
 
@@ -139,10 +148,6 @@ public class OddOneOutMinigameMenu extends MinigameMenu {
         this.startDifficulty    = Math.max(1, Math.min(MAX_DIFFICULTY, raw));
         this.currentDifficulty  = this.startDifficulty;
     }
-
-    // ------------------------------------------------------------------ //
-    //  Menu basics                                                         //
-    // ------------------------------------------------------------------ //
 
     @Override
     public String getMenuName() {
@@ -160,26 +165,6 @@ public class OddOneOutMinigameMenu extends MinigameMenu {
         scheduleTask(this::startRound, 10);
     }
 
-    // ------------------------------------------------------------------ //
-    //  Difficulty progression                                              //
-    // ------------------------------------------------------------------ //
-
-    /**
-     * After each round, decide whether to increase the difficulty.
-     *
-     * Already at max → always stay.
-     * Otherwise the probability of going up grows the longer we have stayed
-     * on the current tier:
-     *
-     *   P(increase) = roundsOnDifficulty / (roundsOnDifficulty + 2)
-     *
-     *   rounds stayed │  0   1    2    3    4    5 …
-     *   P(increase)   │  0%  33%  50%  60%  67%  71% …
-     *
-     * This means on the very first round of a new tier there is NO increase,
-     * giving the player at least one "safe" round to adjust. After that the
-     * pressure builds until an increase is virtually guaranteed.
-     */
     private void updateDifficulty() {
         if (currentDifficulty >= MAX_DIFFICULTY) {
             roundsOnDifficulty++;
@@ -195,25 +180,18 @@ public class OddOneOutMinigameMenu extends MinigameMenu {
         }
     }
 
-    // ------------------------------------------------------------------ //
-    //  Round logic                                                         //
-    // ------------------------------------------------------------------ //
-
     private void startRound() {
         if (finished) return;
         round++;
 
-        // Advance difficulty (skip on very first round)
         if (round > 1) updateDifficulty();
 
         waitingForClick = false;
 
-        XMaterial[] group = DIFFICULTY_GROUPS[currentDifficulty - 1];
-        List<XMaterial> pool = new ArrayList<>();
-        for (XMaterial m : group) pool.add(m);
-        Collections.shuffle(pool, random);
-        currentMain = pool.get(0);
-        currentOdd  = pool.get(1);
+        XMaterial[] pair = pickPair();
+        boolean swap = random.nextBoolean();
+        currentMain = swap ? pair[1] : pair[0];
+        currentOdd  = swap ? pair[0] : pair[1];
 
         oddSlot = random.nextInt(TOTAL_SLOTS);
 
@@ -227,9 +205,20 @@ public class OddOneOutMinigameMenu extends MinigameMenu {
         startCountdown(baseTime);
     }
 
-    // ------------------------------------------------------------------ //
-    //  Countdown                                                           //
-    // ------------------------------------------------------------------ //
+    private XMaterial[] pickPair() {
+        for (int level = currentDifficulty; level >= 1; level--) {
+            List<XMaterial[]> usable = new ArrayList<>();
+            for (XMaterial[] pair : DIFFICULTY_PAIRS[level - 1]) {
+                if (pair[0].isSupported() && pair[1].isSupported()) usable.add(pair);
+            }
+            if (usable.isEmpty()) continue;
+            if (usable.size() > 1 && lastPair != null) usable.remove(lastPair);
+            XMaterial[] chosen = usable.get(random.nextInt(usable.size()));
+            lastPair = chosen;
+            return chosen;
+        }
+        return new XMaterial[]{XMaterial.RED_WOOL, XMaterial.BLUE_WOOL};
+    }
 
     private void startCountdown(long totalTicks) {
         cancelCountdown();
@@ -280,10 +269,6 @@ public class OddOneOutMinigameMenu extends MinigameMenu {
             updateSlot(i, i == oddSlot ? oddItem : mainItem);
         }
     }
-
-    // ------------------------------------------------------------------ //
-    //  Click handling                                                      //
-    // ------------------------------------------------------------------ //
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
