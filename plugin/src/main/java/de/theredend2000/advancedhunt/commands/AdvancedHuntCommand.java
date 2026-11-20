@@ -229,6 +229,16 @@ public class AdvancedHuntCommand {
         commandManager.command(
                 playerBuilder()
                         .literal("collection")
+                        .literal("toggle")
+                        .required("name", StringParser.stringParser(), collectionsSuggestions)
+                        .permission("advancedhunt.admin.collection.edit")
+                        .commandDescription(desc("collection_edit"))
+                        .handler(context -> toggleCollection((Player) context.sender(), context.get("name")))
+        );
+
+        commandManager.command(
+                playerBuilder()
+                        .literal("collection")
                         .literal("delete")
                         .required("name", StringParser.stringParser(), collectionsSuggestions)
                         .permission("advancedhunt.admin.collection.delete")
@@ -1184,6 +1194,30 @@ public class AdvancedHuntCommand {
         withCollection(player, name, collection ->
                 new CollectionSettingsMenu(player, plugin, collection).open()
         );
+    }
+
+    private boolean processing;
+
+    public void toggleCollection(Player player, String name) {
+        withCollection(player, name, collection -> {
+            boolean toggle = !collection.isEnabled();
+            if (processing) return;
+            processing = true;
+            collection.setEnabled(toggle);
+            plugin.getCollectionManager().saveCollection(collection).thenRun(() -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    // Refresh visibility with the already-updated collection
+                    if (collection.isHideWhenNotAvailable()) {
+                        plugin.getTreasureVisibilityManager().refreshCollectionVisibility(collection);
+                    }
+                    processing = false;
+                    if(toggle)
+                        player.sendMessage(plugin.getMessageManager().getMessage("command.toggle.enabled", "%name%", name));
+                    else
+                        player.sendMessage(plugin.getMessageManager().getMessage("command.toggle.disabled", "%name%", name));
+                });
+            });
+        });
     }
 
     public void deleteCollection(Player player, String name){

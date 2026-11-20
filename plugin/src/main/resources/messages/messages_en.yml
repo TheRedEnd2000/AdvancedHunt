@@ -152,6 +152,7 @@ command:
       collection_delete: "Deletes a collection"
       collection_rename: "Renames a collection"
       collection_info: "Display detailed collection information"
+      collection_toggle: "Enables or disabled a collection"
       rewards: "View rewards for the treasure you're looking at"
       placeitems: "Opens the place items menu"
       place: "Toggle place mode (exits if active)"
@@ -220,6 +221,9 @@ command:
   rename:
     success: "%prefix%&aSuccessfully renamed collection &e%old_name% &ato &e%new_name%"
     failed: "%prefix%&cFailed to rename collection. Check if old exists and new name is unique."
+  toggle:
+    enabled: "%prefix%&aSuccessfully &2enabled &acollection &e%name%"
+    disabled: "%prefix%&aSuccessfully &cdisabled &acollection &e%name%"
   create:
     success: "%prefix%&aSuccessfully created collection &e%name%"
     failed: "%prefix%&cFailed to create collection. A collection with that name might already exist."

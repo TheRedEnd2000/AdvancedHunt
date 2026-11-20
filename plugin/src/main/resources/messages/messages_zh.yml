@@ -152,6 +152,7 @@ command:
       collection_delete: "删除一个合集"
       collection_rename: "重命名一个合集"
       collection_info: "显示详细的合集信息"
+      collection_toggle: "启用或禁用合集"
       rewards: "查看你正在注视的宝藏的奖励"
       placeitems: "打开放置物品菜单"
       place: "切换放置模式（如果处于活动状态则退出）"
@@ -220,6 +221,9 @@ command:
   rename:
     success: "%prefix%&a成功将合集 &e%old_name% &a重命名为 &e%new_name%"
     failed: "%prefix%&c重命名合集失败。请检查旧名称是否存在且新名称是唯一的。"
+  toggle:
+    enabled: "%prefix%&a成功&a启用了&a合集&e%name%"
+    disabled: "%prefix%&a成功&c禁用了&a合集&e%name%"
   create:
     success: "%prefix%&a成功创建合集 &e%name%"
     failed: "%prefix%&c创建合集失败。可能已经存在同名合集。"

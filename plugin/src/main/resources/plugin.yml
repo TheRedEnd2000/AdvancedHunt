@@ -1,5 +1,5 @@
 name: AdvancedHunt
-version: '4.0.5'
+version: '4.0.6-pre1'
 main: de.theredend2000.advancedhunt.Main
 api-version: '1.13'
 authors: [ GrafterCrafter, TheRedEnd2000 ]
@@ -35,6 +35,7 @@ permissions:
       advancedhunt.admin.collection.rename: true
       advancedhunt.admin.collection.create: true
       advancedhunt.admin.collection.edit: true
+      advancedhunt.admin.collection.toggle: true
       advancedhunt.admin.collection.delete: true
       advancedhunt.admin.collection.info: true
       advancedhunt.admin.migrate: true
@@ -65,6 +66,9 @@ permissions:
     default: op
   advancedhunt.admin.collection.edit:
     description: Allows opening collection settings directly
+    default: op
+  advancedhunt.admin.collection.toggle:
+    description: Allows enabling or disabling a collection
     default: op
   advancedhunt.admin.collection.delete:
     description: Allows deleting collections

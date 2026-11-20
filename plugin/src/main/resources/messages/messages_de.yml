@@ -152,6 +152,7 @@ command:
       collection_delete: "Löscht eine Sammlung"
       collection_rename: "Benennt eine Sammlung um"
       collection_info: "Zeigt detaillierte Informationen über eine Sammlung"
+      collection_toggle: "Aktiviert oder Deaktiviert eine Sammlung"
       rewards: "Zeigt dir die Belohnungen einer Treasure, die du Anschaust"
       placeitems: "Öffnet das Place-Item Menu"
       place: "Toggelt den Place-Mode (wird beendet wenn aktiv)"
@@ -220,6 +221,9 @@ command:
   rename:
     success: "%prefix%&aDie Sammlung wurde erfolgreich von &e%old_name% &azu &e%new_name%&a umbenannt."
     failed: "%prefix%&cFehler beim Umbenennen der Sammlung. Prüfe ob der alte Name vorhanden ist, und der neue noch nicht Existiert."
+  toggle:
+    enabled: "%prefix%&aDie Sammlung &e%name% &awurde erfolgreich &2aktiviert"
+    disabled: "%prefix%&aDie Sammlung &e%name% &awurde erfolgreich &cdeaktiviert"
   create:
     success: "%prefix%&aDie Sammlung &e%name%&a wurde erfolgreich erstellt."
     failed: "%prefix%&cFehler beim Erstellen der Sammlung. Eine Sammlung mit dem Name existiert vielleicht schon."

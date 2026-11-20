@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.theredend2000</groupId>
         <artifactId>advancedhunt-parent</artifactId>
-        <version>4.0.5</version>
+        <version>4.0.6-pre1</version>
     </parent>
 
     <artifactId>advancedhunt</artifactId>
@@ -288,7 +288,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>13.7.1</version>
+            <version>14.0.0</version>
             <scope>compile</scope>
         </dependency>
         <!-- NBT API -->

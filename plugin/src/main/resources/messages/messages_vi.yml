@@ -151,6 +151,7 @@ command:
       collection_delete: "Xoá một bộ sưu tập"
       collection_rename: "Đổi tên một bộ sưu tập"
       collection_info: "Hiển thị thông tin chi tiết của bộ sưu tập"
+      collection_toggle: "Bật hoặc tắt một bộ sưu tập"
       rewards: "Xem phần thưởng của kho báu bạn đang nhìn"
       placeitems: "Mở menu vật phẩm đặt"
       place: "Bật/tắt chế độ đặt (thoát nếu đang bật)"
@@ -216,6 +217,9 @@ command:
   rename:
     success: "%prefix%&aĐã đổi tên bộ sưu tập từ &e%old_name% &asang &e%new_name%"
     failed: "%prefix%&cKhông thể đổi tên bộ sưu tập. Kiểm tra xem tên cũ có tồn tại và tên mới có là duy nhất hay không."
+  toggle:
+    enabled: "%prefix%&aĐã bật thành công bộ sưu tập &e%name%"
+    disabled: "%prefix%&cĐã tắt thành công bộ sưu tập &e%name%"
   create:
     success: "%prefix%&aĐã tạo thành công bộ sưu tập &e%name%"
     failed: "%prefix%&cKhông thể tạo bộ sưu tập. Có thể đã tồn tại bộ sưu tập với tên này."
