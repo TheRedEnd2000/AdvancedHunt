@@ -227,13 +227,13 @@ public class AdvancedHuntCommand {
         );
 
         commandManager.command(
-                playerBuilder()
+                baseBuilder()
                         .literal("collection")
                         .literal("toggle")
                         .required("name", StringParser.stringParser(), collectionsSuggestions)
                         .permission("advancedhunt.admin.collection.edit")
                         .commandDescription(desc("collection_edit"))
-                        .handler(context -> toggleCollection((Player) context.sender(), context.get("name")))
+                        .handler(context -> toggleCollection(context.sender(), context.get("name")))
         );
 
         commandManager.command(
@@ -1198,8 +1198,8 @@ public class AdvancedHuntCommand {
 
     private boolean processing;
 
-    public void toggleCollection(Player player, String name) {
-        withCollection(player, name, collection -> {
+    public void toggleCollection(CommandSender sender, String name) {
+        withCollection(sender, name, collection -> {
             boolean toggle = !collection.isEnabled();
             if (processing) return;
             processing = true;
@@ -1212,9 +1212,9 @@ public class AdvancedHuntCommand {
                     }
                     processing = false;
                     if(toggle)
-                        player.sendMessage(plugin.getMessageManager().getMessage("command.toggle.enabled", "%name%", name));
+                        sender.sendMessage(plugin.getMessageManager().getMessage("command.toggle.enabled", "%name%", name));
                     else
-                        player.sendMessage(plugin.getMessageManager().getMessage("command.toggle.disabled", "%name%", name));
+                        sender.sendMessage(plugin.getMessageManager().getMessage("command.toggle.disabled", "%name%", name));
                 });
             });
         });
